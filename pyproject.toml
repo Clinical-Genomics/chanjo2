@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "chanjo2"
+version = "0.1.0"
+description = "Next generation coverage analysis"
+authors = ["moonso <mans.magnusson@scilifelab.se>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+fastapi = "^0.68.1"
+uvicorn = "^0.15.0"
+sqlmodel = "^0.0.4"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.5"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
