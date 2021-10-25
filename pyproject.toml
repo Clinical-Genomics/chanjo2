@@ -9,6 +9,7 @@ python = "^3.8"
 fastapi = "^0.68.1"
 uvicorn = "^0.15.0"
 sqlmodel = "^0.0.4"
+pyd4 = "^0.1.13"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
