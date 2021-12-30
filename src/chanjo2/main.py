@@ -11,9 +11,7 @@ from .models.individuals import Individual
 from .endpoints import regions, individuals
 
 
-
 ##
-
 
 
 class CoverageInterval(BaseModel):
@@ -38,7 +36,6 @@ app.include_router(
     responses={status.HTTP_404_NOT_FOUND: {"description": "Not found"}},
 )
 
-
 app.include_router(
     individuals.router,
     prefix="/individuals",
@@ -47,11 +44,10 @@ app.include_router(
 )
 
 
-
-
 @app.on_event("startup")
 def on_startup():
     create_db_and_tables()
+
 
 @app.get("/")
 async def root():

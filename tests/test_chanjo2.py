@@ -1,4 +1,4 @@
-from src.chanjo2 import __version__
+from chanjo2 import __version__
 
 
 def test_version():

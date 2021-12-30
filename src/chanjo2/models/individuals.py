@@ -6,6 +6,7 @@ from sqlmodel import Field, SQLModel
 class IndividualBase(SQLModel):
     individual_id: str
     coverage_file_path: str
+    region_file_path: str
 
 
 class Individual(IndividualBase, table=True):
