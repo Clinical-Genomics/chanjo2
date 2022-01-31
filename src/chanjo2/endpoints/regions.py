@@ -1,8 +1,8 @@
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from src.chanjo2.dependencies import get_session
-from src.chanjo2.models.regions import Region, RegionRead, RegionCreate
+from chanjo2.dependencies import get_session
+from chanjo2.models.regions import Region, RegionRead, RegionCreate
 from sqlmodel import Session, select
 
 router = APIRouter()

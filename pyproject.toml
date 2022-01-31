@@ -9,10 +9,14 @@ python = "^3.8"
 fastapi = "^0.68.1"
 uvicorn = "^0.15.0"
 sqlmodel = "^0.0.4"
-pyd4 = "^0.1.13"
+pyd4 = {version = "^0.3.1", optional = true}
+python-multipart = "^0.0.5"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
+
+[tool.poetry.extras]
+m1 = ["pyd4"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
