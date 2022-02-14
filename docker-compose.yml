@@ -8,14 +8,16 @@ services:
       - /Users/ramprasad.neethiraj/Documents/chanjo2demodata:/var/lib/mysql
       - /Users/ramprasad.neethiraj/Downloads/:/Users/ramprasad.neethiraj/Downloads/
     healthcheck:
-      test: "/usr/bin/mysql --user=root --password=my_secret_pw --execute \"SHOW DATABASES;\""
+      test: "/usr/bin/mysql --user=${D4DB_USER_NAME} --password=${D4DB_USER_PASSWORD} --execute \"SHOW DATABASES;\""
       interval: 5s
       timeout: 5s
-      retries: 3
+      retries: 10
   chanjo2-demo:
     build: .
     ports:
       - "8000:8000"
+    environment:
+      - MYSQL_ROOT_PASSWORD=${D4DB_USER_PASSWORD}
     depends_on:
       d4database:
         condition: service_healthy
