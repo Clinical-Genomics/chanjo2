@@ -1,0 +1,22 @@
+version: "3"
+services:
+  d4database:
+    image: mysql
+    ports:
+      - "3306:3306"
+    volumes:
+      - /Users/ramprasad.neethiraj/Documents/chanjo2demodata:/var/lib/mysql
+      - /Users/ramprasad.neethiraj/Downloads/:/Users/ramprasad.neethiraj/Downloads/
+    healthcheck:
+      test: "/usr/bin/mysql --user=root --password=my_secret_pw --execute \"SHOW DATABASES;\""
+      interval: 5s
+      timeout: 5s
+      retries: 3
+  chanjo2-demo:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      d4database:
+        condition: service_healthy
+      

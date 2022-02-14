@@ -1,12 +1,10 @@
 from sqlmodel import Session, create_engine
 
-sqlite_file_name = "database.db"
-sqlite_url = f"sqlite:///{sqlite_file_name}"
+mysql_url = f"mysql://root:my_secret_pw@d4database:3306/d4files"
 
-connect_args = {"check_same_thread": False}
-engine = create_engine(sqlite_url, echo=True, connect_args=connect_args)
-
+engine = create_engine(mysql_url, echo=True)
 
 def get_session():
     with Session(engine) as session:
         yield session
+

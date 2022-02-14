@@ -96,6 +96,25 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "mysql"
+version = "0.0.3"
+description = "Virtual package for MySQL-python"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+mysqlclient = "*"
+
+[[package]]
+name = "mysqlclient"
+version = "2.1.0"
+description = "Python interface to MySQL"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[[package]]
 name = "numpy"
 version = "1.22.1"
 description = "NumPy is the fundamental package for array computing with Python."
@@ -312,7 +331,7 @@ m1 = ["pyd4"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "c9c9874d134cc9703085adb7c170da09039b9c66ac451f1012e911056fcb1ed4"
+content-hash = "899c4cb45207fe6931202aa639063848159e163ed252a9bf08f774d8d76d1631"
 
 [metadata.files]
 asgiref = [
@@ -398,6 +417,17 @@ h11 = [
 iniconfig = [
     {file = "iniconfig-1.1.1-py2.py3-none-any.whl", hash = "sha256:011e24c64b7f47f6ebd835bb12a743f2fbe9a26d4cecaa7f53bc4f35ee9da8b3"},
     {file = "iniconfig-1.1.1.tar.gz", hash = "sha256:bc3af051d7d14b2ee5ef9969666def0cd1a000e121eaea580d4a313df4b37f32"},
+]
+mysql = [
+    {file = "mysql-0.0.3-py3-none-any.whl", hash = "sha256:8893cb143a5ac525c49ef358a23b8a0dc9721a95646f7bab6ca2f384c18a6a9a"},
+    {file = "mysql-0.0.3.tar.gz", hash = "sha256:fd7bae7d7301ce7cd3932e5ff7f77bbc8e34872108252866e08d16d6b8e8de8c"},
+]
+mysqlclient = [
+    {file = "mysqlclient-2.1.0-cp310-cp310-win_amd64.whl", hash = "sha256:02c8826e6add9b20f4cb12dcf016485f7b1d6e30356a1204d05431867a1b3947"},
+    {file = "mysqlclient-2.1.0-cp37-cp37m-win_amd64.whl", hash = "sha256:b62d23c11c516cedb887377c8807628c1c65d57593b57853186a6ee18b0c6a5b"},
+    {file = "mysqlclient-2.1.0-cp38-cp38-win_amd64.whl", hash = "sha256:2c8410f54492a3d2488a6a53e2d85b7e016751a1e7d116e7aea9c763f59f5e8c"},
+    {file = "mysqlclient-2.1.0-cp39-cp39-win_amd64.whl", hash = "sha256:e6279263d5a9feca3e0edbc2b2a52c057375bf301d47da2089c075ff76331d14"},
+    {file = "mysqlclient-2.1.0.tar.gz", hash = "sha256:973235686f1b720536d417bf0a0d39b4ab3d5086b2b6ad5e6752393428c02b12"},
 ]
 numpy = [
     {file = "numpy-1.22.1-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:3d62d6b0870b53799204515145935608cdeb4cebb95a26800b6750e48884cc5b"},

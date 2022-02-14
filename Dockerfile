@@ -14,11 +14,14 @@ WORKDIR /home/worker/app
 COPY . /home/worker/app
 
 # Install poetry
+RUN apt-get update 
+RUN apt-get install -y default-libmysqlclient-dev
 RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
 ENV PATH="/root/.poetry/bin:${PATH}"
 
 # Install dependencies
 RUN poetry install
+RUN poetry add mysqlclient
 ENV PATH="/root/.poetry/bin:${PATH}"
 ENV PYTHONPATH="/usr/local/lib/python3.9/site-packages/pyd4:${PYTHONPATH}"
 
