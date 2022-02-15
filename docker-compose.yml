@@ -5,8 +5,8 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - /Users/ramprasad.neethiraj/Documents/chanjo2demodata:/var/lib/mysql
-      - /Users/ramprasad.neethiraj/Downloads/:/Users/ramprasad.neethiraj/Downloads/
+      - ${D4DB_VOLUME}:/var/lib/mysql
+      - ${DATA_VOLUME}:${DATA_VOLUME}
     healthcheck:
       test: "/usr/bin/mysql --user=${D4DB_USER_NAME} --password=${D4DB_USER_PASSWORD} --execute \"SHOW DATABASES;\""
       interval: 5s
