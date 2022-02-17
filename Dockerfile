@@ -3,10 +3,10 @@ FROM clinicalgenomics/pyd4
 LABEL base_image="clinicalgenomics/pyd4"
 LABEL about.home="https://github.com/Clinical-Genomics/chanjo2"
 
-ENV UVICORN_WORKERS=2
-ENV UVICORN_THREADS=2
-ENV UVICORN_HOST="0.0.0.0"
-ENV UVICORN_PORT="8000"
+ENV GUNICORN_WORKERS=2
+ENV GUNICORN_THREADS=2
+ENV GUNICORN_HOST="0.0.0.0"
+ENV GUNICORN_PORT="8000"
 
 EXPOSE 8000
 
@@ -27,9 +27,9 @@ ENV PYTHONPATH="/usr/local/lib/python3.9/site-packages/pyd4:${PYTHONPATH}"
 
 
 # switch to gunicorn
-CMD . /root/.cache/pypoetry/virtualenvs/chanjo2-iv4VKWd0-py3.9/bin/activate && uvicorn\
-    --workers=$UVICORN_WORKERS \
-    --host=$UVICORN_HOST \
-    --port=$UVICORN_PORT \
+CMD . /root/.cache/pypoetry/virtualenvs/chanjo2-iv4VKWd0-py3.9/bin/activate && gunicorn\
+    --workers=$GUNICORN_WORKERS \
+    --host=$GUNICORN_HOST \
+    --port=$GUNICORN_PORT \
     --log-level="debug" \
     chanjo2.main:app
