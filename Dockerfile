@@ -3,12 +3,10 @@ FROM clinicalgenomics/pyd4
 LABEL base_image="clinicalgenomics/pyd4"
 LABEL about.home="https://github.com/Clinical-Genomics/chanjo2"
 
-ENV GUNICORN_WORKERS=2
-ENV GUNICORN_THREADS=2
-ENV GUNICORN_HOST="0.0.0.0"
-ENV GUNICORN_PORT="8000"
-
-EXPOSE 8000
+ENV GUNICORN_WORKERS=1
+ENV GUNICORN_THREADS=1
+ENV GUNICORN_BIND="0.0.0.0:8000"
+ENV GUNICORN_TIMEOUT=400
 
 WORKDIR /home/worker/app
 COPY . /home/worker/app
@@ -16,20 +14,17 @@ COPY . /home/worker/app
 # Install poetry
 RUN apt-get update 
 RUN apt-get install -y default-libmysqlclient-dev
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
-ENV PATH="/root/.poetry/bin:${PATH}"
+RUN pip install -r requirements.txt
+RUN pip install .
 
-# Install dependencies
-RUN poetry install
-RUN poetry add mysqlclient
-ENV PATH="/root/.poetry/bin:${PATH}"
-ENV PYTHONPATH="/usr/local/lib/python3.9/site-packages/pyd4:${PYTHONPATH}"
 
 
 # switch to gunicorn
-CMD . /root/.cache/pypoetry/virtualenvs/chanjo2-iv4VKWd0-py3.9/bin/activate && gunicorn\
+CMD gunicorn\
     --workers=$GUNICORN_WORKERS \
-    --host=$GUNICORN_HOST \
-    --port=$GUNICORN_PORT \
+    --bind=$GUNICORN_BIND \
+    --threads=$GUNICORN_THREADS \
+    --timeout=$GUNICORN_TIMEOUT \
+    --worker-class uvicorn.workers.UvicornWorker \
     --log-level="debug" \
     chanjo2.main:app
