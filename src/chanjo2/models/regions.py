@@ -20,4 +20,3 @@ class RegionCreate(RegionBase):
 
 class RegionRead(RegionBase):
     id: int
-

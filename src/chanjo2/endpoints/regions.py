@@ -19,7 +19,10 @@ def create_region(*, session: Session = Depends(get_session), region: RegionCrea
 
 @router.get("/regions/", response_model=List[RegionRead])
 def read_regions(
-        *, session: Session = Depends(get_session), offset: int = 0, limit=Query(default=100, lte=100)
+    *,
+    session: Session = Depends(get_session),
+    offset: int = 0,
+    limit=Query(default=100, lte=100)
 ):
     return session.exec(select(Region).offset(offset).limit(limit)).all()
 
@@ -28,5 +31,7 @@ def read_regions(
 def read_region(*, session: Session = Depends(get_session), region_id: int):
     region = session.get(Region, region_id)
     if not region:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Region not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Region not found"
+        )
     return region
