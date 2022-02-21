@@ -1,0 +1,2 @@
+CREATE DATABASE IF NOT EXISTS `d4files`;
+USE `d4files`;

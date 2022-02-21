@@ -1,11 +1,15 @@
 version: "3"
 services:
   d4database:
-    image: mysql
+    build:
+      context: . 
+      dockerfile: ./Dockerfile-db
+    environment:
+      - MYSQL_DATABASE_NAME=${D4DB_NAME}
+      - MYSQL_ROOT_PASSWORD=${D4DB_USER_PASSWORD}
     ports:
-      - "3306:3306"
+      - "${MYSQL_HOST_PORT}:${MYSQL_CONTAINER_PORT}"
     volumes:
-      - ${D4DB_VOLUME}:/var/lib/mysql
       - ${DATA_VOLUME}:${DATA_VOLUME}
     healthcheck:
       test: "/usr/bin/mysql --user=${D4DB_USER_NAME} --password=${D4DB_USER_PASSWORD} --execute \"SHOW DATABASES;\""
@@ -13,11 +17,16 @@ services:
       timeout: 5s
       retries: 10
   chanjo2-demo:
-    build: .
+    build:
+      context: .  
+      dockerfile: ./Dockerfile-api
     ports:
-      - "8000:8000"
+      - "${CHANJO_HOST_PORT}:${CHANJO_CONTAINER_PORT}"
     environment:
+      - MYSQL_DATABASE_NAME=${D4DB_NAME}
+      - MYSQL_HOST_NAME=d4database
       - MYSQL_ROOT_PASSWORD=${D4DB_USER_PASSWORD}
+      - MYSQL_PORT=${MYSQL_CONTAINER_PORT}
     depends_on:
       d4database:
         condition: service_healthy
