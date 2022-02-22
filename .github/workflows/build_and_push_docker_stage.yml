@@ -1,4 +1,4 @@
-name: Build and publish docker image on push
+name: Build and publish docker image to stage repo
 
 on: [push]
 
