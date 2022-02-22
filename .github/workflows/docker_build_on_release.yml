@@ -1,4 +1,4 @@
-name: Build and publish image on new release event
+name: Release Actions
 
 on:
  release:
@@ -31,5 +31,4 @@ jobs:
          context: ./
          file: ./Dockerfile-api
          push: true
-         tags: "clinicalgenomics/chanjo2:${{github.event.release.tag_name}}, clinicalgenomics/chanjo2:latest, clinicalgenomics/chanjo2-stage:${{github.event.release.tag_name}}" 
-19  .github/workflows/bumpversion_on_merge_main.yml 
+         tags: "clinicalgenomics/chanjo2:${{github.event.release.tag_name}}, clinicalgenomics/chanjo2:latest" 
