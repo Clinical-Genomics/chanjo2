@@ -6,7 +6,7 @@ from fastapi import Depends, FastAPI, HTTPException, Query, status
 from pydantic import BaseModel
 from sqlmodel import Field, Session, SQLModel, select
 
-from src.chanjo2.dependencies import engine, get_session
+from chanjo2.dependencies import engine, get_session
 from .models.individuals import Individual
 from .endpoints import regions, individuals
 

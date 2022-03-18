@@ -1,10 +1,14 @@
+import os
 from sqlmodel import Session, create_engine
 
-sqlite_file_name = "database.db"
-sqlite_url = f"sqlite:///{sqlite_file_name}"
+root_password = os.getenv("MYSQL_ROOT_PASSWORD")
+host_name = os.getenv("MYSQL_HOST_NAME")
+db_name = os.getenv("MYSQL_DATABASE_NAME")
+port_no = os.getenv("MYSQL_PORT")
 
-connect_args = {"check_same_thread": False}
-engine = create_engine(sqlite_url, echo=True, connect_args=connect_args)
+mysql_url = f"mysql://root:{root_password}@{host_name}:{port_no}/{db_name}"
+
+engine = create_engine(mysql_url, echo=True)
 
 
 def get_session():
