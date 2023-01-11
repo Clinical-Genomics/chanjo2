@@ -32,4 +32,4 @@ You can run an instance of the web server by typing:
 gunicorn --config gunicorn.conf.py src.chanjo2.main:app
 ```
 
-The server will run on localhost and default port 8000 (http://127.0.0.1:8000)
+The server will run on localhost and default port 8000 (http://0.0.0.0:8000)
