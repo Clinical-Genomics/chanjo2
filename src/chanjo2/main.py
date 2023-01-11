@@ -1,15 +1,12 @@
 from pathlib import Path
 from typing import List, Literal, Optional
 
+from chanjo2.dependencies import engine, get_session
 from fastapi import Depends, FastAPI, HTTPException, Query, status
-
 from pydantic import BaseModel
 from sqlmodel import Field, Session, SQLModel, select
 
-from chanjo2.dependencies import engine, get_session
-from .models.individuals import Individual
-from .endpoints import regions, individuals
-
+from .endpoints import individuals, regions
 
 ##
 

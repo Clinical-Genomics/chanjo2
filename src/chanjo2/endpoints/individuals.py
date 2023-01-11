@@ -1,14 +1,12 @@
 from pathlib import Path
 from typing import List
 
-from pyd4 import D4File
-from sqlmodel import Session, select
-from fastapi import APIRouter, Depends, HTTPException, Query, status, File
-
-from chanjo2.meta.handle_bed import parse_bed
 from chanjo2.dependencies import get_session
+from chanjo2.meta.handle_bed import parse_bed
 from chanjo2.models.coverage_interval import CoverageInterval
 from chanjo2.models.individuals import Individual, IndividualCreate, IndividualRead
+from fastapi import APIRouter, Depends, File, HTTPException, Query, status
+from sqlmodel import Session, select
 
 router = APIRouter()
 
