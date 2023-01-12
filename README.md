@@ -1,6 +1,28 @@
-# Please note that this project is still a work in progress!!
+# chanjo2
+
+<strong>Please note that this project is still a work in progress!!</strong>
 
 ## Launching a demo app connected to a database using Docker Compose
+
+We provide a generic Docker file to run the application (both the API and the command line that takes care of populating the database).
+
+To test the application, we provide a docker-compose file that connects a demo instance of the app to a Docker-based SQL database (MariaDB).
+
+To check the configuration (env variables passed to the docker-compose file) run:
+
+```
+docker-compose --env-file template.env config
+```
+
+Note that the `template.env` file offers an example of the required variables and that can be customised according to your local seetings.
+
+To run a demo containing the Chanjo2 REST API, run instead:
+
+```
+docker-compose --env-file template.env up
+```
+
+
 
 ## Installing the application on a local Conda environment
 

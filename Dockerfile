@@ -47,8 +47,26 @@ COPY --chown=worker:worker --from=python-builder /venv /venv
 WORKDIR /home/worker/app
 COPY --chown=worker:worker . /home/worker/app
 
-# Install only Scout app
+# Install only the app
 RUN pip install --no-cache-dir --editable .
 
 # Run the app as non-root user
 USER worker
+
+ENV GUNICORN_WORKERS=1
+ENV GUNICORN_THREADS=1
+ENV GUNICORN_BIND="0.0.0.0:8000"
+ENV GUNICORN_TIMEOUT=400
+
+CMD gunicorn \
+    --workers=$GUNICORN_WORKERS \
+    --bind=$GUNICORN_BIND  \
+    --threads=$GUNICORN_THREADS \
+    --timeout=$GUNICORN_TIMEOUT \
+    --proxy-protocol \
+    --forwarded-allow-ips="10.0.2.100,127.0.0.1" \
+    --log-syslog \
+    --access-logfile - \
+    --error-logfile - \
+    --log-level="debug" \
+    chanjo2.main:app --log-level debug
