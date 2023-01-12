@@ -5,3 +5,5 @@
 ### Fixed
 - Bugs preventing the gunicorn app to launch
 - Code to compose DB url to work when app is invoked from docker-compose
+### Changed
+- Use a multi-stage build in Dockerfile to reduce its size
