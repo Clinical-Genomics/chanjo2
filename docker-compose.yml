@@ -1,13 +1,10 @@
 version: '3'
-# usage:
-# (sudo) docker-compose up -d
-# (sudo) docker-compose down
 services:
   mariadb:
     container_name: mariadb
     build:
       context: .
-      dockerfile: Dockerfile-db
+      dockerfile: Dockerfile-db # MariaDB with an init.sql file to initialize the database
     restart: 'always'
     environment:
       - MYSQL_USER=${DB_USER_NAME}
@@ -32,11 +29,11 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=${DB_USER_PASSWORD}
       - MYSQL_DATABASE_NAME=${DB_NAME}
-      - MYSQL_HOST_NAME=${MYSQL_HOST_NAME} # This is set to mariadb (the db service) to work in docker-compose
-      - MYSQL_PORT=${MYSQL_PORT} # This will be empty to work in docker-compose
+      - MYSQL_HOST_NAME=${MYSQL_HOST_NAME} # This is set to 'mariadb' (the db service) to work in docker-compose
+      - MYSQL_PORT=${MYSQL_PORT} # This will be set to 'None' so the DB URI is 'root:testpw@mariadb/testdb'
     depends_on:
       mariadb:
-        condition: service_healthy # DB_URI=root:testpw@mariadb/testdb
+        condition: service_healthy
     volumes:
       - ${HOST_DATA_VOLUME}:${CONTAINER_DATA_VOLUME}
     networks:
