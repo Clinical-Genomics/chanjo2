@@ -1,4 +1,8 @@
-## Installing the application on a local conda environment
+# Please note that this project is still a work in progress!!
+
+## Launching a demo app connected to a database using Docker Compose
+
+## Installing the application on a local Conda environment
 
 Given a local instance of a MySQL database (you can skip the step below if you already have a running instance of MySQL):
 ```
