@@ -16,8 +16,6 @@ To check the configuration (env variables passed to the docker-compose file) run
 docker-compose --env-file template.env config
 ```
 
-Note that
-
 The docker-compose file contains 2 services:
 - **MariaDB database**, runned from a Docker file that includes the script to create an empty `testdb` database
 - **The chanjo2 web app**, a REST API
