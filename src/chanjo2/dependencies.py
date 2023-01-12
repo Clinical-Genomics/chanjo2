@@ -1,7 +1,4 @@
-import logging
 import os
-
-LOG = logging.getLogger("uvicorn.access")
 
 from sqlmodel import Session, create_engine
 
@@ -18,7 +15,6 @@ else:  # This happens when app is invoked from Docker-compose (no db port needed
     host = host_name
 
 mysql_url = f"mysql://root:{root_password}@{host}/{db_name}"
-LOG.error(f"MYSQL URL IS:{mysql_url}")
 
 engine = create_engine(mysql_url, echo=True)
 
