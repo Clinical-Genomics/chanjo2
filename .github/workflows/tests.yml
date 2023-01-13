@@ -31,7 +31,9 @@ jobs:
       - name: Print python versions
         run: |
           python -V
-          poetry run python -V
+          pip freeze
 
       - name: Test with pytest
-        run: poetry run pytest
+        run:
+          poetry env use ${{ matrix.python-version }}
+          poetry run pytest
