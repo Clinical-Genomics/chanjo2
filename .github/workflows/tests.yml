@@ -30,8 +30,7 @@ jobs:
 
       - name: Print python versions
         run: |
-          python -V
-          pip freeze
+          poetry run python -V
 
       - name: Test with pytest
         run:
