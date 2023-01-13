@@ -34,5 +34,4 @@ jobs:
 
       - name: Test with pytest
         run:
-          poetry env use ${{ matrix.python-version }}
           poetry run pytest
