@@ -8,7 +8,7 @@ The file named `Dockerfile` is a generic Docker file to run the application.
 
 To test the application connected to a database (MariaDB) instance, you could use the provided Docker-compose file (`docker-compose.yml`).
 
-Note that a file containing enviroment variables is required to run this setup. The `template.env` file offers an example of the required variables and that can be customised according to your local seetings.
+Note that a file containing enviroment variables is required to run this setup. The `template.env` file offers an example of the required variables and can be customised according to your local settings.
 
 To check the configuration (env variables passed to the docker-compose file) run:
 
