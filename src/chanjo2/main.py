@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import List, Literal, Optional
 
-from chanjo2 import VERSION
+from chanjo2 import __version__
 from chanjo2.dependencies import engine, get_session
 from fastapi import Depends, FastAPI, HTTPException, Query, status
 from pydantic import BaseModel
@@ -47,4 +47,4 @@ def on_startup():
 
 @app.get("/")
 def heartbeat():
-    return {"message": f"Chanjo2 v{VERSION} is up and running!"}
+    return {"message": f"Chanjo2 v{__version__} is up and running!"}
