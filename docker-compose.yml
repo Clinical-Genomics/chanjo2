@@ -1,33 +1,46 @@
-version: "3"
+version: '3'
 services:
-  d4database:
+  mariadb:
+    container_name: mariadb
     build:
-      context: . 
-      dockerfile: ./Dockerfile-db
+      context: .
+      dockerfile: Dockerfile-db # MariaDB with an init.sql file to initialize the database
+    restart: 'always'
     environment:
-      - MYSQL_DATABASE_NAME=${D4DB_NAME}
-      - MYSQL_ROOT_PASSWORD=${D4DB_USER_PASSWORD}
-    ports:
-      - "${MYSQL_HOST_PORT}:${MYSQL_CONTAINER_PORT}"
+      - MYSQL_USER=${DB_USER_NAME}
+      - MYSQL_ROOT_PASSWORD=${DB_USER_PASSWORD}
+      - MYSQL_DATABASE_NAME=${DB_NAME}
+    healthcheck: # Wait for the service to be ready before accepting incoming connections
+      test: "mysql --user=${DB_USER_NAME} --password=${DB_USER_PASSWORD} --execute \"SHOW DATABASES;\""
+      timeout: 10s
+      retries: 20
     volumes:
-      - ${DATA_VOLUME}:${DATA_VOLUME}
-    healthcheck:
-      test: "/usr/bin/mysql --user=${D4DB_USER_NAME} --password=${D4DB_USER_PASSWORD} --execute \"SHOW DATABASES;\""
-      interval: 5s
-      timeout: 5s
-      retries: 10
-  chanjo2-demo:
-    build:
-      context: .  
-      dockerfile: ./Dockerfile-api
+      - ${HOST_DATA_VOLUME}:${CONTAINER_DATA_VOLUME}
+    networks:
+      - chanjo-net
     ports:
-      - "${CHANJO_HOST_PORT}:${CHANJO_CONTAINER_PORT}"
+      - "${MYSQL_HOST_PORT}:3306"
+
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: Dockerfile
     environment:
-      - MYSQL_DATABASE_NAME=${D4DB_NAME}
-      - MYSQL_HOST_NAME=d4database
-      - MYSQL_ROOT_PASSWORD=${D4DB_USER_PASSWORD}
-      - MYSQL_PORT=${MYSQL_CONTAINER_PORT}
+      - MYSQL_ROOT_PASSWORD=${DB_USER_PASSWORD}
+      - MYSQL_DATABASE_NAME=${DB_NAME}
+      - MYSQL_HOST_NAME=${MYSQL_HOST_NAME} # This is set to 'mariadb' (the db service) to work in docker-compose
+      - MYSQL_PORT=${MYSQL_PORT} # This will be set to 'None' so the DB URI is 'root:testpw@mariadb/testdb'
     depends_on:
-      d4database:
+      mariadb:
         condition: service_healthy
-      
+    volumes:
+      - ${HOST_DATA_VOLUME}:${CONTAINER_DATA_VOLUME}
+    networks:
+      - chanjo-net
+    ports:
+      - "${CHANJO_HOST_PORT}:8000"
+
+networks:
+  chanjo-net:
+    driver: bridge
