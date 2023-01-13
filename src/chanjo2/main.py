@@ -1,14 +1,13 @@
 from pathlib import Path
 from typing import List, Literal, Optional
 
+from chanjo2 import VERSION
 from chanjo2.dependencies import engine, get_session
 from fastapi import Depends, FastAPI, HTTPException, Query, status
 from pydantic import BaseModel
 from sqlmodel import Field, Session, SQLModel, select
 
 from .endpoints import individuals, regions
-
-##
 
 
 class CoverageInterval(BaseModel):
@@ -47,5 +46,5 @@ def on_startup():
 
 
 @app.get("/")
-async def root():
-    return {"message": "Welcome to Chanjo2: A strangely named app about to be reborn."}
+def heartbeat():
+    return {"message": f"Chanjo2 v{VERSION} is up and running!"}
