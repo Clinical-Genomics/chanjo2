@@ -5,7 +5,7 @@ from sqlmodel import Session, create_engine
 root_password = os.getenv("MYSQL_ROOT_PASSWORD") or "test"
 db_name = os.getenv("MYSQL_DATABASE_NAME") or "chanjo2_test"
 
-# Set DB host and port inti host variable
+# Set DB host and port into host variable
 host = ""
 host_name = os.getenv("MYSQL_HOST_NAME") or "127.0.0.1"
 port_no = os.getenv("MYSQL_PORT") or "3307"
