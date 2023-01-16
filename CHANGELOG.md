@@ -4,6 +4,7 @@
 - Test for heartbeat endpoint
 - Automated tests GitHub workflow
 - Instructions on how to run a demo connected to a database in README
+- Add Codecov steps to Tests GitHub action
 ### Fixed
 - Bugs preventing the gunicorn app to launch
 - Code to compose DB url to work when app is invoked from docker-compose
