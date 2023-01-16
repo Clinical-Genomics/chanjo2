@@ -1,4 +1,4 @@
-name: tests
+name: tests & coverage
 
 on: [pull_request]
 
@@ -34,4 +34,13 @@ jobs:
 
       - name: Test with pytest
         run:
-          poetry run pytest
+          poetry run pytest --cov=./ --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3.1.1
+        with:
+          flags: unittests
+          files: ./coverage.xml
+          name: codecov-umbrella
+          fail_ci_if_error: true
+          verbose: true
