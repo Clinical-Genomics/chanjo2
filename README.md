@@ -42,8 +42,6 @@ The endpoints of the app will be now reachable from ant web browser: http://0.0.
 
 
 
-
-
 ## Installing the application on a local Conda environment
 
 Given a conda environment containing python >=3.7 and [poetry](https://github.com/python-poetry/poetry), clone the repository from Github with the following command:
