@@ -12,7 +12,12 @@ port_no = os.getenv("MYSQL_PORT")
 if os.getenv("DEMO") or not db_name:
     mysql_url = "sqlite:///./chanjotest.db"
 else:
-    mysql_url = f"mysql://root:{root_password}@{host_name}:{port_no}/{db_name}"
+    if port_no is None:
+        host = host_name
+    else:
+        host = ":".join([host_name, port_no])
+
+    mysql_url = f"mysql://root:{root_password}@{host}/{db_name}"
 
 engine = create_engine(mysql_url, echo=True)
 

@@ -29,8 +29,7 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=${DB_USER_PASSWORD}
       - MYSQL_DATABASE_NAME=${DB_NAME}
-      - MYSQL_HOST_NAME=${MYSQL_HOST_NAME} # This is set to 'mariadb' (the db service) to work in docker-compose
-      - MYSQL_PORT=${MYSQL_PORT} # This will be set to 'None' so the DB URI is 'root:testpw@mariadb/testdb'
+      - MYSQL_HOST_NAME=${MYSQL_HOST_NAME}
     depends_on:
       mariadb:
         condition: service_healthy
