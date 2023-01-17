@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import List
 
-from chanjo2.dependencies import get_session
+from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import parse_bed
 from chanjo2.models.coverage_interval import CoverageInterval
 from chanjo2.models.individuals import Individual, IndividualCreate, IndividualRead
