@@ -38,7 +38,7 @@ To start the demo, run:
 docker-compose -f docker-compose-mysql.yml --env-file template.env up
 ```
 
-The endpoints of the app will be now reachable from ant web browser: http://0.0.0.0:8000/docs or http://localhost:8000/docs
+The endpoints of the app will be now reachable from any web browser: http://0.0.0.0:8000/docs or http://localhost:8000/docs
 
 
 

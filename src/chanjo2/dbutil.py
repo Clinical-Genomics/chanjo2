@@ -2,7 +2,7 @@ import os
 
 from sqlmodel import Session, create_engine
 
-engine = None
+DEMO_DB = "sqlite:///./chanjotest.db"
 
 root_password = os.getenv("MYSQL_ROOT_PASSWORD")
 db_name = os.getenv("MYSQL_DATABASE_NAME")
@@ -10,7 +10,7 @@ host_name = os.getenv("MYSQL_HOST_NAME")
 port_no = os.getenv("MYSQL_PORT")
 
 if os.getenv("DEMO") or not db_name:
-    mysql_url = "sqlite:///./chanjotest.db"
+    mysql_url = DEMO_DB
 else:
     if port_no is None:
         host = host_name
