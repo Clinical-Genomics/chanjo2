@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import List, Literal, Optional
 
 from chanjo2 import __version__
-from chanjo2.dependencies import engine, get_session
+from chanjo2.dbutil import engine
 from fastapi import Depends, FastAPI, HTTPException, Query, status
 from pydantic import BaseModel
 from sqlmodel import Field, Session, SQLModel, select

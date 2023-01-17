@@ -11,3 +11,5 @@
 ### Changed
 - Renamed root endpoint to heartbeat
 - Use a multi-stage build in Dockerfile to reduce its size
+- SQLite database launched instead of MySQL as the default demo DB instance
+- Simpler docker-compose file and additional docker-compose file to show MySQL connection howto
