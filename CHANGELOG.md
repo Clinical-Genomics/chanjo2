@@ -13,3 +13,4 @@
 - Use a multi-stage build in Dockerfile to reduce its size
 - SQLite database launched instead of MySQL as the default demo database
 - Simpler docker-compose file and additional docker-compose file to show MySQL connection howto
+- Use a temporary file when running the demo app
