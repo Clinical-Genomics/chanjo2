@@ -7,7 +7,7 @@ from fastapi import Depends, FastAPI, HTTPException, Query, status
 from pydantic import BaseModel
 from sqlmodel import SQLModel
 
-from .endpoints import individuals, intervals
+from .endpoints import intervals, samples
 
 
 def create_db_and_tables():
@@ -24,9 +24,9 @@ app.include_router(
 )
 
 app.include_router(
-    individuals.router,
-    prefix="/individuals",
-    tags=["individuals"],
+    samples.router,
+    prefix="/samples",
+    tags=["samples"],
     responses={status.HTTP_404_NOT_FOUND: {"description": "Not found"}},
 )
 

@@ -1,5 +1,6 @@
 from datetime import datetime
-from typing import Enum, List, Union
+from enum import Enum
+from typing import List, Union
 
 from pydantic import BaseModel
 
@@ -20,7 +21,9 @@ class CaseCreate(CaseBase):
 
 class CaseRead(CaseBase):
     id: int
-    samples = List[SampleRead] = []
+
+    class Config:
+        orm_mode = True
 
 
 class SampleBase(BaseModel):
@@ -40,6 +43,9 @@ class SampleRead(SampleBase):
     case_id: int
     case: CaseRead
 
+    class Config:
+        orm_mode = True
+
 
 class TagBase(BaseModel):
     name: str
@@ -52,7 +58,6 @@ class TagCreate(TagBase):
 
 class TagRead(TagBase):
     id: int
-    intervals = List[IntervalRead] = []
 
 
 class IntervalBase(BaseModel):
@@ -71,12 +76,11 @@ class IntervalRead(IntervalBase):
     tags: List[TagRead] = []
 
 
-"""
 class CoverageInterval(BaseModel):
     chromosome: str
     start: int
     end: int
-    individual_id: str
-    interval_id: str
+    individual_id: int
+    interval_id: int
+    case_id: int
     mean_coverage: float
-"""
