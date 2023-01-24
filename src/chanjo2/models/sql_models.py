@@ -1,7 +1,14 @@
+import enum
+
 from chanjo2.dbutil import Base
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, String, Table
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+
+
+class Builds(enum.Enum):
+    build_37 = "GRCh37"
+    build_38 = "GRCh38"
 
 
 class Case(Base):
@@ -12,6 +19,8 @@ class Case(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(64), nullable=False, unique=True)
     display_name = Column(String(64), nullable=True, unique=False)
+
+    samples = relationship("Sample", back_populates="case")
 
 
 class Sample(Base):
@@ -26,6 +35,17 @@ class Sample(Base):
     coverage_file_path = Column(String, nullable=False)
     created_date = Column(DateTime(timezone=True), server_default=func.now())
 
+    case = relationship("Case", back_populates="samples")
+
+
+# Table used to define the many-to-many relationship between the Interval and Tag tables
+interval_tag = Table(
+    "interval_tag",
+    Base.metadata,
+    Column("interval_id", ForeignKey("intervals.id"), primary_key=True),
+    Column("tag_id", ForeignKey("tags.id"), primary_key=True),
+)
+
 
 class Tag(Base):
     """Used to define an attribute for one or more intervals, for instance GRCh38.
@@ -35,6 +55,8 @@ class Tag(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(64), nullable=False, unique=True)
+    build = Column(Enum(Builds))
+    intervals = relationship("Interval", secondary=interval_tag, back_populates="tags")
 
 
 class Interval(Base):
@@ -43,16 +65,9 @@ class Interval(Base):
     __tablename__ = "intervals"
 
     id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(64), nullable=True, unique=False)
     chromosome = Column(String(6), nullable=False, unique=True)
     start = Column(Integer, nullable=False)
     stop = Column(Integer, nullable=False)
     tags = Column(Integer, nullable=False)
-
-
-class IntervalTag(Base):
-    """Used to define the many-to-many relationship between the Interval and Tag tables"""
-
-    __tablename__ = "interval_tag"
-
-    interval_id = Column(Integer, ForeignKey("intervals.id"), primary_key=True)
-    tag_id = Column(Integer, ForeignKey("intervals.id"), primary_key=True)
+    tags = relationship("Tag", secondary=interval_tag, back_populates="intervals")
