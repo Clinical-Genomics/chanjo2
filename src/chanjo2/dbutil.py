@@ -11,7 +11,9 @@ port_no = os.getenv("MYSQL_PORT")
 
 if os.getenv("DEMO") or not db_name:
     mysql_url = DEMO_DB
-    engine = create_engine(mysql_url, echo=True, connect_args={"check_same_thread": False})
+    engine = create_engine(
+        mysql_url, echo=True, connect_args={"check_same_thread": False}
+    )
 
 else:
     if port_no is None:
