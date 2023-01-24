@@ -48,7 +48,8 @@ interval_tag = Table(
 
 
 class Tag(Base):
-    """Used to define an attribute for one or more intervals, for instance GRCh38.
+    """Used to define an attribute for one or more intervals.
+    Can be a single gene, can be "Mane" or an entire Genome build.
     It is in a relationship many-to-many with the Interval table"""
 
     __tablename__ = "tags"
