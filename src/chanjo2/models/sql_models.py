@@ -70,5 +70,4 @@ class Interval(Base):
     chromosome = Column(String(6), nullable=False, unique=True)
     start = Column(Integer, nullable=False)
     stop = Column(Integer, nullable=False)
-    tags = Column(Integer, nullable=False)
     tags = relationship("Tag", secondary=interval_tag, back_populates="intervals")
