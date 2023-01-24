@@ -5,18 +5,9 @@ from chanjo2 import __version__
 from chanjo2.dbutil import engine
 from fastapi import Depends, FastAPI, HTTPException, Query, status
 from pydantic import BaseModel
-from sqlmodel import Field, Session, SQLModel, select
+from sqlmodel import SQLModel
 
-from .endpoints import individuals, regions
-
-
-class CoverageInterval(BaseModel):
-    chromosome: str
-    start: int
-    end: int
-    individual_id: str
-    interval_id: str
-    mean_coverage: float
+from .endpoints import individuals, intervals
 
 
 def create_db_and_tables():
@@ -26,8 +17,8 @@ def create_db_and_tables():
 app = FastAPI()
 
 app.include_router(
-    regions.router,
-    prefix="/regions",
+    intervals.router,
+    prefix="/intervals",
     tags=["regions"],
     responses={status.HTTP_404_NOT_FOUND: {"description": "Not found"}},
 )

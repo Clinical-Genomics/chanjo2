@@ -1,20 +1,17 @@
 from pathlib import Path
 from typing import List
 
-from chanjo2.dbutil import get_session
+from chanjo2.dbutil import SessionLocal
 from chanjo2.meta.handle_bed import parse_bed
-from chanjo2.models.coverage_interval import CoverageInterval
-from chanjo2.models.individuals import Individual, IndividualCreate, IndividualRead
+from chanjo2.models.app_models import CoverageInterval
 from fastapi import APIRouter, Depends, File, HTTPException, Query, status
 from sqlmodel import Session, select
 
 router = APIRouter()
 
-
+"""
 @router.post("/individuals/", response_model=IndividualRead)
-def create_individual(
-    *, session: Session = Depends(get_session), individual: IndividualCreate
-):
+def create_individual(*, session: Session = Depends(SessionLocal), individual: IndividualCreate):
     d4_file_path: Path = Path(individual.coverage_file_path)
     region_path: Path = Path(individual.region_file_path)
     for file in [d4_file_path, region_path]:
@@ -33,7 +30,7 @@ def create_individual(
 @router.get("/individuals/", response_model=List[IndividualRead])
 def read_individuals(
     *,
-    session: Session = Depends(get_session),
+    session: Session = Depends(SessionLocal),
     offset: int = 0,
     limit=Query(default=100, lte=100),
 ):
@@ -41,33 +38,25 @@ def read_individuals(
 
 
 @router.get("/individuals/{individual_id}", response_model=IndividualRead)
-def read_individual(*, session: Session = Depends(get_session), individual_id: str):
-    individual = session.exec(
-        select(Individual).filter(individual_id == individual_id)
-    ).first()
+def read_individual(*, session: Session = Depends(SessionLocal), individual_id: str):
+    individual = session.exec(select(Individual).filter(individual_id == individual_id)).first()
     if not individual:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Individual not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Individual not found")
     return individual
 
 
 @router.get("/interval/{individual_id}/", response_model=CoverageInterval)
 def read_interval(
     *,
-    session: Session = Depends(get_session),
+    session: Session = Depends(SessionLocal),
     individual_id: str,
     chromosome: str,
     start: int,
     end: int,
 ):
-    individual = session.exec(
-        select(Individual).filter(individual_id == individual_id)
-    ).first()
+    individual = session.exec(select(Individual).filter(individual_id == individual_id)).first()
     if not individual:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Individual not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Individual not found")
     coverage_file: D4File = D4File(individual.coverage_file_path)
     res: List[float] = coverage_file.mean([(chromosome, start, end)])
     interval_id: str = f"{chromosome}:{start}-{end}"
@@ -84,21 +73,15 @@ def read_interval(
 @router.get("/{individual_id}/target_coverage", response_model=List[float])
 def read_target_coverage(
     *,
-    session: Session = Depends(get_session),
+    session: Session = Depends(SessionLocal),
     individual_id: str,
 ):
-    individual = session.exec(
-        select(Individual).filter(individual_id == individual_id)
-    ).first()
+    individual = session.exec(select(Individual).filter(individual_id == individual_id)).first()
     if not individual:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Individual not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Individual not found")
     coverage_file: D4File = D4File(individual.coverage_file_path)
     with open(individual.region_file_path, "rb") as default_region_file:
-        regions: List[tuple[str, int, int]] = parse_bed(
-            bed_file=default_region_file.read()
-        )
+        regions: List[tuple[str, int, int]] = parse_bed(bed_file=default_region_file.read())
     coverage_results: List[float] = coverage_file.mean(regions=regions)
     return coverage_results
 
@@ -106,18 +89,15 @@ def read_target_coverage(
 @router.post("/interval_file/{individual_id}/", response_model=List[float])
 def read_bed_intervals(
     *,
-    session: Session = Depends(get_session),
+    session: Session = Depends(SessionLocal),
     individual_id: str,
     interval_file: bytes = File(...),
 ):
-    individual = session.exec(
-        select(Individual).filter(individual_id == individual_id)
-    ).first()
+    individual = session.exec(select(Individual).filter(individual_id == individual_id)).first()
     if not individual:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Individual not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Individual not found")
     coverage_file: D4File = D4File(individual.coverage_file_path)
     regions: List[tuple[str, int, int]] = parse_bed(bed_file=interval_file)
     coverage_results: List[float] = coverage_file.mean(regions=regions)
     return coverage_results
+"""
