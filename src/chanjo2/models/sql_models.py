@@ -33,7 +33,7 @@ class Sample(Base):
     display_name = Column(String(64), nullable=True, unique=False)
     case_id = Column(Integer, ForeignKey("cases.id"), nullable=False)
     coverage_file_path = Column(String, nullable=False)
-    created_date = Column(DateTime(timezone=True), server_default=func.now())
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     case = relationship("Case", back_populates="samples")
 
@@ -66,7 +66,7 @@ class Interval(Base):
     __tablename__ = "intervals"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(64), nullable=True, unique=False)
+    name = Column(String(128), nullable=True, unique=False)
     chromosome = Column(String(6), nullable=False, unique=True)
     start = Column(Integer, nullable=False)
     stop = Column(Integer, nullable=False)
