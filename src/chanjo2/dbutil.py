@@ -3,6 +3,7 @@ import os
 from sqlmodel import Session, create_engine
 
 DEMO_DB = "sqlite://"
+DEMO_CONNECT_ARGS = {"check_same_thread": False}
 
 root_password = os.getenv("MYSQL_ROOT_PASSWORD")
 db_name = os.getenv("MYSQL_DATABASE_NAME")
@@ -11,9 +12,7 @@ port_no = os.getenv("MYSQL_PORT")
 
 if os.getenv("DEMO") or not db_name:
     mysql_url = DEMO_DB
-    engine = create_engine(
-        mysql_url, echo=True, connect_args={"check_same_thread": False}
-    )
+    engine = create_engine(mysql_url, echo=True, connect_args=DEMO_CONNECT_ARGS)
 
 else:
     if port_no is None:
