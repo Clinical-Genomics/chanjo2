@@ -2,16 +2,15 @@ from pathlib import Path
 from typing import List
 
 from chanjo2 import __version__
-from chanjo2.dbutil import engine
+from chanjo2.dbutil import Base, engine
 from fastapi import Depends, FastAPI, HTTPException, Query, status
 from pydantic import BaseModel
-from sqlmodel import SQLModel
 
 from .endpoints import intervals, samples
 
 
 def create_db_and_tables():
-    SQLModel.metadata.create_all(engine)
+    Base.metadata.create_all(engine)
 
 
 app = FastAPI()

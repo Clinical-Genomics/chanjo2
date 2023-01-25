@@ -15,6 +15,10 @@ port_no = os.getenv("MYSQL_PORT")
 if os.getenv("DEMO") or not db_name:
     mysql_url = DEMO_DB
     engine = create_engine(mysql_url, echo=True, connect_args=DEMO_CONNECT_ARGS)
+    """
+    if not engine.dialect.has_schema(engine, "appo"):
+        engine.execute(sqlalchemy.schema.CreateSchema("appo"))
+    """
 
 else:
     if port_no is None:
