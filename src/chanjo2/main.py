@@ -1,14 +1,12 @@
 import logging
 import os
-from pathlib import Path
-from typing import List, Literal, Optional
 
 import coloredlogs
 from chanjo2 import __version__
 from chanjo2.dbutil import engine
-from fastapi import Depends, FastAPI, HTTPException, Query, status
+from fastapi import FastAPI, status
 from pydantic import BaseModel
-from sqlmodel import Field, Session, SQLModel, select
+from sqlmodel import SQLModel
 
 from .endpoints import individuals, regions
 
