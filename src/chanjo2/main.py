@@ -1,4 +1,5 @@
 import logging
+import os
 from pathlib import Path
 from typing import List, Literal, Optional
 
@@ -9,7 +10,6 @@ from fastapi import Depends, FastAPI, HTTPException, Query, status
 from pydantic import BaseModel
 from sqlmodel import Field, Session, SQLModel, select
 
-from .dbutil import DEMO_DB
 from .endpoints import individuals, regions
 
 LOG = logging.getLogger(__name__)
@@ -49,7 +49,7 @@ app.include_router(
 @app.on_event("startup")
 def on_startup():
     create_db_and_tables()
-    if str(engine.url) == DEMO_DB:
+    if os.getenv("DEMO") or not os.getenv("MYSQL_DATABASE_NAME"):
         LOG.warning("Running a demo instance of Chanjo2")
 
 
