@@ -1,14 +1,9 @@
-import enum
-
 from chanjo2.dbutil import Base
 from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, String, Table
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
-
-class Builds(enum.Enum):
-    build_37 = "GRCh37"
-    build_38 = "GRCh38"
+from .models import Builds
 
 
 class Case(Base):

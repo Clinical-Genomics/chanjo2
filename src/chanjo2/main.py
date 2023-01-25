@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, Literal, Optional
+from typing import List
 
 from chanjo2 import __version__
 from chanjo2.dbutil import engine
