@@ -6,11 +6,12 @@ from chanjo2 import __version__
 from chanjo2.dbutil import engine
 from fastapi import FastAPI, status
 from pydantic import BaseModel
-from sqlmodel import SQLModel
+from sqlalchemy.ext.declarative import declarative_base
 
 from .endpoints import intervals, samples
 
 LOG = logging.getLogger(__name__)
+Base = declarative_base()
 coloredlogs.install(level="INFO")
 
 
@@ -33,7 +34,7 @@ app.include_router(
 
 @app.on_event("startup")
 async def on_startup():
-    SQLModel.metadata.create_all(engine)
+    Base.metadata.create_all(engine)
     if os.getenv("DEMO") or not os.getenv("MYSQL_DATABASE_NAME"):
         LOG.warning("Running a demo instance of Chanjo2")
 
