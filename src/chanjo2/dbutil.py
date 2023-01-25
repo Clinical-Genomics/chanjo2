@@ -15,10 +15,6 @@ port_no = os.getenv("MYSQL_PORT")
 if os.getenv("DEMO") or not db_name:
     mysql_url = DEMO_DB
     engine = create_engine(mysql_url, echo=True, connect_args=DEMO_CONNECT_ARGS)
-    """
-    if not engine.dialect.has_schema(engine, "appo"):
-        engine.execute(sqlalchemy.schema.CreateSchema("appo"))
-    """
 
 else:
     if port_no is None:
@@ -29,7 +25,15 @@ else:
     mysql_url = f"mysql://root:{root_password}@{host}/{db_name}"
     engine = create_engine(mysql_url, echo=True)
 
-
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+def get_session():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
 
 Base = declarative_base()

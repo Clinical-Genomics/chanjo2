@@ -17,6 +17,8 @@ class Case(Base):
 
     samples = relationship("Sample", back_populates="case")
 
+    LOG.error("HELLO BITCHES")
+
 
 class Sample(Base):
     """Used to define a single sample belonging to a Case"""

@@ -3,8 +3,7 @@ from typing import List
 
 from chanjo2 import __version__
 from chanjo2.dbutil import Base, engine
-from fastapi import Depends, FastAPI, HTTPException, Query, status
-from pydantic import BaseModel
+from fastapi import FastAPI, status
 
 from .endpoints import intervals, samples
 
@@ -30,11 +29,11 @@ app.include_router(
 )
 
 
-@app.on_event("startup")
-def on_startup():
-    create_db_and_tables()
-
-
 @app.get("/")
 def heartbeat():
     return {"message": f"Chanjo2 v{__version__} is up and running!"}
+
+
+@app.on_event("startup")
+async def on_startup():
+    create_db_and_tables()

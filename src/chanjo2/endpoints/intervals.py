@@ -1,6 +1,6 @@
 from typing import List
 
-from chanjo2.dbutil import SessionLocal
+from chanjo2.dbutil import get_session
 from chanjo2.models.pydantic_models import CoverageInterval
 from fastapi import APIRouter, Depends, File, HTTPException, Query, status
 from sqlmodel import Session, select
@@ -11,7 +11,7 @@ router = APIRouter()
 @router.get("/interval/{sample_id}/", response_model=CoverageInterval)
 def read_interval(
     *,
-    session: Session = Depends(SessionLocal),
+    session: Session = Depends(get_session),
     sample_id: str,
     chromosome: str,
     start: int,
@@ -36,7 +36,7 @@ def read_interval(
 @router.get("/{sample_id}/target_coverage", response_model=List[float])
 def read_target_coverage(
     *,
-    session: Session = Depends(SessionLocal),
+    session: Session = Depends(get_session),
     sample_id: str,
 ):
     sample = session.exec(select(Individual).filter(sample_id == sample_id)).first()
@@ -52,7 +52,7 @@ def read_target_coverage(
 @router.post("/interval_file/{sample_id}/", response_model=List[float])
 def read_bed_intervals(
     *,
-    session: Session = Depends(SessionLocal),
+    session: Session = Depends(get_session),
     sample_id: str,
     interval_file: bytes = File(...),
 ):
