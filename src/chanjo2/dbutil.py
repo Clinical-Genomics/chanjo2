@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-DEMO_DB = "sqlite://"
+DEMO_DB = "sqlite:///./chanjotest.db"
 DEMO_CONNECT_ARGS = {"check_same_thread": False}
 
 root_password = os.getenv("MYSQL_ROOT_PASSWORD")
