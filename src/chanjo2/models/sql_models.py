@@ -57,7 +57,6 @@ class Tag(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(64), nullable=False, unique=True)
     build = Column(Enum(Builds))
-    intervals = relationship("Interval", secondary=interval_tag, back_populates="tags")
 
 
 class Interval(Base):
@@ -70,4 +69,3 @@ class Interval(Base):
     chromosome = Column(String(6), nullable=False, unique=True)
     start = Column(Integer, nullable=False)
     stop = Column(Integer, nullable=False)
-    tags = relationship("Tag", secondary=interval_tag, back_populates="intervals")
