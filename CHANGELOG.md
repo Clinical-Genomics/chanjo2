@@ -6,6 +6,7 @@
 - Instructions on how to run a demo connected to a database in README
 - Add Codecov steps to Tests GitHub action
 - Vulture GitHub action to remove unused code
+- Colored logs for development and debugging
 ### Fixed
 - Bugs preventing the gunicorn app to launch
 - Code to compose DB url to work when app is invoked from docker-compose
@@ -14,5 +15,5 @@
 - Use a multi-stage build in Dockerfile to reduce its size
 - SQLite database launched instead of MySQL as the default demo database
 - Simpler docker-compose file and additional docker-compose file to show MySQL connection howto
-- Removed broken BumpVersion GitHub action 
+- Removed broken BumpVersion GitHub action
 - Use a temporary file when running the demo app
