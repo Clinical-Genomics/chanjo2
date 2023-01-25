@@ -11,8 +11,21 @@ from sqlalchemy.ext.declarative import declarative_base
 from .endpoints import intervals, samples
 
 LOG = logging.getLogger(__name__)
-Base = declarative_base()
 coloredlogs.install(level="INFO")
+Base = declarative_base()
+
+
+class CoverageInterval(BaseModel):
+    chromosome: str
+    start: int
+    end: int
+    individual_id: str
+    interval_id: str
+    mean_coverage: float
+
+
+def create_db_and_tables():
+    Base.metadata.create_all(engine)
 
 
 app = FastAPI()
@@ -34,7 +47,7 @@ app.include_router(
 
 @app.on_event("startup")
 async def on_startup():
-    Base.metadata.create_all(engine)
+    create_db_and_tables()
     if os.getenv("DEMO") or not os.getenv("MYSQL_DATABASE_NAME"):
         LOG.warning("Running a demo instance of Chanjo2")
 

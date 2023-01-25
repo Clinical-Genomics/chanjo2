@@ -1,10 +1,9 @@
 import os
 
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-DEMO_DB = "sqlite:///./chanjotest.db"
+DEMO_DB = "sqlite://"
 DEMO_CONNECT_ARGS = {"check_same_thread": False}
 
 root_password = os.getenv("MYSQL_ROOT_PASSWORD")
@@ -25,15 +24,13 @@ else:
     mysql_url = f"mysql://root:{root_password}@{host}/{db_name}"
     engine = create_engine(mysql_url, echo=True)
 
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-
+# Dependency
 def get_session():
     db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
-
-
-Base = declarative_base()
