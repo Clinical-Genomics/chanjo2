@@ -4,23 +4,13 @@ import os
 import coloredlogs
 from chanjo2 import __version__
 from fastapi import FastAPI, status
-from pydantic import BaseModel
 
-from .dbutil import Base, engine
+from .dbutil import engine
 from .endpoints import intervals, samples
 from .models.sql_models import Base, Case, Interval, Sample, Tag
 
 LOG = logging.getLogger(__name__)
 coloredlogs.install(level="INFO")
-
-
-class CoverageInterval(BaseModel):
-    chromosome: str
-    start: int
-    end: int
-    individual_id: str
-    interval_id: str
-    mean_coverage: float
 
 
 def create_db_and_tables():

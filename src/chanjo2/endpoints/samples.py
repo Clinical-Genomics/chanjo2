@@ -39,5 +39,7 @@ def read_samples(
 def read_individual(*, session: Session = Depends(get_session), sample_id: str):
     sample = session.exec(select(Sampke).filter(sample_id == sample_id)).first()
     if not sample:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sample not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Sample not found"
+        )
     return sample
