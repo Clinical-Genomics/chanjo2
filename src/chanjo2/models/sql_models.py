@@ -1,11 +1,9 @@
+from chanjo2.dbutil import Base
 from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, String, Table
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
 from .pydantic_models import Builds
-
-Base = declarative_base()
 
 
 class Case(Base):

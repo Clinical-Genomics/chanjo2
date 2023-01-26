@@ -7,7 +7,7 @@ from fastapi import FastAPI, status
 
 from .dbutil import engine
 from .endpoints import intervals, samples
-from .models.sql_models import Base, Case, Interval, Sample, Tag
+from .models.sql_models import Base
 
 LOG = logging.getLogger(__name__)
 coloredlogs.install(level="INFO")
