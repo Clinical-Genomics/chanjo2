@@ -65,7 +65,7 @@ poetry install
 You can run a demo instance of the web server by typing:
 
 ```
-uvicorn src.chanjo2.main:app
+uvicorn src.chanjo2.main:app --reload
 ```
 
 The server will run on localhost and default port 8000 (http://0.0.0.0:8000)
