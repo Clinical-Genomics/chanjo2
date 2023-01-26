@@ -19,4 +19,4 @@
 - Removed broken BumpVersion GitHub action
 - Use a temporary file when running the demo app
 - Renamed table `Individuals` table to the more general `Samples`
-- Rebamed table `Regions` table to `Intervals`
+- Renamed table `Regions` table to `Intervals`
