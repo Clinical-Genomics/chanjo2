@@ -26,7 +26,7 @@ else:
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Dependency
+
 def get_session():
     db = SessionLocal()
     try:
