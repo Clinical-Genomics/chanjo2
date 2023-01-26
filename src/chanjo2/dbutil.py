@@ -1,6 +1,7 @@
 import os
 
 from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 DEMO_DB = "sqlite://"
@@ -24,7 +25,7 @@ else:
     mysql_url = f"mysql://root:{root_password}@{host}/{db_name}"
     engine = create_engine(mysql_url, echo=True)
 
-
+Base = declarative_base()
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Dependency

@@ -1,9 +1,11 @@
 from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, String, Table
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
-from .main import Base
 from .pydantic_models import Builds
+
+Base = declarative_base()
 
 
 class Case(Base):
@@ -16,8 +18,6 @@ class Case(Base):
     display_name = Column(String(64), nullable=True, unique=False)
 
     samples = relationship("Sample", back_populates="case")
-
-    LOG.error("HELLO BITCHES")
 
 
 class Sample(Base):

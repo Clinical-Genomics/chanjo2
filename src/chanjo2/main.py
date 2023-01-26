@@ -3,16 +3,15 @@ import os
 
 import coloredlogs
 from chanjo2 import __version__
-from chanjo2.dbutil import engine
 from fastapi import FastAPI, status
 from pydantic import BaseModel
-from sqlalchemy.ext.declarative import declarative_base
 
+from .dbutil import Base, engine
 from .endpoints import intervals, samples
+from .models.sql_models import Base, Case, Interval, Sample, Tag
 
 LOG = logging.getLogger(__name__)
 coloredlogs.install(level="INFO")
-Base = declarative_base()
 
 
 class CoverageInterval(BaseModel):
