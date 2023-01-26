@@ -82,7 +82,7 @@ The server will run on localhost and default port 8000 (http://0.0.0.0:8000)
 [black-url]: https://github.com/psf/black
 [codecov-img]: https://codecov.io/gh/Clinical-Genomics/chanjo2/branch/main/graph/badge.svg?token=6U8ILA2SOY
 [codecov-url]: https://codecov.io/gh/Clinical-Genomics/chanjo2
-[latest-commit]: https://img.shields.io/github/commits-since/Clinical-Genomics/chanjo2/latest)
+[latest-commit]: https://img.shields.io/github/commits-since/Clinical-Genomics/chanjo2/latest
 [commit-rate]: https://img.shields.io/github/commit-activity/w/Clinical-Genomics/chanjo2
 [pypi-img]: https://img.shields.io/pypi/v/chanjo2.svg?style=flat-square
 [pypi-url]: https://pypi.python.org/pypi/chanjo2
