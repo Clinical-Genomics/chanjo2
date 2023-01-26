@@ -1,13 +1,13 @@
 # chanjo2
 
-<strong>Please note that this project is still a work in progress!!</strong>
-
 ![Build Status - GitHub][actions-build-status]
 [![PyPI Version][pypi-img]][pypi-url]
 [![Code style: black][black-image]][black-url]
 [![Coverage Status][codecov-img]][codecov-url]
 ![GitHub commits latest][latest-commit]
 ![GitHub commit rate][commit-rate]
+
+<strong>Please note that this project is still a work in progress!!</strong>
 
 ## Launching a demo using Docker-compose
 
@@ -85,4 +85,4 @@ The server will run on localhost and default port 8000 (http://0.0.0.0:8000)
 [latest-commit]: https://img.shields.io/github/commits-since/Clinical-Genomics/chanjo2/latest)
 [commit-rate]: https://img.shields.io/github/commit-activity/w/Clinical-Genomics/chanjo2
 [pypi-img]: https://img.shields.io/pypi/v/chanjo2.svg?style=flat-square
-[pypi-url]: https://pypi.python.org/pypi/chanjo2/
+[pypi-url]: https://pypi.python.org/pypi/chanjo2
