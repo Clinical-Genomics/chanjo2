@@ -7,6 +7,7 @@
 - Add Codecov steps to Tests GitHub action
 - Vulture GitHub action to remove unused code
 - Colored logs for development and debugging
+- Common test fixtures
 ### Fixed
 - Bugs preventing the gunicorn app to launch
 - Code to compose DB url to work when app is invoked from docker-compose
