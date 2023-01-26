@@ -18,5 +18,6 @@
 - Simpler docker-compose file and additional docker-compose file to show MySQL connection howto
 - Removed broken BumpVersion GitHub action
 - Use a temporary file when running the demo app
+- Modified the command to run a demo instance in README file
 - Renamed table `Individuals` table to the more general `Samples`
 - Renamed table `Regions` table to `Intervals`
