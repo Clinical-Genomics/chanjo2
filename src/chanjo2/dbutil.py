@@ -1,6 +1,8 @@
 import os
 
-from sqlmodel import Session, create_engine
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
 DEMO_DB = "sqlite://"
 DEMO_CONNECT_ARGS = {"check_same_thread": False}
@@ -23,7 +25,13 @@ else:
     mysql_url = f"mysql://root:{root_password}@{host}/{db_name}"
     engine = create_engine(mysql_url, echo=True)
 
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
+
 
 def get_session():
-    with Session(engine) as session:
-        yield session
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
