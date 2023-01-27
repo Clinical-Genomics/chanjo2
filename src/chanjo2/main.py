@@ -3,11 +3,10 @@ import os
 
 import coloredlogs
 from chanjo2 import __version__
+from chanjo2.dbutil import engine
+from chanjo2.endpoints import intervals, samples
+from chanjo2.models.sql_models import Base
 from fastapi import FastAPI, status
-
-from .dbutil import engine
-from .endpoints import intervals, samples
-from .models.sql_models import Base
 
 LOG = logging.getLogger(__name__)
 coloredlogs.install(level="INFO")
