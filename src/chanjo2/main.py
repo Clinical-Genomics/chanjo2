@@ -1,15 +1,14 @@
 import logging
 import os
 
-import coloredlogs
+import uvicorn
 from chanjo2 import __version__
 from chanjo2.dbutil import engine
 from chanjo2.endpoints import intervals, samples
 from chanjo2.models.sql_models import Base
 from fastapi import FastAPI, status
 
-LOG = logging.getLogger(__name__)
-coloredlogs.install(level="INFO")
+LOG = logging.getLogger("uvicorn.access")
 
 
 def create_db_and_tables():
@@ -35,7 +34,16 @@ app.include_router(
 
 @app.on_event("startup")
 async def on_startup():
+    # Configure logging
+    LOG = logging.getLogger("uvicorn.access")
+    console_formatter = uvicorn.logging.ColourizedFormatter(
+        "{levelprefix} {asctime} : {message}", style="{", use_colors=True
+    )
+    LOG.handlers[0].setFormatter(console_formatter)
+
+    # Create database tables
     create_db_and_tables()
+
     if os.getenv("DEMO") or not os.getenv("MYSQL_DATABASE_NAME"):
         LOG.warning("Running a demo instance of Chanjo2")
 
