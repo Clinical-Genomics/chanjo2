@@ -8,13 +8,13 @@ TEST_DB = "sqlite:///./test.db"
 
 
 @pytest.fixture(name="test_db")
-def test_db_fixture():
+def test_db_fixture() -> str:
     """Returns a string representing the path to the test database file"""
     return TEST_DB
 
 
 @pytest.fixture(name="session")
-def session_fixture():
+def session_fixture() -> sessionmaker:
     """Returns an obect of type sqlalchemy.orm.session.sessionmaker"""
     engine = create_engine(TEST_DB, connect_args={"check_same_thread": False})
     Base.metadata.drop_all(bind=engine)
@@ -23,7 +23,7 @@ def session_fixture():
 
 
 @pytest.fixture(name="client")
-def client_fixture(session):
+def client_fixture(session) -> TestClient:
     """Returns a fastapi.testclient.TestClient used to test the app endpoints"""
 
     def override_get_db():
