@@ -22,3 +22,4 @@
 - Modified the command to run a demo instance in README file
 - Renamed table `Individuals` table to the more general `Samples`
 - Renamed table `Regions` table to `Intervals`
+- Use uvicorn logging and avoid printing logs twice
