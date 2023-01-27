@@ -11,12 +11,12 @@ def test_heartbeat(client):
     assert response.json() == {"message": f"Chanjo2 v{__version__} is up and running!"}
 
 
-def test_create_db_and_tables(session, testdb):
+def test_create_db_and_tables(test_db):
     """Test that tables are created correctly when app starts up"""
     # Given a running instance of Chanjo2 (client fixture)
 
     # WHEN connecting to the same database used by the test app
-    engine2 = create_engine(testdb, connect_args={"check_same_thread": False})
+    engine2 = create_engine(test_db, connect_args={"check_same_thread": False})
 
     # THEN the expected tables should be found
     insp = inspect(engine2)
