@@ -1,4 +1,5 @@
 import pytest
+from chanjo2.dbutil import DEMO_CONNECT_ARGS
 from chanjo2.main import Base, app, create_db_and_tables, engine
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -16,7 +17,7 @@ def test_db_fixture() -> str:
 @pytest.fixture(name="session")
 def session_fixture() -> sessionmaker:
     """Returns an obect of type sqlalchemy.orm.session.sessionmaker"""
-    engine = create_engine(TEST_DB, connect_args={"check_same_thread": False})
+    engine = create_engine(TEST_DB, connect_args=DEMO_CONNECT_ARGS)
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
     return sessionmaker(autocommit=False, autoflush=False, bind=engine)
