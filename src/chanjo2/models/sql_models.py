@@ -7,7 +7,7 @@ from .pydantic_models import Builds
 
 
 class Case(Base):
-    """Used to define a group of samples"""
+    """Used to define a group of samples."""
 
     __tablename__ = "cases"
 
