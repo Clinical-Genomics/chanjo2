@@ -16,14 +16,7 @@ def create_db_and_tables():
 
 
 app = FastAPI()
-"""
-app.include_router(
-    intervals.router,
-    prefix="/intervals",
-    tags=["intervals"],
-    responses={status.HTTP_404_NOT_FOUND: {"description": "Not found"}},
-)
-"""
+
 
 app.include_router(
     samples.router,
