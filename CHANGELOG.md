@@ -23,3 +23,4 @@
 - Renamed table `Individuals` table to the more general `Samples`
 - Renamed table `Regions` table to `Intervals`
 - Use uvicorn logging and avoid printing logs twice
+- Modified samples and cases endpoints to interact with database via CRUD utils
