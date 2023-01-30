@@ -1,8 +1,9 @@
 from chanjo2 import __version__
+from chanjo2.constants import SUCCESS_CODE
+from chanjo2.dbutil import DEMO_CONNECT_ARGS
 from sqlalchemy import create_engine, inspect
 
 DB_TABLES = ["cases", "interval_tag", "intervals", "samples", "tags"]
-SUCCESS_CODE = 200
 
 
 def test_heartbeat(client):
@@ -17,10 +18,10 @@ def test_heartbeat(client):
 
 def test_create_db_and_tables(test_db):
     """Test that tables are created correctly when app starts up"""
-    # Given a running instance of Chanjo2 (client fixture)
+    # Given a running instance of Chanjo2
 
     # WHEN connecting to the same database used by the test app
-    engine2 = create_engine(test_db, connect_args={"check_same_thread": False})
+    engine2 = create_engine(test_db, connect_args=DEMO_CONNECT_ARGS)
 
     # THEN the expected tables should be found
     insp = inspect(engine2)
