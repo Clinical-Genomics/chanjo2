@@ -1,5 +1,11 @@
-CASES_ENDPOINT = "/cases/"
+import pytest
 from chanjo2.constants import SUCCESS_CODE
+
+CASES_ENDPOINT = "/cases/"
+
+
+def pytest_namespace():
+    return {"shared": None}
 
 
 def test_create_case(client):
@@ -17,3 +23,25 @@ def test_create_case(client):
     saved_case = response.json()
     for key, _ in case_data.items():
         assert saved_case[key] == case_data[key]
+
+    # WHEN sending a GET request to fetch all database cases
+    response = client.get(CASES_ENDPOINT)
+
+    # THEN it should return success
+    assert response.status_code == SUCCESS_CODE
+
+    # AND the case should be returned in the list of results:
+    for item in response.json():
+        for key, _ in case_data.items():
+            assert item[key] == case_data[key]
+
+    # WHEN sending a GET request to retrieve the specific case using its name:
+    response = client.get(f"{CASES_ENDPOINT}{case_data['name']}")
+
+    # THEN it should also return success
+    assert response.status_code == SUCCESS_CODE
+    result = response.json()
+
+    # AND the case object should be returned as result
+    for key, _ in case_data.items():
+        assert result[key] == case_data[key]

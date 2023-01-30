@@ -27,10 +27,10 @@ def read_cases(skip: int = 0, limit: int = 100, db: Session = Depends(get_sessio
     return cases
 
 
-@router.get("/cases/{case_id}", response_model=pydantic_models.CaseRead)
-def read_case(case_id: int, db: Session = Depends(get_session)):
+@router.get("/cases/{case_name}", response_model=pydantic_models.CaseRead)
+def read_case(case_name: str, db: Session = Depends(get_session)):
     """Endpoint used to fetch one cases from the database by providing its ID"""
-    db_case = crud_samples.get_case(db, case_id=case_id)
+    db_case = crud_samples.get_case(db, case_name=case_name)
     if db_case is None:
         raise HTTPException(status_code=NOT_FOUND, detail="Case not found")
     return db_case
@@ -47,9 +47,7 @@ def create_sample_for_case(
     return crud_samples.create_case_sample(db=db, sample=sample, case_id=case_id)
 
 
-@router.get(
-    "/cases/{case_id}/samples/", response_model=List[pydantic_models.SampleRead]
-)
+@router.get("/cases/{case_id}/samples/", response_model=List[pydantic_models.SampleRead])
 def read_samples_for_case(case_id: int, db: Session = Depends(get_session)):
     """Endpoint used to fetch all samples for a given case from the database"""
     samples = crud_samples.get_case_samples(db, case_id=case_id)
