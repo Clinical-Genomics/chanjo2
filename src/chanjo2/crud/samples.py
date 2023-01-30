@@ -8,9 +8,9 @@ def get_cases(db: Session, skip: int = 0, limit: int = 100):
     return db.query(sql_models.Case).offset(skip).limit(limit).all()
 
 
-def get_case(db: Session, case_id: int):
+def get_case(db: Session, case_name: str):
     """Return a specific case by providing its ID"""
-    return db.query(sql_models.Case).filter(models.Case.id == case_id).first()
+    return db.query(sql_models.Case).filter(sql_models.Case.name == case_name).first()
 
 
 def create_case(db: Session, case: pydantic_models.CaseCreate):
@@ -38,7 +38,7 @@ def get_sample(db: Session, sample_id: int):
     return db.query(sql_models.Sample).filter(sql_models.Sample.id == sample_id).first()
 
 
-def create_case_sample(db: Session, item: schemas.SampleCreate, case_id: int):
+def create_case_sample(db: Session, item: pydantic_models.SampleCreate, case_id: int):
     """Create a sample"""
     db_sample = sql_models.Sample(**sample.dict(), case_id=case_id)
     db.add(db_sample)
