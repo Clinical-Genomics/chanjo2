@@ -3,6 +3,7 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import StaticPool
 
 DEMO_DB = "sqlite://"
 DEMO_CONNECT_ARGS = {"check_same_thread": False}
@@ -14,7 +15,9 @@ port_no = os.getenv("MYSQL_PORT")
 
 if os.getenv("DEMO") or not db_name:
     mysql_url = DEMO_DB
-    engine = create_engine(mysql_url, echo=True, connect_args=DEMO_CONNECT_ARGS)
+    engine = create_engine(
+        mysql_url, echo=True, connect_args=DEMO_CONNECT_ARGS, poolclass=StaticPool
+    )
 
 else:
     if port_no is None:

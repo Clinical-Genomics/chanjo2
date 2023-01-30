@@ -4,8 +4,8 @@ from typing import List
 from chanjo2.crud import samples as crud_samples
 from chanjo2.dbutil import get_session
 from chanjo2.models import pydantic_models, sql_models
-from fastapi import APIRouter, Depends, File, HTTPException, Query, status
-from sqlmodel import Session, select
+from fastapi import APIRouter, Depends, File, HTTPException
+from sqlmodel import Session
 
 router = APIRouter()
 
@@ -16,7 +16,7 @@ def create_case(case: pydantic_models.CaseCreate, db: Session = Depends(get_sess
     db_case = crud_samples.get_case(db, case_name=case.name)
     if db_case:
         raise HTTPException(status_code=400, detail="Case already registered")
-    return crud.create_case(db=db, user=user)
+    return crud_samples.create_case(db=db, case=case)
 
 
 @router.get("/cases/", response_model=List[pydantic_models.CaseRead])

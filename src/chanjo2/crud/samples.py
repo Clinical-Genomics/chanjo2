@@ -15,7 +15,7 @@ def get_case(db: Session, case_name: str):
 
 def create_case(db: Session, case: pydantic_models.CaseCreate):
     """Create a case"""
-    db_sample = sql_models.Case(id=case.id, display_name=case.display_name)
+    db_sample = sql_models.Case(name=case.name, display_name=case.display_name)
     db.add(db_sample)
     db.commit()
     db.refresh(db_sample)
