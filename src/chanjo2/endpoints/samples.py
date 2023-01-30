@@ -1,45 +1,60 @@
 from pathlib import Path
 from typing import List
 
+from chanjo2 import crud
 from chanjo2.dbutil import get_session
-from chanjo2.meta.handle_bed import parse_bed
-from chanjo2.models.pydantic_models import CoverageInterval, SampleCreate, SampleRead
+from chanjo2.models import pydantic_models, sql_models
 from fastapi import APIRouter, Depends, File, HTTPException, Query, status
 from sqlmodel import Session, select
 
 router = APIRouter()
 
-
-@router.post("/sample_create/", response_model=SampleRead)
-def create_sample(*, session: Session = Depends(get_session), sample: SampleCreate):
-    d4_file_path: Path = Path(sample.coverage_file_path)
-    if not d4_file_path.is_file():
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=f"Could not find file: {file}",
-        )
-    db_individual = Sample.from_orm(sample)
-    session.add(db_individual)
-    session.commit()
-    session.refresh(db_individual)
-    return db_individual
+### Case endpoints
+@router.post("/cases/", response_model=pydantic_models.CaseRead)
+def create_case(user: pydantic_models.CaseCreate, db: Session = Depends(get_session)):
+    db_case = crud.get_case(db, case_id=user.id)
+    if db_case:
+        raise HTTPException(status_code=400, detail="Case already registered")
+    return crud.create_case(db=db, user=user)
 
 
-@router.get("/samples/", response_model=List[SampleRead])
-def read_samples(
-    *,
-    session: Session = Depends(get_session),
-    offset: int = 0,
-    limit=Query(default=100, lte=100),
+@router.get("/cases/", response_model=List[pydantic_models.CaseRead])
+def read_cases(skip: int = 0, limit: int = 100, db: Session = Depends(get_session)):
+    cases = crud.get_cases(db, skip=skip, limit=limit)
+    return cases
+
+
+@router.get("/cases/{case_id}", response_model=pydantic_models.CaseRead)
+def read_case(case_id: int, db: Session = Depends(get_session)):
+    db_case = crud.get_case(db, case_id=case_id)
+    if db_case is None:
+        raise HTTPException(status_code=404, detail="Case not found")
+    return db_case
+
+
+### Sample endpoints
+@router.post("/cases/{case_id}/samples/", response_model=pydantic_models.SampleRead)
+def create_sample_for_case(
+    case_id: int, sample: pydantic_models.SampleCreate, db: Session = Depends(get_session)
 ):
-    return session.exec(select(Sample).offset(offset).limit(limit)).all()
+    return crud.create_case_sample(db=db, sample=sample, case_id=case_id)
 
 
-@router.get("/sample/{sample_id}", response_model=SampleRead)
-def read_individual(*, session: Session = Depends(get_session), sample_id: str):
-    sample = session.exec(select(Sampke).filter(sample_id == sample_id)).first()
-    if not sample:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Sample not found"
-        )
-    return sample
+@router.get("/cases/{case_id}/samples/", response_model=List[pydantic_models.SampleRead])
+def read_samples_for_case(case_id: int, db: Session = Depends(get_session)):
+    samples = crud.get_case_samples(db, case_id=case_id)
+    return samples
+
+
+@router.get("/samples/", response_model=List[pydantic_models.SampleRead])
+def read_samples(skip: int = 0, limit: int = 100, db: Session = Depends(get_session)):
+    samples = crud.get_samples(db, skip=skip, limit=limit)
+    return samples
+
+
+@router.get("/samples/{sample_id}", response_model=pydantic_models.SampleRead)
+def read_sample(sample_id: int, db: Session = Depends(get_session)):
+    db_sample = crud.get_case(db, sample_id=sample_id)
+    if db_sample is None:
+        raise HTTPException(status_code=404, detail="Sample not found")
+    return db_sample
