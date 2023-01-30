@@ -1,11 +1,6 @@
-import pytest
 from chanjo2.constants import SUCCESS_CODE
 
 CASES_ENDPOINT = "/cases/"
-
-
-def pytest_namespace():
-    return {"shared": None}
 
 
 def test_create_case(client):
