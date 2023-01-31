@@ -46,9 +46,3 @@ def client_fixture(session) -> TestClient:
     app.dependency_overrides[get_session] = _override_get_db
 
     return TestClient(app)
-
-
-@pytest.fixture(name="temp_d4_file_path")
-def temp_d4_file_path(tmp_path_factory):
-    """Returns the path to a temporary .d4 file"""
-    return tmp_path_factory.mktemp("data") / "coverage.d4"
