@@ -46,3 +46,9 @@ def client_fixture(session) -> TestClient:
     app.dependency_overrides[get_session] = _override_get_db
 
     return TestClient(app)
+
+
+@pytest.fixture(name="test_case")
+def test_case(session):
+    """Returns a dictionary corresponding to a case record"""
+    return {"name": "123", "display_name": "case_123"}

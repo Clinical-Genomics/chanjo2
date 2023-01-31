@@ -59,6 +59,4 @@ def create_case_sample(db: Session, sample: pydantic_models.SampleCreate):
     db.add(db_sample)
     db.commit()
     db.refresh(db_sample)
-
-    # Return complete case with sample info
-    return db.query(sql_models.Case).filter(sql_models.Case.id == case_obj.id)
+    return db_sample
