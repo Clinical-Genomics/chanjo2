@@ -19,7 +19,9 @@ def read_interval(
 ):
     sample = session.exec(select(Individual).filter(sample_id == sample_id)).first()
     if not sample:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sample not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Sample not found"
+        )
     coverage_file: D4File = D4File(sample.coverage_file_path)
     res: List[float] = coverage_file.mean([(chromosome, start, end)])
     interval_id: str = f"{chromosome}:{start}-{end}"
@@ -41,10 +43,14 @@ def read_target_coverage(
 ):
     sample = session.exec(select(Individual).filter(sample_id == sample_id)).first()
     if not sample:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sample not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Sample not found"
+        )
     coverage_file: D4File = D4File(sample.coverage_file_path)
     with open(sample.region_file_path, "rb") as default_region_file:
-        regions: List[tuple[str, int, int]] = parse_bed(bed_file=default_region_file.read())
+        regions: List[tuple[str, int, int]] = parse_bed(
+            bed_file=default_region_file.read()
+        )
     coverage_results: List[float] = coverage_file.mean(regions=regions)
     return coverage_results
 
@@ -58,7 +64,9 @@ def read_bed_intervals(
 ):
     sample = session.exec(select(Sample).filter(sampple_id == sample_id)).first()
     if not sample:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sample not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Sample not found"
+        )
     coverage_file: D4File = D4File(sample.coverage_file_path)
     regions: List[tuple[str, int, int]] = parse_bed(bed_file=interval_file)
     coverage_results: List[float] = coverage_file.mean(regions=regions)
