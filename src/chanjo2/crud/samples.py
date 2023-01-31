@@ -1,5 +1,9 @@
+import logging
+
 from chanjo2.models import pydantic_models, sql_models
 from sqlalchemy.orm import Session
+
+LOG = logging.getLogger("uvicorn.access")
 
 
 ### Case utils
@@ -38,9 +42,18 @@ def get_sample(db: Session, sample_id: int):
     return db.query(sql_models.Sample).filter(sql_models.Sample.id == sample_id).first()
 
 
-def create_case_sample(db: Session, item: pydantic_models.SampleCreate, case_id: int):
+def create_case_sample(db: Session, sample: pydantic_models.SampleCreate):
     """Create a sample"""
-    db_sample = sql_models.Sample(**sample.dict(), case_id=case_id)
+
+    db_sample = sql_models.Sample(
+        name=sample.name,
+        display_name=sample.display_name,
+        case_id=db.query(sql_models.Case)
+        .filter(sql_models.Case.name == sample.case_name)
+        .first()
+        .id,
+        coverage_file_path=sample.coverage_file_path,
+    )
     db.add(db_sample)
     db.commit()
     db.refresh(db_sample)

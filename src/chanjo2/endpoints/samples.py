@@ -5,7 +5,7 @@ from chanjo2.constants import BAD_REQUEST, NOT_FOUND
 from chanjo2.crud import samples as crud_samples
 from chanjo2.dbutil import get_session
 from chanjo2.models import pydantic_models, sql_models
-from fastapi import APIRouter, Depends, File, HTTPException
+from fastapi import APIRouter, Depends, File, HTTPException, status
 from sqlmodel import Session
 
 router = APIRouter()
@@ -37,19 +37,22 @@ def read_case(case_name: str, db: Session = Depends(get_session)):
 
 
 ### Sample endpoints
-@router.post("/cases/{case_id}/samples/", response_model=pydantic_models.SampleRead)
+@router.post("/samples/", response_model=pydantic_models.SampleRead)
 def create_sample_for_case(
-    case_id: int,
     sample: pydantic_models.SampleCreate,
     db: Session = Depends(get_session),
 ):
     """Endpoint used to add a case sample to the database"""
-    return crud_samples.create_case_sample(db=db, sample=sample, case_id=case_id)
+    d4_file_path: Path = Path(sample.coverage_file_path)
+    if not d4_file_path.is_file():
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"Could not find file: { d4_file_path}",
+        )
+    return crud_samples.create_case_sample(db=db, sample=sample)
 
 
-@router.get(
-    "/cases/{case_id}/samples/", response_model=List[pydantic_models.SampleRead]
-)
+@router.get("/{case_id}/samples/", response_model=List[pydantic_models.SampleRead])
 def read_samples_for_case(case_id: int, db: Session = Depends(get_session)):
     """Endpoint used to fetch all samples for a given case from the database"""
     samples = crud_samples.get_case_samples(db, case_id=case_id)

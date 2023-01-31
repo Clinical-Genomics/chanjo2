@@ -19,13 +19,6 @@ class CaseCreate(CaseBase):
     pass
 
 
-class CaseRead(CaseBase):
-    id: int
-
-    class Config:
-        orm_mode = True
-
-
 class SampleBase(BaseModel):
     name: str
     display_name: str
@@ -33,15 +26,21 @@ class SampleBase(BaseModel):
 
 
 class SampleCreate(SampleBase):
-    created_at: datetime
+    case_name: str
 
 
 class SampleRead(SampleBase):
     id: int
-    case_id: int
     created_at: datetime
     case_id: int
-    case: CaseRead
+
+    class Config:
+        orm_mode = True
+
+
+class CaseRead(CaseBase):
+    id: int
+    samples: List[SampleRead] = []
 
     class Config:
         orm_mode = True

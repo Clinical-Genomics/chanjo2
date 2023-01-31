@@ -21,9 +21,9 @@ def test_create_db_and_tables(test_db):
     # Given a running instance of Chanjo2
 
     # WHEN connecting to the same database used by the test app
-    engine2 = create_engine(test_db, connect_args=DEMO_CONNECT_ARGS)
+    engine = create_engine(test_db, connect_args=DEMO_CONNECT_ARGS)
 
     # THEN the expected tables should be found
-    insp = inspect(engine2)
+    insp = inspect(engine)
     for table in DB_TABLES:
         assert insp.has_table(table)
