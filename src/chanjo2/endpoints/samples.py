@@ -51,7 +51,9 @@ def create_sample_for_case(
         )
     updated_case = crud_samples.create_case_sample(db=db, sample=sample)
     if updated_case is None:
-        raise HTTPException(status_code=NOT_FOUND, detail="Could not find a case for this sample")
+        raise HTTPException(
+            status_code=NOT_FOUND, detail="Could not find a case for this sample"
+        )
     return updated_case
 
 
