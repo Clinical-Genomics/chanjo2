@@ -1,12 +1,13 @@
-from chanjo2.constants import SUCCESS_CODE
+from chanjo2.constants import SUCCESS_CODE, UNPROCESSABLE_ENTITY
 
 CASES_ENDPOINT = "/cases/"
+SAMPLES_ENDPOINT = "/samples/"
 
 
 def test_create_case(client):
     """Test the endpoint used to create a new case"""
     # GIVEN a json-like object containing the new case data:
-    case_data = {"name": "case_id", "display_name": "case_name"}
+    case_data = {"name": "123", "display_name": "case_123"}
 
     # WHEN the create_case endpoint is used to create the case
     response = client.post(CASES_ENDPOINT, json=case_data)
@@ -40,3 +41,25 @@ def test_create_case(client):
     # AND the case object should be returned as result
     for key, _ in case_data.items():
         assert result[key] == case_data[key]
+
+
+def test_create_sample_for_case_no_coverage_file(client):
+    """Test the function that creates a new sample for a case when no coverage file is specified"""
+    # GIVEN a json-like object containing the new sample data that is missing the coverage_file_path key/Value:
+    COVERAGE_FILE_PATH = "FOO"
+    sample_data = {
+        "name": "abc",
+        "display_name": "sample_abc",
+        "case_name": "case_123",
+        "coverage_file_path": COVERAGE_FILE_PATH,
+    }
+
+    # WHEN the create_sample_for_case endpoint is used to create the case
+    response = client.post(SAMPLES_ENDPOINT, json=sample_data)
+
+    # THEN the response should return error
+    assert response.status_code == UNPROCESSABLE_ENTITY
+    result = response.json()
+
+    # WITH a meaningful message
+    assert response.json()["detail"] == f"Could not find file: {COVERAGE_FILE_PATH}"
