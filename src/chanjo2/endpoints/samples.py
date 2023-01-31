@@ -5,7 +5,7 @@ from chanjo2.constants import BAD_REQUEST, NOT_FOUND
 from chanjo2.crud import samples as crud_samples
 from chanjo2.dbutil import get_session
 from chanjo2.models import pydantic_models, sql_models
-from fastapi import APIRouter, Depends, File, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session
 
 router = APIRouter()
