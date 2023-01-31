@@ -45,11 +45,7 @@ def get_sample(db: Session, sample_id: int):
 def create_case_sample(db: Session, sample: pydantic_models.SampleCreate):
     """Create a sample"""
     # Check if sample's case exists first
-    case_obj = (
-        db.query(sql_models.Case)
-        .filter(sql_models.Case.name == sample.case_name)
-        .first()
-    )
+    case_obj = db.query(sql_models.Case).filter(sql_models.Case.name == sample.case_name).first()
     if not case_obj:
         return
 
