@@ -44,17 +44,21 @@ def get_sample(db: Session, sample_id: int):
 
 def create_case_sample(db: Session, sample: pydantic_models.SampleCreate):
     """Create a sample"""
+    # Check if sample's case exists first
+    case_obj = db.query(sql_models.Case).filter(sql_models.Case.name == sample.case_name).first()
+    if not case_obj:
+        return
 
+    # Insert new sample
     db_sample = sql_models.Sample(
         name=sample.name,
         display_name=sample.display_name,
-        case_id=db.query(sql_models.Case)
-        .filter(sql_models.Case.name == sample.case_name)
-        .first()
-        .id,
+        case_id=case_obj.id,
         coverage_file_path=sample.coverage_file_path,
     )
     db.add(db_sample)
     db.commit()
     db.refresh(db_sample)
-    return db_sample
+
+    # Return complete case with sample info
+    return db.query(sql_models.Case).filter(sql_models.Case.id == case_obj.id)
