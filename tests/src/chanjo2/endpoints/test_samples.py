@@ -173,3 +173,24 @@ def test_read_samples_for_case(session, client, db_case, db_sample):
     assert response.status_code == SUCCESS_CODE
     result = response.json()
     assert result[0]["name"] == db_sample.name
+
+
+def test_read_sample(session, client, db_case, db_sample):
+    """Test the ednpoint that returns a single sample when providing its name"""
+
+    # GIVEN a case object saved in the database
+    session.add(db_case)
+    session.commit()
+    session.refresh(db_case)
+
+    # Which contains a sample
+    session.add(db_sample)
+    session.commit()
+    session.refresh(db_sample)
+
+    # THEN the read_sample endpoint should return the sample
+    url = f"{SAMPLES_ENDPOINT}{db_sample.name}"
+    response = client.get(url)
+    assert response.status_code == SUCCESS_CODE
+    result = response.json()
+    assert result["name"] == db_sample.name
