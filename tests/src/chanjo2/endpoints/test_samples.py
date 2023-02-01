@@ -22,27 +22,40 @@ def test_create_case(client, test_case):
     for key, _ in case_data.items():
         assert saved_case[key] == case_data[key]
 
-    # WHEN sending a GET request to fetch all database cases
+
+def test_read_cases(client, session, db_case):
+    """Test the endpoint returning all cases found in the database"""
+
+    # GIVEN a case object saved in the database
+    session.add(db_case)
+    session.commit()
+    session.refresh(db_case)
+
+    # THEN the read_cases endpoint should return it
     response = client.get(CASES_ENDPOINT)
-
-    # THEN it should return success
     assert response.status_code == SUCCESS_CODE
+    result = response.json()
+    assert len(result) == 1
+    assert result[0]["name"] == db_case.name
 
-    # AND the case should be returned in the list of results:
-    for item in response.json():
-        for key, _ in case_data.items():
-            assert item[key] == case_data[key]
 
-    # WHEN sending a GET request to retrieve the specific case using its name:
-    response = client.get(f"{CASES_ENDPOINT}{case_data['name']}")
+def test_read_case(client, session, db_case):
+    """Test the endpoint that returns a specific case"""
 
-    # THEN it should also return success
+    # GIVEN a case object saved in the database
+    session.add(db_case)
+    session.commit()
+    session.refresh(db_case)
+
+    # WHEN sending a GET request to retrieve the specific case using its name
+    response = client.get(f"{CASES_ENDPOINT}{db_case.name}")
+
+    # THEN it should  return success
     assert response.status_code == SUCCESS_CODE
     result = response.json()
 
     # AND the case object should be returned as result
-    for key, _ in case_data.items():
-        assert result[key] == case_data[key]
+    assert result["name"] == db_case.name
 
 
 def test_create_sample_for_case_no_coverage_file(client):
@@ -67,14 +80,14 @@ def test_create_sample_for_case_no_coverage_file(client):
     assert response.json()["detail"] == f"Could not find file: {COVERAGE_FILE_PATH}"
 
 
-def test_create_sample_for_case_no_case(client, test_case):
+def test_create_sample_for_case_no_case(client, test_case, test_sample):
     """Test the function that creates a new sample for a case when no case was previously saved in the database"""
 
     # GIVEN a json-like object containing the new sample data:
     with tempfile.NamedTemporaryFile(suffix=".d4") as tf:
         sample_data = {
-            "name": "abc",
-            "display_name": "sample_abc",
+            "name": test_sample["name"],
+            "display_name": test_sample["display_name"],
             "case_name": test_case["name"],
             "coverage_file_path": tf.name,
         }
@@ -118,3 +131,45 @@ def test_create_sample_for_case(test_case, client):
         for item in ["name", "display_name", "coverage_file_path"]:
             assert saved_sample[item] == sample_data[item]
         assert saved_sample["case_id"] == saved_case["id"]
+
+
+def test_read_samples(client, session, db_case, db_sample):
+    """Test endpoint that returns all samples present in the database"""
+
+    # GIVEN a case object saved in the database
+    session.add(db_case)
+    session.commit()
+    session.refresh(db_case)
+
+    # Which contains a sample
+    session.add(db_sample)
+    session.commit()
+    session.refresh(db_sample)
+
+    # THEN the read_samples endpoint should return the sample:
+    response = client.get(SAMPLES_ENDPOINT)
+    assert response.status_code == SUCCESS_CODE
+    result = response.json()
+    assert len(result) == 1
+    assert result[0]["name"] == db_sample.name
+
+
+def test_read_samples_for_case(session, client, db_case, db_sample):
+    """Test the endpoint that returns all samples for a given case name"""
+
+    # GIVEN a case object saved in the database
+    session.add(db_case)
+    session.commit()
+    session.refresh(db_case)
+
+    # Which contains a sample
+    session.add(db_sample)
+    session.commit()
+    session.refresh(db_sample)
+
+    # THEN the read_samples_for_case endpoint should return the sample
+    url = f"/{db_case.name}{SAMPLES_ENDPOINT}"
+    response = client.get(url)
+    assert response.status_code == SUCCESS_CODE
+    result = response.json()
+    assert result[0]["name"] == db_sample.name

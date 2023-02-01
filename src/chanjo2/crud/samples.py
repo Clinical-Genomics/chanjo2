@@ -1,10 +1,7 @@
-import logging
 from typing import List, Union
 
 from chanjo2.models import pydantic_models, sql_models
 from sqlalchemy.orm import Session
-
-LOG = logging.getLogger("uvicorn.access")
 
 
 ### Case utils
@@ -33,14 +30,19 @@ def get_samples(db: Session, skip: int = 0, limit: int = 100) -> List[pydantic_m
     return db.query(sql_models.Sample).offset(skip).limit(limit).all()
 
 
-def get_case_samples(db: Session, case_id: int) -> List[pydantic_models.SampleRead]:
+def get_case_samples(db: Session, case_name: str) -> List[pydantic_models.SampleRead]:
     """Return all samples for a given case ID"""
-    return db.query(sql_models.Sample).filter(sql_models.Sample.id == case_id)
+    return (
+        db.query(sql_models.Sample)
+        .join(sql_models.Case)
+        .filter(sql_models.Case.name == case_name)
+        .all()
+    )
 
 
-def get_sample(db: Session, sample_id: int) -> pydantic_models.SampleRead:
+def get_sample(db: Session, sample_name: int) -> pydantic_models.SampleRead:
     """Return a specific sample by its ID"""
-    return db.query(sql_models.Sample).filter(sql_models.Sample.id == sample_id).first()
+    return db.query(sql_models.Sample).filter(sql_models.Sample.name == sample_name).first()
 
 
 def create_case_sample(

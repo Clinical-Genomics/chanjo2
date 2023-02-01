@@ -1,6 +1,7 @@
 import pytest
 from chanjo2.dbutil import DEMO_CONNECT_ARGS, get_session
 from chanjo2.main import Base, app, engine
+from chanjo2.models import sql_models
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -49,6 +50,29 @@ def client_fixture(session) -> TestClient:
 
 
 @pytest.fixture(name="test_case")
-def test_case(session) -> dict:
+def test_case() -> dict:
     """Returns a dictionary corresponding to a case record"""
     return {"name": "123", "display_name": "case_123"}
+
+
+@pytest.fixture(name="test_sample")
+def test_sample() -> dict:
+    """Returns a dictionary containing some of the key/values used to create a sample in the database"""
+    return {"name": "abc", "display_name": "sample_abc"}
+
+
+@pytest.fixture(name="db_case")
+def db_case(test_case) -> sql_models.Case:
+    """Returns an object corresponding to a sql_models.Case"""
+    return sql_models.Case(name=test_case["name"], display_name=test_case["display_name"])
+
+
+@pytest.fixture(name="db_sample")
+def db_sample(test_case, test_sample) -> sql_models.Sample:
+    """Returns an object corresponding to a sql_models.Sample"""
+    return sql_models.Sample(
+        name=test_sample["name"],
+        display_name=test_sample["display_name"],
+        case_id=1,
+        coverage_file_path="a_file.d4",
+    )

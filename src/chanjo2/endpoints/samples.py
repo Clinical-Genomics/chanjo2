@@ -58,17 +58,17 @@ def create_sample_for_case(
     return updated_case
 
 
-@router.get("/{case_id}/samples/", response_model=List[pydantic_models.SampleRead])
-def read_samples_for_case(case_id: int, db: Session = Depends(get_session)):
-    """Endpoint used to fetch all samples for a given case from the database"""
-    samples = crud_samples.get_case_samples(db, case_id=case_id)
-    return samples
-
-
 @router.get("/samples/", response_model=List[pydantic_models.SampleRead])
 def read_samples(skip: int = 0, limit: int = 100, db: Session = Depends(get_session)):
     """Endpoint used to fetch all existing samples from the database"""
     samples = crud_samples.get_samples(db, skip=skip, limit=limit)
+    return samples
+
+
+@router.get("/{case_name}/samples/", response_model=List[pydantic_models.SampleRead])
+def read_samples_for_case(case_name: str, db: Session = Depends(get_session)):
+    """Endpoint used to fetch all samples for a given case from the database"""
+    samples = crud_samples.get_case_samples(db, case_name=case_name)
     return samples
 
 
