@@ -10,6 +10,7 @@ from sqlmodel import Session
 
 router = APIRouter()
 
+
 ### Case endpoints
 @router.post("/cases/", response_model=pydantic_models.CaseRead)
 def create_case(case: pydantic_models.CaseCreate, db: Session = Depends(get_session)):
