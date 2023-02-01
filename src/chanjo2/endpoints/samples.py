@@ -73,9 +73,9 @@ def read_samples_for_case(case_name: str, db: Session = Depends(get_session)):
     return samples
 
 
-@router.get("/samples/{sample_id}", response_model=pydantic_models.SampleRead)
-def read_sample(sample_id: int, db: Session = Depends(get_session)):
-    db_sample = crud_samples.get_case(db, sample_id=sample_id)
+@router.get("/samples/{sample_name}", response_model=pydantic_models.SampleRead)
+def read_sample(sample_name: str, db: Session = Depends(get_session)):
+    db_sample = crud_samples.get_sample(db, sample_name=sample_name)
     if db_sample is None:
         raise HTTPException(status_code=NOT_FOUND, detail="Sample not found")
     return db_sample
