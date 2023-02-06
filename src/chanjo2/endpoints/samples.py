@@ -34,7 +34,9 @@ def read_case(case_name: str, db: Session = Depends(get_session)):
     """Endpoint used to fetch one cases from the database by providing its ID"""
     db_case = crud_samples.get_case(db, case_name=case_name)
     if db_case is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Case not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Case not found"
+        )
     return db_case
 
 
@@ -78,5 +80,7 @@ def read_samples_for_case(case_name: str, db: Session = Depends(get_session)):
 def read_sample(sample_name: str, db: Session = Depends(get_session)):
     db_sample = crud_samples.get_sample(db, sample_name=sample_name)
     if db_sample is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sample not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Sample not found"
+        )
     return db_sample
