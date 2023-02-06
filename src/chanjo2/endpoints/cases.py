@@ -22,13 +22,13 @@ def create_case(case: CaseCreate, db: Session = Depends(get_session)):
 
 @router.get("/cases/", response_model=List[CaseRead])
 def read_cases(skip: int = 0, limit: int = 100, db: Session = Depends(get_session)):
-    """Endpoint used to fetch all existing cases from the database"""
+    """Return all existing cases from the database"""
     return get_cases(db, skip=skip, limit=limit)
 
 
 @router.get("/cases/{case_name}", response_model=CaseRead)
 def read_case(case_name: str, db: Session = Depends(get_session)):
-    """Endpoint used to fetch one cases from the database by providing its ID"""
+    """Return one case from the database by providing its name"""
     db_case = get_case(db, case_name=case_name)
     if db_case is None:
         raise HTTPException(

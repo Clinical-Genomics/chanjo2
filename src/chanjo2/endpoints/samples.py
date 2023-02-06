@@ -50,6 +50,7 @@ def read_samples_for_case(case_name: str, db: Session = Depends(get_session)):
 
 @router.get("/samples/{sample_name}", response_model=SampleRead)
 def read_sample(sample_name: str, db: Session = Depends(get_session)):
+    """Return a sample by providing its name"""
     db_sample = get_sample(db, sample_name=sample_name)
     if db_sample is None:
         raise HTTPException(
