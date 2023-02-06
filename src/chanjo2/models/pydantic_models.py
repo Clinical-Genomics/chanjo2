@@ -29,7 +29,7 @@ class SampleCreate(SampleBase):
     case_name: str
 
 
-class SampleRead(SampleBase):
+class Sample(SampleBase):
     id: int
     created_at: datetime
     case_id: int
@@ -40,7 +40,7 @@ class SampleRead(SampleBase):
 
 class Case(CaseBase):
     id: int
-    samples: List[SampleRead] = []
+    samples: List[Sample] = []
 
     class Config:
         orm_mode = True
