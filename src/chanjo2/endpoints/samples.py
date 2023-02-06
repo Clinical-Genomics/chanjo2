@@ -68,7 +68,7 @@ def read_samples(skip: int = 0, limit: int = 100, db: Session = Depends(get_sess
 
 @router.get("/{case_name}/samples/", response_model=List[pydantic_models.SampleRead])
 def read_samples_for_case(case_name: str, db: Session = Depends(get_session)):
-    """Endpoint used to fetch all samples for a given case from the database"""
+    """Return all samples for a given case from the database."""
     samples = crud_samples.get_case_samples(db, case_name=case_name)
     return samples
 
