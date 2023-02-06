@@ -8,7 +8,6 @@ from chanjo2.crud.samples import (
     get_samples,
 )
 from chanjo2.dbutil import get_session
-from chanjo2.models import pydantic_models, sql_models
 from chanjo2.models.pydantic_models import SampleCreate, SampleRead
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session
