@@ -1,6 +1,6 @@
 import tempfile
 
-from chanjo2.constants import SUCCESS_CODE, UNPROCESSABLE_ENTITY
+from fastapi import status
 
 CASES_ENDPOINT = "/cases/"
 SAMPLES_ENDPOINT = "/samples/"
@@ -15,7 +15,7 @@ def test_create_case(client, test_case):
     response = client.post(CASES_ENDPOINT, json=case_data)
 
     # THEN it should return success
-    assert response.status_code == SUCCESS_CODE
+    assert response.status_code == status.HTTP_200_OK
 
     # AND the case should have been saved correctly
     saved_case = response.json()
@@ -33,7 +33,7 @@ def test_read_cases(client, session, db_case):
 
     # THEN the read_cases endpoint should return it
     response = client.get(CASES_ENDPOINT)
-    assert response.status_code == SUCCESS_CODE
+    assert response.status_code == status.HTTP_200_OK
     result = response.json()
     assert len(result) == 1
     assert result[0]["name"] == db_case.name
@@ -51,7 +51,7 @@ def test_read_case(client, session, db_case):
     response = client.get(f"{CASES_ENDPOINT}{db_case.name}")
 
     # THEN it should  return success
-    assert response.status_code == SUCCESS_CODE
+    assert response.status_code == status.HTTP_200_OK
     result = response.json()
 
     # AND the case object should be returned as result
@@ -73,7 +73,7 @@ def test_create_sample_for_case_no_coverage_file(client):
     response = client.post(SAMPLES_ENDPOINT, json=sample_data)
 
     # THEN the response should return error
-    assert response.status_code == UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     result = response.json()
 
     # WITH a meaningful message
@@ -96,7 +96,7 @@ def test_create_sample_for_case_no_case(client, test_case, test_sample):
         response = client.post(SAMPLES_ENDPOINT, json=sample_data)
 
         # THEN the response should return error
-        assert response.status_code == UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         result = response.json()
 
         # WITH a meaningful message
@@ -122,7 +122,7 @@ def test_create_sample_for_case(test_case, client):
         response = client.post(SAMPLES_ENDPOINT, json=sample_data)
 
         # THEN the response shour return success
-        assert response.status_code == SUCCESS_CODE
+        assert response.status_code == status.HTTP_200_OK
 
         # AND the saved data should be correct
         saved_sample = response.json()
@@ -148,7 +148,7 @@ def test_read_samples(client, session, db_case, db_sample):
 
     # THEN the read_samples endpoint should return the sample:
     response = client.get(SAMPLES_ENDPOINT)
-    assert response.status_code == SUCCESS_CODE
+    assert response.status_code == status.HTTP_200_OK
     result = response.json()
     assert len(result) == 1
     assert result[0]["name"] == db_sample.name
@@ -170,7 +170,7 @@ def test_read_samples_for_case(session, client, db_case, db_sample):
     # THEN the read_samples_for_case endpoint should return the sample
     url = f"/{db_case.name}{SAMPLES_ENDPOINT}"
     response = client.get(url)
-    assert response.status_code == SUCCESS_CODE
+    assert response.status_code == status.HTTP_200_OK
     result = response.json()
     assert result[0]["name"] == db_sample.name
 
@@ -191,6 +191,6 @@ def test_read_sample(session, client, db_case, db_sample):
     # THEN the read_sample endpoint should return the sample
     url = f"{SAMPLES_ENDPOINT}{db_sample.name}"
     response = client.get(url)
-    assert response.status_code == SUCCESS_CODE
+    assert response.status_code == status.HTTP_200_OK
     result = response.json()
     assert result["name"] == db_sample.name

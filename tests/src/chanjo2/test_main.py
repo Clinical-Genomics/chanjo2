@@ -1,6 +1,6 @@
 from chanjo2 import __version__
-from chanjo2.constants import SUCCESS_CODE
 from chanjo2.dbutil import DEMO_CONNECT_ARGS
+from fastapi import status
 from sqlalchemy import create_engine, inspect
 
 DB_TABLES = ["cases", "interval_tag", "intervals", "samples", "tags"]
@@ -11,7 +11,7 @@ def test_heartbeat(client):
     # WHEN user makes a call to the heatbeat endpoint
     response = client.get("/")
     # THEN it should return success
-    assert response.status_code == SUCCESS_CODE
+    assert response.status_code == status.HTTP_200_OK
     # AND the expected message
     assert response.json() == {"message": f"Chanjo2 v{__version__} is up and running!"}
 
