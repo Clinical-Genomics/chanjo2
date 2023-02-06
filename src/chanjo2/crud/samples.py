@@ -1,11 +1,6 @@
 from typing import List, Union
 
-from chanjo2.models.pydantic_models import (
-    CaseCreate,
-    CaseRead,
-    SampleCreate,
-    SampleRead,
-)
+from chanjo2.models.pydantic_models import CaseCreate, SampleCreate, SampleRead
 from chanjo2.models.sql_models import Case as SQLCase
 from chanjo2.models.sql_models import Sample as SQLSample
 from sqlalchemy.orm import Session

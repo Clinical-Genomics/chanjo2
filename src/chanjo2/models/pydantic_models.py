@@ -38,7 +38,7 @@ class SampleRead(SampleBase):
         orm_mode = True
 
 
-class CaseRead(CaseBase):
+class Case(CaseBase):
     id: int
     samples: List[SampleRead] = []
 
