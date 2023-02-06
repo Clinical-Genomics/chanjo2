@@ -13,7 +13,7 @@ router = APIRouter()
 ### Case endpoints
 @router.post("/cases/", response_model=pydantic_models.CaseRead)
 def create_case(case: pydantic_models.CaseCreate, db: Session = Depends(get_session)):
-    """Endpoint used to add a case to the database"""
+    """Add a case to the database"""
     db_case = crud_samples.get_case(db, case_name=case.name)
     if db_case:
         raise HTTPException(
@@ -62,14 +62,14 @@ def create_sample_for_case(
 
 @router.get("/samples/", response_model=List[pydantic_models.SampleRead])
 def read_samples(skip: int = 0, limit: int = 100, db: Session = Depends(get_session)):
-    """Endpoint used to fetch all existing samples from the database"""
+    """Return all existing samples from the database."""
     samples = crud_samples.get_samples(db, skip=skip, limit=limit)
     return samples
 
 
 @router.get("/{case_name}/samples/", response_model=List[pydantic_models.SampleRead])
 def read_samples_for_case(case_name: str, db: Session = Depends(get_session)):
-    """Endpoint used to fetch all samples for a given case from the database"""
+    """Return all samples for a given case from the database."""
     samples = crud_samples.get_case_samples(db, case_name=case_name)
     return samples
 
