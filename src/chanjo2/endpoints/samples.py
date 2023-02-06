@@ -15,7 +15,7 @@ def create_sample_for_case(
     sample: SampleCreate,
     db: Session = Depends(get_session),
 ):
-    """Endpoint used to add a case sample to the database"""
+    """Add a sample to a case in the database."""
     d4_file_path: Path = Path(sample.coverage_file_path)
     if not d4_file_path.is_file():
         raise HTTPException(
