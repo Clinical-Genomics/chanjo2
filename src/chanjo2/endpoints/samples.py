@@ -1,12 +1,7 @@
 from pathlib import Path
 from typing import List
 
-from chanjo2.crud.samples import (
-    create_case_sample,
-    get_case_samples,
-    get_sample,
-    get_samples,
-)
+from chanjo2.crud.samples import create_case_sample, get_case_samples, get_sample, get_samples
 from chanjo2.dbutil import get_session
 from chanjo2.models.pydantic_models import SampleCreate, SampleRead
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -31,7 +26,7 @@ def create_sample_for_case(
     if db_sample is None:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Could not find a case for this sample",
+            detail=f"Could not find a case with name: {sample.case_name}",
         )
     return db_sample
 
@@ -52,7 +47,5 @@ def read_samples_for_case(case_name: str, db: Session = Depends(get_session)):
 def read_sample(sample_name: str, db: Session = Depends(get_session)):
     db_sample = get_sample(db, sample_name=sample_name)
     if db_sample is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Sample not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sample not found")
     return db_sample
