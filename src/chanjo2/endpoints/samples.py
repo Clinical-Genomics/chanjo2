@@ -61,7 +61,7 @@ def create_sample_for_case(
 
 @router.get("/samples/", response_model=List[pydantic_models.SampleRead])
 def read_samples(skip: int = 0, limit: int = 100, db: Session = Depends(get_session)):
-    """Endpoint used to fetch all existing samples from the database"""
+    """Return all existing samples from the database."""
     samples = crud_samples.get_samples(db, skip=skip, limit=limit)
     return samples
 
