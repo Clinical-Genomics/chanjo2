@@ -17,8 +17,8 @@ def get_case(db: Session, case_name: str) -> CaseRead:
 
 def case_create(db: Session, case: CaseCreate) -> CaseRead:
     """Create a case"""
-    db_sample = SQLCase(name=case.name, display_name=case.display_name)
-    db.add(db_sample)
+    db_case = SQLCase(name=case.name, display_name=case.display_name)
+    db.add(db_case)
     db.commit()
-    db.refresh(db_sample)
-    return db_sample
+    db.refresh(db_case)
+    return db_case
