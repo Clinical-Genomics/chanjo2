@@ -48,7 +48,10 @@ def test_create_sample_for_case_no_case(client, test_case, test_sample):
         result = response.json()
 
         # WITH a meaningful message
-        assert response.json()["detail"] == "Could not find a case for this sample"
+        assert (
+            response.json()["detail"]
+            == f"Could not find a case with name: {test_case['name']}"
+        )
 
 
 def test_create_sample_for_case(test_case, client):
