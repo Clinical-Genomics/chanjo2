@@ -14,7 +14,7 @@ router = APIRouter()
 ### Case endpoints
 @router.post("/cases/", response_model=pydantic_models.CaseRead)
 def create_case(case: pydantic_models.CaseCreate, db: Session = Depends(get_session)):
-    """Endpoint used to add a case to the database"""
+    """Add a case to the database"""
     db_case = crud_samples.get_case(db, case_name=case.name)
     if db_case:
         raise HTTPException(status_code=BAD_REQUEST, detail="Case already registered")
