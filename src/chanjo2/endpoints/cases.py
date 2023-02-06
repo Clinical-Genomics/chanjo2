@@ -31,5 +31,7 @@ def read_case(case_name: str, db: Session = Depends(get_session)):
     """Return one case from the database by providing its name"""
     db_case = get_case(db, case_name=case_name)
     if db_case is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Case not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Case not found"
+        )
     return db_case
