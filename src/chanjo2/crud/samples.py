@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 def get_cases(
     db: Session, skip: int = 0, limit: int = 100
 ) -> List[pydantic_models.CaseRead]:
-    """Return all cases"""
+    """Return all cases."""
     return db.query(sql_models.Case).offset(skip).limit(limit).all()
 
 
