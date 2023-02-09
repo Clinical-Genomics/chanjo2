@@ -4,16 +4,15 @@ from fastapi import status
 
 
 def test_create_sample_for_case_no_coverage_file(
-    client, raw_case, raw_sample, samples_endpoint
+    client, raw_case, raw_sample, samples_endpoint, wrong_coverage_path
 ):
     """Test the function that creates a new sample for a case when no coverage file is specified."""
     # GIVEN a json-like object containing the new sample data that is missing the coverage_file_path key/Value:
-    COVERAGE_FILE_PATH = "FOO"
     sample_data = {
         "name": raw_sample["name"],
         "display_name": raw_sample["display_name"],
         "case_name": raw_case["name"],
-        "coverage_file_path": COVERAGE_FILE_PATH,
+        "coverage_file_path": wrong_coverage_path,
     }
 
     # WHEN the create_sample_for_case endpoint is used to create the case
@@ -24,7 +23,7 @@ def test_create_sample_for_case_no_coverage_file(
     result = response.json()
 
     # WITH a meaningful message
-    assert response.json()["detail"] == f"Could not find file: {COVERAGE_FILE_PATH}"
+    assert response.json()["detail"] == f"Could not find file: {wrong_coverage_path}"
 
 
 def test_create_sample_for_case_no_case(client, raw_case, raw_sample, samples_endpoint):

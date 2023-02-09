@@ -15,6 +15,7 @@ SAMPLE_NAME = "abc"
 SAMPLE_DISPLAY_NAME = "sample_abc"
 CASES_ENDPOINT = "/cases/"
 SAMPLES_ENDPOINT = "/samples/"
+WRONG_COVERAGE_PATH = "a_file.d4"
 
 engine = create_engine(TEST_DB, connect_args=DEMO_CONNECT_ARGS)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -94,5 +95,11 @@ def db_sample(raw_case, raw_sample) -> sql_models.Sample:
         name=raw_sample["name"],
         display_name=raw_sample["display_name"],
         case_id=1,
-        coverage_file_path="a_file.d4",
+        coverage_file_path=WRONG_COVERAGE_PATH,
     )
+
+
+@pytest.fixture(name="wrong_coverage_path")
+def wrong_coverage_path() -> str:
+    """Returns the path to a file that doesn't exist on disk"""
+    return WRONG_COVERAGE_PATH
