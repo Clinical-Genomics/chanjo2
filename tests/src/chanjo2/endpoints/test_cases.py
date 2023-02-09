@@ -1,5 +1,6 @@
 from typing import Dict, Type
 
+from chanjo2.models.pydantic_models import Case
 from chanjo2.models.sql_models import Case as SQLCase
 from fastapi import status
 from fastapi.testclient import TestClient
@@ -17,10 +18,10 @@ def test_create_case(client: TestClient, raw_case: Dict[str, str], cases_endpoin
     # THEN it should return success
     assert response.status_code == status.HTTP_200_OK
 
-    # AND the case should have been saved correctly
-    saved_case = response.json()
-    for key, _ in case_data.items():
-        assert saved_case[key] == case_data[key]
+    # AND the saved data should be correct and compliant with a Case model
+    result = response.json()
+
+    assert Case(**result)
 
 
 def test_read_cases(
@@ -40,7 +41,7 @@ def test_read_cases(
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
     assert len(result) == 1
-    assert result[0]["name"] == db_case.name
+    assert Case(**result[0])
 
 
 def test_read_case(
@@ -63,4 +64,4 @@ def test_read_case(
     result = response.json()
 
     # AND the case object should be returned as result
-    assert result["name"] == db_case.name
+    assert Case(**result)

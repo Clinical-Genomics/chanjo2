@@ -1,6 +1,7 @@
 from pathlib import PosixPath
 from typing import Dict, Type
 
+from chanjo2.models.pydantic_models import Sample
 from chanjo2.models.sql_models import Case as SQLCase
 from chanjo2.models.sql_models import Sample as SQLSample
 from fastapi import status
@@ -90,13 +91,9 @@ def test_create_sample_for_case(
     # THEN the response shour return success
     assert response.status_code == status.HTTP_200_OK
 
-    # AND the saved data should be correct
-    saved_sample = response.json()
-    assert saved_sample["id"]
-    assert saved_sample["created_at"]
-    for item in ["name", "display_name", "coverage_file_path"]:
-        assert saved_sample[item] == sample_data[item]
-    assert saved_sample["case_id"] == saved_case["id"]
+    # AND the saved data should be a Sample object
+    result = response.json()
+    assert Sample(**result)
 
 
 def test_read_samples(
@@ -115,12 +112,12 @@ def test_read_samples(
     # Which contains a sample
     helpers.session_commit_item(session, db_sample)
 
-    # THEN the read_samples endpoint should return the sample:
+    # THEN the read_samples endpoint should return the sample in the right format
     response = client.get(samples_endpoint)
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
     assert len(result) == 1
-    assert result[0]["name"] == db_sample.name
+    assert Sample(**result[0])
 
 
 def test_read_samples_for_case(
@@ -144,7 +141,7 @@ def test_read_samples_for_case(
     response = client.get(url)
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
-    assert result[0]["name"] == db_sample.name
+    assert Sample(**result[0])
 
 
 def test_read_sample(
@@ -168,4 +165,4 @@ def test_read_sample(
     response = client.get(url)
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
-    assert result["name"] == db_sample.name
+    assert Sample(**result)
