@@ -12,7 +12,7 @@ def get_samples(db: Session, skip: int = 0, limit: int = 100) -> List[Sample]:
 
 
 def get_case_samples(db: Session, case_name: str) -> List[Sample]:
-    """Return all samples for a given case name"""
+    """Return all samples for a given case name."""
     return db.query(SQLSample).join(SQLCase).filter(SQLCase.name == case_name).all()
 
 
