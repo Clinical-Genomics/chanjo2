@@ -22,7 +22,7 @@ def get_sample(db: Session, sample_name: str) -> Sample:
 
 
 def create_case_sample(db: Session, sample: SampleCreate) -> Union[Sample, None]:
-    """Create a sample"""
+    """Create a sample and link it to a case."""
     # Check if sample's case exists first
     case_obj = db.query(SQLCase).filter(SQLCase.name == sample.case_name).first()
     if not case_obj:
