@@ -36,7 +36,7 @@ def test_read_cases(client, session, db_case):
 
 
 def test_read_case(client, session, db_case):
-    """Test the endpoint that returns a specific case"""
+    """Test the endpoint that returns a specific case."""
 
     # GIVEN a case object saved in the database
     session.add(db_case)
