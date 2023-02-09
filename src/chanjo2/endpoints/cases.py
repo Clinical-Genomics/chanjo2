@@ -22,7 +22,7 @@ def create_case(case: CaseCreate, db: Session = Depends(get_session)):
 
 @router.get("/cases/", response_model=List[Case])
 def read_cases(skip: int = 0, limit: int = 100, db: Session = Depends(get_session)):
-    """Return all existing cases from the database"""
+    """Return all existing cases from the database."""
     return get_cases(db, skip=skip, limit=limit)
 
 
