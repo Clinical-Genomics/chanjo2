@@ -31,7 +31,7 @@ def test_create_sample_for_case_no_coverage_file(
     result = response.json()
 
     # WITH a meaningful message
-    assert response.json()["detail"] == f"Could not find file: {coverage_file}"
+    assert result["detail"] == f"Could not find file: {coverage_file}"
 
 
 def test_create_sample_for_case_no_case(
@@ -59,7 +59,7 @@ def test_create_sample_for_case_no_case(
     result = response.json()
 
     # WITH a meaningful message
-    assert response.json()["detail"] == f"Could not find a case with name: {raw_case['name']}"
+    assert result["detail"] == f"Could not find a case with name: {raw_case['name']}"
 
 
 def test_create_sample_for_case(
@@ -71,6 +71,9 @@ def test_create_sample_for_case(
     samples_endpoint: str,
 ):
     """Test the function that creates a new sample for a case when provided sample info is complete."""
+
+    # GIVEN a case that exists in the database:
+    saved_case = client.post(cases_endpoint, json=raw_case).json()
 
     # GIVEN a json-like object containing the new sample data:
     sample_data = {
