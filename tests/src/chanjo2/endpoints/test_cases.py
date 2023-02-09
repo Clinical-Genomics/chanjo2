@@ -1,6 +1,6 @@
 from typing import Dict, Type
 
-from chanjo2.models.sql_models import Case
+from chanjo2.models.sql_models import Case as SQLCase
 from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import sessionmaker
@@ -26,7 +26,7 @@ def test_create_case(client: TestClient, raw_case: Dict[str, str], cases_endpoin
 def test_read_cases(
     client: TestClient,
     session: sessionmaker,
-    db_case: Case,
+    db_case: SQLCase,
     cases_endpoint: str,
     helpers: Type,
 ):
@@ -46,7 +46,7 @@ def test_read_cases(
 def test_read_case(
     client: TestClient,
     session: sessionmaker,
-    db_case: Case,
+    db_case: SQLCase,
     cases_endpoint: str,
     helpers: Type,
 ):

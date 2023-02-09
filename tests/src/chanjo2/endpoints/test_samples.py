@@ -1,7 +1,8 @@
 from pathlib import PosixPath
 from typing import Dict, Type
 
-from chanjo2.models.sql_models import Case, Sample
+from chanjo2.models.sql_models import Case as SQLCase
+from chanjo2.models.sql_models import Sample as SQLSample
 from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import sessionmaker
@@ -101,8 +102,8 @@ def test_create_sample_for_case(
 def test_read_samples(
     client: TestClient,
     session: sessionmaker,
-    db_case: Case,
-    db_sample: Sample,
+    db_case: SQLCase,
+    db_sample: SQLSample,
     samples_endpoint: str,
     helpers: Type,
 ):
@@ -125,8 +126,8 @@ def test_read_samples(
 def test_read_samples_for_case(
     session: sessionmaker,
     client: TestClient,
-    db_case: Case,
-    db_sample: Sample,
+    db_case: SQLCase,
+    db_sample: SQLSample,
     samples_endpoint: str,
     helpers: Type,
 ):
@@ -149,8 +150,8 @@ def test_read_samples_for_case(
 def test_read_sample(
     session: sessionmaker,
     client: TestClient,
-    db_case: Sample,
-    db_sample: Sample,
+    db_case: SQLCase,
+    db_sample: SQLSample,
     samples_endpoint: str,
     helpers: Type,
 ):

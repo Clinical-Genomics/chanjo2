@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from typing import List, Union
+from typing import List, Optional
 
 from pydantic import BaseModel
 
@@ -12,7 +12,7 @@ class Builds(str, Enum):
 
 class CaseBase(BaseModel):
     name: str
-    display_name: Union[str, None] = None
+    display_name: Optional[str] = None
 
 
 class CaseCreate(CaseBase):
