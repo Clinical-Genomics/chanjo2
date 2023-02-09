@@ -127,7 +127,7 @@ def test_read_samples_for_case(session, client, db_case, db_sample):
 
 
 def test_read_sample(session, client, db_case, db_sample):
-    """Test the ednpoint that returns a single sample when providing its name"""
+    """Test the endpoint that returns a single sample when providing its name."""
 
     # GIVEN a case object saved in the database
     session.add(db_case)
