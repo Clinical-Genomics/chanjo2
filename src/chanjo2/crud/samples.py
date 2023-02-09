@@ -1,3 +1,4 @@
+import logging
 from typing import List, Optional
 
 from chanjo2.crud.cases import filter_cases_by_name
@@ -5,6 +6,8 @@ from chanjo2.models.pydantic_models import CaseCreate, Sample, SampleCreate
 from chanjo2.models.sql_models import Case as SQLCase
 from chanjo2.models.sql_models import Sample as SQLSample
 from sqlalchemy.orm import Session, query
+
+LOG = logging.getLogger("uvicorn.access")
 
 
 def _filter_samples_by_name(
@@ -18,7 +21,7 @@ def _filter_samples_by_case(
     samples: query.Query, case_name: str, **kwargs
 ) -> List[SQLSample]:
     """Filter samples by case name"""
-    return samples.filter(SQLCase.name == case_name).first()
+    return samples.filter(SQLCase.name == case_name).all()
 
 
 def get_samples(db: Session, skip: int = 0, limit: int = 100) -> List[SQLSample]:
@@ -28,6 +31,7 @@ def get_samples(db: Session, skip: int = 0, limit: int = 100) -> List[SQLSample]
 
 def get_case_samples(db: Session, case_name: str) -> List[SQLSample]:
     """Return all samples for a given case name."""
+
     pipeline = {"filter_samples_by_case": _filter_samples_by_case}
     query = db.query(SQLSample).join(SQLCase)
 
