@@ -3,7 +3,21 @@ from typing import List, Optional
 from chanjo2.models.pydantic_models import CaseCreate, Sample, SampleCreate
 from chanjo2.models.sql_models import Case as SQLCase
 from chanjo2.models.sql_models import Sample as SQLSample
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, query
+
+
+def _filter_samples_by_name(
+    samples: query.Query, sample_name: str, **kwargs
+) -> SQLSample:
+    """Filter samples by sample name"""
+    return samples.filter(SQLSample.name == sample_name).first()
+
+
+def _filter_samples_by_case(
+    samples: query.Query, case_name: str, **kwargs
+) -> SQLSample:
+    """Filter samples by case name"""
+    return samples.filter(SQLCase.name == case_name).first()
 
 
 def get_samples(db: Session, skip: int = 0, limit: int = 100) -> List[Sample]:
@@ -13,12 +27,18 @@ def get_samples(db: Session, skip: int = 0, limit: int = 100) -> List[Sample]:
 
 def get_case_samples(db: Session, case_name: str) -> List[Sample]:
     """Return all samples for a given case name."""
-    return db.query(SQLSample).join(SQLCase).filter(SQLCase.name == case_name).all()
+    pipeline = {"filter_samples_by_case": _filter_samples_by_case}
+    query = db.query(SQLSample).join(SQLCase)
+
+    return pipeline["filter_samples_by_case"](query, case_name)
 
 
 def get_sample(db: Session, sample_name: str) -> Sample:
     """Return a specific sample by name."""
-    return db.query(SQLSample).filter(SQLSample.name == sample_name).first()
+    pipeline = {"filter_samples_by_name": _filter_samples_by_name}
+    query = db.query(SQLSample)
+
+    return pipeline["filter_samples_by_name"](query, sample_name)
 
 
 def create_sample_in_case(db: Session, sample: SampleCreate) -> Optional[Sample]:
