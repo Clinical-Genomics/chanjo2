@@ -1,4 +1,4 @@
-import tempfile
+from pathlib import PosixPath
 from typing import Dict, Type
 
 from chanjo2.models.sql_models import Case, Sample
@@ -12,7 +12,7 @@ def test_create_sample_for_case_no_coverage_file(
     raw_case: Dict[str, str],
     raw_sample: Dict[str, str],
     samples_endpoint: str,
-    wrong_coverage_path: str,
+    coverage_file: str,
 ):
     """Test the function that creates a new sample for a case when no coverage file is specified."""
     # GIVEN a json-like object containing the new sample data that is missing the coverage_file_path key/Value:
@@ -20,7 +20,7 @@ def test_create_sample_for_case_no_coverage_file(
         "name": raw_sample["name"],
         "display_name": raw_sample["display_name"],
         "case_name": raw_case["name"],
-        "coverage_file_path": wrong_coverage_path,
+        "coverage_file_path": coverage_file,
     }
 
     # WHEN the create_sample_for_case endpoint is used to create the case
@@ -31,42 +31,40 @@ def test_create_sample_for_case_no_coverage_file(
     result = response.json()
 
     # WITH a meaningful message
-    assert response.json()["detail"] == f"Could not find file: {wrong_coverage_path}"
+    assert response.json()["detail"] == f"Could not find file: {coverage_file}"
 
 
 def test_create_sample_for_case_no_case(
     client: TestClient,
     raw_case: Dict[str, str],
     raw_sample: Dict[str, str],
+    coverage_path: PosixPath,
     samples_endpoint: str,
 ):
     """Test the function that creates a new sample for a case when no case was previously saved in the database."""
 
     # GIVEN a json-like object containing the new sample data:
-    with tempfile.NamedTemporaryFile(suffix=".d4") as tf:
-        sample_data = {
-            "name": raw_sample["name"],
-            "display_name": raw_sample["display_name"],
-            "case_name": raw_case["name"],
-            "coverage_file_path": tf.name,
-        }
+    sample_data = {
+        "name": raw_sample["name"],
+        "display_name": raw_sample["display_name"],
+        "case_name": raw_case["name"],
+        "coverage_file_path": str(coverage_path),
+    }
 
-        # WHEN the create_sample_for_case endpoint is used to create the case
-        response = client.post(samples_endpoint, json=sample_data)
+    # WHEN the create_sample_for_case endpoint is used to create the case
+    response = client.post(samples_endpoint, json=sample_data)
 
-        # THEN the response should return error
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-        result = response.json()
+    # THEN the response should return error
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    result = response.json()
 
-        # WITH a meaningful message
-        assert (
-            response.json()["detail"]
-            == f"Could not find a case with name: {raw_case['name']}"
-        )
+    # WITH a meaningful message
+    assert response.json()["detail"] == f"Could not find a case with name: {raw_case['name']}"
 
 
 def test_create_sample_for_case(
     client: TestClient,
+    coverage_path: PosixPath,
     raw_case: Dict[str, str],
     raw_sample: Dict[str, str],
     cases_endpoint: str,
@@ -74,31 +72,27 @@ def test_create_sample_for_case(
 ):
     """Test the function that creates a new sample for a case when provided sample info is complete."""
 
-    # GIVEN a case that exists in the database:
-    saved_case = client.post(cases_endpoint, json=raw_case).json()
-
     # GIVEN a json-like object containing the new sample data:
-    with tempfile.NamedTemporaryFile(suffix=".d4") as tf:
-        sample_data = {
-            "name": raw_sample["name"],
-            "display_name": raw_sample["display_name"],
-            "case_name": raw_case["name"],
-            "coverage_file_path": tf.name,
-        }
+    sample_data = {
+        "name": raw_sample["name"],
+        "display_name": raw_sample["display_name"],
+        "case_name": raw_case["name"],
+        "coverage_file_path": str(coverage_path),
+    }
 
-        # WHEN the create_sample_for_case endpoint is used to create the case
-        response = client.post(samples_endpoint, json=sample_data)
+    # WHEN the create_sample_for_case endpoint is used to create the case
+    response = client.post(samples_endpoint, json=sample_data)
 
-        # THEN the response shour return success
-        assert response.status_code == status.HTTP_200_OK
+    # THEN the response shour return success
+    assert response.status_code == status.HTTP_200_OK
 
-        # AND the saved data should be correct
-        saved_sample = response.json()
-        assert saved_sample["id"]
-        assert saved_sample["created_at"]
-        for item in ["name", "display_name", "coverage_file_path"]:
-            assert saved_sample[item] == sample_data[item]
-        assert saved_sample["case_id"] == saved_case["id"]
+    # AND the saved data should be correct
+    saved_sample = response.json()
+    assert saved_sample["id"]
+    assert saved_sample["created_at"]
+    for item in ["name", "display_name", "coverage_file_path"]:
+        assert saved_sample[item] == sample_data[item]
+    assert saved_sample["case_id"] == saved_case["id"]
 
 
 def test_read_samples(

@@ -1,3 +1,4 @@
+from pathlib import PosixPath
 from typing import Dict
 
 import pytest
@@ -5,6 +6,7 @@ from chanjo2.dbutil import DEMO_CONNECT_ARGS, get_session
 from chanjo2.main import Base, app, engine
 from chanjo2.models import sql_models
 from fastapi.testclient import TestClient
+from py._path.local import LocalPath
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -15,7 +17,8 @@ SAMPLE_NAME = "abc"
 SAMPLE_DISPLAY_NAME = "sample_abc"
 CASES_ENDPOINT = "/cases/"
 SAMPLES_ENDPOINT = "/samples/"
-WRONG_COVERAGE_PATH = "a_file.d4"
+COVERAGE_FILE = "a_file.d4"
+COVERAGE_CONTENT = "content"
 
 engine = create_engine(TEST_DB, connect_args=DEMO_CONNECT_ARGS)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -109,11 +112,22 @@ def db_sample(raw_case, raw_sample) -> sql_models.Sample:
         name=raw_sample["name"],
         display_name=raw_sample["display_name"],
         case_id=1,
-        coverage_file_path=WRONG_COVERAGE_PATH,
+        coverage_file_path=COVERAGE_FILE,
     )
 
 
-@pytest.fixture(name="wrong_coverage_path")
-def wrong_coverage_path() -> str:
-    """Returns the path to a file that doesn't exist on disk"""
-    return WRONG_COVERAGE_PATH
+@pytest.fixture(name="coverage_file")
+def coverage_file() -> str:
+    """Returns the name of a mock coverage file."""
+    return COVERAGE_FILE
+
+
+@pytest.fixture(name="coverage_path")
+def coverage_path(tmp_path) -> PosixPath:
+    """Returns a mock temp coverage file."""
+
+    tf = tmp_path / COVERAGE_FILE
+    tf.touch()
+    tf.write_text(COVERAGE_CONTENT)
+
+    return tf
