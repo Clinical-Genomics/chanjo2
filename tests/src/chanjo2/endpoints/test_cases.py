@@ -1,7 +1,12 @@
+from typing import Dict, Type
+
+from chanjo2.models.sql_models import Case
 from fastapi import status
+from fastapi.testclient import TestClient
+from sqlalchemy.orm import sessionmaker
 
 
-def test_create_case(client, raw_case, cases_endpoint):
+def test_create_case(client: TestClient, raw_case: Dict[str, str], cases_endpoint: str):
     """Test the endpoint used to create a new case."""
     # GIVEN a json-like object containing the new case data:
     case_data = raw_case
@@ -18,7 +23,13 @@ def test_create_case(client, raw_case, cases_endpoint):
         assert saved_case[key] == case_data[key]
 
 
-def test_read_cases(client, session, db_case, cases_endpoint, helpers):
+def test_read_cases(
+    client: TestClient,
+    session: sessionmaker,
+    db_case: Case,
+    cases_endpoint: str,
+    helpers: Type,
+):
     """Test the endpoint returning all cases found in the database."""
 
     # GIVEN a case object saved in the database
@@ -32,7 +43,13 @@ def test_read_cases(client, session, db_case, cases_endpoint, helpers):
     assert result[0]["name"] == db_case.name
 
 
-def test_read_case(client, session, db_case, cases_endpoint, helpers):
+def test_read_case(
+    client: TestClient,
+    session: sessionmaker,
+    db_case: Case,
+    cases_endpoint: str,
+    helpers: Type,
+):
     """Test the endpoint that returns a specific case."""
 
     # GIVEN a case object saved in the database

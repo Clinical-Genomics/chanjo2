@@ -1,13 +1,14 @@
 from chanjo2 import __version__
 from chanjo2.dbutil import DEMO_CONNECT_ARGS
 from fastapi import status
+from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, inspect
 
 DB_TABLES = ["cases", "interval_tag", "intervals", "samples", "tags"]
 
 
-def test_heartbeat(client):
-    """Test the function that returns a message if server is running"""
+def test_heartbeat(client: TestClient):
+    """Test the function that returns a message if server is running."""
     # WHEN user makes a call to the heatbeat endpoint
     response = client.get("/")
     # THEN it should return success
@@ -16,8 +17,8 @@ def test_heartbeat(client):
     assert response.json() == {"message": f"Chanjo2 v{__version__} is up and running!"}
 
 
-def test_create_db_and_tables(test_db):
-    """Test that tables are created correctly when app starts up"""
+def test_create_db_and_tables(test_db: str):
+    """Test that tables are created correctly when app starts up."""
     # Given a running instance of Chanjo2
 
     # WHEN connecting to the same database used by the test app

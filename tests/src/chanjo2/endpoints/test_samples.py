@@ -1,10 +1,18 @@
 import tempfile
+from typing import Dict, Type
 
+from chanjo2.models.sql_models import Case, Sample
 from fastapi import status
+from fastapi.testclient import TestClient
+from sqlalchemy.orm import sessionmaker
 
 
 def test_create_sample_for_case_no_coverage_file(
-    client, raw_case, raw_sample, samples_endpoint, wrong_coverage_path
+    client: TestClient,
+    raw_case: Dict[str, str],
+    raw_sample: Dict[str, str],
+    samples_endpoint: str,
+    wrong_coverage_path: str,
 ):
     """Test the function that creates a new sample for a case when no coverage file is specified."""
     # GIVEN a json-like object containing the new sample data that is missing the coverage_file_path key/Value:
@@ -26,7 +34,12 @@ def test_create_sample_for_case_no_coverage_file(
     assert response.json()["detail"] == f"Could not find file: {wrong_coverage_path}"
 
 
-def test_create_sample_for_case_no_case(client, raw_case, raw_sample, samples_endpoint):
+def test_create_sample_for_case_no_case(
+    client: TestClient,
+    raw_case: Dict[str, str],
+    raw_sample: Dict[str, str],
+    samples_endpoint: str,
+):
     """Test the function that creates a new sample for a case when no case was previously saved in the database."""
 
     # GIVEN a json-like object containing the new sample data:
@@ -53,7 +66,11 @@ def test_create_sample_for_case_no_case(client, raw_case, raw_sample, samples_en
 
 
 def test_create_sample_for_case(
-    client, raw_case, raw_sample, cases_endpoint, samples_endpoint
+    client: TestClient,
+    raw_case: Dict[str, str],
+    raw_sample: Dict[str, str],
+    cases_endpoint: str,
+    samples_endpoint: str,
 ):
     """Test the function that creates a new sample for a case when provided sample info is complete."""
 
@@ -84,8 +101,15 @@ def test_create_sample_for_case(
         assert saved_sample["case_id"] == saved_case["id"]
 
 
-def test_read_samples(client, session, db_case, db_sample, samples_endpoint, helpers):
-    """Test endpoint that returns all samples present in the database"""
+def test_read_samples(
+    client: TestClient,
+    session: sessionmaker,
+    db_case: Case,
+    db_sample: Sample,
+    samples_endpoint: str,
+    helpers: Type,
+):
+    """Test endpoint that returns all samples present in the database."""
 
     # GIVEN a case object saved in the database
     helpers.session_commit_item(session, db_case)
@@ -102,9 +126,14 @@ def test_read_samples(client, session, db_case, db_sample, samples_endpoint, hel
 
 
 def test_read_samples_for_case(
-    session, client, db_case, db_sample, samples_endpoint, helpers
+    session: sessionmaker,
+    client: TestClient,
+    db_case: Case,
+    db_sample: Sample,
+    samples_endpoint: str,
+    helpers: Type,
 ):
-    """Test the endpoint that returns all samples for a given case name"""
+    """Test the endpoint that returns all samples for a given case name."""
 
     # GIVEN a case object saved in the database
     helpers.session_commit_item(session, db_case)
@@ -120,7 +149,14 @@ def test_read_samples_for_case(
     assert result[0]["name"] == db_sample.name
 
 
-def test_read_sample(session, client, db_case, db_sample, samples_endpoint, helpers):
+def test_read_sample(
+    session: sessionmaker,
+    client: TestClient,
+    db_case: Sample,
+    db_sample: Sample,
+    samples_endpoint: str,
+    helpers: Type,
+):
     """Test the endpoint that returns a single sample when providing its name."""
 
     # GIVEN a case object saved in the database
