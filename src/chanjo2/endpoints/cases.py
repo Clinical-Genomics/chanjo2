@@ -11,7 +11,7 @@ router = APIRouter()
 
 @router.post("/cases/", response_model=Case)
 def create_case(case: CaseCreate, db: Session = Depends(get_session)):
-    """Add a case to the database"""
+    """Add a case to the database."""
     db_case = get_case(db, case_name=case.name)
     if db_case:
         raise HTTPException(
