@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Optional
 
 from chanjo2.models.pydantic_models import CaseCreate, Sample, SampleCreate
 from chanjo2.models.sql_models import Case as SQLCase
@@ -21,7 +21,7 @@ def get_sample(db: Session, sample_name: str) -> Sample:
     return db.query(SQLSample).filter(SQLSample.name == sample_name).first()
 
 
-def create_sample_in_case(db: Session, sample: SampleCreate) -> Union[Sample, None]:
+def create_sample_in_case(db: Session, sample: SampleCreate) -> Optional[Sample, None]:
     """Create a sample"""
     # Check if sample's case exists first
     case_obj = db.query(SQLCase).filter(SQLCase.name == sample.case_name).first()
