@@ -15,17 +15,17 @@ def _filter_samples_by_name(
 
 def _filter_samples_by_case(
     samples: query.Query, case_name: str, **kwargs
-) -> SQLSample:
+) -> List[SQLSample]:
     """Filter samples by case name"""
     return samples.filter(SQLCase.name == case_name).first()
 
 
-def get_samples(db: Session, skip: int = 0, limit: int = 100) -> List[Sample]:
+def get_samples(db: Session, skip: int = 0, limit: int = 100) -> List[SQLSample]:
     """Return all samples."""
     return db.query(SQLSample).offset(skip).limit(limit).all()
 
 
-def get_case_samples(db: Session, case_name: str) -> List[Sample]:
+def get_case_samples(db: Session, case_name: str) -> List[SQLSample]:
     """Return all samples for a given case name."""
     pipeline = {"filter_samples_by_case": _filter_samples_by_case}
     query = db.query(SQLSample).join(SQLCase)
@@ -33,7 +33,7 @@ def get_case_samples(db: Session, case_name: str) -> List[Sample]:
     return pipeline["filter_samples_by_case"](query, case_name)
 
 
-def get_sample(db: Session, sample_name: str) -> Sample:
+def get_sample(db: Session, sample_name: str) -> SQLSample:
     """Return a specific sample by name."""
     pipeline = {"filter_samples_by_name": _filter_samples_by_name}
     query = db.query(SQLSample)
@@ -41,7 +41,7 @@ def get_sample(db: Session, sample_name: str) -> Sample:
     return pipeline["filter_samples_by_name"](query, sample_name)
 
 
-def create_sample_in_case(db: Session, sample: SampleCreate) -> Optional[Sample]:
+def create_sample_in_case(db: Session, sample: SampleCreate) -> Optional[SQLSample]:
     """Create a sample"""
     # Check if sample's case exists first
     case_obj = db.query(SQLCase).filter(SQLCase.name == sample.case_name).first()
