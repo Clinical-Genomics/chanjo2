@@ -9,6 +9,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 TEST_DB = "sqlite:///./test.db"
+CASE_NAME = "123"
+CASE_DISPLAY_NAME = "case_123"
+SAMPLE_NAME = "abc"
+SAMPLE_DISPLAY_NAME = "sample_abc"
 
 engine = create_engine(TEST_DB, connect_args=DEMO_CONNECT_ARGS)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -54,13 +58,13 @@ def client_fixture(session) -> TestClient:
 @pytest.fixture(name="raw_case")
 def raw_case() -> Dict[str, str]:
     """Returns a dictionary corresponding to a case record."""
-    return {"name": "123", "display_name": "case_123"}
+    return {"name": CASE_NAME, "display_name": CASE_DISPLAY_NAME}
 
 
 @pytest.fixture(name="raw_sample")
 def raw_sample() -> Dict[str, str]:
     """Returns a dictionary used to create a sample in the database."""
-    return {"name": "abc", "display_name": "sample_abc"}
+    return {"name": SAMPLE_NAME, "display_name": SAMPLE_DISPLAY_NAME}
 
 
 @pytest.fixture(name="db_case")

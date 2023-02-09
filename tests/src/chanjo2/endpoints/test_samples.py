@@ -6,14 +6,14 @@ SAMPLES_ENDPOINT = "/samples/"
 CASES_ENDPOINT = "/cases/"
 
 
-def test_create_sample_for_case_no_coverage_file(client):
+def test_create_sample_for_case_no_coverage_file(client, raw_case, raw_sample):
     """Test the function that creates a new sample for a case when no coverage file is specified."""
     # GIVEN a json-like object containing the new sample data that is missing the coverage_file_path key/Value:
     COVERAGE_FILE_PATH = "FOO"
     sample_data = {
-        "name": "abc",
-        "display_name": "sample_abc",
-        "case_name": "case_123",
+        "name": raw_sample["name"],
+        "display_name": raw_sample["display_name"],
+        "case_name": raw_case["name"],
         "coverage_file_path": COVERAGE_FILE_PATH,
     }
 
@@ -54,7 +54,7 @@ def test_create_sample_for_case_no_case(client, raw_case, raw_sample):
         )
 
 
-def test_create_sample_for_case(raw_case, client):
+def test_create_sample_for_case(client, raw_case, raw_sample):
     """Test the function that creates a new sample for a case when provided sample info is complete."""
 
     # GIVEN a case that exists in the database:
@@ -63,8 +63,8 @@ def test_create_sample_for_case(raw_case, client):
     # GIVEN a json-like object containing the new sample data:
     with tempfile.NamedTemporaryFile(suffix=".d4") as tf:
         sample_data = {
-            "name": "abc",
-            "display_name": "sample_abc",
+            "name": raw_sample["name"],
+            "display_name": raw_sample["display_name"],
             "case_name": raw_case["name"],
             "coverage_file_path": tf.name,
         }
