@@ -51,7 +51,7 @@ def client_fixture(session) -> TestClient:
 
 @pytest.fixture(name="test_case")
 def test_case() -> dict:
-    """Returns a dictionary corresponding to a case record"""
+    """Returns a dictionary corresponding to a case record."""
     return {"name": "123", "display_name": "case_123"}
 
 
