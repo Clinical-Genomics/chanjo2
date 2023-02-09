@@ -29,7 +29,7 @@ def test_create_sample_for_case_no_coverage_file(client):
 
 
 def test_create_sample_for_case_no_case(client, test_case, test_sample):
-    """Test the function that creates a new sample for a case when no case was previously saved in the database"""
+    """Test the function that creates a new sample for a case when no case was previously saved in the database."""
 
     # GIVEN a json-like object containing the new sample data:
     with tempfile.NamedTemporaryFile(suffix=".d4") as tf:
