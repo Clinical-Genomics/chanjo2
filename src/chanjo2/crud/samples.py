@@ -1,5 +1,6 @@
 from typing import List, Optional
 
+from chanjo2.crud.cases import filter_cases_by_name
 from chanjo2.models.pydantic_models import CaseCreate, Sample, SampleCreate
 from chanjo2.models.sql_models import Case as SQLCase
 from chanjo2.models.sql_models import Sample as SQLSample
@@ -43,8 +44,10 @@ def get_sample(db: Session, sample_name: str) -> SQLSample:
 
 def create_sample_in_case(db: Session, sample: SampleCreate) -> Optional[SQLSample]:
     """Create a sample"""
-    # Check if sample's case exists first
-    case_obj = db.query(SQLCase).filter(SQLCase.name == sample.case_name).first()
+    # Check if case exists first
+    pipeline = {"filter_cases_by_name": filter_cases_by_name}
+    query = db.query(SQLCase)
+    case_obj = pipeline["filter_cases_by_name"](query, sample.case_name)
     if not case_obj:
         return
 
