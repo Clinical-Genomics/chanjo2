@@ -21,7 +21,7 @@ def get_sample(db: Session, sample_name: str) -> Sample:
     return db.query(SQLSample).filter(SQLSample.name == sample_name).first()
 
 
-def create_sample_in_case(db: Session, sample: SampleCreate) -> Union[Sample, None]:
+def create_sample_in_case(db: Session, sample: SampleCreate) -> Optional[Sample]:
     """Create a sample"""
     # Check if sample's case exists first
     case_obj = db.query(SQLCase).filter(SQLCase.name == sample.case_name).first()
