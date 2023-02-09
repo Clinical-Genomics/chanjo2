@@ -13,14 +13,14 @@ LOG = logging.getLogger("uvicorn.access")
 def _filter_samples_by_name(
     samples: query.Query, sample_name: str, **kwargs
 ) -> SQLSample:
-    """Filter samples by sample name"""
+    """Filter samples by sample name."""
     return samples.filter(SQLSample.name == sample_name).first()
 
 
 def _filter_samples_by_case(
     samples: query.Query, case_name: str, **kwargs
 ) -> List[SQLSample]:
-    """Filter samples by case name"""
+    """Filter samples by case name."""
     return samples.filter(SQLCase.name == case_name).all()
 
 
@@ -47,7 +47,7 @@ def get_sample(db: Session, sample_name: str) -> SQLSample:
 
 
 def create_sample_in_case(db: Session, sample: SampleCreate) -> Optional[SQLSample]:
-    """Create a sample"""
+    """Create a sample."""
     # Check if case exists first
     pipeline = {"filter_cases_by_name": filter_cases_by_name}
     query = db.query(SQLCase)

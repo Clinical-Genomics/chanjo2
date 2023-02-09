@@ -6,7 +6,6 @@ from chanjo2.dbutil import DEMO_CONNECT_ARGS, get_session
 from chanjo2.main import Base, app, engine
 from chanjo2.models import sql_models
 from fastapi.testclient import TestClient
-from py._path.local import LocalPath
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -27,7 +26,7 @@ TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engin
 class Helpers:
     @staticmethod
     def session_commit_item(session, item):
-        """Creates a database item and refreshes the session"""
+        """Creates a database item and refreshes the session."""
         session.add(item)
         session.commit()
         session.refresh(item)
@@ -40,13 +39,13 @@ def helpers() -> Helpers:
 
 @pytest.fixture(name="test_db")
 def test_db_fixture() -> str:
-    """Returns a string representing the path to the test database file"""
+    """Returns a string representing the path to the test database file."""
     return TEST_DB
 
 
 @pytest.fixture(name="session")
 def session_fixture() -> sessionmaker:
-    """Returns an obect of type sqlalchemy.orm.session.sessionmaker"""
+    """Returns an obect of type sqlalchemy.orm.session.sessionmaker."""
 
     # Create the database
     Base.metadata.drop_all(bind=engine)
@@ -61,19 +60,19 @@ def session_fixture() -> sessionmaker:
 
 @pytest.fixture(name="cases_endpoint")
 def cases_endpoint() -> str:
-    """Returns cases app endpoint"""
+    """Returns cases app endpoint."""
     return CASES_ENDPOINT
 
 
 @pytest.fixture(name="samples_endpoint")
 def samples_endpoint() -> str:
-    """Returns cases app endpoint"""
+    """Returns cases app endpoint."""
     return SAMPLES_ENDPOINT
 
 
 @pytest.fixture(name="client")
 def client_fixture(session) -> TestClient:
-    """Returns a fastapi.testclient.TestClient used to test the app endpoints"""
+    """Returns a fastapi.testclient.TestClient used to test the app endpoints."""
 
     def _override_get_db():
         try:

@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session, query
 
 
 def filter_cases_by_name(cases: query.Query, case_name: str, **kwargs) -> SQLCase:
-    """Filter cases by case name"""
+    """Filter cases by case name."""
     return cases.filter(SQLCase.name == case_name).first()
 
 
