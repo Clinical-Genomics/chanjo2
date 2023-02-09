@@ -37,9 +37,9 @@ def create_sample_for_case(
 
 
 @router.get("/samples/", response_model=List[Sample])
-def read_samples(skip: int = 0, limit: int = 100, db: Session = Depends(get_session)):
+def read_samples(limit: int = 100, db: Session = Depends(get_session)):
     """Return all existing samples from the database."""
-    return get_samples(db, skip=skip, limit=limit)
+    return get_samples(db, limit=limit)
 
 
 @router.get("/{case_name}/samples/", response_model=List[Sample])

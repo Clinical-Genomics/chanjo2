@@ -10,9 +10,9 @@ def filter_cases_by_name(cases: query.Query, case_name: str, **kwargs) -> SQLCas
     return cases.filter(SQLCase.name == case_name).first()
 
 
-def get_cases(db: Session, skip: int = 0, limit: int = 100) -> List[SQLCase]:
+def get_cases(db: Session, limit: int = 100) -> List[SQLCase]:
     """Return all cases."""
-    return db.query(SQLCase).offset(skip).limit(limit).all()
+    return db.query(SQLCase).limit(limit).all()
 
 
 def get_case(db: Session, case_name: str) -> Case:

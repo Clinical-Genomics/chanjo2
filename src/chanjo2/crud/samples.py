@@ -24,9 +24,9 @@ def _filter_samples_by_case(
     return samples.filter(SQLCase.name == case_name).all()
 
 
-def get_samples(db: Session, skip: int = 0, limit: int = 100) -> List[SQLSample]:
+def get_samples(db: Session, limit: int = 100) -> List[SQLSample]:
     """Return all samples."""
-    return db.query(SQLSample).offset(skip).limit(limit).all()
+    return db.query(SQLSample).limit(limit).all()
 
 
 def get_case_samples(db: Session, case_name: str) -> List[SQLSample]:
