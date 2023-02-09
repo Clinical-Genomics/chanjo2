@@ -84,18 +84,14 @@ def test_create_sample_for_case(
         assert saved_sample["case_id"] == saved_case["id"]
 
 
-def test_read_samples(client, session, db_case, db_sample, samples_endpoint):
+def test_read_samples(client, session, db_case, db_sample, samples_endpoint, helpers):
     """Test endpoint that returns all samples present in the database"""
 
     # GIVEN a case object saved in the database
-    session.add(db_case)
-    session.commit()
-    session.refresh(db_case)
+    helpers.session_commit_item(session, db_case)
 
     # Which contains a sample
-    session.add(db_sample)
-    session.commit()
-    session.refresh(db_sample)
+    helpers.session_commit_item(session, db_sample)
 
     # THEN the read_samples endpoint should return the sample:
     response = client.get(samples_endpoint)
@@ -105,18 +101,16 @@ def test_read_samples(client, session, db_case, db_sample, samples_endpoint):
     assert result[0]["name"] == db_sample.name
 
 
-def test_read_samples_for_case(session, client, db_case, db_sample, samples_endpoint):
+def test_read_samples_for_case(
+    session, client, db_case, db_sample, samples_endpoint, helpers
+):
     """Test the endpoint that returns all samples for a given case name"""
 
     # GIVEN a case object saved in the database
-    session.add(db_case)
-    session.commit()
-    session.refresh(db_case)
+    helpers.session_commit_item(session, db_case)
 
     # Which contains a sample
-    session.add(db_sample)
-    session.commit()
-    session.refresh(db_sample)
+    helpers.session_commit_item(session, db_sample)
 
     # THEN the read_samples_for_case endpoint should return the sample
     url = f"/{db_case.name}{samples_endpoint}"
@@ -126,18 +120,14 @@ def test_read_samples_for_case(session, client, db_case, db_sample, samples_endp
     assert result[0]["name"] == db_sample.name
 
 
-def test_read_sample(session, client, db_case, db_sample, samples_endpoint):
+def test_read_sample(session, client, db_case, db_sample, samples_endpoint, helpers):
     """Test the endpoint that returns a single sample when providing its name."""
 
     # GIVEN a case object saved in the database
-    session.add(db_case)
-    session.commit()
-    session.refresh(db_case)
+    helpers.session_commit_item(session, db_case)
 
     # Which contains a sample
-    session.add(db_sample)
-    session.commit()
-    session.refresh(db_sample)
+    helpers.session_commit_item(session, db_sample)
 
     # THEN the read_sample endpoint should return the sample
     url = f"{samples_endpoint}{db_sample.name}"

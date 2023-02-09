@@ -21,6 +21,20 @@ engine = create_engine(TEST_DB, connect_args=DEMO_CONNECT_ARGS)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
+class Helpers:
+    @staticmethod
+    def session_commit_item(session, item):
+        """Creates a database item and refreshes the session"""
+        session.add(item)
+        session.commit()
+        session.refresh(item)
+
+
+@pytest.fixture
+def helpers():
+    return Helpers
+
+
 @pytest.fixture(name="test_db")
 def test_db_fixture() -> str:
     """Returns a string representing the path to the test database file"""

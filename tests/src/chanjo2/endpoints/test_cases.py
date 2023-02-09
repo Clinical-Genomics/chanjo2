@@ -18,13 +18,11 @@ def test_create_case(client, raw_case, cases_endpoint):
         assert saved_case[key] == case_data[key]
 
 
-def test_read_cases(client, session, db_case, cases_endpoint):
+def test_read_cases(client, session, db_case, cases_endpoint, helpers):
     """Test the endpoint returning all cases found in the database."""
 
     # GIVEN a case object saved in the database
-    session.add(db_case)
-    session.commit()
-    session.refresh(db_case)
+    helpers.session_commit_item(session, db_case)
 
     # THEN the read_cases endpoint should return the case
     response = client.get(cases_endpoint)
@@ -34,13 +32,11 @@ def test_read_cases(client, session, db_case, cases_endpoint):
     assert result[0]["name"] == db_case.name
 
 
-def test_read_case(client, session, db_case, cases_endpoint):
+def test_read_case(client, session, db_case, cases_endpoint, helpers):
     """Test the endpoint that returns a specific case."""
 
     # GIVEN a case object saved in the database
-    session.add(db_case)
-    session.commit()
-    session.refresh(db_case)
+    helpers.session_commit_item(session, db_case)
 
     # WHEN sending a GET request to retrieve the specific case using its name
     response = client.get(f"{cases_endpoint}{db_case.name}")
