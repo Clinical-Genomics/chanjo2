@@ -55,7 +55,7 @@ def test_create_sample_for_case_no_case(client, test_case, test_sample):
 
 
 def test_create_sample_for_case(test_case, client):
-    """Test the function that creates a new sample for a case when provided sample info is complete"""
+    """Test the function that creates a new sample for a case when provided sample info is complete."""
 
     # GIVEN a case that exists in the database:
     saved_case = client.post(CASES_ENDPOINT, json=test_case).json()
