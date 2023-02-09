@@ -27,7 +27,7 @@ def test_read_cases(client, session, db_case):
     session.commit()
     session.refresh(db_case)
 
-    # THEN the read_cases endpoint should return it
+    # THEN the read_cases endpoint should return the case
     response = client.get(CASES_ENDPOINT)
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
