@@ -13,6 +13,8 @@ CASE_NAME = "123"
 CASE_DISPLAY_NAME = "case_123"
 SAMPLE_NAME = "abc"
 SAMPLE_DISPLAY_NAME = "sample_abc"
+CASES_ENDPOINT = "/cases/"
+SAMPLES_ENDPOINT = "/samples/"
 
 engine = create_engine(TEST_DB, connect_args=DEMO_CONNECT_ARGS)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -37,6 +39,18 @@ def session_fixture() -> sessionmaker:
         yield db
     finally:
         db.close()
+
+
+@pytest.fixture(name="cases_endpoint")
+def cases_endpoint() -> str:
+    """Returns cases app endpoint"""
+    return CASES_ENDPOINT
+
+
+@pytest.fixture(name="samples_endpoint")
+def samples_endpoint() -> str:
+    """Returns cases app endpoint"""
+    return SAMPLES_ENDPOINT
 
 
 @pytest.fixture(name="client")
