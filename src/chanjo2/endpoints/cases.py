@@ -1,6 +1,6 @@
 from typing import List
 
-from chanjo2.crud.cases import case_create, get_case, get_cases
+from chanjo2.crud.cases import create_db_case, get_case, get_cases
 from chanjo2.dbutil import get_session
 from chanjo2.models.pydantic_models import Case, CaseCreate
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -17,7 +17,7 @@ def create_case(case: CaseCreate, db: Session = Depends(get_session)):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Case already registered"
         )
-    return case_create(db=db, case=case)
+    return create_db_case(db=db, case=case)
 
 
 @router.get("/cases/", response_model=List[Case])
@@ -31,7 +31,5 @@ def read_case(case_name: str, db: Session = Depends(get_session)):
     """Return one case from the database by name."""
     db_case = get_case(db, case_name=case_name)
     if db_case is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Case not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Case not found")
     return db_case

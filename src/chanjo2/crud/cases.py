@@ -15,7 +15,7 @@ def get_case(db: Session, case_name: str) -> Case:
     return db.query(SQLCase).filter(SQLCase.name == case_name).first()
 
 
-def case_create(db: Session, case: CaseCreate) -> Case:
+def create_db_case(db: Session, case: CaseCreate) -> Case:
     """Create a case."""
     db_case = SQLCase(name=case.name, display_name=case.display_name)
     db.add(db_case)
