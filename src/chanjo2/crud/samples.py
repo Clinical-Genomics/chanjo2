@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 
 def get_samples(db: Session, skip: int = 0, limit: int = 100) -> List[Sample]:
-    """Return all samples"""
+    """Return all samples."""
     return db.query(SQLSample).offset(skip).limit(limit).all()
 
 
