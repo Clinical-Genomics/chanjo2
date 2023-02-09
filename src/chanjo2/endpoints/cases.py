@@ -28,7 +28,7 @@ def read_cases(skip: int = 0, limit: int = 100, db: Session = Depends(get_sessio
 
 @router.get("/cases/{case_name}", response_model=Case)
 def read_case(case_name: str, db: Session = Depends(get_session)):
-    """Return one case from the database by providing its name"""
+    """Return one case from the database by name."""
     db_case = get_case(db, case_name=case_name)
     if db_case is None:
         raise HTTPException(
