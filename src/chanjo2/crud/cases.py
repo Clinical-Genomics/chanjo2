@@ -16,7 +16,7 @@ def get_case(db: Session, case_name: str) -> Case:
 
 
 def case_create(db: Session, case: CaseCreate) -> Case:
-    """Create a case"""
+    """Create a case."""
     db_case = SQLCase(name=case.name, display_name=case.display_name)
     db.add(db_case)
     db.commit()
