@@ -20,7 +20,7 @@ def test_create_case(client, test_case):
 
 
 def test_read_cases(client, session, db_case):
-    """Test the endpoint returning all cases found in the database"""
+    """Test the endpoint returning all cases found in the database."""
 
     # GIVEN a case object saved in the database
     session.add(db_case)
