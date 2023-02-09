@@ -3,7 +3,7 @@ from fastapi import status
 
 
 def test_create_case(client, test_case):
-    """Test the endpoint used to create a new case"""
+    """Test the endpoint used to create a new case."""
     # GIVEN a json-like object containing the new case data:
     case_data = test_case
 
