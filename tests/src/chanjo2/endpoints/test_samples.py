@@ -28,15 +28,15 @@ def test_create_sample_for_case_no_coverage_file(client):
     assert response.json()["detail"] == f"Could not find file: {COVERAGE_FILE_PATH}"
 
 
-def test_create_sample_for_case_no_case(client, test_case, test_sample):
+def test_create_sample_for_case_no_case(client, raw_case, raw_sample):
     """Test the function that creates a new sample for a case when no case was previously saved in the database."""
 
     # GIVEN a json-like object containing the new sample data:
     with tempfile.NamedTemporaryFile(suffix=".d4") as tf:
         sample_data = {
-            "name": test_sample["name"],
-            "display_name": test_sample["display_name"],
-            "case_name": test_case["name"],
+            "name": raw_sample["name"],
+            "display_name": raw_sample["display_name"],
+            "case_name": raw_case["name"],
             "coverage_file_path": tf.name,
         }
 
@@ -50,22 +50,22 @@ def test_create_sample_for_case_no_case(client, test_case, test_sample):
         # WITH a meaningful message
         assert (
             response.json()["detail"]
-            == f"Could not find a case with name: {test_case['name']}"
+            == f"Could not find a case with name: {raw_case['name']}"
         )
 
 
-def test_create_sample_for_case(test_case, client):
+def test_create_sample_for_case(raw_case, client):
     """Test the function that creates a new sample for a case when provided sample info is complete."""
 
     # GIVEN a case that exists in the database:
-    saved_case = client.post(CASES_ENDPOINT, json=test_case).json()
+    saved_case = client.post(CASES_ENDPOINT, json=raw_case).json()
 
     # GIVEN a json-like object containing the new sample data:
     with tempfile.NamedTemporaryFile(suffix=".d4") as tf:
         sample_data = {
             "name": "abc",
             "display_name": "sample_abc",
-            "case_name": test_case["name"],
+            "case_name": raw_case["name"],
             "coverage_file_path": tf.name,
         }
 

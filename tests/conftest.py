@@ -1,3 +1,5 @@
+from typing import Dict
+
 import pytest
 from chanjo2.dbutil import DEMO_CONNECT_ARGS, get_session
 from chanjo2.main import Base, app, engine
@@ -49,32 +51,30 @@ def client_fixture(session) -> TestClient:
     return TestClient(app)
 
 
-@pytest.fixture(name="test_case")
+@pytest.fixture(name="raw_case")
 def raw_case() -> Dict[str, str]:
     """Returns a dictionary corresponding to a case record."""
     return {"name": "123", "display_name": "case_123"}
 
 
-@pytest.fixture(name="test_sample")
+@pytest.fixture(name="raw_sample")
 def raw_sample() -> Dict[str, str]:
     """Returns a dictionary used to create a sample in the database."""
     return {"name": "abc", "display_name": "sample_abc"}
 
 
 @pytest.fixture(name="db_case")
-def db_case(test_case) -> sql_models.Case:
+def db_case(raw_case) -> sql_models.Case:
     """Returns an object corresponding to a sql_models.Case."""
-    return sql_models.Case(
-        name=test_case["name"], display_name=test_case["display_name"]
-    )
+    return sql_models.Case(name=raw_case["name"], display_name=raw_case["display_name"])
 
 
 @pytest.fixture(name="db_sample")
-def db_sample(test_case, test_sample) -> sql_models.Sample:
+def db_sample(raw_case, raw_sample) -> sql_models.Sample:
     """Returns an object corresponding to a sql_models.Sample."""
     return sql_models.Sample(
-        name=test_sample["name"],
-        display_name=test_sample["display_name"],
+        name=raw_sample["name"],
+        display_name=raw_sample["display_name"],
         case_id=1,
         coverage_file_path="a_file.d4",
     )

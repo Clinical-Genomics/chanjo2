@@ -2,10 +2,10 @@ CASES_ENDPOINT = "/cases/"
 from fastapi import status
 
 
-def test_create_case(client, test_case):
+def test_create_case(client, raw_case):
     """Test the endpoint used to create a new case."""
     # GIVEN a json-like object containing the new case data:
-    case_data = test_case
+    case_data = raw_case
 
     # WHEN the create_case endpoint is used to create the case
     response = client.post(CASES_ENDPOINT, json=case_data)
