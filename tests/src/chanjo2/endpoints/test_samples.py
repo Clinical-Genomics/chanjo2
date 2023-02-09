@@ -7,7 +7,7 @@ CASES_ENDPOINT = "/cases/"
 
 
 def test_create_sample_for_case_no_coverage_file(client):
-    """Test the function that creates a new sample for a case when no coverage file is specified"""
+    """Test the function that creates a new sample for a case when no coverage file is specified."""
     # GIVEN a json-like object containing the new sample data that is missing the coverage_file_path key/Value:
     COVERAGE_FILE_PATH = "FOO"
     sample_data = {
