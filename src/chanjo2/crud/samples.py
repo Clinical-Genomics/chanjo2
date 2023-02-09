@@ -12,12 +12,12 @@ def get_samples(db: Session, skip: int = 0, limit: int = 100) -> List[Sample]:
 
 
 def get_case_samples(db: Session, case_name: str) -> List[Sample]:
-    """Return all samples for a given case name"""
+    """Return all samples for a given case name."""
     return db.query(SQLSample).join(SQLCase).filter(SQLCase.name == case_name).all()
 
 
 def get_sample(db: Session, sample_name: str) -> Sample:
-    """Return a specific sample by its name"""
+    """Return a specific sample by name."""
     return db.query(SQLSample).filter(SQLSample.name == sample_name).first()
 
 

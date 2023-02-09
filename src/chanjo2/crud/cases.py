@@ -11,7 +11,7 @@ def get_cases(db: Session, skip: int = 0, limit: int = 100) -> List[Case]:
 
 
 def get_case(db: Session, case_name: str) -> Case:
-    """Return a specific case by providing its name"""
+    """Return a specific case by providing its name."""
     return db.query(SQLCase).filter(SQLCase.name == case_name).first()
 
 
