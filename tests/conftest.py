@@ -71,7 +71,7 @@ def db_case(test_case) -> sql_models.Case:
 
 @pytest.fixture(name="db_sample")
 def db_sample(test_case, test_sample) -> sql_models.Sample:
-    """Returns an object corresponding to a sql_models.Sample"""
+    """Returns an object corresponding to a sql_models.Sample."""
     return sql_models.Sample(
         name=test_sample["name"],
         display_name=test_sample["display_name"],
