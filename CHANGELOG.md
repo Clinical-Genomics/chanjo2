@@ -25,3 +25,6 @@
 - Renamed table `Regions` table to `Intervals`
 - Use uvicorn logging and avoid printing logs twice
 - Modified samples and cases endpoints to interact with database via CRUD utils
+- Use SQLAlchemy 1.4 Declarative which is now integrated into the ORM to avoid deprecation warning
+- Start SQL engine and sessions using the future tag to prepare migration to SQLAlchemy 2.0
+- Updated a few python dependencies
