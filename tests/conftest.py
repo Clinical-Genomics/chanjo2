@@ -51,7 +51,7 @@ def session_fixture() -> sessionmaker:
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
 
-    db = TestingSessionLocal()
+    db = TestingSessionLocal(future=True)
     try:
         yield db
     finally:
