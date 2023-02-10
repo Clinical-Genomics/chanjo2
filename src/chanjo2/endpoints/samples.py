@@ -1,45 +1,59 @@
 from pathlib import Path
 from typing import List
 
+from chanjo2.crud.samples import (
+    create_sample_in_case,
+    get_case_samples,
+    get_sample,
+    get_samples,
+)
 from chanjo2.dbutil import get_session
-from chanjo2.meta.handle_bed import parse_bed
-from chanjo2.models.pydantic_models import CoverageInterval, SampleCreate, SampleRead
-from fastapi import APIRouter, Depends, File, HTTPException, Query, status
-from sqlmodel import Session, select
+from chanjo2.models.pydantic_models import Sample, SampleCreate
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlmodel import Session
 
 router = APIRouter()
 
 
-@router.post("/sample_create/", response_model=SampleRead)
-def create_sample(*, session: Session = Depends(get_session), sample: SampleCreate):
+@router.post("/samples/", response_model=Sample)
+def create_sample_for_case(
+    sample: SampleCreate,
+    db: Session = Depends(get_session),
+):
+    """Add a sample to a case in the database."""
     d4_file_path: Path = Path(sample.coverage_file_path)
     if not d4_file_path.is_file():
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=f"Could not find file: {file}",
+            detail=f"Could not find file: { d4_file_path}",
         )
-    db_individual = Sample.from_orm(sample)
-    session.add(db_individual)
-    session.commit()
-    session.refresh(db_individual)
-    return db_individual
+    db_sample = create_sample_in_case(db=db, sample=sample)
+    if db_sample is None:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"Could not find a case with name: {sample.case_name}",
+        )
+    return db_sample
 
 
-@router.get("/samples/", response_model=List[SampleRead])
-def read_samples(
-    *,
-    session: Session = Depends(get_session),
-    offset: int = 0,
-    limit=Query(default=100, lte=100),
-):
-    return session.exec(select(Sample).offset(offset).limit(limit)).all()
+@router.get("/samples/", response_model=List[Sample])
+def read_samples(limit: int = 100, db: Session = Depends(get_session)):
+    """Return all existing samples from the database."""
+    return get_samples(db, limit=limit)
 
 
-@router.get("/sample/{sample_id}", response_model=SampleRead)
-def read_individual(*, session: Session = Depends(get_session), sample_id: str):
-    sample = session.exec(select(Sampke).filter(sample_id == sample_id)).first()
-    if not sample:
+@router.get("/{case_name}/samples/", response_model=List[Sample])
+def read_samples_for_case(case_name: str, db: Session = Depends(get_session)):
+    """Return all samples for a given case from the database."""
+    return get_case_samples(db, case_name=case_name)
+
+
+@router.get("/samples/{sample_name}", response_model=Sample)
+def read_sample(sample_name: str, db: Session = Depends(get_session)):
+    """Return a sample by providing its name"""
+    db_sample = get_sample(db, sample_name=sample_name)
+    if db_sample is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Sample not found"
         )
-    return sample
+    return db_sample

@@ -11,7 +11,7 @@ class Case(Base):
     __tablename__ = "cases"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(64), nullable=False, unique=True)
+    name = Column(String(64), nullable=False, unique=True, index=True)
     display_name = Column(String(64), nullable=True, unique=False)
 
     samples = relationship("Sample", back_populates="case")
@@ -23,7 +23,7 @@ class Sample(Base):
     __tablename__ = "samples"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(64), nullable=False, unique=True)
+    name = Column(String(64), nullable=False, unique=True, index=True)
     display_name = Column(String(64), nullable=True, unique=False)
     case_id = Column(Integer, ForeignKey("cases.id"), nullable=False)
     coverage_file_path = Column(String, nullable=False)

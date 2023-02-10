@@ -4,7 +4,7 @@ import os
 import uvicorn
 from chanjo2 import __version__
 from chanjo2.dbutil import engine
-from chanjo2.endpoints import intervals, samples
+from chanjo2.endpoints import cases, intervals, samples
 from chanjo2.models.sql_models import Base
 from fastapi import FastAPI, status
 
@@ -25,8 +25,13 @@ app.include_router(
 )
 
 app.include_router(
+    cases.router,
+    tags=["cases"],
+    responses={status.HTTP_404_NOT_FOUND: {"description": "Not found"}},
+)
+
+app.include_router(
     samples.router,
-    prefix="/samples",
     tags=["samples"],
     responses={status.HTTP_404_NOT_FOUND: {"description": "Not found"}},
 )

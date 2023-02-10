@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from typing import List, Union
+from typing import List, Optional
 
 from pydantic import BaseModel
 
@@ -12,18 +12,11 @@ class Builds(str, Enum):
 
 class CaseBase(BaseModel):
     name: str
-    display_name: Union[str, None] = None
+    display_name: Optional[str] = None
 
 
 class CaseCreate(CaseBase):
     pass
-
-
-class CaseRead(CaseBase):
-    id: int
-
-    class Config:
-        orm_mode = True
 
 
 class SampleBase(BaseModel):
@@ -33,15 +26,21 @@ class SampleBase(BaseModel):
 
 
 class SampleCreate(SampleBase):
-    created_at: datetime
+    case_name: str
 
 
-class SampleRead(SampleBase):
+class Sample(SampleBase):
     id: int
-    case_id: int
     created_at: datetime
     case_id: int
-    case: CaseRead
+
+    class Config:
+        orm_mode = True
+
+
+class Case(CaseBase):
+    id: int
+    samples: List[Sample] = []
 
     class Config:
         orm_mode = True
