@@ -1,12 +1,13 @@
 from pathlib import PosixPath
 from typing import Dict, Type
 
-import responses
+from chanjo2.endpoints.samples import validators
 from chanjo2.models.pydantic_models import Sample
 from chanjo2.models.sql_models import Case as SQLCase
 from chanjo2.models.sql_models import Sample as SQLSample
 from fastapi import status
 from fastapi.testclient import TestClient
+from pytest_mock.plugin import MockerFixture
 from sqlalchemy.orm import sessionmaker
 
 
@@ -34,7 +35,7 @@ def test_create_sample_for_case_no_local_coverage_file(
     result = response.json()
 
     # WITH a meaningful message
-    assert result["detail"] == f"Could not find local resource: {coverage_file}"
+    assert result["detail"] == f"Could not find resource: {coverage_file}"
 
 
 def test_create_sample_for_case_no_remote_coverage_file(
@@ -61,7 +62,7 @@ def test_create_sample_for_case_no_remote_coverage_file(
 
     # WITH a meaningful message
     result = response.json()
-    assert result["detail"] == f"Could not find remote resource: {remote_coverage_file}"
+    assert result["detail"] == f"Could not find resource: {remote_coverage_file}"
 
 
 def test_create_sample_for_case_no_case(
@@ -124,7 +125,6 @@ def test_create_sample_for_case_local_coverage_file(
     assert Sample(**result)
 
 
-@responses.activate
 def test_create_sample_for_case_remote_coverage_file(
     client: TestClient,
     remote_coverage_file: str,
@@ -133,19 +133,12 @@ def test_create_sample_for_case_remote_coverage_file(
     raw_sample: Dict[str, str],
     cases_endpoint: str,
     samples_endpoint: str,
+    mocker: MockerFixture,
 ):
     """Test the function that creates a new sample for a case with a remote coverage file."""
 
-    assert coverage_path.read_text() == "content"
-
     # GIVEN a mocked d4 file hosted on the internet
-    responses.add(
-        responses.HEAD,
-        remote_coverage_file,
-        body=coverage_path.read_text(),
-        status=200,
-        content_type="application/octet-stream",
-    )
+    mocker.patch("validators.url", return_value=True)
 
     # GIVEN a case that exists in the database:
     saved_case = client.post(cases_endpoint, json=raw_case).json()
