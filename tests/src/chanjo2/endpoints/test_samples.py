@@ -1,6 +1,7 @@
 from pathlib import PosixPath
 from typing import Dict, Type
 
+import responses
 from chanjo2.models.pydantic_models import Sample
 from chanjo2.models.sql_models import Case as SQLCase
 from chanjo2.models.sql_models import Sample as SQLSample
@@ -91,6 +92,7 @@ def test_create_sample_for_case_no_case(
     assert result["detail"] == f"Could not find a case with name: {raw_case['name']}"
 
 
+@responses.activate
 def test_create_sample_for_case_local_coverage_file(
     client: TestClient,
     coverage_path: PosixPath,
@@ -110,6 +112,51 @@ def test_create_sample_for_case_local_coverage_file(
         "display_name": raw_sample["display_name"],
         "case_name": raw_case["name"],
         "coverage_file_path": str(coverage_path),
+    }
+
+    # WHEN the create_sample_for_case endpoint is used to create the case
+    response = client.post(samples_endpoint, json=sample_data)
+
+    # THEN the response shour return success
+    assert response.status_code == status.HTTP_200_OK
+
+    # AND the saved data should be a Sample object
+    result = response.json()
+    assert Sample(**result)
+
+
+@responses.activate
+def test_create_sample_for_case_remote_coverage_file(
+    client: TestClient,
+    remote_coverage_file: str,
+    coverage_path: PosixPath,
+    raw_case: Dict[str, str],
+    raw_sample: Dict[str, str],
+    cases_endpoint: str,
+    samples_endpoint: str,
+):
+    """Test the function that creates a new sample for a case with a remote coverage file."""
+
+    assert coverage_path.read_text() == "content"
+
+    # GIVEN a mocked d4 file hosted on the internet
+    responses.add(
+        responses.HEAD,
+        remote_coverage_file,
+        body=coverage_path.read_text(),
+        status=200,
+        content_type="application/octet-stream",
+    )
+
+    # GIVEN a case that exists in the database:
+    saved_case = client.post(cases_endpoint, json=raw_case).json()
+
+    # GIVEN a json-like object containing the new sample data:
+    sample_data = {
+        "name": raw_sample["name"],
+        "display_name": raw_sample["display_name"],
+        "case_name": raw_case["name"],
+        "coverage_file_path": remote_coverage_file,
     }
 
     # WHEN the create_sample_for_case endpoint is used to create the case
