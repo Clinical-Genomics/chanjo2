@@ -31,7 +31,7 @@ class SampleBase(BaseModel):
     coverage_file_path: str
 
     @validator("coverage_file_path", pre=True)
-    def validate_src(cls, value: Any) -> Any:
+    def validate_src(cls, value: str) -> Any:
         if not Path(value).is_file() and not validators.url(value):
             raise ValueError(WRONG_COVERAGE_FILE_MSG)
 
