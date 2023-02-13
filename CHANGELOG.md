@@ -10,6 +10,7 @@
 - Common test fixtures
 - Some badges on README page
 - Tests for cases and samples endpoints
+- Save samples with coverage files stored on a remote HTTP(s) server
 ### Fixed
 - Bugs preventing the gunicorn app to launch
 - Code to compose DB url to work when app is invoked from docker-compose

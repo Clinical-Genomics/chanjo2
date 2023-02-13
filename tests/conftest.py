@@ -17,6 +17,7 @@ SAMPLE_DISPLAY_NAME = "sample_abc"
 CASES_ENDPOINT = "/cases/"
 SAMPLES_ENDPOINT = "/samples/"
 COVERAGE_FILE = "a_file.d4"
+REMOTE_COVERAGE_FILE = "https://a_remote_host/a_file.d4"
 COVERAGE_CONTENT = "content"
 
 engine = create_engine(TEST_DB, connect_args=DEMO_CONNECT_ARGS)
@@ -119,6 +120,12 @@ def db_sample(raw_case, raw_sample) -> sql_models.Sample:
 def coverage_file() -> str:
     """Returns the name of a mock coverage file."""
     return COVERAGE_FILE
+
+
+@pytest.fixture(name="remote_coverage_file")
+def remote_coverage_file() -> str:
+    """Returns the name of a mock coverage file."""
+    return REMOTE_COVERAGE_FILE
 
 
 @pytest.fixture(name="coverage_path")

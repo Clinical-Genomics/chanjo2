@@ -9,7 +9,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import sessionmaker
 
 
-def test_create_sample_for_case_no_coverage_file(
+def test_create_sample_for_case_no_local_coverage_file(
     client: TestClient,
     raw_case: Dict[str, str],
     raw_sample: Dict[str, str],
@@ -33,7 +33,34 @@ def test_create_sample_for_case_no_coverage_file(
     result = response.json()
 
     # WITH a meaningful message
-    assert result["detail"] == f"Could not find file: {coverage_file}"
+    assert result["detail"] == f"Could not find local resource: {coverage_file}"
+
+
+def test_create_sample_for_case_no_remote_coverage_file(
+    client: TestClient,
+    raw_case: Dict[str, str],
+    raw_sample: Dict[str, str],
+    samples_endpoint: str,
+    remote_coverage_file: str,
+):
+    """Test the function that creates a new sample for a case when no coverage file is specified."""
+    # GIVEN a json-like object containing the new sample data that is missing the coverage_file_path key/Value:
+    sample_data = {
+        "name": raw_sample["name"],
+        "display_name": raw_sample["display_name"],
+        "case_name": raw_case["name"],
+        "coverage_file_path": remote_coverage_file,
+    }
+
+    # WHEN the create_sample_for_case endpoint is used to create the case
+    response = client.post(samples_endpoint, json=sample_data)
+
+    # THEN the response should return error
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    result = response.json()
+
+    # WITH a meaningful message
+    assert result["detail"] == f"Could not find remote resource: {remote_coverage_file}"
 
 
 def test_create_sample_for_case_no_case(

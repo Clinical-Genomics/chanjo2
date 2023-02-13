@@ -1,13 +1,8 @@
-from pathlib import Path
 from typing import List
 
-from chanjo2.crud.samples import (
-    create_sample_in_case,
-    get_case_samples,
-    get_sample,
-    get_samples,
-)
+from chanjo2.crud.samples import create_sample_in_case, get_case_samples, get_sample, get_samples
 from chanjo2.dbutil import get_session
+from chanjo2.meta.handle_d4 import local_resource_exists, remote_resource_exists
 from chanjo2.models.pydantic_models import Sample, SampleCreate
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session
@@ -21,12 +16,18 @@ def create_sample_for_case(
     db: Session = Depends(get_session),
 ):
     """Add a sample to a case in the database."""
-    d4_file_path: Path = Path(sample.coverage_file_path)
-    if not d4_file_path.is_file():
+    d4_file_path = sample.coverage_file_path
+    if d4_file_path.startswith("http") and not remote_resource_exists(d4_file_path):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=f"Could not find file: { d4_file_path}",
+            detail=f"Could not find remote resource: {d4_file_path}",
         )
+    elif not local_resource_exists(d4_file_path):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"Could not find local resource: {d4_file_path}",
+        )
+
     db_sample = create_sample_in_case(db=db, sample=sample)
     if db_sample is None:
         raise HTTPException(
@@ -53,7 +54,5 @@ def read_sample(sample_name: str, db: Session = Depends(get_session)):
     """Return a sample by providing its name"""
     db_sample = get_sample(db, sample_name=sample_name)
     if db_sample is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Sample not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sample not found")
     return db_sample
