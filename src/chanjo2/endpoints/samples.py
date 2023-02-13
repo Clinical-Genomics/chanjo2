@@ -1,6 +1,11 @@
 from typing import List
 
-from chanjo2.crud.samples import create_sample_in_case, get_case_samples, get_sample, get_samples
+from chanjo2.crud.samples import (
+    create_sample_in_case,
+    get_case_samples,
+    get_sample,
+    get_samples,
+)
 from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_d4 import local_resource_exists, remote_resource_exists
 from chanjo2.models.pydantic_models import Sample, SampleCreate
@@ -54,5 +59,7 @@ def read_sample(sample_name: str, db: Session = Depends(get_session)):
     """Return a sample by providing its name"""
     db_sample = get_sample(db, sample_name=sample_name)
     if db_sample is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sample not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Sample not found"
+        )
     return db_sample
