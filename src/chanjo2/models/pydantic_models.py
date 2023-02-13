@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any, List, Optional
 
 import validators
-from pydantic import AnyUrl, BaseModel, validator
+from pydantic import BaseModel, validator
 
 WRONG_COVERAGE_FILE_MSG = (
     "coverage_file_path must be either an existing local file path or a URL"
