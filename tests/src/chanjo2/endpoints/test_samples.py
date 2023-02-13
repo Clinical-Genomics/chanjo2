@@ -58,9 +58,9 @@ def test_create_sample_for_case_no_remote_coverage_file(
 
     # THEN the response should return error
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-    result = response.json()
 
     # WITH a meaningful message
+    result = response.json()
     assert result["detail"] == f"Could not find remote resource: {remote_coverage_file}"
 
 
