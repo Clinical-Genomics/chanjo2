@@ -19,7 +19,6 @@ app = FastAPI()
 
 app.include_router(
     intervals.router,
-    prefix="/intervals",
     tags=["intervals"],
     responses={status.HTTP_404_NOT_FOUND: {"description": "Not found"}},
 )
