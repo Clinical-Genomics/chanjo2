@@ -1,8 +1,7 @@
 from pathlib import PosixPath
 from typing import Dict, Type
 
-from chanjo2.endpoints.samples import validators
-from chanjo2.models.pydantic_models import Sample
+from chanjo2.models.pydantic_models import WRONG_COVERAGE_FILE_MSG, Sample, validators
 from chanjo2.models.sql_models import Case as SQLCase
 from chanjo2.models.sql_models import Sample as SQLSample
 from fastapi import status
@@ -35,7 +34,7 @@ def test_create_sample_for_case_no_local_coverage_file(
     result = response.json()
 
     # WITH a meaningful message
-    assert result["detail"] == f"Could not find resource: {coverage_file}"
+    assert result["detail"][0]["msg"] == WRONG_COVERAGE_FILE_MSG
 
 
 def test_create_sample_for_case_no_remote_coverage_file(
@@ -62,7 +61,7 @@ def test_create_sample_for_case_no_remote_coverage_file(
 
     # WITH a meaningful message
     result = response.json()
-    assert result["detail"] == f"Could not find resource: {remote_coverage_file}"
+    assert result["detail"][0]["msg"] == WRONG_COVERAGE_FILE_MSG
 
 
 def test_create_sample_for_case_no_case(
