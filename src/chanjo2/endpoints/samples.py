@@ -22,12 +22,13 @@ def create_sample_for_case(
 ):
     """Add a sample to a case in the database."""
     d4_file_path = sample.coverage_file_path
-    if d4_file_path.startswith("http") and not remote_resource_exists(d4_file_path):
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=f"Could not find remote resource: {d4_file_path}",
-        )
-    elif not local_resource_exists(d4_file_path):
+    if d4_file_path.startswith("http"):  # remote resource
+        if not remote_resource_exists(d4_file_path):
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=f"Could not find remote resource: {d4_file_path}",
+            )
+    elif not local_resource_exists(d4_file_path):  # local resource
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=f"Could not find local resource: {d4_file_path}",

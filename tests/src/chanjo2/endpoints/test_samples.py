@@ -91,7 +91,7 @@ def test_create_sample_for_case_no_case(
     assert result["detail"] == f"Could not find a case with name: {raw_case['name']}"
 
 
-def test_create_sample_for_case(
+def test_create_sample_for_case_local_coverage_file(
     client: TestClient,
     coverage_path: PosixPath,
     raw_case: Dict[str, str],
@@ -99,7 +99,7 @@ def test_create_sample_for_case(
     cases_endpoint: str,
     samples_endpoint: str,
 ):
-    """Test the function that creates a new sample for a case when provided sample info is complete."""
+    """Test the function that creates a new sample for a case with a local coverage file."""
 
     # GIVEN a case that exists in the database:
     saved_case = client.post(cases_endpoint, json=raw_case).json()
