@@ -22,7 +22,7 @@ def create_sample_for_case(
     db: Session = Depends(get_session),
 ):
     """Add a sample to a case in the database."""
-    d4_file_path = sample.coverage_file_path
+    d4_file_path: str = sample.coverage_file_path
     if not validators.url(d4_file_path) and not local_resource_exists(d4_file_path):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
