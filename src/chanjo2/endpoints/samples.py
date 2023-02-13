@@ -8,7 +8,7 @@ from chanjo2.crud.samples import (
     get_samples,
 )
 from chanjo2.dbutil import get_session
-from chanjo2.meta.handle_d4 import local_resource_exists, remote_resource_exists
+from chanjo2.meta.handle_d4 import local_resource_exists
 from chanjo2.models.pydantic_models import Sample, SampleCreate
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session
