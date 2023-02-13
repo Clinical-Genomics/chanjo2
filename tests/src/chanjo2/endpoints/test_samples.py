@@ -44,7 +44,7 @@ def test_create_sample_for_case_no_remote_coverage_file(
     samples_endpoint: str,
     remote_coverage_file: str,
 ):
-    """Test the function that creates a new sample for a case when no coverage file is specified."""
+    """Test the function that creates a new sample for a case with remote coverage file not existing."""
     # GIVEN a json-like object containing the new sample data that is missing the coverage_file_path key/Value:
     sample_data = {
         "name": raw_sample["name"],
