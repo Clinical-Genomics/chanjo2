@@ -92,7 +92,6 @@ def test_create_sample_for_case_no_case(
     assert result["detail"] == f"Could not find a case with name: {raw_case['name']}"
 
 
-@responses.activate
 def test_create_sample_for_case_local_coverage_file(
     client: TestClient,
     coverage_path: PosixPath,
