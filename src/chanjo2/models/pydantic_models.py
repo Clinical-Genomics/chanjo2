@@ -92,7 +92,7 @@ class CoverageInterval(BaseModel):
     chromosome: str
     start: int
     end: int
-    individual_id: int
-    interval_id: int
-    case_id: int
-    mean_coverage: float
+    individual_id: Optional[int]
+    interval_id: Optional[int]
+    case_id: Optional[int]
+    mean_coverage: int
