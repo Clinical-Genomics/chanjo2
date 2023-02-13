@@ -124,7 +124,7 @@ def coverage_file() -> str:
 
 @pytest.fixture(name="remote_coverage_file")
 def remote_coverage_file() -> str:
-    """Returns the name of a mock coverage file."""
+    """Returns the URL of a mock coverage file."""
     return REMOTE_COVERAGE_FILE
 
 
