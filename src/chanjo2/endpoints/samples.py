@@ -1,4 +1,3 @@
-from pathlib import Path
 from typing import List
 
 from chanjo2.crud.samples import (
@@ -21,12 +20,6 @@ def create_sample_for_case(
     db: Session = Depends(get_session),
 ):
     """Add a sample to a case in the database."""
-    d4_file_path: Path = Path(sample.coverage_file_path)
-    if not d4_file_path.is_file():
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=f"Could not find file: { d4_file_path}",
-        )
     db_sample = create_sample_in_case(db=db, sample=sample)
     if db_sample is None:
         raise HTTPException(

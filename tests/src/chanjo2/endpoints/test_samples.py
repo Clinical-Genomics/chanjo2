@@ -1,15 +1,16 @@
 from pathlib import PosixPath
 from typing import Dict, Type
 
-from chanjo2.models.pydantic_models import Sample
+from chanjo2.models.pydantic_models import WRONG_COVERAGE_FILE_MSG, Sample, validators
 from chanjo2.models.sql_models import Case as SQLCase
 from chanjo2.models.sql_models import Sample as SQLSample
 from fastapi import status
 from fastapi.testclient import TestClient
+from pytest_mock.plugin import MockerFixture
 from sqlalchemy.orm import sessionmaker
 
 
-def test_create_sample_for_case_no_coverage_file(
+def test_create_sample_for_case_no_local_coverage_file(
     client: TestClient,
     raw_case: Dict[str, str],
     raw_sample: Dict[str, str],
@@ -18,22 +19,39 @@ def test_create_sample_for_case_no_coverage_file(
 ):
     """Test the function that creates a new sample for a case when no coverage file is specified."""
     # GIVEN a json-like object containing the new sample data that is missing the coverage_file_path key/Value:
-    sample_data = {
-        "name": raw_sample["name"],
-        "display_name": raw_sample["display_name"],
-        "case_name": raw_case["name"],
-        "coverage_file_path": coverage_file,
-    }
+    raw_sample["coverage_file_path"] = coverage_file
 
     # WHEN the create_sample_for_case endpoint is used to create the case
-    response = client.post(samples_endpoint, json=sample_data)
+    response = client.post(samples_endpoint, json=raw_sample)
 
     # THEN the response should return error
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     result = response.json()
 
     # WITH a meaningful message
-    assert result["detail"] == f"Could not find file: {coverage_file}"
+    assert result["detail"][0]["msg"] == WRONG_COVERAGE_FILE_MSG
+
+
+def test_create_sample_for_case_no_remote_coverage_file(
+    client: TestClient,
+    raw_case: Dict[str, str],
+    raw_sample: Dict[str, str],
+    samples_endpoint: str,
+    remote_coverage_file: str,
+):
+    """Test the function that creates a new sample for a case with remote coverage file not existing."""
+    # GIVEN a json-like object containing the new sample data that is missing the coverage_file_path key/Value:
+    raw_sample["coverage_file_path"] = remote_coverage_file
+
+    # WHEN the create_sample_for_case endpoint is used to create the case
+    response = client.post(samples_endpoint, json=raw_sample)
+
+    # THEN the response should return error
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    # WITH a meaningful message
+    result = response.json()
+    assert result["detail"][0]["msg"] == WRONG_COVERAGE_FILE_MSG
 
 
 def test_create_sample_for_case_no_case(
@@ -46,15 +64,10 @@ def test_create_sample_for_case_no_case(
     """Test the function that creates a new sample for a case when no case was previously saved in the database."""
 
     # GIVEN a json-like object containing the new sample data:
-    sample_data = {
-        "name": raw_sample["name"],
-        "display_name": raw_sample["display_name"],
-        "case_name": raw_case["name"],
-        "coverage_file_path": str(coverage_path),
-    }
+    raw_sample["coverage_file_path"] = str(coverage_path)
 
     # WHEN the create_sample_for_case endpoint is used to create the case
-    response = client.post(samples_endpoint, json=sample_data)
+    response = client.post(samples_endpoint, json=raw_sample)
 
     # THEN the response should return error
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
@@ -64,7 +77,7 @@ def test_create_sample_for_case_no_case(
     assert result["detail"] == f"Could not find a case with name: {raw_case['name']}"
 
 
-def test_create_sample_for_case(
+def test_create_sample_for_case_local_coverage_file(
     client: TestClient,
     coverage_path: PosixPath,
     raw_case: Dict[str, str],
@@ -72,21 +85,48 @@ def test_create_sample_for_case(
     cases_endpoint: str,
     samples_endpoint: str,
 ):
-    """Test the function that creates a new sample for a case when provided sample info is complete."""
+    """Test the function that creates a new sample for a case with a local coverage file."""
 
     # GIVEN a case that exists in the database:
     saved_case = client.post(cases_endpoint, json=raw_case).json()
 
     # GIVEN a json-like object containing the new sample data:
-    sample_data = {
-        "name": raw_sample["name"],
-        "display_name": raw_sample["display_name"],
-        "case_name": raw_case["name"],
-        "coverage_file_path": str(coverage_path),
-    }
+    raw_sample["coverage_file_path"] = str(coverage_path)
 
     # WHEN the create_sample_for_case endpoint is used to create the case
-    response = client.post(samples_endpoint, json=sample_data)
+    response = client.post(samples_endpoint, json=raw_sample)
+
+    # THEN the response shour return success
+    assert response.status_code == status.HTTP_200_OK
+
+    # AND the saved data should be a Sample object
+    result = response.json()
+    assert Sample(**result)
+
+
+def test_create_sample_for_case_remote_coverage_file(
+    client: TestClient,
+    remote_coverage_file: str,
+    coverage_path: PosixPath,
+    raw_case: Dict[str, str],
+    raw_sample: Dict[str, str],
+    cases_endpoint: str,
+    samples_endpoint: str,
+    mocker: MockerFixture,
+):
+    """Test the function that creates a new sample for a case with a remote coverage file."""
+
+    # GIVEN a mocked d4 file hosted on the internet
+    mocker.patch("validators.url", return_value=True)
+
+    # GIVEN a case that exists in the database:
+    saved_case = client.post(cases_endpoint, json=raw_case).json()
+
+    # GIVEN a json-like object containing the new sample data:
+    raw_sample["coverage_file_path"] = remote_coverage_file
+
+    # WHEN the create_sample_for_case endpoint is used to create the case
+    response = client.post(samples_endpoint, json=raw_sample)
 
     # THEN the response shour return success
     assert response.status_code == status.HTTP_200_OK

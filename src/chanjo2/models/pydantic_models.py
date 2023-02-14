@@ -1,8 +1,14 @@
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional
+from pathlib import Path
+from typing import Any, List, Optional
 
-from pydantic import BaseModel
+import validators
+from pydantic import BaseModel, validator
+
+WRONG_COVERAGE_FILE_MSG = (
+    "coverage_file_path must be either an existing local file path or a URL"
+)
 
 
 class Builds(str, Enum):
@@ -23,6 +29,13 @@ class SampleBase(BaseModel):
     name: str
     display_name: str
     coverage_file_path: str
+
+    @validator("coverage_file_path", pre=True)
+    def validate_coverage_path(cls, value: str) -> Any:
+        if not Path(value).is_file() and not validators.url(value):
+            raise ValueError(WRONG_COVERAGE_FILE_MSG)
+
+        return value
 
 
 class SampleCreate(SampleBase):
