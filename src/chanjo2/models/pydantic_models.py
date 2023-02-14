@@ -7,7 +7,7 @@ import validators
 from pydantic import BaseModel, validator
 
 WRONG_COVERAGE_FILE_MSG = (
-    "coverage_file_path must be either an existing local file path or a URL"
+    "Coverage_file_path must be either an existing local file path or a URL"
 )
 
 
