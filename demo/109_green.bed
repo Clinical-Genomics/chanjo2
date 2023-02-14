@@ -1,0 +1,11 @@
+##genome_build=37
+##gene_panel=109,version=1.2,updated_at=2017-11-05,display_name=Cerebral folate deficiency - [GREEN]
+##contig=1
+##contig=5
+##contig=11
+##contig=17
+#chromosome	gene_start	gene_stop	hgnc_id	hgnc_symbol
+1	11845780	11866977	7436	MTHFR
+5	79922047	79950802	2861	DHFR
+11	71900602	71907345	3791	FOLR1
+17	26721661	26734215	30521	SLC46A1
