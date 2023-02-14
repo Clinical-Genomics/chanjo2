@@ -17,6 +17,7 @@ SAMPLE_DISPLAY_NAME = "sample_abc"
 CASES_ENDPOINT = "/cases/"
 SAMPLES_ENDPOINT = "/samples/"
 COVERAGE_FILE = "a_file.d4"
+REMOTE_COVERAGE_FILE = "https://a_remote_host/a_file.d4"
 COVERAGE_CONTENT = "content"
 
 engine = create_engine(TEST_DB, connect_args=DEMO_CONNECT_ARGS)
@@ -93,9 +94,13 @@ def raw_case() -> Dict[str, str]:
 
 
 @pytest.fixture(name="raw_sample")
-def raw_sample() -> Dict[str, str]:
+def raw_sample(raw_case) -> Dict[str, str]:
     """Returns a dictionary used to create a sample in the database."""
-    return {"name": SAMPLE_NAME, "display_name": SAMPLE_DISPLAY_NAME}
+    return {
+        "name": SAMPLE_NAME,
+        "display_name": SAMPLE_DISPLAY_NAME,
+        "case_name": raw_case["name"],
+    }
 
 
 @pytest.fixture(name="db_case")
@@ -105,13 +110,13 @@ def db_case(raw_case) -> sql_models.Case:
 
 
 @pytest.fixture(name="db_sample")
-def db_sample(raw_case, raw_sample) -> sql_models.Sample:
+def db_sample(raw_case, raw_sample, coverage_path) -> sql_models.Sample:
     """Returns an object corresponding to a sql_models.Sample."""
     return sql_models.Sample(
         name=raw_sample["name"],
         display_name=raw_sample["display_name"],
         case_id=1,
-        coverage_file_path=COVERAGE_FILE,
+        coverage_file_path=str(coverage_path),
     )
 
 
@@ -119,6 +124,12 @@ def db_sample(raw_case, raw_sample) -> sql_models.Sample:
 def coverage_file() -> str:
     """Returns the name of a mock coverage file."""
     return COVERAGE_FILE
+
+
+@pytest.fixture(name="remote_coverage_file")
+def remote_coverage_file() -> str:
+    """Returns the URL of a mock coverage file."""
+    return REMOTE_COVERAGE_FILE
 
 
 @pytest.fixture(name="coverage_path")
