@@ -29,3 +29,4 @@
 - Use SQLAlchemy 1.4 Declarative which is now integrated into the ORM to avoid deprecation warning
 - Start SQL engine and sessions using the future tag to prepare migration to SQLAlchemy 2.0
 - Updated a few python dependencies
+- Moved validation of sample's coverage file path to sample's pydantic model
