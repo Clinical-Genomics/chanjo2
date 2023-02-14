@@ -110,13 +110,13 @@ def db_case(raw_case) -> sql_models.Case:
 
 
 @pytest.fixture(name="db_sample")
-def db_sample(raw_case, raw_sample) -> sql_models.Sample:
+def db_sample(raw_case, raw_sample, coverage_path) -> sql_models.Sample:
     """Returns an object corresponding to a sql_models.Sample."""
     return sql_models.Sample(
         name=raw_sample["name"],
         display_name=raw_sample["display_name"],
         case_id=1,
-        coverage_file_path=COVERAGE_FILE,
+        coverage_file_path=str(coverage_path),
     )
 
 
