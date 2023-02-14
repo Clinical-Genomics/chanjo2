@@ -19,15 +19,10 @@ def test_create_sample_for_case_no_local_coverage_file(
 ):
     """Test the function that creates a new sample for a case when no coverage file is specified."""
     # GIVEN a json-like object containing the new sample data that is missing the coverage_file_path key/Value:
-    sample_data = {
-        "name": raw_sample["name"],
-        "display_name": raw_sample["display_name"],
-        "case_name": raw_case["name"],
-        "coverage_file_path": coverage_file,
-    }
+    raw_sample["coverage_file_path"] = coverage_file
 
     # WHEN the create_sample_for_case endpoint is used to create the case
-    response = client.post(samples_endpoint, json=sample_data)
+    response = client.post(samples_endpoint, json=raw_sample)
 
     # THEN the response should return error
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
@@ -46,15 +41,10 @@ def test_create_sample_for_case_no_remote_coverage_file(
 ):
     """Test the function that creates a new sample for a case with remote coverage file not existing."""
     # GIVEN a json-like object containing the new sample data that is missing the coverage_file_path key/Value:
-    sample_data = {
-        "name": raw_sample["name"],
-        "display_name": raw_sample["display_name"],
-        "case_name": raw_case["name"],
-        "coverage_file_path": remote_coverage_file,
-    }
+    raw_sample["coverage_file_path"] = remote_coverage_file
 
     # WHEN the create_sample_for_case endpoint is used to create the case
-    response = client.post(samples_endpoint, json=sample_data)
+    response = client.post(samples_endpoint, json=raw_sample)
 
     # THEN the response should return error
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
@@ -74,15 +64,10 @@ def test_create_sample_for_case_no_case(
     """Test the function that creates a new sample for a case when no case was previously saved in the database."""
 
     # GIVEN a json-like object containing the new sample data:
-    sample_data = {
-        "name": raw_sample["name"],
-        "display_name": raw_sample["display_name"],
-        "case_name": raw_case["name"],
-        "coverage_file_path": str(coverage_path),
-    }
+    raw_sample["coverage_file_path"] = str(coverage_path)
 
     # WHEN the create_sample_for_case endpoint is used to create the case
-    response = client.post(samples_endpoint, json=sample_data)
+    response = client.post(samples_endpoint, json=raw_sample)
 
     # THEN the response should return error
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
@@ -106,15 +91,10 @@ def test_create_sample_for_case_local_coverage_file(
     saved_case = client.post(cases_endpoint, json=raw_case).json()
 
     # GIVEN a json-like object containing the new sample data:
-    sample_data = {
-        "name": raw_sample["name"],
-        "display_name": raw_sample["display_name"],
-        "case_name": raw_case["name"],
-        "coverage_file_path": str(coverage_path),
-    }
+    raw_sample["coverage_file_path"] = str(coverage_path)
 
     # WHEN the create_sample_for_case endpoint is used to create the case
-    response = client.post(samples_endpoint, json=sample_data)
+    response = client.post(samples_endpoint, json=raw_sample)
 
     # THEN the response shour return success
     assert response.status_code == status.HTTP_200_OK
@@ -143,15 +123,10 @@ def test_create_sample_for_case_remote_coverage_file(
     saved_case = client.post(cases_endpoint, json=raw_case).json()
 
     # GIVEN a json-like object containing the new sample data:
-    sample_data = {
-        "name": raw_sample["name"],
-        "display_name": raw_sample["display_name"],
-        "case_name": raw_case["name"],
-        "coverage_file_path": remote_coverage_file,
-    }
+    raw_sample["coverage_file_path"] = remote_coverage_file
 
     # WHEN the create_sample_for_case endpoint is used to create the case
-    response = client.post(samples_endpoint, json=sample_data)
+    response = client.post(samples_endpoint, json=raw_sample)
 
     # THEN the response shour return success
     assert response.status_code == status.HTTP_200_OK

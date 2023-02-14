@@ -94,9 +94,13 @@ def raw_case() -> Dict[str, str]:
 
 
 @pytest.fixture(name="raw_sample")
-def raw_sample() -> Dict[str, str]:
+def raw_sample(raw_case) -> Dict[str, str]:
     """Returns a dictionary used to create a sample in the database."""
-    return {"name": SAMPLE_NAME, "display_name": SAMPLE_DISPLAY_NAME}
+    return {
+        "name": SAMPLE_NAME,
+        "display_name": SAMPLE_DISPLAY_NAME,
+        "case_name": raw_case["name"],
+    }
 
 
 @pytest.fixture(name="db_case")
