@@ -32,3 +32,4 @@
 - Start SQL engine and sessions using the future tag to prepare migration to SQLAlchemy 2.0
 - Updated a few python dependencies
 - Moved validation of sample's coverage file path to sample's pydantic model
+- Installing the pyd4 module as a requirement of this repository
