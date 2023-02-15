@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Tuple
 
 from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_d4 import interval_coverage, set_d4_file, set_interval
@@ -18,9 +18,11 @@ def read_single_interval(
     end: Optional[int] = None,
     session: Session = Depends(get_session),
 ):
-    """Return coverage on the given interval for a .d4 resource located on the disk or on a remote server"""
+    """Return coverage on the given interval for a D4 resource located on the disk or on a remote server."""
 
-    interval: tuple = set_interval(chromosome, start, end)
+    interval: Tuple[str, Optional[int], Optional[int]] = set_interval(
+        chromosome, start, end
+    )
     try:
         d4_file: D4File = set_d4_file(coverage_file_path)
     except FileNotFoundError:
