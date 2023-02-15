@@ -6,7 +6,7 @@ from pyd4 import D4File
 def set_interval(
     chrom: str, start: Optional[int] = None, end: Optional[int] = None
 ) -> Tuple[str, Optional[int], Optional[int]]:
-    """Compose the string to be used as a genomic interval query by pyd4 utility."""
+    """Create the interval tuple used by the pyd4 utility."""
     if start and end:
         return (chrom, start, end)
     return chrom
