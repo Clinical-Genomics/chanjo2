@@ -16,6 +16,7 @@ SAMPLE_NAME = "abc"
 SAMPLE_DISPLAY_NAME = "sample_abc"
 CASES_ENDPOINT = "/cases/"
 SAMPLES_ENDPOINT = "/samples/"
+INTERVAL_ENDPOINT = "/intervals/interval/"
 COVERAGE_FILE = "a_file.d4"
 REMOTE_COVERAGE_FILE = "https://a_remote_host/a_file.d4"
 COVERAGE_CONTENT = "content"
@@ -67,8 +68,14 @@ def cases_endpoint() -> str:
 
 @pytest.fixture(name="samples_endpoint")
 def samples_endpoint() -> str:
-    """Returns cases app endpoint."""
+    """Returns samples app endpoint."""
     return SAMPLES_ENDPOINT
+
+
+@pytest.fixture(name="interval_endpoint")
+def interval_endpoint() -> str:
+    """Returns interval app endpoint."""
+    return INTERVAL_ENDPOINT
 
 
 @pytest.fixture(name="client")

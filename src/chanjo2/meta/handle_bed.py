@@ -1,16 +1,12 @@
-import logging
 from typing import List, Tuple
-
-LOG = logging.getLogger("uvicorn.access")
 
 
 def parse_bed(bed_file: bytes) -> List[Tuple[str, int, int]]:
-    regions: List[tuple[str, int, int]] = []
-    for region_byte in bed_file.rsplit(b"\n"):
-        if len(region_byte) > 0 and not region_byte.startswith(b"#"):
-            LOG.warning(region_byte)
-            regions.append(bed_line_to_region(bytes_line=region_byte))
-    return regions
+    intervals: List[tuple[str, int, int]] = []
+    for line_byte in bed_file.rsplit(b"\n"):
+        if len(line_byte) > 0 and not line_byte.startswith(b"#"):
+            intervals.append(bed_line_to_region(bytes_line=line_byte))
+    return intervals
 
 
 def bed_line_to_region(bytes_line: bytes) -> Tuple[str, int, int]:
