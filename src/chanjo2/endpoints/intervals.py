@@ -25,7 +25,7 @@ def read_single_interval(
     )
     try:
         d4_file: D4File = set_d4_file(coverage_file_path)
-    except FileNotFoundError:
+    except:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=WRONG_COVERAGE_FILE_MSG,
