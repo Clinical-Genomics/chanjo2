@@ -1,9 +1,11 @@
 from pathlib import PosixPath
-from typing import Dict
+from typing import Dict, Tuple
 
 import pytest
 from chanjo2.dbutil import DEMO_CONNECT_ARGS, get_session
+from chanjo2.demo import d4_demo_path, gene_panel_path
 from chanjo2.main import Base, app, engine
+from chanjo2.meta.handle_bed import parse_bed
 from chanjo2.models import sql_models
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -148,3 +150,28 @@ def coverage_path(tmp_path) -> PosixPath:
     tf.write_text(COVERAGE_CONTENT)
 
     return tf
+
+
+@pytest.fixture(name="real_coverage_path")
+def real_coverage_path() -> str:
+    """Returns the string path to a demo D4 file present on disk."""
+
+    return d4_demo_path
+
+
+@pytest.fixture(name="bed_interval")
+def bed_interval() -> Tuple[str, int, int]:
+    """Returns a genomic interval as tuple"""
+
+    interval: Tuple[str, int, int] = None
+    with open(gene_panel_path, "rb") as f:
+        contents = f.read()
+        interval = parse_bed(contents)[0]
+    return interval
+
+
+@pytest.fixture(name="interval_query")
+def interval_query(bed_interval) -> Dict:
+    """Returns a query dictionary with genomic coordinates"""
+
+    return dict(chromosome=bed_interval[0], start=bed_interval[1], end=bed_interval[2])
