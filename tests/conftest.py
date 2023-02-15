@@ -161,7 +161,7 @@ def real_coverage_path() -> str:
 
 @pytest.fixture(name="bed_interval")
 def bed_interval() -> Tuple[str, int, int]:
-    """Returns a genomic interval as tuple"""
+    """Returns a genomic interval as tuple."""
 
     interval: Tuple[str, int, int] = None
     with open(gene_panel_path, "rb") as f:
@@ -172,6 +172,6 @@ def bed_interval() -> Tuple[str, int, int]:
 
 @pytest.fixture(name="interval_query")
 def interval_query(bed_interval) -> Dict:
-    """Returns a query dictionary with genomic coordinates"""
+    """Returns a query dictionary with genomic coordinates."""
 
     return dict(chromosome=bed_interval[0], start=bed_interval[1], end=bed_interval[2])
