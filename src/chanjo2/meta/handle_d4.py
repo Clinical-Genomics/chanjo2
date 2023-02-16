@@ -7,7 +7,7 @@ def set_interval(
     chrom: str, start: Optional[int] = None, end: Optional[int] = None
 ) -> Tuple[str, Optional[int], Optional[int]]:
     """Create the interval tuple used by the pyd4 utility."""
-   return (chrom, start, end) if start and end else chrom
+    return (chrom, start, end) if start and end else chrom
 
 
 def set_d4_file(coverage_file_path: str) -> D4File:
