@@ -36,7 +36,7 @@ def test_read_single_interval(
     response = client.get(interval_endpoint, params=interval_query)
     assert response.status_code == status.HTTP_200_OK
 
-    # AND the mean coverage over the interval should be returned
+    # THEN the mean coverage over the interval should be returned
     result = response.json()
     coverage_data = CoverageInterval(**result)
     assert coverage_data.mean_coverage > 0
