@@ -40,7 +40,8 @@ def test_read_single_interval(
     result = response.json()
     coverage_data = CoverageInterval(**result)
     assert coverage_data.mean_coverage > 0
-    # together with the queried interval
+
+    # THEN the queried interval should also be present
     assert coverage_data.chromosome
     assert coverage_data.start
     assert coverage_data.end
