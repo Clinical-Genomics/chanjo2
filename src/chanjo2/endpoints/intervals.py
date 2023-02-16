@@ -21,7 +21,7 @@ def read_single_interval(
     """Return coverage on the given interval for a D4 resource located on the disk or on a remote server."""
 
     interval: Tuple[str, Optional[int], Optional[int]] = set_interval(
-        chromosome, start, end
+        chromosome=chromosome, start=start, end=end
     )
     try:
         d4_file: D4File = set_d4_file(coverage_file_path)
