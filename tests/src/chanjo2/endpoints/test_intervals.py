@@ -16,7 +16,7 @@ def test_read_single_interval_d4_not_found(
     response = client.get(interval_endpoint, params=interval_query)
     assert response.status_code == status.HTTP_404_NOT_FOUND
     
-    # WITH a meaningful message
+    # THEN show a meaningful message
     result = response.json()
     assert result["detail"] == WRONG_COVERAGE_FILE_MSG
 
