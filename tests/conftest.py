@@ -172,4 +172,4 @@ def bed_interval() -> Tuple[str, int, int]:
 def interval_query(bed_interval) -> Dict:
     """Returns a query dictionary with genomic coordinates."""
 
-    return dict(chromosome=bed_interval[0], start=bed_interval[1], end=bed_interval[2])
+    return {chromosome: bed_interval[0], start: bed_interval[1], end: bed_interval[2]}
