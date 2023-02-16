@@ -11,6 +11,8 @@
 - Some badges on README page
 - Tests for cases and samples endpoints
 - Save samples with coverage files stored on a remote HTTP(s) server
+- Demo data (D4 file containing coverage data for a panel of 4 genes)
+- Endpoint for coverage queries over a single interval of a provided D4 file
 ### Fixed
 - Bugs preventing the gunicorn app to launch
 - Code to compose DB url to work when app is invoked from docker-compose
@@ -30,3 +32,4 @@
 - Start SQL engine and sessions using the future tag to prepare migration to SQLAlchemy 2.0
 - Updated a few python dependencies
 - Moved validation of sample's coverage file path to sample's pydantic model
+- Installing the pyd4 module as a requirement of this repository

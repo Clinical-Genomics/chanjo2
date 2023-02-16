@@ -511,7 +511,7 @@ name = "numpy"
 version = "1.24.2"
 description = "Fundamental package for array computing in Python"
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.8"
 files = [
     {file = "numpy-1.24.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:eef70b4fc1e872ebddc38cddacc87c19a3709c0e3e5d20bf3954c147b1dd941d"},
@@ -589,7 +589,7 @@ name = "pyd4"
 version = "0.3.6.2"
 description = ""
 category = "main"
-optional = true
+optional = false
 python-versions = "*"
 files = [
     {file = "pyd4-0.3.6.2.tar.gz", hash = "sha256:211ca79573a770b15aaf96b452a47eb09144c19c795d275cfdf8d8b9546c8e92"},
@@ -1214,9 +1214,9 @@ files = [
 ]
 
 [extras]
-m1 = ["pyd4"]
+m1 = []
 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "3e91cbcbdcf24f74ced9a16aba8d1ad354b49b38b9330f7ecf0572b7b8894c99"
+content-hash = "a4c2c6b622b636c24b8c2c5d55293b99e6a221a642027b8c63ba93e1d9d03eb2"

@@ -7,7 +7,7 @@ import validators
 from pydantic import BaseModel, validator
 
 WRONG_COVERAGE_FILE_MSG = (
-    "coverage_file_path must be either an existing local file path or a URL"
+    "Coverage_file_path must be either an existing local file path or a URL"
 )
 
 
@@ -90,9 +90,9 @@ class IntervalRead(IntervalBase):
 
 class CoverageInterval(BaseModel):
     chromosome: str
-    start: int
-    end: int
-    individual_id: int
-    interval_id: int
-    case_id: int
+    start: Optional[int]
+    end: Optional[int]
+    individual_id: Optional[int]
+    interval_id: Optional[int]
+    case_id: Optional[int]
     mean_coverage: float
