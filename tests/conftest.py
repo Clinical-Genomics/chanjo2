@@ -161,7 +161,6 @@ def real_coverage_path() -> str:
 @pytest.fixture(name="bed_interval")
 def bed_interval() -> Tuple[str, int, int]:
     """Returns a genomic interval as tuple."""
-
     interval: Tuple[str, int, int] = ()
     with open(gene_panel_path, "rb") as f:
         contents = f.read()
