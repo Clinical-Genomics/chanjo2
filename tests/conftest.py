@@ -155,7 +155,6 @@ def coverage_path(tmp_path) -> PosixPath:
 @pytest.fixture(name="real_coverage_path")
 def real_coverage_path() -> str:
     """Returns the string path to a demo D4 file present on disk."""
-
     return d4_demo_path
 
 
