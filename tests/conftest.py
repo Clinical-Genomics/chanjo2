@@ -162,7 +162,7 @@ def real_coverage_path() -> str:
 def bed_interval() -> Tuple[str, int, int]:
     """Returns a genomic interval as tuple."""
 
-    interval: Tuple[str, int, int] = None
+    interval: Tuple[str, int, int] = ()
     with open(gene_panel_path, "rb") as f:
         contents = f.read()
         interval = parse_bed(contents)[0]
