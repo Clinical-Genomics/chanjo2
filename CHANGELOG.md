@@ -16,6 +16,7 @@
 ### Fixed
 - Bugs preventing the gunicorn app to launch
 - Code to compose DB url to work when app is invoked from docker-compose
+- Dockerfile is containing pyd4 and d4tools libs
 ### Changed
 - Renamed root endpoint to heartbeat
 - Use a multi-stage build in Dockerfile to reduce its size
