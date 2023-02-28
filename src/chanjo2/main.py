@@ -40,7 +40,6 @@ app.include_router(
 @app.on_event("startup")
 async def on_startup():
     # Configure logging
-    LOG = logging.getLogger("uvicorn.access")
     console_formatter = uvicorn.logging.ColourizedFormatter(
         "{levelprefix} {asctime} : {message}", style="{", use_colors=True
     )

@@ -1,5 +1,3 @@
-import logging
-
 from chanjo2.crud.cases import create_db_case, get_case
 from chanjo2.crud.samples import create_sample_in_case
 from chanjo2.dbutil import get_session
@@ -7,8 +5,6 @@ from chanjo2.models.pydantic_models import CaseCreate, SampleCreate
 from sqlalchemy.orm import sessionmaker
 
 from . import d4_demo_path
-
-LOG = logging.getLogger("uvicorn.access")
 
 db: sessionmaker = next(get_session())
 
