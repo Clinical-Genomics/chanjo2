@@ -49,7 +49,7 @@ def test_db_fixture() -> str:
 
 @pytest.fixture(name="session")
 def session_fixture() -> sessionmaker:
-    """Returns an obect of type sqlalchemy.orm.session.sessionmaker."""
+    """Returns an object of type sqlalchemy.orm.session.sessionmaker."""
 
     # Create the database
     Base.metadata.drop_all(bind=engine)
