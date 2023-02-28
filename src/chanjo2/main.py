@@ -4,9 +4,12 @@ import os
 import uvicorn
 from chanjo2 import __version__
 from chanjo2.dbutil import engine
+from chanjo2.demo.populate_demo import load_demo_data
 from chanjo2.endpoints import cases, intervals, samples
 from chanjo2.models.sql_models import Base
 from fastapi import FastAPI, status
+
+LOG = logging.getLogger("uvicorn.access")
 
 
 def create_db_and_tables():
@@ -51,6 +54,8 @@ async def on_startup():
 
     if os.getenv("DEMO") or not os.getenv("MYSQL_DATABASE_NAME"):
         LOG.warning("Running a demo instance of Chanjo2")
+        if load_demo_data():
+            LOG.info("Demo data loaded into database")
 
 
 @app.get("/")
