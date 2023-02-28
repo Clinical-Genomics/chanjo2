@@ -1,31 +1,10 @@
-###########
-# BUILDER #
-###########
-FROM clinicalgenomics/python3.8-venv:1.0 AS python-builder
-
-ENV PATH="/venv/bin:$PATH"
-
-WORKDIR /app
-
-# Install base dependencies
-RUN apt-get update && \
-     apt-get -y upgrade && \
-     apt-get -y install -y --no-install-recommends gcc default-libmysqlclient-dev && \
-     apt-get clean && \
-     rm -rf /var/lib/apt/lists/*
-
-# Install dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-#########
-# FINAL #
-#########
-FROM python:3.8-slim
+FROM clinicalgenomics/python3.8-venv-pyd4:1.0
 
 LABEL about.home="https://github.com/Clinical-Genomics/chanjo2"
 LABEL about.license="MIT License (MIT)"
 
+USER root
+
 # Install base dependencies
 RUN apt-get update && \
      apt-get -y upgrade && \
@@ -33,24 +12,18 @@ RUN apt-get update && \
      apt-get clean && \
      rm -rf /var/lib/apt/lists/*
 
-# Do not upgrade to the latest pip version to ensure more reproducible builds
-ENV PIP_DISABLE_PIP_VERSION_CHECK=1
-ENV PATH="/venv/bin:$PATH"
-RUN echo export PATH="/venv/bin:\$PATH" > /etc/profile.d/venv.sh
+# make sure all messages always reach console
+ENV PYTHONUNBUFFERED=1
 
-# Create a non-root user to run commands
-RUN groupadd --gid 1000 worker && useradd -g worker --uid 1000 --shell /usr/sbin/nologin --create-home worker
-
-# Copy virtual environment from builder
-COPY --chown=worker:worker --from=python-builder /venv /venv
-
+# Install app
 WORKDIR /home/worker/app
 COPY --chown=worker:worker . /home/worker/app
 
-# Install only the app
-RUN pip install --no-cache-dir --editable .
+RUN pip install poetry
+RUN poetry config virtualenvs.create false
+RUN poetry install --no-interaction
 
-# Run the app as non-root user
+# Run commands as non-root
 USER worker
 
 CMD gunicorn\

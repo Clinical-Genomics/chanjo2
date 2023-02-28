@@ -8,8 +8,6 @@ from chanjo2.endpoints import cases, intervals, samples
 from chanjo2.models.sql_models import Base
 from fastapi import FastAPI, status
 
-LOG = logging.getLogger("uvicorn.access")
-
 
 def create_db_and_tables():
     Base.metadata.create_all(engine)
@@ -43,7 +41,10 @@ async def on_startup():
     console_formatter = uvicorn.logging.ColourizedFormatter(
         "{levelprefix} {asctime} : {message}", style="{", use_colors=True
     )
-    LOG.handlers[0].setFormatter(console_formatter)
+    if LOG.handlers:
+        LOG.handlers[0].setFormatter(console_formatter)
+    else:
+        logging.basicConfig()
 
     # Create database tables
     create_db_and_tables()
