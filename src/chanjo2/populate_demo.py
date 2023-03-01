@@ -24,7 +24,7 @@ def load_demo_data() -> Case:
     return get_case(db=db, case_name=DEMO_CASE["name"])
 
 
-def load_demo_case():
+def load_demo_case() -> None:
     """Load a demo case into the database."""
     case: CaseCreate = CaseCreate(**DEMO_CASE)
     create_db_case(db=db, case=case)
