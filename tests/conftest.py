@@ -16,15 +16,21 @@ CASE_NAME = "123"
 CASE_DISPLAY_NAME = "case_123"
 SAMPLE_NAME = "abc"
 SAMPLE_DISPLAY_NAME = "sample_abc"
-CASES_ENDPOINT = "/cases/"
-SAMPLES_ENDPOINT = "/samples/"
-INTERVAL_ENDPOINT = "/intervals/interval/"
 COVERAGE_FILE = "a_file.d4"
 REMOTE_COVERAGE_FILE = "https://a_remote_host/a_file.d4"
 COVERAGE_CONTENT = "content"
 
 engine = create_engine(TEST_DB, connect_args=DEMO_CONNECT_ARGS)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+class Endpoints:
+    """Contains all the app endpoints used in testing"""
+
+    CASES = "/cases/"
+    SAMPLES = "/samples/"
+    INTERVAL = "/intervals/interval/"
+    INTERVALS = "/intervals/"
 
 
 class Helpers:
@@ -34,6 +40,11 @@ class Helpers:
         session.add(item)
         session.commit()
         session.refresh(item)
+
+
+@pytest.fixture
+def endpoints() -> Endpoints:
+    return Endpoints
 
 
 @pytest.fixture
@@ -60,12 +71,6 @@ def session_fixture() -> sessionmaker:
         yield db
     finally:
         db.close()
-
-
-@pytest.fixture(name="cases_endpoint")
-def cases_endpoint() -> str:
-    """Returns cases app endpoint."""
-    return CASES_ENDPOINT
 
 
 @pytest.fixture(name="samples_endpoint")

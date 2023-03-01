@@ -1,10 +1,12 @@
+from typing import Type
+
 from chanjo2.models.pydantic_models import WRONG_COVERAGE_FILE_MSG, CoverageInterval
 from fastapi import status
 from fastapi.testclient import TestClient
 
 
 def test_read_single_interval_d4_not_found(
-    client: TestClient, coverage_file: str, interval_endpoint: str, interval_query: dict
+    client: TestClient, coverage_file: str, endpoints: Type, interval_query: dict
 ):
     """Test the function that returns the coverage over an interval of a D4 file.
     Testing with a D4 file not found on disk or on a remote server."""
@@ -13,7 +15,7 @@ def test_read_single_interval_d4_not_found(
     interval_query["coverage_file_path"] = coverage_file
 
     # THEN a request to the read_single_interval should return 404 error
-    response = client.get(interval_endpoint, params=interval_query)
+    response = client.get(endpoints.INTERVAL, params=interval_query)
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
     # THEN show a meaningful message
@@ -24,7 +26,7 @@ def test_read_single_interval_d4_not_found(
 def test_read_single_interval(
     client: TestClient,
     real_coverage_path: str,
-    interval_endpoint: str,
+    endpoints: Type,
     interval_query: dict,
 ):
     """Test the function that returns the coverage over an interval of a D4 file."""
@@ -33,7 +35,7 @@ def test_read_single_interval(
     interval_query["coverage_file_path"] = real_coverage_path
 
     # THEN a request to the read_single_interval should be successful
-    response = client.get(interval_endpoint, params=interval_query)
+    response = client.get(endpoints.INTERVAL, params=interval_query)
     assert response.status_code == status.HTTP_200_OK
 
     # THEN the mean coverage over the interval should be returned
@@ -50,7 +52,7 @@ def test_read_single_interval(
 def test_read_single_chromosome(
     client: TestClient,
     real_coverage_path: str,
-    interval_endpoint: str,
+    endpoints: Type,
     interval_query: dict,
 ):
     """Test the function that returns the coverage over an entire chsomosome of a D4 file."""
@@ -63,7 +65,7 @@ def test_read_single_chromosome(
     interval_query["coverage_file_path"] = real_coverage_path
 
     # THEN a request to the read_single_intervalshould be successful
-    response = client.get(interval_endpoint, params=interval_query)
+    response = client.get(endpoints.INTERVAL, params=interval_query)
     assert response.status_code == status.HTTP_200_OK
 
     # AND the mean coverage over the entire chromosome should be present in the result

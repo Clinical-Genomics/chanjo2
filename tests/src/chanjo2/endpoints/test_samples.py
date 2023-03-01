@@ -14,7 +14,7 @@ def test_create_sample_for_case_no_local_coverage_file(
     client: TestClient,
     raw_case: Dict[str, str],
     raw_sample: Dict[str, str],
-    samples_endpoint: str,
+    endpoints: Type,
     coverage_file: str,
 ):
     """Test the function that creates a new sample for a case when no coverage file is specified."""
@@ -22,7 +22,7 @@ def test_create_sample_for_case_no_local_coverage_file(
     raw_sample["coverage_file_path"] = coverage_file
 
     # WHEN the create_sample_for_case endpoint is used to create the case
-    response = client.post(samples_endpoint, json=raw_sample)
+    response = client.post(endpoints.SAMPLES, json=raw_sample)
 
     # THEN the response should return error
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
@@ -36,7 +36,7 @@ def test_create_sample_for_case_no_remote_coverage_file(
     client: TestClient,
     raw_case: Dict[str, str],
     raw_sample: Dict[str, str],
-    samples_endpoint: str,
+    endpoints: Type,
     remote_coverage_file: str,
 ):
     """Test the function that creates a new sample for a case with remote coverage file not existing."""
@@ -44,7 +44,7 @@ def test_create_sample_for_case_no_remote_coverage_file(
     raw_sample["coverage_file_path"] = remote_coverage_file
 
     # WHEN the create_sample_for_case endpoint is used to create the case
-    response = client.post(samples_endpoint, json=raw_sample)
+    response = client.post(endpoints.SAMPLES, json=raw_sample)
 
     # THEN the response should return error
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
@@ -59,7 +59,7 @@ def test_create_sample_for_case_no_case(
     raw_case: Dict[str, str],
     raw_sample: Dict[str, str],
     coverage_path: PosixPath,
-    samples_endpoint: str,
+    endpoints: Type,
 ):
     """Test the function that creates a new sample for a case when no case was previously saved in the database."""
 
@@ -67,7 +67,7 @@ def test_create_sample_for_case_no_case(
     raw_sample["coverage_file_path"] = str(coverage_path)
 
     # WHEN the create_sample_for_case endpoint is used to create the case
-    response = client.post(samples_endpoint, json=raw_sample)
+    response = client.post(endpoints.SAMPLES, json=raw_sample)
 
     # THEN the response should return error
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
@@ -82,19 +82,18 @@ def test_create_sample_for_case_local_coverage_file(
     coverage_path: PosixPath,
     raw_case: Dict[str, str],
     raw_sample: Dict[str, str],
-    cases_endpoint: str,
-    samples_endpoint: str,
+    endpoints: Type,
 ):
     """Test the function that creates a new sample for a case with a local coverage file."""
 
     # GIVEN a case that exists in the database:
-    saved_case = client.post(cases_endpoint, json=raw_case).json()
+    saved_case = client.post(endpoints.CASES, json=raw_case).json()
 
     # GIVEN a json-like object containing the new sample data:
     raw_sample["coverage_file_path"] = str(coverage_path)
 
     # WHEN the create_sample_for_case endpoint is used to create the case
-    response = client.post(samples_endpoint, json=raw_sample)
+    response = client.post(endpoints.SAMPLES, json=raw_sample)
 
     # THEN the response shour return success
     assert response.status_code == status.HTTP_200_OK
@@ -110,8 +109,7 @@ def test_create_sample_for_case_remote_coverage_file(
     coverage_path: PosixPath,
     raw_case: Dict[str, str],
     raw_sample: Dict[str, str],
-    cases_endpoint: str,
-    samples_endpoint: str,
+    endpoints: Type,
     mocker: MockerFixture,
 ):
     """Test the function that creates a new sample for a case with a remote coverage file."""
@@ -120,13 +118,13 @@ def test_create_sample_for_case_remote_coverage_file(
     mocker.patch("validators.url", return_value=True)
 
     # GIVEN a case that exists in the database:
-    saved_case = client.post(cases_endpoint, json=raw_case).json()
+    saved_case = client.post(endpoints.CASES, json=raw_case).json()
 
     # GIVEN a json-like object containing the new sample data:
     raw_sample["coverage_file_path"] = remote_coverage_file
 
     # WHEN the create_sample_for_case endpoint is used to create the case
-    response = client.post(samples_endpoint, json=raw_sample)
+    response = client.post(endpoints.SAMPLES, json=raw_sample)
 
     # THEN the response shour return success
     assert response.status_code == status.HTTP_200_OK
@@ -141,7 +139,7 @@ def test_read_samples(
     session: sessionmaker,
     db_case: SQLCase,
     db_sample: SQLSample,
-    samples_endpoint: str,
+    endpoints: Type,
     helpers: Type,
 ):
     """Test endpoint that returns all samples present in the database."""
@@ -153,7 +151,7 @@ def test_read_samples(
     helpers.session_commit_item(session, db_sample)
 
     # THEN the read_samples endpoint should return the sample in the right format
-    response = client.get(samples_endpoint)
+    response = client.get(endpoints.SAMPLES)
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
     assert len(result) == 1
@@ -165,7 +163,7 @@ def test_read_samples_for_case(
     client: TestClient,
     db_case: SQLCase,
     db_sample: SQLSample,
-    samples_endpoint: str,
+    endpoints: Type,
     helpers: Type,
 ):
     """Test the endpoint that returns all samples for a given case name."""
@@ -177,7 +175,7 @@ def test_read_samples_for_case(
     helpers.session_commit_item(session, db_sample)
 
     # THEN the read_samples_for_case endpoint should return the sample
-    url = f"/{db_case.name}{samples_endpoint}"
+    url = f"/{db_case.name}{endpoints.SAMPLES}"
     response = client.get(url)
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
@@ -189,7 +187,7 @@ def test_read_sample(
     client: TestClient,
     db_case: SQLCase,
     db_sample: SQLSample,
-    samples_endpoint: str,
+    endpoints: Type,
     helpers: Type,
 ):
     """Test the endpoint that returns a single sample when providing its name."""
@@ -201,7 +199,7 @@ def test_read_sample(
     helpers.session_commit_item(session, db_sample)
 
     # THEN the read_sample endpoint should return the sample
-    url = f"{samples_endpoint}{db_sample.name}"
+    url = f"{endpoints.SAMPLES}{db_sample.name}"
     response = client.get(url)
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
