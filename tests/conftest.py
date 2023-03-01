@@ -25,7 +25,7 @@ TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engin
 
 
 class Endpoints:
-    """Contains all the app endpoints used in testing"""
+    """Contains all the app endpoints used in testing."""
 
     CASES = "/cases/"
     SAMPLES = "/samples/"
