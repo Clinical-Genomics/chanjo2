@@ -17,8 +17,9 @@ CASE_DISPLAY_NAME = "case_123"
 SAMPLE_NAME = "abc"
 SAMPLE_DISPLAY_NAME = "sample_abc"
 COVERAGE_FILE = "a_file.d4"
+BED_FILE = "a_file.bed"
 REMOTE_COVERAGE_FILE = "https://a_remote_host/a_file.d4"
-COVERAGE_CONTENT = "content"
+CONTENT = "content"
 
 engine = create_engine(TEST_DB, connect_args=DEMO_CONNECT_ARGS)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -140,7 +141,18 @@ def coverage_path(tmp_path) -> PosixPath:
 
     tf = tmp_path / COVERAGE_FILE
     tf.touch()
-    tf.write_text(COVERAGE_CONTENT)
+    tf.write_text(CONTENT)
+
+    return tf
+
+
+@pytest.fixture(name="bed_path")
+def bed_path(tmp_path) -> PosixPath:
+    """Returns malformed bed file."""
+
+    tf = tmp_path / BED_FILE
+    tf.touch()
+    tf.write_text(CONTENT)
 
     return tf
 
@@ -169,4 +181,13 @@ def interval_query(bed_interval) -> Dict:
         "chromosome": bed_interval[0],
         "start": bed_interval[1],
         "end": bed_interval[2],
+    }
+
+
+@pytest.fixture(name="real_d4_query")
+def real_d4_query(real_coverage_path) -> Dict:
+    """Returns a query dictionary with genomic coordinates."""
+
+    return {
+        "coverage_file_path": real_coverage_path,
     }
