@@ -8,7 +8,7 @@ from sqlalchemy.orm import sessionmaker
 
 db: sessionmaker = next(get_session())
 
-DEMO_CASE = {"name": "internal_id", "display_name": "643594"}
+DEMO_CASE: Dict[str, str] = {"name": "internal_id", "display_name": "643594"}
 DEMO_SAMPLE = {
     "name": "ADM1059A2",
     "display_name": "NA12882",
