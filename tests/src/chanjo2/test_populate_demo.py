@@ -10,7 +10,7 @@ db: sessionmaker = next(get_session())
 
 
 def test_load_demo_data():
-    """Test the function that adds demo data."""
+    """Test loading demo data."""
 
     # WHEN the app is launched
     with TestClient(app) as client:
