@@ -36,3 +36,4 @@
 - Updated a few python dependencies
 - Moved validation of sample's coverage file path to sample's pydantic model
 - Installing the pyd4 module as a requirement of this repository
+- Moved the endpoints contants to a class in test fixtures
