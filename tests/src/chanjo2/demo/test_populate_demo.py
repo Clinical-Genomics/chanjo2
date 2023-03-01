@@ -9,11 +9,11 @@ client = TestClient(app)
 db: sessionmaker = next(get_session())
 
 
-def test_load_demo_data(cases_endpoint: str):
+def test_load_demo_data():
     """Test the function that adds demo data"""
 
     # WHEN the app is launched
     with TestClient(app) as client:
         # THEN a demo case should be found in the database
-        result = get_cases(db)
+        result: list = get_cases(db)
         assert isinstance(result[0], Case)

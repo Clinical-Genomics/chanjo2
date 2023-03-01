@@ -1,10 +1,10 @@
 from chanjo2.crud.cases import create_db_case, get_case
 from chanjo2.crud.samples import create_sample_in_case
 from chanjo2.dbutil import get_session
+from chanjo2.demo import d4_demo_path
 from chanjo2.models.pydantic_models import CaseCreate, SampleCreate
+from chanjo2.models.sql_models import Case
 from sqlalchemy.orm import sessionmaker
-
-from . import d4_demo_path
 
 db: sessionmaker = next(get_session())
 
@@ -17,7 +17,7 @@ DEMO_SAMPLE = {
 }
 
 
-def load_demo_data():
+def load_demo_data() -> Case:
     """Loads demo data into the database of a demo instance of Chanjo2"""
     load_demo_case()
     load_demo_sample()
