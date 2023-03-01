@@ -30,7 +30,7 @@ def load_demo_case() -> None:
     create_db_case(db=db, case=case)
 
 
-def load_demo_sample():
+def load_demo_sample() -> None:
     """Add a sample to a demo case."""
     sample: SampleCreate = SampleCreate(**DEMO_SAMPLE)
     create_sample_in_case(db=db, sample=sample)
