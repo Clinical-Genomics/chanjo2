@@ -50,7 +50,7 @@ def read_single_interval(
     )
 
 
-@router.post("/intervals/", response_model=List)
+@router.post("/intervals/", response_model=List[CoverageInterval])
 def read_intervals(coverage_file_path: str, bed_file: bytes = File(...)):
     """Return coverage on the given intervals for a D4 resource located on the disk or on a remote server."""
 
