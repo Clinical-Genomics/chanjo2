@@ -2,7 +2,12 @@ from typing import List, Optional, Tuple
 
 from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import parse_bed
-from chanjo2.meta.handle_d4 import interval_coverage, intervals_coverage, set_d4_file, set_interval
+from chanjo2.meta.handle_d4 import (
+    interval_coverage,
+    intervals_coverage,
+    set_d4_file,
+    set_interval,
+)
 from chanjo2.models.pydantic_models import (
     WRONG_BED_FILE_MSG,
     WRONG_COVERAGE_FILE_MSG,

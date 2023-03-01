@@ -16,7 +16,9 @@ def set_d4_file(coverage_file_path: str) -> D4File:
     return D4File(coverage_file_path)
 
 
-def interval_coverage(d4_file: D4File, interval: Tuple[str, Optional[int], Optional[int]]) -> float:
+def interval_coverage(
+    d4_file: D4File, interval: Tuple[str, Optional[int], Optional[int]]
+) -> float:
     """Return coverage over a single interval of a D4 file."""
     return d4_file.mean([interval])[0]
 
