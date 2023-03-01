@@ -13,6 +13,7 @@
 - Save samples with coverage files stored on a remote HTTP(s) server
 - Demo data (D4 file containing coverage data for a panel of 4 genes)
 - Endpoint for coverage queries over a single interval of a provided D4 file
+- Demo case and demo sample loaded with demo instance startup
 ### Fixed
 - Bugs preventing the gunicorn app to launch
 - Code to compose DB url to work when app is invoked from docker-compose
