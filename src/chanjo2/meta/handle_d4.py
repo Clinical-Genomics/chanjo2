@@ -26,7 +26,7 @@ def interval_coverage(
 def intervals_coverage(
     d4_file: D4File, intervals: List[Tuple[str, int, int]]
 ) -> List[CoverageInterval]:
-    """Return coverage over a list of intervals"""
+    """Return coverage over a list of intervals."""
     intervals_cov: List[CoverageInterval] = []
     for interval in intervals:
         intervals_cov.append(
