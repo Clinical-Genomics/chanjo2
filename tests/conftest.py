@@ -73,18 +73,6 @@ def session_fixture() -> sessionmaker:
         db.close()
 
 
-@pytest.fixture(name="samples_endpoint")
-def samples_endpoint() -> str:
-    """Returns samples app endpoint."""
-    return SAMPLES_ENDPOINT
-
-
-@pytest.fixture(name="interval_endpoint")
-def interval_endpoint() -> str:
-    """Returns interval app endpoint."""
-    return INTERVAL_ENDPOINT
-
-
 @pytest.fixture(name="client")
 def client_fixture(session) -> TestClient:
     """Returns a fastapi.testclient.TestClient used to test the app endpoints."""
