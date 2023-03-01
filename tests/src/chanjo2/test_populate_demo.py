@@ -15,5 +15,5 @@ def test_load_demo_data():
     # WHEN the app is launched
     with TestClient(app) as client:
         # THEN a demo case should be found in the database
-        result: list = get_cases(db)
-        assert isinstance(result[0], Case)
+        cases: List[Case] = get_cases(db)
+        assert isinstance(cases[0], Case)
