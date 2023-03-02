@@ -46,11 +46,13 @@ class Helpers:
 
 @pytest.fixture
 def endpoints() -> Endpoints:
+    """returns an instance of the class Endpoints"""
     return Endpoints
 
 
 @pytest.fixture
 def helpers() -> Helpers:
+    """returns an instance of the class Helpers"""
     return Helpers
 
 
