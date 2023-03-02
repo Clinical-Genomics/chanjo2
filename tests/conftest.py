@@ -126,8 +126,8 @@ def db_sample(raw_case, raw_sample, coverage_path) -> sql_models.Sample:
     )
 
 
-@pytest.fixture(name="coverage_file")
-def coverage_file() -> str:
+@pytest.fixture(name="mock_coverage_file")
+def mock_coverage_file() -> str:
     """Returns the name of a mock coverage file."""
     return COVERAGE_FILE
 

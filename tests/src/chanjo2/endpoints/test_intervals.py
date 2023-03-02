@@ -1,5 +1,5 @@
 from pathlib import PosixPath
-from typing import Type
+from typing import Dict, Type
 
 from chanjo2.demo import gene_panel_file, gene_panel_path
 from chanjo2.models.pydantic_models import (
@@ -12,13 +12,13 @@ from fastapi.testclient import TestClient
 
 
 def test_read_single_interval_d4_not_found(
-    client: TestClient, coverage_file: str, endpoints: Type, interval_query: dict
+    client: TestClient, mock_coverage_file: str, endpoints: Type, interval_query: dict
 ):
     """Test the function that returns the coverage over an interval of a D4 file.
     Testing with a D4 file not found on disk or on a remote server."""
 
     # WHEN using a query for a genomic interval with a D4 not present on disk
-    interval_query["coverage_file_path"] = coverage_file
+    interval_query["coverage_file_path"] = mock_coverage_file
 
     # THEN a request to the read_single_interval should return 404 error
     response = client.get(endpoints.INTERVAL, params=interval_query)
@@ -85,7 +85,7 @@ def test_read_single_chromosome(
 
 
 def test_read_intervals_d4_not_found(
-    coverage_file: str, client: TestClient, endpoints: Type
+    mock_coverage_file: str, client: TestClient, endpoints: Type
 ):
     """Test the function that returns the coverage over multiple intervals of a D4 file.
     Testing with a D4 file not found on disk or on a remote server."""
@@ -96,7 +96,7 @@ def test_read_intervals_d4_not_found(
     ]
 
     # WHEN using a query for genomic intervals with a D4 not present on disk
-    d4_query = {"coverage_file_path": coverage_file}
+    d4_query = {"coverage_file_path": mock_coverage_file}
 
     # THEN a request to the endpoint should return 404 error
     response = client.post(endpoints.INTERVALS, params=d4_query, files=files)
@@ -113,6 +113,7 @@ def test_read_intervals_wrong_bed_file(
     real_coverage_path: str,
     client: TestClient,
     endpoints: Type,
+    real_d4_query: Dict[str, str],
 ):
     """Test the function that returns the coverage over multiple intervals of a D4 file.
     Testing with a BED file that is not correctly formatted."""
@@ -122,11 +123,8 @@ def test_read_intervals_wrong_bed_file(
         ("bed_file", ("a_file.bed", open(bed_path_malformed, "rb"))),
     ]
 
-    # WHEN using a query for genomic intervals over an existing d4 file
-    d4_query = {"coverage_file_path": real_coverage_path}
-
     # THEN a request to the endpoint should return 404 error
-    response = client.post(endpoints.INTERVALS, params=d4_query, files=files)
+    response = client.post(endpoints.INTERVALS, params=real_d4_query, files=files)
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
     # AND show a meaningful message
@@ -135,7 +133,12 @@ def test_read_intervals_wrong_bed_file(
     assert result["detail"] == WRONG_BED_FILE_MSG
 
 
-def test_read_intervals(real_coverage_path: str, client: TestClient, endpoints: Type):
+def test_read_intervals(
+    real_coverage_path: str,
+    client: TestClient,
+    endpoints: Type,
+    real_d4_query: Dict[str, str],
+):
     """Test the function that returns the coverage over multiple intervals of a D4 file."""
 
     # GIVEN a valid BED file containing genomic intervals
@@ -143,11 +146,8 @@ def test_read_intervals(real_coverage_path: str, client: TestClient, endpoints: 
         ("bed_file", (gene_panel_file, open(gene_panel_path, "rb"))),
     ]
 
-    # WHEN using a query for genomic intervals over an existing d4 file
-    d4_query = {"coverage_file_path": real_coverage_path}
-
     # THEN a request to the endpoint should return HTTP 200
-    response = client.post(endpoints.INTERVALS, params=d4_query, files=files)
+    response = client.post(endpoints.INTERVALS, params=real_d4_query, files=files)
     assert response.status_code == status.HTTP_200_OK
 
     # AND return coverage intervals data

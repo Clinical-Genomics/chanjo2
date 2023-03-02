@@ -15,11 +15,11 @@ def test_create_sample_for_case_no_local_coverage_file(
     raw_case: Dict[str, str],
     raw_sample: Dict[str, str],
     endpoints: Type,
-    coverage_file: str,
+    mock_coverage_file: str,
 ):
     """Test the function that creates a new sample for a case when no coverage file is specified."""
     # GIVEN a json-like object containing the new sample data that is missing the coverage_file_path key/Value:
-    raw_sample["coverage_file_path"] = coverage_file
+    raw_sample["coverage_file_path"] = mock_coverage_file
 
     # WHEN the create_sample_for_case endpoint is used to create the case
     response = client.post(endpoints.SAMPLES, json=raw_sample)
