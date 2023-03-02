@@ -187,8 +187,8 @@ def interval_query(bed_interval) -> Dict:
 
 
 @pytest.fixture(name="real_d4_query")
-def real_d4_query(real_coverage_path) -> Dict:
-    """Returns a query dictionary with genomic coordinates."""
+def real_d4_query(real_coverage_path) -> Dict[str, str]:
+    """Returns a query dictionary with the path to an existing D4 coverage file."""
 
     return {
         "coverage_file_path": real_coverage_path,
