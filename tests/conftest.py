@@ -147,7 +147,7 @@ def coverage_path(tmp_path) -> PosixPath:
 
 @pytest.fixture(name="bed_path")
 def bed_path(tmp_path) -> PosixPath:
-    """Returns malformed bed file."""
+    """Return malformed BED file."""
 
     tf = tmp_path / BED_FILE
     tf.touch()
