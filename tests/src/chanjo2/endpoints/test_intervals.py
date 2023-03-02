@@ -98,7 +98,7 @@ def test_read_intervals_d4_not_found(
     # WHEN using a query for genomic intervals with a D4 not present on disk
     d4_query = {"coverage_file_path": coverage_file}
 
-    # THEN a request to the endpoint should return 404 error (not found)
+    # THEN a request to the endpoint should return 404 error
     response = client.post(endpoints.INTERVALS, params=d4_query, files=files)
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
