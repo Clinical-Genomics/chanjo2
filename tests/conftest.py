@@ -142,21 +142,21 @@ def remote_coverage_file() -> str:
 def coverage_path(tmp_path) -> PosixPath:
     """Returns a mock temp coverage file."""
 
-    tf: PosixPath = tmp_path / COVERAGE_FILE
-    tf.touch()
-    tf.write_text(CONTENT)
-    return tf
+    tmp_coverage_file: PosixPath = tmp_path / COVERAGE_FILE
+    tmp_coverage_file.touch()
+    tmp_coverage_file.write_text(CONTENT)
+    return tmp_coverage_file
 
 
 @pytest.fixture(name="bed_path_malformed")
 def bed_path_malformed(tmp_path) -> PosixPath:
     """Return malformed BED file."""
 
-    tf: PosixPath = tmp_path / BED_FILE
-    tf.touch()
-    tf.write_text(CONTENT)
+    tmp_bed_file: PosixPath = tmp_path / BED_FILE
+    tmp_bed_file.touch()
+    tmp_bed_file.write_text(CONTENT)
 
-    return tf
+    return tmp_bed_file
 
 
 @pytest.fixture(name="real_coverage_path")
