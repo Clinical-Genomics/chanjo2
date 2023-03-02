@@ -31,12 +31,10 @@ def intervals_coverage(
     for interval in intervals:
         intervals_cov.append(
             CoverageInterval(
-                **{
-                    "chromosome": interval[0],
-                    "start": interval[1],
-                    "end": interval[2],
-                    "mean_coverage": d4_file.mean(interval),
-                }
+                chromosome=interval[0],
+                start=interval[1],
+                end=interval[2],
+                mean_coverage=d4_file.mean(interval),
             )
         )
     return intervals_cov
