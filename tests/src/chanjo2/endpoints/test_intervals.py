@@ -143,7 +143,7 @@ def test_read_intervals(real_coverage_path: str, client: TestClient, endpoints: 
     # WHEN using a query for genomic intervals over an existing d4 file
     d4_query = {"coverage_file_path": real_coverage_path}
 
-    # THEN a request to the endpoint should be successful
+    # THEN a request to the endpoint should return HTTP 200
     response = client.post(endpoints.INTERVALS, params=d4_query, files=files)
     assert response.status_code == status.HTTP_200_OK
 
