@@ -7,13 +7,13 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import sessionmaker
 
 
-def test_create_case(client: TestClient, raw_case: Dict[str, str], cases_endpoint: str):
+def test_create_case(client: TestClient, raw_case: Dict[str, str], endpoints: Type):
     """Test the endpoint used to create a new case."""
     # GIVEN a json-like object containing the new case data:
     case_data = raw_case
 
     # WHEN the create_case endpoint is used to create the case
-    response = client.post(cases_endpoint, json=case_data)
+    response = client.post(endpoints.CASES, json=case_data)
 
     # THEN it should return success
     assert response.status_code == status.HTTP_200_OK
@@ -28,7 +28,7 @@ def test_read_cases(
     client: TestClient,
     session: sessionmaker,
     db_case: SQLCase,
-    cases_endpoint: str,
+    endpoints: Type,
     helpers: Type,
 ):
     """Test the endpoint returning all cases found in the database."""
@@ -37,7 +37,7 @@ def test_read_cases(
     helpers.session_commit_item(session, db_case)
 
     # THEN the read_cases endpoint should return the case
-    response = client.get(cases_endpoint)
+    response = client.get(endpoints.CASES)
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
     assert len(result) == 1
@@ -48,7 +48,7 @@ def test_read_case(
     client: TestClient,
     session: sessionmaker,
     db_case: SQLCase,
-    cases_endpoint: str,
+    endpoints: Type,
     helpers: Type,
 ):
     """Test the endpoint that returns a specific case."""
@@ -57,7 +57,7 @@ def test_read_case(
     helpers.session_commit_item(session, db_case)
 
     # WHEN sending a GET request to retrieve the specific case using its name
-    response = client.get(f"{cases_endpoint}{db_case.name}")
+    response = client.get(f"{endpoints.CASES}{db_case.name}")
 
     # THEN it should  return success
     assert response.status_code == status.HTTP_200_OK

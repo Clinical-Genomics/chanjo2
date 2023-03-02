@@ -1,3 +1,4 @@
+from enum import Enum
 from pathlib import PosixPath
 from typing import Dict, Tuple
 
@@ -16,15 +17,22 @@ CASE_NAME = "123"
 CASE_DISPLAY_NAME = "case_123"
 SAMPLE_NAME = "abc"
 SAMPLE_DISPLAY_NAME = "sample_abc"
-CASES_ENDPOINT = "/cases/"
-SAMPLES_ENDPOINT = "/samples/"
-INTERVAL_ENDPOINT = "/intervals/interval/"
 COVERAGE_FILE = "a_file.d4"
+BED_FILE = "a_file.bed"
 REMOTE_COVERAGE_FILE = "https://a_remote_host/a_file.d4"
-COVERAGE_CONTENT = "content"
+CONTENT: str = "content"
 
 engine = create_engine(TEST_DB, connect_args=DEMO_CONNECT_ARGS)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+class Endpoints(str, Enum):
+    """Contains all the app endpoints used in testing."""
+
+    CASES = "/cases/"
+    SAMPLES = "/samples/"
+    INTERVAL = "/intervals/interval/"
+    INTERVALS = "/intervals/"
 
 
 class Helpers:
@@ -37,7 +45,14 @@ class Helpers:
 
 
 @pytest.fixture
+def endpoints() -> Endpoints:
+    """returns an instance of the class Endpoints"""
+    return Endpoints
+
+
+@pytest.fixture
 def helpers() -> Helpers:
+    """returns an instance of the class Helpers"""
     return Helpers
 
 
@@ -60,24 +75,6 @@ def session_fixture() -> sessionmaker:
         yield db
     finally:
         db.close()
-
-
-@pytest.fixture(name="cases_endpoint")
-def cases_endpoint() -> str:
-    """Returns cases app endpoint."""
-    return CASES_ENDPOINT
-
-
-@pytest.fixture(name="samples_endpoint")
-def samples_endpoint() -> str:
-    """Returns samples app endpoint."""
-    return SAMPLES_ENDPOINT
-
-
-@pytest.fixture(name="interval_endpoint")
-def interval_endpoint() -> str:
-    """Returns interval app endpoint."""
-    return INTERVAL_ENDPOINT
 
 
 @pytest.fixture(name="client")
@@ -129,8 +126,8 @@ def db_sample(raw_case, raw_sample, coverage_path) -> sql_models.Sample:
     )
 
 
-@pytest.fixture(name="coverage_file")
-def coverage_file() -> str:
+@pytest.fixture(name="mock_coverage_file")
+def mock_coverage_file() -> str:
     """Returns the name of a mock coverage file."""
     return COVERAGE_FILE
 
@@ -145,11 +142,21 @@ def remote_coverage_file() -> str:
 def coverage_path(tmp_path) -> PosixPath:
     """Returns a mock temp coverage file."""
 
-    tf = tmp_path / COVERAGE_FILE
-    tf.touch()
-    tf.write_text(COVERAGE_CONTENT)
+    tmp_coverage_file: PosixPath = tmp_path / COVERAGE_FILE
+    tmp_coverage_file.touch()
+    tmp_coverage_file.write_text(CONTENT)
+    return tmp_coverage_file
 
-    return tf
+
+@pytest.fixture(name="bed_path_malformed")
+def bed_path_malformed(tmp_path) -> PosixPath:
+    """Return malformed BED file."""
+
+    tmp_bed_file: PosixPath = tmp_path / BED_FILE
+    tmp_bed_file.touch()
+    tmp_bed_file.write_text(CONTENT)
+
+    return tmp_bed_file
 
 
 @pytest.fixture(name="real_coverage_path")
@@ -176,4 +183,13 @@ def interval_query(bed_interval) -> Dict:
         "chromosome": bed_interval[0],
         "start": bed_interval[1],
         "end": bed_interval[2],
+    }
+
+
+@pytest.fixture(name="real_d4_query")
+def real_d4_query(real_coverage_path) -> Dict[str, str]:
+    """Returns a query dictionary with the path to an existing D4 coverage file."""
+
+    return {
+        "coverage_file_path": real_coverage_path,
     }

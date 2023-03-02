@@ -1,5 +1,6 @@
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 
+from chanjo2.models.pydantic_models import CoverageInterval
 from pyd4 import D4File
 
 
@@ -20,3 +21,20 @@ def interval_coverage(
 ) -> float:
     """Return coverage over a single interval of a D4 file."""
     return d4_file.mean([interval])[0]
+
+
+def intervals_coverage(
+    d4_file: D4File, intervals: List[Tuple[str, int, int]]
+) -> List[CoverageInterval]:
+    """Return coverage over a list of intervals."""
+    intervals_cov: List[CoverageInterval] = []
+    for interval in intervals:
+        intervals_cov.append(
+            CoverageInterval(
+                chromosome=interval[0],
+                start=interval[1],
+                end=interval[2],
+                mean_coverage=d4_file.mean(interval),
+            )
+        )
+    return intervals_cov

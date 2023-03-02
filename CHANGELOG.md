@@ -14,6 +14,7 @@
 - Demo data (D4 file containing coverage data for a panel of 4 genes)
 - Endpoint for coverage queries over a single interval of a provided D4 file
 - Demo case and demo sample loaded with demo instance startup
+- Endpoint for coverage queries over the intervals of a BED file
 ### Fixed
 - Bugs preventing the gunicorn app to launch
 - Code to compose DB url to work when app is invoked from docker-compose
@@ -35,3 +36,4 @@
 - Updated a few python dependencies
 - Moved validation of sample's coverage file path to sample's pydantic model
 - Installing the pyd4 module as a requirement of this repository
+- Moved the endpoints contants to a class in test fixtures
