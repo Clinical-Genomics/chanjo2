@@ -55,7 +55,7 @@ def read_intervals(coverage_file_path: str, bed_file: bytes = File(...)):
     """Return coverage on the given intervals for a D4 resource located on the disk or on a remote server."""
 
     try:
-        d4_file: D4File = set_d4_file(coverage_file_path)
+        d4_file: D4File = set_d4_file(coverage_file_path=coverage_file_path)
     except:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -63,7 +63,9 @@ def read_intervals(coverage_file_path: str, bed_file: bytes = File(...)):
         )
 
     try:
-        intervals: List[Tuple[str, Optional[int], Optional[int]]] = parse_bed(bed_file)
+        intervals: List[Tuple[str, Optional[int], Optional[int]]] = parse_bed(
+            bed_file=bed_file
+        )
     except:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
