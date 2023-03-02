@@ -122,7 +122,7 @@ def test_read_intervals_wrong_bed_file(
     # WHEN using a query for genomic intervals over an existing d4 file
     d4_query = {"coverage_file_path": real_coverage_path}
 
-    # THEN a request to the endpoint should return 404 error (not found)
+    # THEN a request to the endpoint should return 404 error
     response = client.post(endpoints.INTERVALS, params=d4_query, files=files)
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
