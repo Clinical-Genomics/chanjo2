@@ -142,7 +142,6 @@ def coverage_path(tmp_path) -> PosixPath:
     tf = tmp_path / COVERAGE_FILE
     tf.touch()
     tf.write_text(CONTENT)
-
     return tf
 
 
