@@ -108,7 +108,7 @@ def test_read_intervals_d4_not_found(
     assert result["detail"] == WRONG_COVERAGE_FILE_MSG
 
 
-def test_read_intervals_wrong_bed_file(
+def test_read_intervals_malformed_bed_file(
     bed_path_malformed: PosixPath,
     real_coverage_path: str,
     client: TestClient,
@@ -125,7 +125,7 @@ def test_read_intervals_wrong_bed_file(
 
     # THEN a request to the endpoint should return 404 error
     response = client.post(endpoints.INTERVALS, params=real_d4_query, files=files)
-    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
     # AND show a meaningful message
     result = response.json()

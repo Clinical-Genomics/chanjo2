@@ -68,7 +68,7 @@ def read_intervals(coverage_file_path: str, bed_file: bytes = File(...)):
         )
     except:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=WRONG_BED_FILE_MSG,
         )
 
