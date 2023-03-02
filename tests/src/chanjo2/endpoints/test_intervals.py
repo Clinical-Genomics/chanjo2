@@ -109,14 +109,17 @@ def test_read_intervals_d4_not_found(
 
 
 def test_read_intervals_wrong_bed_file(
-    bed_path: PosixPath, real_coverage_path: str, client: TestClient, endpoints: Type
+    bed_path_malformed: PosixPath,
+    real_coverage_path: str,
+    client: TestClient,
+    endpoints: Type,
 ):
     """Test the function that returns the coverage over multiple intervals of a D4 file.
     Testing with a BED file that is not correctly formatted."""
 
     # GIVEN a malformed BED file
     files = [
-        ("bed_file", ("a_file.bed", open(bed_path, "rb"))),
+        ("bed_file", ("a_file.bed", open(bed_path_malformed, "rb"))),
     ]
 
     # WHEN using a query for genomic intervals over an existing d4 file
