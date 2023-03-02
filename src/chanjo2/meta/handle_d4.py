@@ -39,5 +39,4 @@ def intervals_coverage(
                 }
             )
         )
-
     return intervals_cov
