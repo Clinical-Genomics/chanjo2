@@ -37,8 +37,19 @@ class IntervalTag(Base):
 
     __tablename__ = "interval_tag"
 
-    interval_id = Column(ForeignKey("intervals.id"), primary_key=True)
-    tag_id = Column(ForeignKey("tags.id"), primary_key=True)
+    interval_id = Column(Integer, ForeignKey("intervals.id"), primary_key=True)
+    tag_id = Column(Integer, ForeignKey("tags.id"), primary_key=True)
+
+
+class Interval(Base):
+    """Used to define a single genomic interval"""
+
+    __tablename__ = "intervals"
+
+    id = Column(Integer, primary_key=True, index=True)
+    chromosome = Column(String(6), nullable=False)
+    start = Column(Integer, nullable=False)
+    stop = Column(Integer, nullable=False)
 
 
 class Tag(Base):
@@ -52,14 +63,3 @@ class Tag(Base):
     name = Column(String(64), nullable=False, index=True)
     type = Column(Enum(TagType))
     build = Column(Enum(Builds))
-
-
-class Interval(Base):
-    """Used to define a single genomic interval"""
-
-    __tablename__ = "intervals"
-
-    id = Column(Integer, primary_key=True, index=True)
-    chromosome = Column(String(6), nullable=False)
-    start = Column(Integer, nullable=False)
-    stop = Column(Integer, nullable=False)

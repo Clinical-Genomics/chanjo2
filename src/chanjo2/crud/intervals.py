@@ -16,6 +16,6 @@ def create_db_interval(db: Session, interval: IntervalBase) -> SQLInterval:
     return db_interval
 
 
-def get_intervals(tags: Optional[List[str]], limit: int, db: Session) -> List[SQLInterval]:
-    """Return intervals filtered by tags."""
-    return db.query(SQLInterval).limit(limit).all()
+def count_intervals(db: Session) -> int:
+    """Count number of intervals returned by a query"""
+    return db.query(SQLInterval.id).count()

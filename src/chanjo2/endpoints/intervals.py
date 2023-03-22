@@ -1,7 +1,6 @@
 from typing import List, Optional, Tuple
 
 from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
-from chanjo2.crud.intervals import get_intervals
 from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import parse_bed
 from chanjo2.meta.handle_d4 import interval_coverage, intervals_coverage, set_d4_file, set_interval
@@ -66,14 +65,6 @@ def read_intervals(coverage_file_path: str, bed_file: bytes = File(...)):
         )
 
     return intervals_coverage(d4_file=d4_file, intervals=intervals)
-
-
-@router.post("/intervals/tags", response_model=List[Interval])
-def intervals_by_tag(
-    tags: Optional[List[str]], limit: int = 100, session: Session = Depends(get_session)
-):
-    """Filter intervals by tag"""
-    return get_intervals(db=session, tags=tags, limit=limit)
 
 
 @router.post("/intervals/load/intervals/{build}")
