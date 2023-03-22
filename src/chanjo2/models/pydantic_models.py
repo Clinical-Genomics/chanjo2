@@ -13,6 +13,13 @@ class Builds(str, Enum):
     build_38 = "GRCh38"
 
 
+class TagType(Enum):
+    GENE = 0
+    TRANSCRIPT = 1
+    EXON = 2
+    INTERVAL = 4  # generic interval
+
+
 class CaseBase(BaseModel):
     name: str
     display_name: Optional[str] = None
@@ -58,6 +65,7 @@ class Case(CaseBase):
 
 class TagBase(BaseModel):
     name: str
+    type: TagType
     build: Builds
 
 
@@ -70,17 +78,12 @@ class TagRead(TagBase):
 
 
 class IntervalBase(BaseModel):
-    name: str
     chromosome: str
     start: int
     stop: int
 
 
-class IntervalCreate(IntervalBase):
-    pass
-
-
-class IntervalRead(IntervalBase):
+class Interval(IntervalBase):
     id: int
     tags: List[TagRead] = []
 

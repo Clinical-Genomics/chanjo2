@@ -1,5 +1,5 @@
 from chanjo2.dbutil import Base
-from chanjo2.models.pydantic_models import Builds
+from chanjo2.models.pydantic_models import Builds, TagType
 from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, String, Table
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -49,7 +49,8 @@ class Tag(Base):
     __tablename__ = "tags"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(64), nullable=False, unique=True)
+    name = Column(String(64), nullable=False, unique=True, index=True)
+    type = Column(Enum(TagType))
     build = Column(Enum(Builds))
 
 
@@ -59,7 +60,6 @@ class Interval(Base):
     __tablename__ = "intervals"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(128), nullable=True, unique=False)
     chromosome = Column(String(6), nullable=False, unique=True)
     start = Column(Integer, nullable=False)
     stop = Column(Integer, nullable=False)

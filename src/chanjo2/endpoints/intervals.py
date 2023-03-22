@@ -4,8 +4,10 @@ from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
 from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import parse_bed
 from chanjo2.meta.handle_d4 import interval_coverage, intervals_coverage, set_d4_file, set_interval
-from chanjo2.models.pydantic_models import CoverageInterval
-from fastapi import APIRouter, Depends, File, HTTPException, status
+from chanjo2.meta.handle_load_intervals import update_genes
+from chanjo2.models.pydantic_models import Builds, CoverageInterval
+from fastapi import APIRouter, Depends, File, HTTPException, Response, status
+from fastapi.responses import JSONResponse
 from pyd4 import D4File
 from sqlmodel import Session, select
 
@@ -63,3 +65,10 @@ def read_intervals(coverage_file_path: str, bed_file: bytes = File(...)):
         )
 
     return intervals_coverage(d4_file=d4_file, intervals=intervals)
+
+
+@router.post("/intervals/load/intervals/{build}")
+async def load_genes(build: Builds) -> Response:
+    """Load genes, transcripts and exons intervals for a genome build."""
+    ngenes: int = await update_genes(build)
+    return JSONResponse(content={"detail": f"{ngenes} genes loaded into database"})
