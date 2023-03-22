@@ -37,8 +37,8 @@ class IntervalTag(Base):
 
     __tablename__ = "interval_tag"
 
-    interval_id = Column(ForeignKey(Interval.id), primary_key=True)
-    tag_id = Column(ForeignKey(Tag.id), primary_key=True)
+    interval_id = Column(ForeignKey("intervals.id"), primary_key=True)
+    tag_id = Column(ForeignKey("tags.id"), primary_key=True)
 
 
 class Tag(Base):
@@ -49,7 +49,7 @@ class Tag(Base):
     __tablename__ = "tags"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(64), nullable=False, unique=True, index=True)
+    name = Column(String(64), nullable=False, index=True)
     type = Column(Enum(TagType))
     build = Column(Enum(Builds))
 

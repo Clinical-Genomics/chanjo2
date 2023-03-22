@@ -14,9 +14,9 @@ class Builds(str, Enum):
 
 
 class TagType(Enum):
-    GENE = 0
-    TRANSCRIPT = 1
-    EXON = 2
+    GENE = 1
+    TRANSCRIPT = 2
+    EXON = 3
     INTERVAL = 4  # generic interval
 
 
