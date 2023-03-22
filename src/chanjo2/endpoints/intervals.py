@@ -1,18 +1,10 @@
 from typing import List, Optional, Tuple
 
+from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
 from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import parse_bed
-from chanjo2.meta.handle_d4 import (
-    interval_coverage,
-    intervals_coverage,
-    set_d4_file,
-    set_interval,
-)
-from chanjo2.models.pydantic_models import (
-    WRONG_BED_FILE_MSG,
-    WRONG_COVERAGE_FILE_MSG,
-    CoverageInterval,
-)
+from chanjo2.meta.handle_d4 import interval_coverage, intervals_coverage, set_d4_file, set_interval
+from chanjo2.models.pydantic_models import CoverageInterval
 from fastapi import APIRouter, Depends, File, HTTPException, status
 from pyd4 import D4File
 from sqlmodel import Session, select
@@ -63,9 +55,7 @@ def read_intervals(coverage_file_path: str, bed_file: bytes = File(...)):
         )
 
     try:
-        intervals: List[Tuple[str, Optional[int], Optional[int]]] = parse_bed(
-            bed_file=bed_file
-        )
+        intervals: List[Tuple[str, Optional[int], Optional[int]]] = parse_bed(bed_file=bed_file)
     except:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
