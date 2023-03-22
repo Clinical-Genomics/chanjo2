@@ -10,3 +10,7 @@ def create_db_tag(db: Session, tag: TagBase) -> SQLTag:
     db.commit()
     db.refresh(db_tag)
     return db_tag
+
+
+def create_tag_link(db: Session, interval_id: int, tag_id: int):
+    """Link a tag to a specific intervals"""

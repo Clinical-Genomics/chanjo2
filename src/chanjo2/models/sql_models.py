@@ -32,13 +32,13 @@ class Sample(Base):
     case = relationship("Case", back_populates="samples")
 
 
-# Table used to define the many-to-many relationship between the Interval and Tag tables
-interval_tag = Table(
-    "interval_tag",
-    Base.metadata,
-    Column("interval_id", ForeignKey("intervals.id"), primary_key=True),
-    Column("tag_id", ForeignKey("tags.id"), primary_key=True),
-)
+class IntervalTag(Base):
+    """Table used to define the many-to-many relationship between the Interval and Tag tables"""
+
+    __tablename__ = "interval_tag"
+
+    interval_id = Column(ForeignKey(Interval.id), primary_key=True)
+    tag_id = Column(ForeignKey(Tag.id), primary_key=True)
 
 
 class Tag(Base):
