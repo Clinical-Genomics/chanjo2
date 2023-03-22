@@ -3,7 +3,12 @@ from typing import List, Optional, Tuple
 from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
 from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import parse_bed
-from chanjo2.meta.handle_d4 import interval_coverage, intervals_coverage, set_d4_file, set_interval
+from chanjo2.meta.handle_d4 import (
+    interval_coverage,
+    intervals_coverage,
+    set_d4_file,
+    set_interval,
+)
 from chanjo2.meta.handle_load_intervals import update_genes
 from chanjo2.models.pydantic_models import Builds, CoverageInterval
 from fastapi import APIRouter, Depends, File, HTTPException, Response, status
@@ -57,7 +62,9 @@ def read_intervals(coverage_file_path: str, bed_file: bytes = File(...)):
         )
 
     try:
-        intervals: List[Tuple[str, Optional[int], Optional[int]]] = parse_bed(bed_file=bed_file)
+        intervals: List[Tuple[str, Optional[int], Optional[int]]] = parse_bed(
+            bed_file=bed_file
+        )
     except:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -68,7 +75,11 @@ def read_intervals(coverage_file_path: str, bed_file: bytes = File(...)):
 
 
 @router.post("/intervals/load/intervals/{build}")
-async def load_genes(build: Builds, session: Session = Depends(get_session)) -> Response:
+async def load_genes(
+    build: Builds, session: Session = Depends(get_session)
+) -> Response:
     """Load genes, transcripts and exons intervals for a genome build."""
     n_loaded_genes: int = await update_genes(build, session)
-    return JSONResponse(content={"detail": f"{n_loaded_genes} genes loaded into database"})
+    return JSONResponse(
+        content={"detail": f"{n_loaded_genes} genes loaded into database"}
+    )
