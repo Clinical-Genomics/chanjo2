@@ -68,7 +68,7 @@ def read_intervals(coverage_file_path: str, bed_file: bytes = File(...)):
 
 
 @router.post("/intervals/load/intervals/{build}")
-async def load_genes(build: Builds) -> Response:
+async def load_genes(build: Builds, session: Session = Depends(get_session)) -> Response:
     """Load genes, transcripts and exons intervals for a genome build."""
-    ngenes: int = await update_genes(build)
-    return JSONResponse(content={"detail": f"{ngenes} genes loaded into database"})
+    n_loaded_genes: int = await update_genes(build, session)
+    return JSONResponse(content={"detail": f"{n_loaded_genes} genes loaded into database"})

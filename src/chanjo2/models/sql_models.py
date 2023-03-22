@@ -60,6 +60,6 @@ class Interval(Base):
     __tablename__ = "intervals"
 
     id = Column(Integer, primary_key=True, index=True)
-    chromosome = Column(String(6), nullable=False, unique=True)
+    chromosome = Column(String(6), nullable=False)
     start = Column(Integer, nullable=False)
     stop = Column(Integer, nullable=False)

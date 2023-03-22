@@ -13,3 +13,5 @@ GENES_FILE_HEADER: List = [
     "HGNC symbol",
     "HGNC ID(s)",
 ]
+
+GENE_TAG = "gene"

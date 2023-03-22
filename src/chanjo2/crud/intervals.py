@@ -1,5 +1,6 @@
 from chanjo2.models.pydantic_models import IntervalBase
 from chanjo2.models.sql_models import Interval as SQLInterval
+from sqlmodel import Session
 
 
 def create_db_interval(db: Session, interval: IntervalBase) -> SQLInterval:

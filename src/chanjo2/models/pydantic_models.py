@@ -69,10 +69,6 @@ class TagBase(BaseModel):
     build: Builds
 
 
-class TagCreate(TagBase):
-    pass
-
-
 class TagRead(TagBase):
     id: int
 
