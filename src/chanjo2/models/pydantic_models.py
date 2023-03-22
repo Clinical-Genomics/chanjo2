@@ -83,6 +83,9 @@ class Interval(IntervalBase):
     id: int
     tags: List[TagRead] = []
 
+    class Config:
+        orm_mode = True
+
 
 class CoverageInterval(BaseModel):
     chromosome: str

@@ -1,6 +1,8 @@
+from typing import List, Optional
+
 from chanjo2.models.pydantic_models import IntervalBase
 from chanjo2.models.sql_models import Interval as SQLInterval
-from sqlmodel import Session
+from sqlalchemy.orm import Session, query
 
 
 def create_db_interval(db: Session, interval: IntervalBase) -> SQLInterval:
@@ -12,3 +14,8 @@ def create_db_interval(db: Session, interval: IntervalBase) -> SQLInterval:
     db.commit()
     db.refresh(db_interval)
     return db_interval
+
+
+def get_intervals(tags: Optional[List[str]], limit: int, db: Session) -> List[SQLInterval]:
+    """Return intervals filtered by tags."""
+    return db.query(SQLInterval).limit(limit).all()

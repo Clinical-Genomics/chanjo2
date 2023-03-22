@@ -1,7 +1,7 @@
 from chanjo2.models.pydantic_models import TagBase
 from chanjo2.models.sql_models import IntervalTag
 from chanjo2.models.sql_models import Tag as SQLTag
-from sqlmodel import Session
+from sqlalchemy.orm import Session
 
 
 def create_db_tag(db: Session, tag: TagBase) -> SQLTag:
