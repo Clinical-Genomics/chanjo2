@@ -81,7 +81,9 @@ def test_read_single_chromosome(
     assert coverage_data.end is None
 
 
-def test_read_intervals_d4_not_found(mock_coverage_file: str, client: TestClient, endpoints: Type):
+def test_read_intervals_d4_not_found(
+    mock_coverage_file: str, client: TestClient, endpoints: Type
+):
     """Test the function that returns the coverage over multiple intervals of a D4 file.
     Testing with a D4 file not found on disk or on a remote server."""
 
