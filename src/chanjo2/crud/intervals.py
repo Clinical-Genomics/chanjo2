@@ -1,21 +1,27 @@
 from typing import List, Optional
 
-from chanjo2.models.pydantic_models import IntervalBase
-from chanjo2.models.sql_models import Interval as SQLInterval
+from chanjo2.models.pydantic_models import GeneBase
+from chanjo2.models.sql_models import Gene as SQLGene
 from sqlalchemy.orm import Session, query
 
 
-def create_db_interval(db: Session, interval: IntervalBase) -> SQLInterval:
-    """Create a case."""
-    db_interval = SQLInterval(
-        chromosome=interval.chromosome, start=interval.start, stop=interval.stop
+def create_db_gene(db: Session, gene: GeneBase):
+    """Add a gene into the database"""
+    db_gene = SQLGene(
+        build=gene.build,
+        chromosome=gene.chromosome,
+        start=gene.start,
+        stop=gene.stop,
+        ensembl_id=gene.ensembl_id,
+        hgnc_symbol=gene.hgnc_symbol,
+        hgnc_id=gene.hgnc_id,
     )
-    db.add(db_interval)
+    db.add(db_gene)
     db.commit()
-    db.refresh(db_interval)
-    return db_interval
+    db.refresh(db_gene)
+    return db_gene
 
 
-def count_intervals(db: Session) -> int:
-    """Count number of intervals returned by a query"""
-    return db.query(SQLInterval.id).count()
+def count_genes(db: Session) -> int:
+    """Count number of genes present in the database"""
+    return db.query(SQLGene.id).count()

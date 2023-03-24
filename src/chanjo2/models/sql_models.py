@@ -1,5 +1,5 @@
 from chanjo2.dbutil import Base
-from chanjo2.models.pydantic_models import Builds, TagType
+from chanjo2.models.pydantic_models import Builds
 from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, String, Table
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -32,15 +32,6 @@ class Sample(Base):
     case = relationship("Case", back_populates="samples")
 
 
-class IntervalTag(Base):
-    """Table used to define the many-to-many relationship between the Interval and Tag tables"""
-
-    __tablename__ = "interval_tag"
-
-    interval_id = Column(Integer, ForeignKey("intervals.id"), primary_key=True)
-    tag_id = Column(Integer, ForeignKey("tags.id"), primary_key=True)
-
-
 class Interval(Base):
     """Used to define a single genomic interval"""
 
@@ -52,14 +43,15 @@ class Interval(Base):
     stop = Column(Integer, nullable=False)
 
 
-class Tag(Base):
-    """Used to define an attribute for one or more intervals.
-    Can be a single gene, can be "Mane" or an entire Genome build.
-    It is in a relationship many-to-many with the Interval table"""
+class Gene(Base):
+    """Used to define a gene entity"""
 
-    __tablename__ = "tags"
-
+    __tablename__ = "genes"
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(64), nullable=False, index=True)
-    type = Column(Enum(TagType))
-    build = Column(Enum(Builds))
+    chromosome = Column(String(6), nullable=False)
+    start = Column(Integer, nullable=False)
+    stop = Column(Integer, nullable=False)
+    ensembl_id = Column(String(24), nullable=False, index=True)
+    hgnc_id = Column(Integer, nullable=True, index=True)
+    hgnc_symbol = Column(String(24), nullable=True, index=True)
+    build = Column(Enum(Builds), index=True)
