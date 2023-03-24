@@ -42,7 +42,7 @@ async def update_genes(build: Builds, session: Session) -> int:
         )
         return 0
 
-    for line in lines[:10]:
+    for line in lines:
         items = [
             None if i == "" else i for i in line.split("\t")
         ]  # Convert empty strings to None
@@ -60,5 +60,5 @@ async def update_genes(build: Builds, session: Session) -> int:
         create_db_gene(db=session, gene=gene)
 
     n_loaded_genes: int = count_genes(db=session) - initial_genes
-    LOG.INFO(f"{n_loaded_genes} genes loaded into the database.")
+    LOG.info(f"{n_loaded_genes} genes loaded into the database.")
     return n_loaded_genes

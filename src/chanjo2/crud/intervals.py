@@ -1,8 +1,15 @@
-from typing import List, Optional
+from typing import List, Optional, Union
 
-from chanjo2.models.pydantic_models import GeneBase
+from chanjo2.models.pydantic_models import Builds, Gene, GeneBase
 from chanjo2.models.sql_models import Gene as SQLGene
 from sqlalchemy.orm import Session, query
+
+
+def _filter_intervals_by_build(
+    intervals: query.Query, interval_type: Union[SQLGene], build: Builds
+) -> List[Union[SQLGene]]:
+    """Filter samples by sample name."""
+    return intervals.filter(interval_type.build == build)
 
 
 def create_db_gene(db: Session, gene: GeneBase):
@@ -25,3 +32,11 @@ def create_db_gene(db: Session, gene: GeneBase):
 def count_genes(db: Session) -> int:
     """Count number of genes present in the database."""
     return db.query(SQLGene.id).count()
+
+
+def get_genes(db: Session, build: Builds) -> List[Gene]:
+    """Returns genes in the given genome build"""
+    query = db.query(SQLGene)
+    return _filter_intervals_by_build(
+        intervals=query, interval_type=SQLGene, build=build
+    ).all()

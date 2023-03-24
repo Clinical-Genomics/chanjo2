@@ -1,6 +1,7 @@
 from typing import List, Optional, Tuple
 
 from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
+from chanjo2.crud.intervals import get_genes
 from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import parse_bed
 from chanjo2.meta.handle_d4 import (
@@ -10,7 +11,7 @@ from chanjo2.meta.handle_d4 import (
     set_interval,
 )
 from chanjo2.meta.handle_load_intervals import update_genes
-from chanjo2.models.pydantic_models import Builds, CoverageInterval, Interval
+from chanjo2.models.pydantic_models import Builds, CoverageInterval, Gene, Interval
 from fastapi import APIRouter, Depends, File, HTTPException, Response, status
 from fastapi.responses import JSONResponse
 from pyd4 import D4File
@@ -83,3 +84,9 @@ async def load_genes(
     return JSONResponse(
         content={"detail": f"{n_loaded_genes} genes loaded into the database"}
     )
+
+
+@router.post("/intervals/genes/{build}")
+def genes(build: Builds, session: Session = Depends(get_session)) -> List[Gene]:
+    """Load genes of in the given genome build."""
+    return get_genes(db=session, build=build)
