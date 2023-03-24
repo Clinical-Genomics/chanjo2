@@ -5,7 +5,7 @@ import pytest
 from _io import TextIOWrapper
 from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
 from chanjo2.demo import gene_panel_file, gene_panel_path
-from chanjo2.models.pydantic_models import Builds, CoverageInterval
+from chanjo2.models.pydantic_models import Builds, CoverageInterval, Gene
 from fastapi import status
 from fastapi.testclient import TestClient
 from pytest_mock.plugin import MockerFixture
@@ -185,5 +185,14 @@ def test_load_genes(
     response: Response = client.post(f"{endpoints.LOAD_GENES}{build}")
     # THEN it should return success
     assert response.status_code == status.HTTP_200_OK
-    # AND all the genes should be loaded
+    # THEN all the genes should be loaded
     assert response.json()["detail"] == f"{n_genes} genes loaded into the database"
+
+    # WHEN sending a request to the "genes" endpoint
+    response: Response = client.get(f"{endpoints.GENES}{build}")
+    assert response.status_code == status.HTTP_200_OK
+    result = response.json()
+    # THEN the expected number of genes should be returned
+    assert len(result) == n_genes
+    # AND the should have the right format
+    assert Gene(**result[0])

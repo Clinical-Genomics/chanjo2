@@ -35,6 +35,7 @@ class Endpoints(str, Enum):
     INTERVAL = "/intervals/interval/"
     INTERVALS = "/intervals/"
     LOAD_GENES = "/intervals/load/genes/"
+    GENES = "/intervals/genes/"
 
 
 class Helpers:
