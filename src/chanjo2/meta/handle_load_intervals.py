@@ -18,6 +18,7 @@ async def resource_lines(url) -> Tuple[List[List], List]:
     all_lines: List = "".join(
         [i.decode("utf-8") async for i in stream_resource(url=url)]
     ).split("\n")
+    all_lines = [line.rstrip() for line in all_lines]
     resource_header = all_lines[0]
     resource_lines = all_lines[1:-2]  # last 2 lines don't contain data
     return resource_header.split("\t"), resource_lines
@@ -36,15 +37,16 @@ async def update_genes(build: Builds, session: Session) -> int:
     initial_genes: int = count_genes(db=session)
     url: str = _ensembl_genes_url(build)
     header, lines = await resource_lines(url)
-    if header != GENES_FILE_HEADER:
+
+    if header != GENES_FILE_HEADER[build]:
         LOG.warning(
-            f"Ensembl genes file has an unexpected format:{header}. Expected format: {GENES_FILE_HEADER}"
+            f"Ensembl genes file has an unexpected format:{header}. Expected format: {GENES_FILE_HEADER[build]}"
         )
         return 0
 
     for line in lines:
         items = [
-            None if i == "" else i for i in line.split("\t")
+            None if i == "" else i.replace("HGNC:", "") for i in line.split("\t")
         ]  # Convert empty strings to None
 
         # Load gene interval into the database

@@ -90,7 +90,9 @@ def test_read_single_chromosome(
     assert coverage_data.end is None
 
 
-def test_read_intervals_d4_not_found(mock_coverage_file: str, client: TestClient, endpoints: Type):
+def test_read_intervals_d4_not_found(
+    mock_coverage_file: str, client: TestClient, endpoints: Type
+):
     """Test the function that returns the coverage over multiple intervals of a D4 file.
     Testing with a D4 file not found on disk or on a remote server."""
 
@@ -173,10 +175,15 @@ def test_load_genes(
 
     # GIVEN a patched response from Ensembl Biomart, via schug
     gene_lines: TextIOWrapper = file_handler(path)
-    mocker.patch("schug.endpoints.genes.stream_resource", return_value=gene_lines)
+    mocker.patch(
+        "chanjo2.meta.handle_load_intervals.resource_lines", return_value=gene_lines
+    )
 
+    # GIVEN a number of genes contained in the genes file
+    n_genes = len(gene_lines[1])
     # WHEN sending a request to the load_genes with genome build
-    response: Response = client.post(f"{endpoints.LOAD_GENES}?build={build}")
+    response: Response = client.post(f"{endpoints.LOAD_GENES}{build}")
     # THEN it should return success
     assert response.status_code == status.HTTP_200_OK
-    assert response.text == "skdjk"
+    # AND all the genes should be loaded
+    assert response.json()["detail"] == f"{n_genes} genes loaded into the database"
