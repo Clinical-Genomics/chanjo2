@@ -10,12 +10,16 @@ from sqlalchemy.orm import Session, query
 LOG = logging.getLogger("uvicorn.access")
 
 
-def _filter_samples_by_name(samples: query.Query, sample_name: str, **kwargs) -> SQLSample:
+def _filter_samples_by_name(
+    samples: query.Query, sample_name: str, **kwargs
+) -> SQLSample:
     """Filter samples by sample name."""
     return samples.filter(SQLSample.name == sample_name).first()
 
 
-def _filter_samples_by_case(samples: query.Query, case_name: str, **kwargs) -> List[SQLSample]:
+def _filter_samples_by_case(
+    samples: query.Query, case_name: str, **kwargs
+) -> List[SQLSample]:
     """Filter samples by case name."""
     return samples.filter(SQLCase.name == case_name).all()
 

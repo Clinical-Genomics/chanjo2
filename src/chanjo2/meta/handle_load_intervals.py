@@ -15,9 +15,9 @@ LOG = logging.getLogger("uvicorn.access")
 
 async def resource_lines(url) -> Tuple[List[List], List]:
     """Returns header and lines of a downloaded resources as strings."""
-    all_lines: List = "".join([i.decode("utf-8") async for i in stream_resource(url=url)]).split(
-        "\n"
-    )
+    all_lines: List = "".join(
+        [i.decode("utf-8") async for i in stream_resource(url=url)]
+    ).split("\n")
     resource_header = all_lines[0]
     resource_lines = all_lines[1:-2]  # last 2 lines don't contain data
     return resource_header.split("\t"), resource_lines
@@ -43,7 +43,9 @@ async def update_genes(build: Builds, session: Session) -> int:
         return 0
 
     for line in lines[:10]:
-        items = [None if i == "" else i for i in line.split("\t")]  # Convert empty strings to None
+        items = [
+            None if i == "" else i for i in line.split("\t")
+        ]  # Convert empty strings to None
 
         # Load gene interval into the database
         gene: Gene = GeneBase(
