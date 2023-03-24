@@ -1,11 +1,20 @@
 from pathlib import PosixPath
-from typing import Dict, Type
+from typing import Callable, Dict, Type
 
+import pytest
+from _io import TextIOWrapper
 from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
 from chanjo2.demo import gene_panel_file, gene_panel_path
-from chanjo2.models.pydantic_models import CoverageInterval
+from chanjo2.models.pydantic_models import Builds, CoverageInterval
 from fastapi import status
 from fastapi.testclient import TestClient
+from pytest_mock.plugin import MockerFixture
+from schug.demo import GENES_37_FILE_PATH, GENES_38_FILE_PATH
+
+BUILD_GENES_RESOURCE = [
+    (Builds.build_37, GENES_37_FILE_PATH),
+    (Builds.build_38, GENES_38_FILE_PATH),
+]
 
 
 def test_read_single_interval_d4_not_found(
@@ -81,9 +90,7 @@ def test_read_single_chromosome(
     assert coverage_data.end is None
 
 
-def test_read_intervals_d4_not_found(
-    mock_coverage_file: str, client: TestClient, endpoints: Type
-):
+def test_read_intervals_d4_not_found(mock_coverage_file: str, client: TestClient, endpoints: Type):
     """Test the function that returns the coverage over multiple intervals of a D4 file.
     Testing with a D4 file not found on disk or on a remote server."""
 
@@ -151,3 +158,25 @@ def test_read_intervals(
     result = response.json()
     for interval in result:
         assert CoverageInterval(**interval)
+
+
+@pytest.mark.parametrize("build, path", BUILD_GENES_RESOURCE)
+def test_load_genes(
+    build: str,
+    path: str,
+    client: TestClient,
+    endpoints: Type,
+    mocker: MockerFixture,
+    file_handler: Callable,
+):
+    """Test the endpoint that adds genes to the database in a given genome build."""
+
+    # GIVEN a patched response from Ensembl Biomart, via schug
+    gene_lines: TextIOWrapper = file_handler(path)
+    mocker.patch("schug.endpoints.genes.stream_resource", return_value=gene_lines)
+
+    # WHEN sending a request to the load_genes with genome build
+    response: Response = client.post(f"{endpoints.LOAD_GENES}?build={build}")
+    # THEN it should return success
+    assert response.status_code == status.HTTP_200_OK
+    assert response.text == "skdjk"

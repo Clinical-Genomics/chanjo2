@@ -3,6 +3,7 @@ from pathlib import PosixPath
 from typing import Dict, Tuple
 
 import pytest
+from _io import TextIOWrapper
 from chanjo2.dbutil import DEMO_CONNECT_ARGS, get_session
 from chanjo2.demo import d4_demo_path, gene_panel_path
 from chanjo2.main import Base, app, engine
@@ -33,6 +34,7 @@ class Endpoints(str, Enum):
     SAMPLES = "/samples/"
     INTERVAL = "/intervals/interval/"
     INTERVALS = "/intervals/"
+    LOAD_GENES = "/intervals/load/genes/"
 
 
 class Helpers:
@@ -193,3 +195,13 @@ def real_d4_query(real_coverage_path) -> Dict[str, str]:
     return {
         "coverage_file_path": real_coverage_path,
     }
+
+
+@pytest.fixture(name="file_handler")
+def file_handler() -> TextIOWrapper:
+    """Get a file handler to a resource file."""
+
+    def _open_file(file_path: str) -> TextIOWrapper:
+        return open(file_path, "r", encoding="utf-8")
+
+    return _open_file
