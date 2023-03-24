@@ -2,7 +2,12 @@ from typing import List, Optional, Tuple
 
 from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import parse_bed
-from chanjo2.meta.handle_d4 import interval_coverage, intervals_coverage, set_d4_file, set_interval
+from chanjo2.meta.handle_d4 import (
+    interval_coverage,
+    intervals_coverage,
+    set_d4_file,
+    set_interval,
+)
 from chanjo2.models.pydantic_models import (
     WRONG_BED_FILE_MSG,
     WRONG_COVERAGE_FILE_MSG,
@@ -45,7 +50,9 @@ def d4_interval_coverage(
     )
 
 
-@router.post("/intervals/coverage/d4/interval_file/", response_model=List[CoverageInterval])
+@router.post(
+    "/intervals/coverage/d4/interval_file/", response_model=List[CoverageInterval]
+)
 def d4_intervals_coverage(coverage_file_path: str, bed_file: bytes = File(...)):
     """Return coverage on the given intervals for a D4 resource located on the disk or on a remote server."""
 
@@ -58,7 +65,9 @@ def d4_intervals_coverage(coverage_file_path: str, bed_file: bytes = File(...)):
         )
 
     try:
-        intervals: List[Tuple[str, Optional[int], Optional[int]]] = parse_bed(bed_file=bed_file)
+        intervals: List[Tuple[str, Optional[int], Optional[int]]] = parse_bed(
+            bed_file=bed_file
+        )
     except:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
