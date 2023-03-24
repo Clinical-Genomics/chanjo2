@@ -4,7 +4,7 @@ from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, inspect
 
-DB_TABLES = ["cases", "interval_tag", "intervals", "samples", "tags"]
+DB_TABLES = ["cases", "intervals", "samples", "genes"]
 
 
 def test_heartbeat(client: TestClient):
