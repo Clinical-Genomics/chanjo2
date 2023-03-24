@@ -31,8 +31,8 @@ class Endpoints(str, Enum):
 
     CASES = "/cases/"
     SAMPLES = "/samples/"
-    INTERVAL = "/intervals/interval/"
-    INTERVALS = "/intervals/"
+    INTERVAL_COVERAGE = "/intervals/coverage/d4/interval/"
+    INTERVALS_FILE_COVERAGE = "/intervals/coverage/d4/interval_file/"
 
 
 class Helpers:
