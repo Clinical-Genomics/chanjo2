@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session, query
 
 
 def create_db_gene(db: Session, gene: GeneBase):
-    """Add a gene into the database"""
+    """Load a gene into the database."""
     db_gene = SQLGene(
         build=gene.build,
         chromosome=gene.chromosome,
@@ -23,5 +23,5 @@ def create_db_gene(db: Session, gene: GeneBase):
 
 
 def count_genes(db: Session) -> int:
-    """Count number of genes present in the database"""
+    """Count number of genes present in the database."""
     return db.query(SQLGene.id).count()
