@@ -8,6 +8,7 @@ from chanjo2.models.sql_models import Gene as SQLGene
 from schug.load.biomart import EnsemblBiomartClient
 from schug.load.ensembl import fetch_ensembl_genes
 from schug.load.fetch_resource import stream_resource
+from schug.models.common import Build as SchugBuild
 from sqlmodel import Session
 
 LOG = logging.getLogger("uvicorn.access")
@@ -24,13 +25,15 @@ async def resource_lines(url) -> Tuple[List[List], List]:
     return resource_header.split("\t"), resource_lines
 
 
-def _ensembl_genes_url(build: Builds) -> str:
+def _ensembl_genes_url(build: str) -> str:
     """Return the URL to download genes using the Ensembl Biomart."""
-    shug_client: EnsemblBiomartClient = fetch_ensembl_genes(build=build)
+    shug_client: EnsemblBiomartClient = fetch_ensembl_genes(
+        build=SchugBuild(build)
+    )  # GRCh38 -> 38
     return shug_client.build_url(xml=shug_client.xml)
 
 
-async def update_genes(build: Builds, session: Session) -> int:
+async def update_genes(build: str, session: Session) -> int:
     """Loads genes into the database."""
 
     LOG.info(f"Loading gene intervals. Genome build --> {build}")
@@ -39,7 +42,7 @@ async def update_genes(build: Builds, session: Session) -> int:
     header, lines = await resource_lines(url)
 
     if header != GENES_FILE_HEADER[build]:
-        LOG.warning(
+        LOG.error(
             f"Ensembl genes file has an unexpected format:{header}. Expected format: {GENES_FILE_HEADER[build]}"
         )
         return 0
