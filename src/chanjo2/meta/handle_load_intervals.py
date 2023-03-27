@@ -25,15 +25,15 @@ async def resource_lines(url) -> Tuple[List[List], List]:
     return resource_header.split("\t"), resource_lines
 
 
-def _ensembl_genes_url(build: str) -> str:
+def _ensembl_genes_url(build: Builds) -> str:
     """Return the URL to download genes using the Ensembl Biomart."""
     shug_client: EnsemblBiomartClient = fetch_ensembl_genes(
         build=SchugBuild(build)
-    )  # GRCh38 -> 38
+    )  # Schug converts 'GRCh38' to '38'
     return shug_client.build_url(xml=shug_client.xml)
 
 
-async def update_genes(build: str, session: Session) -> int:
+async def update_genes(build: Builds, session: Session) -> int:
     """Loads genes into the database."""
 
     LOG.info(f"Loading gene intervals. Genome build --> {build}")
