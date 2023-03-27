@@ -33,7 +33,7 @@ class Sample(Base):
 
 
 class Interval(Base):
-    """Used to define a single genomic interval"""
+    """Used to define a single genomic interval."""
 
     __tablename__ = "intervals"
 
@@ -44,7 +44,7 @@ class Interval(Base):
 
 
 class Gene(Base):
-    """Used to define a gene entity"""
+    """Used to define a gene entity."""
 
     __tablename__ = "genes"
     id = Column(Integer, primary_key=True, index=True)

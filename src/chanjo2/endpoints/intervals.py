@@ -81,7 +81,7 @@ def d4_intervals_coverage(coverage_file_path: str, bed_file: bytes = File(...)):
 async def load_genes(
     build: Builds, session: Session = Depends(get_session)
 ) -> Response:
-    """Load genes of in the given genome build."""
+    """Load genes in the given genome build."""
     n_loaded_genes: int = await update_genes(build, session)
     return JSONResponse(
         content={"detail": f"{n_loaded_genes} genes loaded into the database"}
@@ -92,5 +92,5 @@ async def load_genes(
 async def genes(
     build: Builds, session: Session = Depends(get_session), limit: int = 100
 ) -> List[Gene]:
-    """Load genes of in the given genome build."""
+    """Return genes in the given genome build."""
     return get_genes(db=session, build=build, limit=limit)
