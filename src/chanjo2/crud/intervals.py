@@ -12,9 +12,9 @@ def _filter_intervals_by_build(
     return intervals.filter(interval_type.build == build)
 
 
-def create_db_gene(db: Session, gene: GeneBase):
-    """Load a gene into the database."""
-    db_gene = SQLGene(
+def create_db_gene(gene: GeneBase) -> SQLGene:
+    """Create a SQL gene object."""
+    return SQLGene(
         build=gene.build,
         chromosome=gene.chromosome,
         start=gene.start,
@@ -23,10 +23,13 @@ def create_db_gene(db: Session, gene: GeneBase):
         hgnc_symbol=gene.hgnc_symbol,
         hgnc_id=gene.hgnc_id,
     )
-    db.add(db_gene)
+
+
+def bulk_insert_genes(db: Session, gene_list: List[Gene]):
+    """Bulk insert genes into the database"""
+
+    db.bulk_save_objects([create_db_gene(gene) for gene in gene_list])
     db.commit()
-    db.refresh(db_gene)
-    return db_gene
 
 
 def count_genes(db: Session) -> int:
@@ -34,9 +37,11 @@ def count_genes(db: Session) -> int:
     return db.query(SQLGene.id).count()
 
 
-def get_genes(db: Session, build: Builds) -> List[Gene]:
+def get_genes(db: Session, build: Builds, limit: int) -> List[Gene]:
     """Returns genes in the given genome build"""
     query = db.query(SQLGene)
-    return _filter_intervals_by_build(
-        intervals=query, interval_type=SQLGene, build=build
-    ).all()
+    return (
+        _filter_intervals_by_build(intervals=query, interval_type=SQLGene, build=build)
+        .limit(limit)
+        .all()
+    )

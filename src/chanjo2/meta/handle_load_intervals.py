@@ -2,7 +2,7 @@ import logging
 from typing import List, Tuple
 
 from chanjo2.constants import GENES_FILE_HEADER
-from chanjo2.crud.intervals import count_genes, create_db_gene
+from chanjo2.crud.intervals import bulk_insert_genes, count_genes
 from chanjo2.models.pydantic_models import Builds, GeneBase
 from chanjo2.models.sql_models import Gene as SQLGene
 from schug.load.biomart import EnsemblBiomartClient
@@ -15,9 +15,9 @@ LOG = logging.getLogger("uvicorn.access")
 
 async def resource_lines(url) -> Tuple[List[List], List]:
     """Returns header and lines of a downloaded resource."""
-    all_lines: List = "".join([i.decode("utf-8") async for i in stream_resource(url=url)]).split(
-        "\n"
-    )
+    all_lines: List = "".join(
+        [i.decode("utf-8") async for i in stream_resource(url=url)]
+    ).split("\n")
     all_lines = [line.rstrip("\n") for line in all_lines]
     resource_header = all_lines[0]
     resource_lines = all_lines[1:-2]  # last 2 lines don't contain data
@@ -44,12 +44,11 @@ async def update_genes(build: Builds, session: Session) -> int:
         )
         return 0
 
+    db_genes: List[SQLGene] = []
     for line in lines:
-        LOG.error(line.split("\t"))
         items = [
             None if i == "" else i.replace("HGNC:", "") for i in line.split("\t")
         ]  # Convert empty strings to None
-        LOG.warning(items)
         # Load gene interval into the database
         gene: Gene = GeneBase(
             build=build,
@@ -60,8 +59,9 @@ async def update_genes(build: Builds, session: Session) -> int:
             hgnc_symbol=items[4],
             hgnc_id=items[5],
         )
-        create_db_gene(db=session, gene=gene)
+        db_genes.append(gene)
 
+    bulk_insert_genes(db=session, gene_list=db_genes)
     n_loaded_genes: int = count_genes(db=session) - initial_genes
     LOG.info(f"{n_loaded_genes} genes loaded into the database.")
     return n_loaded_genes

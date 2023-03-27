@@ -4,7 +4,12 @@ from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
 from chanjo2.crud.intervals import get_genes
 from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import parse_bed
-from chanjo2.meta.handle_d4 import interval_coverage, intervals_coverage, set_d4_file, set_interval
+from chanjo2.meta.handle_d4 import (
+    interval_coverage,
+    intervals_coverage,
+    set_d4_file,
+    set_interval,
+)
 from chanjo2.meta.handle_load_intervals import update_genes
 from chanjo2.models.pydantic_models import Builds, CoverageInterval, Gene, Interval
 from fastapi import APIRouter, Depends, File, HTTPException, Response, status
@@ -45,7 +50,9 @@ def d4_interval_coverage(
     )
 
 
-@router.post("/intervals/coverage/d4/interval_file/", response_model=List[CoverageInterval])
+@router.post(
+    "/intervals/coverage/d4/interval_file/", response_model=List[CoverageInterval]
+)
 def d4_intervals_coverage(coverage_file_path: str, bed_file: bytes = File(...)):
     """Return coverage on the given intervals for a D4 resource located on the disk or on a remote server."""
 
@@ -58,7 +65,9 @@ def d4_intervals_coverage(coverage_file_path: str, bed_file: bytes = File(...)):
         )
 
     try:
-        intervals: List[Tuple[str, Optional[int], Optional[int]]] = parse_bed(bed_file=bed_file)
+        intervals: List[Tuple[str, Optional[int], Optional[int]]] = parse_bed(
+            bed_file=bed_file
+        )
     except:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -69,13 +78,19 @@ def d4_intervals_coverage(coverage_file_path: str, bed_file: bytes = File(...)):
 
 
 @router.post("/intervals/load/genes/{build}")
-async def load_genes(build: Builds, session: Session = Depends(get_session)) -> Response:
+async def load_genes(
+    build: Builds, session: Session = Depends(get_session)
+) -> Response:
     """Load genes of in the given genome build."""
     n_loaded_genes: int = await update_genes(build, session)
-    return JSONResponse(content={"detail": f"{n_loaded_genes} genes loaded into the database"})
+    return JSONResponse(
+        content={"detail": f"{n_loaded_genes} genes loaded into the database"}
+    )
 
 
 @router.get("/intervals/genes/{build}")
-async def genes(build: Builds, session: Session = Depends(get_session)) -> List[Gene]:
+async def genes(
+    build: Builds, session: Session = Depends(get_session), limit: int = 100
+) -> List[Gene]:
     """Load genes of in the given genome build."""
-    return get_genes(db=session, build=build)
+    return get_genes(db=session, build=build, limit=limit)
