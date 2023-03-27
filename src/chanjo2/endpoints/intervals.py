@@ -20,8 +20,8 @@ from sqlmodel import Session, select
 router = APIRouter()
 
 
-@router.get("/intervals/interval/", response_model=CoverageInterval)
-def read_single_interval(
+@router.get("/intervals/coverage/d4/interval/", response_model=CoverageInterval)
+def d4_interval_coverage(
     coverage_file_path: str,
     chromosome: str,
     start: Optional[int] = None,
@@ -50,8 +50,10 @@ def read_single_interval(
     )
 
 
-@router.post("/intervals/", response_model=List[CoverageInterval])
-def read_intervals(coverage_file_path: str, bed_file: bytes = File(...)):
+@router.post(
+    "/intervals/coverage/d4/interval_file/", response_model=List[CoverageInterval]
+)
+def d4_intervals_coverage(coverage_file_path: str, bed_file: bytes = File(...)):
     """Return coverage on the given intervals for a D4 resource located on the disk or on a remote server."""
 
     try:

@@ -17,7 +17,7 @@ BUILD_GENES_RESOURCE = [
 ]
 
 
-def test_read_single_interval_d4_not_found(
+def test_d4_interval_coverage_d4_not_found(
     client: TestClient, mock_coverage_file: str, endpoints: Type, interval_query: dict
 ):
     """Test the function that returns the coverage over an interval of a D4 file.
@@ -27,7 +27,7 @@ def test_read_single_interval_d4_not_found(
     interval_query["coverage_file_path"] = mock_coverage_file
 
     # THEN a request to the read_single_interval should return 404 error
-    response = client.get(endpoints.INTERVAL, params=interval_query)
+    response = client.get(endpoints.INTERVAL_COVERAGE, params=interval_query)
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
     # THEN show a meaningful message
@@ -35,7 +35,7 @@ def test_read_single_interval_d4_not_found(
     assert result["detail"] == WRONG_COVERAGE_FILE_MSG
 
 
-def test_read_single_interval(
+def test_d4_interval_coverage(
     client: TestClient,
     real_coverage_path: str,
     endpoints: Type,
@@ -47,7 +47,7 @@ def test_read_single_interval(
     interval_query["coverage_file_path"] = real_coverage_path
 
     # THEN a request to the read_single_interval should be successful
-    response = client.get(endpoints.INTERVAL, params=interval_query)
+    response = client.get(endpoints.INTERVAL_COVERAGE, params=interval_query)
     assert response.status_code == status.HTTP_200_OK
 
     # THEN the mean coverage over the interval should be returned
@@ -61,7 +61,7 @@ def test_read_single_interval(
     assert coverage_data.end
 
 
-def test_read_single_chromosome(
+def test_d4_interval_coverage_single_chromosome(
     client: TestClient,
     real_coverage_path: str,
     endpoints: Type,
@@ -77,7 +77,7 @@ def test_read_single_chromosome(
     interval_query["coverage_file_path"] = real_coverage_path
 
     # THEN a request to the read_single_intervalshould be successful
-    response = client.get(endpoints.INTERVAL, params=interval_query)
+    response = client.get(endpoints.INTERVAL_COVERAGE, params=interval_query)
     assert response.status_code == status.HTTP_200_OK
 
     # AND the mean coverage over the entire chromosome should be present in the result
@@ -90,7 +90,7 @@ def test_read_single_chromosome(
     assert coverage_data.end is None
 
 
-def test_read_intervals_d4_not_found(
+def test_d4_intervals_coverage_d4_not_found(
     mock_coverage_file: str, client: TestClient, endpoints: Type
 ):
     """Test the function that returns the coverage over multiple intervals of a D4 file.
@@ -105,7 +105,9 @@ def test_read_intervals_d4_not_found(
     d4_query = {"coverage_file_path": mock_coverage_file}
 
     # THEN a request to the endpoint should return 404 error
-    response = client.post(endpoints.INTERVALS, params=d4_query, files=files)
+    response = client.post(
+        endpoints.INTERVALS_FILE_COVERAGE, params=d4_query, files=files
+    )
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
     # AND show a meaningful message
@@ -114,7 +116,7 @@ def test_read_intervals_d4_not_found(
     assert result["detail"] == WRONG_COVERAGE_FILE_MSG
 
 
-def test_read_intervals_malformed_bed_file(
+def test_d4_intervals_coverage_malformed_bed_file(
     bed_path_malformed: PosixPath,
     real_coverage_path: str,
     client: TestClient,
@@ -130,7 +132,9 @@ def test_read_intervals_malformed_bed_file(
     ]
 
     # THEN a request to the endpoint should return 404 error
-    response = client.post(endpoints.INTERVALS, params=real_d4_query, files=files)
+    response = client.post(
+        endpoints.INTERVALS_FILE_COVERAGE, params=real_d4_query, files=files
+    )
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
     # AND show a meaningful message
@@ -139,7 +143,7 @@ def test_read_intervals_malformed_bed_file(
     assert result["detail"] == WRONG_BED_FILE_MSG
 
 
-def test_read_intervals(
+def test_d4_intervals_coverage(
     real_coverage_path: str,
     client: TestClient,
     endpoints: Type,
@@ -153,7 +157,9 @@ def test_read_intervals(
     ]
 
     # THEN a request to the endpoint should return HTTP 200
-    response = client.post(endpoints.INTERVALS, params=real_d4_query, files=files)
+    response = client.post(
+        endpoints.INTERVALS_FILE_COVERAGE, params=real_d4_query, files=files
+    )
     assert response.status_code == status.HTTP_200_OK
 
     # AND return coverage intervals data
