@@ -33,7 +33,7 @@ def _ensembl_genes_url(build: Builds) -> str:
     return shug_client.build_url(xml=shug_client.xml)
 
 
-async def update_genes(build: Builds, session: Session) -> int:
+async def update_genes(build: Builds, session: Session) -> Tuple[int, str]:
     """Loads genes into the database."""
 
     LOG.info(f"Loading gene intervals. Genome build --> {build}")
@@ -42,10 +42,9 @@ async def update_genes(build: Builds, session: Session) -> int:
     header, lines = await resource_lines(url)
 
     if header != GENES_FILE_HEADER[build]:
-        LOG.error(
-            f"Ensembl genes file has an unexpected format:{header}. Expected format: {GENES_FILE_HEADER[build]}"
-        )
-        return 0
+        error = f"Ensembl genes file has an unexpected format:{header}. Expected format: {GENES_FILE_HEADER[build]}"
+        LOG.error(error)
+        return 0, error
 
     db_genes: List[SQLGene] = []
     for line in lines:
@@ -53,7 +52,7 @@ async def update_genes(build: Builds, session: Session) -> int:
             None if i == "" else i.replace("HGNC:", "") for i in line.split("\t")
         ]  # Convert empty strings to None
         # Load gene interval into the database
-        gene: Gene = GeneBase(
+        gene: SQLGene = GeneBase(
             build=build,
             chromosome=items[0],
             start=int(items[1]),
@@ -67,4 +66,4 @@ async def update_genes(build: Builds, session: Session) -> int:
     bulk_insert_genes(db=session, gene_list=db_genes)
     n_loaded_genes: int = count_genes(db=session) - initial_genes
     LOG.info(f"{n_loaded_genes} genes loaded into the database.")
-    return n_loaded_genes
+    return n_loaded_genes, "OK"

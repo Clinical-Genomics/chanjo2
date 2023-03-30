@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
 from chanjo2.crud.intervals import get_genes
@@ -80,12 +80,18 @@ def d4_intervals_coverage(coverage_file_path: str, bed_file: bytes = File(...)):
 @router.post("/intervals/load/genes/{build}")
 async def load_genes(
     build: Builds, session: Session = Depends(get_session)
-) -> Response:
+) -> Union[Response, HTTPException]:
     """Load genes in the given genome build."""
-    n_loaded_genes: int = await update_genes(build, session)
-    return JSONResponse(
-        content={"detail": f"{n_loaded_genes} genes loaded into the database"}
-    )
+    n_loaded_genes, detail = await update_genes(build, session)
+    if n_loaded_genes:
+        return JSONResponse(
+            content={"detail": f"{n_loaded_genes} genes loaded into the database"}
+        )
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=detail,
+        )
 
 
 @router.get("/intervals/genes/{build}")
