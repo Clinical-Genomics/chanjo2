@@ -5,7 +5,7 @@ WRONG_COVERAGE_FILE_MSG: str = (
 )
 WRONG_BED_FILE_MSG: str = "Provided intervals files is not a valid BED file"
 
-GENES_FILE_HEADER = {
+GENES_FILE_HEADER: dict = {
     "GRCh37": [
         "Chromosome Name",
         "Gene Start (bp)",

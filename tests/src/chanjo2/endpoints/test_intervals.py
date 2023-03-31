@@ -1,5 +1,5 @@
 from pathlib import PosixPath
-from typing import Callable, Dict, Type
+from typing import Callable, Dict, List, Tuple, Type
 
 import pytest
 from _io import TextIOWrapper
@@ -11,7 +11,7 @@ from fastapi.testclient import TestClient
 from pytest_mock.plugin import MockerFixture
 from schug.demo import GENES_37_FILE_PATH, GENES_38_FILE_PATH
 
-BUILD_GENES_RESOURCE = [
+BUILD_GENES_RESOURCE: List[Tuple[Builds, str]] = [
     (Builds.build_37, GENES_37_FILE_PATH),
     (Builds.build_38, GENES_38_FILE_PATH),
 ]
@@ -105,9 +105,7 @@ def test_d4_intervals_coverage_d4_not_found(
     d4_query = {"coverage_file_path": mock_coverage_file}
 
     # THEN a request to the endpoint should return 404 error
-    response = client.post(
-        endpoints.INTERVALS_FILE_COVERAGE, params=d4_query, files=files
-    )
+    response = client.post(endpoints.INTERVALS_FILE_COVERAGE, params=d4_query, files=files)
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
     # AND show a meaningful message
@@ -132,9 +130,7 @@ def test_d4_intervals_coverage_malformed_bed_file(
     ]
 
     # THEN a request to the endpoint should return 404 error
-    response = client.post(
-        endpoints.INTERVALS_FILE_COVERAGE, params=real_d4_query, files=files
-    )
+    response = client.post(endpoints.INTERVALS_FILE_COVERAGE, params=real_d4_query, files=files)
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
     # AND show a meaningful message
@@ -157,9 +153,7 @@ def test_d4_intervals_coverage(
     ]
 
     # THEN a request to the endpoint should return HTTP 200
-    response = client.post(
-        endpoints.INTERVALS_FILE_COVERAGE, params=real_d4_query, files=files
-    )
+    response = client.post(endpoints.INTERVALS_FILE_COVERAGE, params=real_d4_query, files=files)
     assert response.status_code == status.HTTP_200_OK
 
     # AND return coverage intervals data
