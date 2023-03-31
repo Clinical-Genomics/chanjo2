@@ -82,15 +82,17 @@ async def load_genes(
     build: Builds, session: Session = Depends(get_session)
 ) -> Union[Response, HTTPException]:
     """Load genes in the given genome build."""
-    n_loaded_genes, detail = await update_genes(build, session)
-    if n_loaded_genes:
+
+    try:
+        nr_loaded_genes: int = await update_genes(build, session)
         return JSONResponse(
-            content={"detail": f"{n_loaded_genes} genes loaded into the database"}
+            content={"detail": f"{nr_loaded_genes} genes loaded into the database"}
         )
-    else:
+
+    except Exception as ex:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=detail,
+            detail=ex.args,
         )
 
 

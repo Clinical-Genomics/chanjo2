@@ -37,7 +37,7 @@ def _get_ensembl_genes_url(build: Builds) -> str:
     return shug_client.build_url(xml=shug_client.xml)
 
 
-async def update_genes(build: Builds, session: Session) -> Tuple[int, str]:
+async def update_genes(build: Builds, session: Session) -> int:
     """Loads genes into the database."""
 
     LOG.info(f"Loading gene intervals. Genome build --> {build}")
@@ -46,9 +46,9 @@ async def update_genes(build: Builds, session: Session) -> Tuple[int, str]:
     header, lines = await parse_resource_lines(url)
 
     if header != GENES_FILE_HEADER[build]:
-        error = f"Ensembl genes file has an unexpected format:{header}. Expected format: {GENES_FILE_HEADER[build]}"
-        LOG.error(error)
-        return 0, error
+        raise ValueError(
+            f"Ensembl genes file has an unexpected format:{header}. Expected format: {GENES_FILE_HEADER[build]}"
+        )
 
     db_genes: List[SQLGene] = []
     for line in lines:
@@ -73,4 +73,4 @@ async def update_genes(build: Builds, session: Session) -> Tuple[int, str]:
         db=session, interval_type=SQLGene, build=build
     )
     LOG.info(f"{nr_loaded_genes} genes loaded into the database.")
-    return nr_loaded_genes, "OK"
+    return nr_loaded_genes
