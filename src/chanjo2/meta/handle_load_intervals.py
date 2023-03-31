@@ -40,8 +40,14 @@ def _get_ensembl_genes_url(build: Builds) -> str:
 async def update_genes(build: Builds, session: Session) -> int:
     """Loads genes into the database."""
 
-    LOG.info(f"Loading gene intervals. Genome build --> {build}")
+    def _format_gene_line_cols(string_line: str) -> List:
+        """Split and remove a gene line, replacing empty columns with None values"""
+        return [
+            None if col == "" else col.replace("HGNC:", "")
+            for col in string_line.split("\t")
+        ]
 
+    LOG.info(f"Loading gene intervals. Genome build --> {build}")
     url: str = _get_ensembl_genes_url(build)
     header, lines = await parse_resource_lines(url)
 
@@ -52,9 +58,8 @@ async def update_genes(build: Builds, session: Session) -> int:
 
     db_genes: List[SQLGene] = []
     for line in lines:
-        items = [
-            None if i == "" else i.replace("HGNC:", "") for i in line.split("\t")
-        ]  # Convert empty strings to None
+        items = _format_gene_line_cols(line)
+
         # Load gene interval into the database
         gene: SQLGene = GeneBase(
             build=build,
