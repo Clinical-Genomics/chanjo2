@@ -20,7 +20,7 @@ LOG = logging.getLogger("uvicorn.access")
 
 async def parse_resource_lines(url) -> Tuple[List[List[str]], List[str]]:
     """Returns header and lines of a downloaded resource."""
-    all_lines: List = "".join(
+    all_lines: List[str] = "".join(
         [i.decode("utf-8") async for i in stream_resource(url=url)]
     ).split("\n")
     all_lines = [line.rstrip("\n") for line in all_lines]
