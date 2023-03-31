@@ -7,7 +7,7 @@ from sqlalchemy.engine.cursor import CursorResult
 from sqlalchemy.orm import Session, query
 
 
-def intervals_delete_by_build(
+def delete_intervals_for_build(
     db: Session, interval_type: Union[SQLGene], build: Builds
 ) -> None:
     """Delete intervals from a given table by specifying a genome build."""
