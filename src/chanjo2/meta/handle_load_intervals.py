@@ -18,7 +18,7 @@ from sqlmodel import Session
 LOG = logging.getLogger("uvicorn.access")
 
 
-async def resource_lines(url) -> Tuple[List[List], List]:
+async def parse_resource_lines(url) -> Tuple[List[List[str]], List[str]]:
     """Returns header and lines of a downloaded resource."""
     all_lines: List = "".join(
         [i.decode("utf-8") async for i in stream_resource(url=url)]
