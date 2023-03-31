@@ -186,7 +186,7 @@ def test_load_genes(
     )
 
     # GIVEN a number of genes contained in the genes file
-    n_genes = len(gene_lines[1])
+    nr_genes = len(gene_lines[1])
     # WHEN sending a request to the load_genes with genome build
     response: Response = client.post(f"{endpoints.LOAD_GENES}{build}")
     # THEN it should return success
