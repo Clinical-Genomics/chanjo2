@@ -20,16 +20,16 @@ LOG = logging.getLogger("uvicorn.access")
 
 async def parse_resource_lines(url) -> Tuple[List[List[str]], List[str]]:
     """Returns header and lines of a downloaded resource."""
-    all_lines: List = "".join([i.decode("utf-8") async for i in stream_resource(url=url)]).split(
-        "\n"
-    )
+    all_lines: List[str] = "".join(
+        [i.decode("utf-8") async for i in stream_resource(url=url)]
+    ).split("\n")
     all_lines = [line.rstrip("\n") for line in all_lines]
-    resource_header = all_lines[0]
-    resource_lines = all_lines[1:-2]  # last 2 lines don't contain data
+    resource_header: str = all_lines[0]
+    resource_lines: List[str] = all_lines[1:-2]  # last 2 lines don't contain data
     return resource_header.split("\t"), resource_lines
 
 
-def _ensembl_genes_url(build: Builds) -> str:
+def _get_ensembl_genes_url(build: Builds) -> str:
     """Return the URL to download genes using the Ensembl Biomart."""
     shug_client: EnsemblBiomartClient = fetch_ensembl_genes(
         build=SchugBuild(build)
@@ -42,7 +42,7 @@ async def update_genes(build: Builds, session: Session) -> Tuple[int, str]:
 
     LOG.info(f"Loading gene intervals. Genome build --> {build}")
 
-    url: str = _ensembl_genes_url(build)
+    url: str = _get_ensembl_genes_url(build)
     header, lines = await parse_resource_lines(url)
 
     if header != GENES_FILE_HEADER[build]:
@@ -69,6 +69,8 @@ async def update_genes(build: Builds, session: Session) -> Tuple[int, str]:
 
     delete_intervals_for_build(db=session, interval_type=SQLGene, build=build)
     bulk_insert_genes(db=session, gene_list=db_genes)
-    nr_loaded_genes: int = count_intervals_for_build(db=session, interval_type=SQLGene, build=build)
+    nr_loaded_genes: int = count_intervals_for_build(
+        db=session, interval_type=SQLGene, build=build
+    )
     LOG.info(f"{nr_loaded_genes} genes loaded into the database.")
     return nr_loaded_genes, "OK"
