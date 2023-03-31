@@ -15,7 +15,7 @@ def delete_intervals_for_build(
     db.execute(statement)
 
 
-def intervals_count_by_build(
+def count_intervals_for_build(
     db: Session, interval_type: Union[SQLGene], build: Builds
 ) -> int:
     """Count intervals in table by specifying a genome build."""
