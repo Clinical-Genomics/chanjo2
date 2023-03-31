@@ -41,7 +41,7 @@ async def update_genes(build: Builds, session: Session) -> int:
     """Loads genes into the database."""
 
     def _format_gene_line_cols(string_line: str) -> List:
-        """Split and remove a gene line, replacing empty columns with None values"""
+        """Split and remove a gene line, replacing empty columns with None values."""
         return [
             None if col == "" else col.replace("HGNC:", "")
             for col in string_line.split("\t")
