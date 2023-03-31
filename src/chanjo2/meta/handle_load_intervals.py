@@ -69,7 +69,7 @@ async def update_genes(build: Builds, session: Session) -> Tuple[int, str]:
 
     intervals_delete_by_build(db=session, interval_type=SQLGene, build=build)
     bulk_insert_genes(db=session, gene_list=db_genes)
-    n_loaded_genes: int = intervals_count_by_build(
+    nr_loaded_genes: int = intervals_count_by_build(
         db=session, interval_type=SQLGene, build=build
     )
     LOG.info(f"{n_loaded_genes} genes loaded into the database.")
