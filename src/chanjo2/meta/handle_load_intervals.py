@@ -4,8 +4,8 @@ from typing import List, Tuple
 from chanjo2.constants import GENES_FILE_HEADER
 from chanjo2.crud.intervals import (
     bulk_insert_genes,
-    intervals_count_by_build,
-    intervals_delete_by_build,
+    count_intervals_for_build,
+    delete_intervals_for_build,
 )
 from chanjo2.models.pydantic_models import Builds, GeneBase
 from chanjo2.models.sql_models import Gene as SQLGene
@@ -43,7 +43,7 @@ async def update_genes(build: Builds, session: Session) -> Tuple[int, str]:
     LOG.info(f"Loading gene intervals. Genome build --> {build}")
 
     url: str = _ensembl_genes_url(build)
-    header, lines = await resource_lines(url)
+    header, lines = await parse_resource_lines(url)
 
     if header != GENES_FILE_HEADER[build]:
         error = f"Ensembl genes file has an unexpected format:{header}. Expected format: {GENES_FILE_HEADER[build]}"
@@ -67,10 +67,10 @@ async def update_genes(build: Builds, session: Session) -> Tuple[int, str]:
         )
         db_genes.append(gene)
 
-    intervals_delete_by_build(db=session, interval_type=SQLGene, build=build)
+    delete_intervals_for_build(db=session, interval_type=SQLGene, build=build)
     bulk_insert_genes(db=session, gene_list=db_genes)
-    nr_loaded_genes: int = intervals_count_by_build(
+    nr_loaded_genes: int = count_intervals_for_build(
         db=session, interval_type=SQLGene, build=build
     )
-    LOG.info(f"{n_loaded_genes} genes loaded into the database.")
-    return n_loaded_genes, "OK"
+    LOG.info(f"{nr_loaded_genes} genes loaded into the database.")
+    return nr_loaded_genes, "OK"

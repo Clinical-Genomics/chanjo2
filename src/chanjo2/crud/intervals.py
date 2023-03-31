@@ -51,7 +51,9 @@ def bulk_insert_genes(db: Session, gene_list: List[Gene]):
 def get_genes(db: Session, build: Builds, limit: int) -> List[Gene]:
     """Returns genes in the given genome build."""
     return (
-        _filter_intervals_by_build(intervals=db.query(SQLGene), interval_type=SQLGene, build=build)
+        _filter_intervals_by_build(
+            intervals=db.query(SQLGene), interval_type=SQLGene, build=build
+        )
         .limit(limit)
         .all()
     )

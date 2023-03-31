@@ -182,7 +182,8 @@ def test_load_genes(
     # GIVEN a patched response from Ensembl Biomart, via schug
     gene_lines: TextIOWrapper = file_handler(path)
     mocker.patch(
-        "chanjo2.meta.handle_load_intervals.resource_lines", return_value=gene_lines
+        "chanjo2.meta.handle_load_intervals.parse_resource_lines",
+        return_value=gene_lines,
     )
 
     # GIVEN a number of genes contained in the genes file
@@ -192,13 +193,13 @@ def test_load_genes(
     # THEN it should return success
     assert response.status_code == status.HTTP_200_OK
     # THEN all the genes should be loaded
-    assert response.json()["detail"] == f"{n_genes} genes loaded into the database"
+    assert response.json()["detail"] == f"{nr_genes} genes loaded into the database"
 
     # WHEN sending a request to the "genes" endpoint
     response: Response = client.get(f"{endpoints.GENES}{build}")
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
     # THEN the expected number of genes should be returned
-    assert len(result) == n_genes
+    assert len(result) == nr_genes
     # AND the should have the right format
     assert Gene(**result[0])
