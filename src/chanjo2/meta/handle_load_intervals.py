@@ -29,7 +29,7 @@ async def parse_resource_lines(url) -> Tuple[List[List[str]], List[str]]:
     return resource_header.split("\t"), resource_lines
 
 
-def _ensembl_genes_url(build: Builds) -> str:
+def _get_ensembl_genes_url(build: Builds) -> str:
     """Return the URL to download genes using the Ensembl Biomart."""
     shug_client: EnsemblBiomartClient = fetch_ensembl_genes(
         build=SchugBuild(build)
