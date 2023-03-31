@@ -24,7 +24,7 @@ async def parse_resource_lines(url) -> Tuple[List[List[str]], List[str]]:
         [i.decode("utf-8") async for i in stream_resource(url=url)]
     ).split("\n")
     all_lines = [line.rstrip("\n") for line in all_lines]
-    resource_header = all_lines[0]
+    resource_header: str = all_lines[0]
     resource_lines = all_lines[1:-2]  # last 2 lines don't contain data
     return resource_header.split("\t"), resource_lines
 
