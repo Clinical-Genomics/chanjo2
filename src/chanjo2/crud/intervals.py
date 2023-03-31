@@ -2,7 +2,24 @@ from typing import List, Optional, Union
 
 from chanjo2.models.pydantic_models import Builds, Gene, GeneBase
 from chanjo2.models.sql_models import Gene as SQLGene
+from sqlalchemy import delete
+from sqlalchemy.engine.cursor import CursorResult
 from sqlalchemy.orm import Session, query
+
+
+def intervals_delete_by_build(
+    db: Session, interval_type: Union[SQLGene], build: Builds
+) -> None:
+    """Delete intervals from a given table by specifying a genome build."""
+    statement = delete(interval_type).where(interval_type.build == build)
+    db.execute(statement)
+
+
+def intervals_count_by_build(
+    db: Session, interval_type: Union[SQLGene], build: Builds
+) -> int:
+    """Count intervals in table by specifying a genome build."""
+    return db.query(interval_type).where(interval_type.build == build).count()
 
 
 def _filter_intervals_by_build(
@@ -30,11 +47,6 @@ def bulk_insert_genes(db: Session, gene_list: List[Gene]):
 
     db.bulk_save_objects([create_db_gene(gene) for gene in gene_list])
     db.commit()
-
-
-def count_genes(db: Session) -> int:
-    """Count number of genes present in the database."""
-    return db.query(SQLGene.id).count()
 
 
 def get_genes(db: Session, build: Builds, limit: int) -> List[Gene]:
