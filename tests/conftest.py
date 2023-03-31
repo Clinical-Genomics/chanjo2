@@ -1,8 +1,9 @@
 from enum import Enum
 from pathlib import PosixPath
-from typing import Dict, Tuple
+from typing import Dict, List, Tuple
 
 import pytest
+from _io import TextIOWrapper
 from chanjo2.dbutil import DEMO_CONNECT_ARGS, get_session
 from chanjo2.demo import d4_demo_path, gene_panel_path
 from chanjo2.main import Base, app, engine
@@ -31,6 +32,10 @@ class Endpoints(str, Enum):
 
     CASES = "/cases/"
     SAMPLES = "/samples/"
+    INTERVAL = "/intervals/interval/"
+    INTERVALS = "/intervals/"
+    LOAD_GENES = "/intervals/load/genes/"
+    GENES = "/intervals/genes/"
     INTERVAL_COVERAGE = "/intervals/coverage/d4/interval/"
     INTERVALS_FILE_COVERAGE = "/intervals/coverage/d4/interval_file/"
 
@@ -193,3 +198,16 @@ def real_d4_query(real_coverage_path) -> Dict[str, str]:
     return {
         "coverage_file_path": real_coverage_path,
     }
+
+
+@pytest.fixture(name="file_handler")
+def file_handler() -> TextIOWrapper:
+    """Get a file handler to a resource file."""
+
+    def _resource_data(file_path: str) -> Tuple[List, List]:
+        resource = open(file_path, "r", encoding="utf-8")
+        lines: List = resource.readlines()
+        lines: List = [line.rstrip("\n") for line in lines]
+        return lines[0].split("\t"), lines[1:]
+
+    return _resource_data

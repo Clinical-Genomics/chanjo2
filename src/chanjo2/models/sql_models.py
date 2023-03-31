@@ -32,34 +32,26 @@ class Sample(Base):
     case = relationship("Case", back_populates="samples")
 
 
-# Table used to define the many-to-many relationship between the Interval and Tag tables
-interval_tag = Table(
-    "interval_tag",
-    Base.metadata,
-    Column("interval_id", ForeignKey("intervals.id"), primary_key=True),
-    Column("tag_id", ForeignKey("tags.id"), primary_key=True),
-)
-
-
-class Tag(Base):
-    """Used to define an attribute for one or more intervals.
-    Can be a single gene, can be "Mane" or an entire Genome build.
-    It is in a relationship many-to-many with the Interval table"""
-
-    __tablename__ = "tags"
-
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(64), nullable=False, unique=True)
-    build = Column(Enum(Builds))
-
-
 class Interval(Base):
-    """Used to define a single genomic interval"""
+    """Used to define a single genomic interval."""
 
     __tablename__ = "intervals"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(128), nullable=True, unique=False)
-    chromosome = Column(String(6), nullable=False, unique=True)
+    chromosome = Column(String(6), nullable=False)
     start = Column(Integer, nullable=False)
     stop = Column(Integer, nullable=False)
+
+
+class Gene(Base):
+    """Used to define a gene entity."""
+
+    __tablename__ = "genes"
+    id = Column(Integer, primary_key=True, index=True)
+    chromosome = Column(String(6), nullable=False)
+    start = Column(Integer, nullable=False)
+    stop = Column(Integer, nullable=False)
+    ensembl_id = Column(String(24), nullable=False, index=True)
+    hgnc_id = Column(Integer, nullable=True, index=True)
+    hgnc_symbol = Column(String(24), nullable=True, index=True)
+    build = Column(Enum(Builds), index=True)

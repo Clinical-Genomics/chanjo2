@@ -4,17 +4,20 @@ from pathlib import Path
 from typing import Any, List, Optional
 
 import validators
+from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
 from pydantic import BaseModel, validator
-
-WRONG_COVERAGE_FILE_MSG: str = (
-    "Coverage_file_path must be either an existing local file path or a URL"
-)
-WRONG_BED_FILE_MSG: str = "Provided intervals files is not a valid BED file"
 
 
 class Builds(str, Enum):
     build_37 = "GRCh37"
     build_38 = "GRCh38"
+
+
+class IntervalType(str, Enum):
+    GENES = "genes"
+    TRANCRIPTS = "transcripts"
+    EXONS = "exons"
+    CUSTOM = "custom_intervals"
 
 
 class CaseBase(BaseModel):
@@ -60,33 +63,25 @@ class Case(CaseBase):
         orm_mode = True
 
 
-class TagBase(BaseModel):
-    name: str
-    build: Builds
-
-
-class TagCreate(TagBase):
-    pass
-
-
-class TagRead(TagBase):
-    id: int
-
-
 class IntervalBase(BaseModel):
-    name: str
     chromosome: str
     start: int
     stop: int
 
 
-class IntervalCreate(IntervalBase):
-    pass
-
-
-class IntervalRead(IntervalBase):
+class Interval(IntervalBase):
     id: int
-    tags: List[TagRead] = []
+
+
+class GeneBase(IntervalBase):
+    ensembl_id: str
+    hgnc_id: Optional[int]
+    hgnc_symbol: Optional[str]
+    build: Builds
+
+
+class Gene(IntervalBase):
+    id: int
 
 
 class CoverageInterval(BaseModel):

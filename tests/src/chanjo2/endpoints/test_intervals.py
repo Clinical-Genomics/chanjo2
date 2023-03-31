@@ -1,14 +1,20 @@
 from pathlib import PosixPath
-from typing import Dict, Type
+from typing import Callable, Dict, List, Tuple, Type
 
+import pytest
+from _io import TextIOWrapper
+from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
 from chanjo2.demo import gene_panel_file, gene_panel_path
-from chanjo2.models.pydantic_models import (
-    WRONG_BED_FILE_MSG,
-    WRONG_COVERAGE_FILE_MSG,
-    CoverageInterval,
-)
+from chanjo2.models.pydantic_models import Builds, CoverageInterval, Gene
 from fastapi import status
 from fastapi.testclient import TestClient
+from pytest_mock.plugin import MockerFixture
+from schug.demo import GENES_37_FILE_PATH, GENES_38_FILE_PATH
+
+BUILD_GENES_RESOURCE: List[Tuple[Builds, str]] = [
+    (Builds.build_37, GENES_37_FILE_PATH),
+    (Builds.build_38, GENES_38_FILE_PATH),
+]
 
 
 def test_d4_interval_coverage_d4_not_found(
@@ -160,3 +166,40 @@ def test_d4_intervals_coverage(
     result = response.json()
     for interval in result:
         assert CoverageInterval(**interval)
+
+
+@pytest.mark.parametrize("build, path", BUILD_GENES_RESOURCE)
+def test_load_genes(
+    build: str,
+    path: str,
+    client: TestClient,
+    endpoints: Type,
+    mocker: MockerFixture,
+    file_handler: Callable,
+):
+    """Test the endpoint that adds genes to the database in a given genome build."""
+
+    # GIVEN a patched response from Ensembl Biomart, via schug
+    gene_lines: TextIOWrapper = file_handler(path)
+    mocker.patch(
+        "chanjo2.meta.handle_load_intervals.parse_resource_lines",
+        return_value=gene_lines,
+    )
+
+    # GIVEN a number of genes contained in the genes file
+    nr_genes = len(gene_lines[1])
+    # WHEN sending a request to the load_genes with genome build
+    response: Response = client.post(f"{endpoints.LOAD_GENES}{build}")
+    # THEN it should return success
+    assert response.status_code == status.HTTP_200_OK
+    # THEN all the genes should be loaded
+    assert response.json()["detail"] == f"{nr_genes} genes loaded into the database"
+
+    # WHEN sending a request to the "genes" endpoint
+    response: Response = client.get(f"{endpoints.GENES}{build}")
+    assert response.status_code == status.HTTP_200_OK
+    result = response.json()
+    # THEN the expected number of genes should be returned
+    assert len(result) == nr_genes
+    # AND the should have the right format
+    assert Gene(**result[0])
