@@ -84,6 +84,23 @@ class Gene(IntervalBase):
     id: int
 
 
+class TranscriptBase(IntervalBase):
+    ensembl_gene_id: str
+    ensembl_id: str
+    refseq_mrna: Optional[str]
+    refseq_mrna_pred: Optional[str]
+    refseq_ncrna: Optional[str]
+    refseq_mane_select: Optional[str]
+    refseq_mane_plus_clinical: Optional[str]
+    build: Builds
+
+
+class Transcript(TranscriptBase):
+    id: int
+    ensembl_gene_ref: int
+    hgnc_gene_ref: Optional[int]
+
+
 class CoverageInterval(BaseModel):
     chromosome: str
     start: Optional[int]

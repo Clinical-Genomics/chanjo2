@@ -55,3 +55,23 @@ class Gene(Base):
     hgnc_id = Column(Integer, nullable=True, index=True)
     hgnc_symbol = Column(String(24), nullable=True, index=True)
     build = Column(Enum(Builds), index=True)
+
+
+class Transcript(Base):
+    """Used to define a transcript entity."""
+
+    __tablename__ = "transcripts"
+    id = Column(Integer, primary_key=True, index=True)
+    chromosome = Column(String(6), nullable=False)
+    start = Column(Integer, nullable=False)
+    stop = Column(Integer, nullable=False)
+    ensembl_id = Column(String(24), nullable=False, index=True)
+    refseq_mrna = Column(String(24), nullable=True, index=True)
+    refseq_mrna_pred = Column(String(24), nullable=True, index=False)
+    refseq_ncrna = Column(String(24), nullable=True, index=False)
+    refseq_mane_select = Column(String(24), nullable=True, index=True)
+    refseq_mane_plus_clinical = Column(String(24), nullable=True, index=True)
+    ensembl_gene_ref = Column(
+        Integer, ForeignKey("genes.id"), nullable=True, index=True
+    )
+    build = Column(Enum(Builds), index=True)

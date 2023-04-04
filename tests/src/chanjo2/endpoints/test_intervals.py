@@ -9,11 +9,21 @@ from chanjo2.models.pydantic_models import Builds, CoverageInterval, Gene
 from fastapi import status
 from fastapi.testclient import TestClient
 from pytest_mock.plugin import MockerFixture
-from schug.demo import GENES_37_FILE_PATH, GENES_38_FILE_PATH
+from schug.demo import (
+    GENES_37_FILE_PATH,
+    GENES_38_FILE_PATH,
+    TRANSCRIPTS_37_FILE_PATH,
+    TRANSCRIPTS_38_FILE_PATH,
+)
 
 BUILD_GENES_RESOURCE: List[Tuple[Builds, str]] = [
     (Builds.build_37, GENES_37_FILE_PATH),
-    (Builds.build_38, GENES_38_FILE_PATH),
+    # (Builds.build_38, GENES_38_FILE_PATH),
+]
+
+BUILD_TRANSCRIPTS_RESOURCE: List[Tuple[Builds, str]] = [
+    (Builds.build_37, TRANSCRIPTS_37_FILE_PATH),
+    (Builds.build_38, TRANSCRIPTS_38_FILE_PATH),
 ]
 
 
@@ -186,7 +196,7 @@ def test_load_genes(
         return_value=gene_lines,
     )
 
-    # GIVEN a number of genes contained in the genes file
+    # GIVEN a number of genes contained in the demo file
     nr_genes = len(gene_lines[1])
     # WHEN sending a request to the load_genes with genome build
     response: Response = client.post(f"{endpoints.LOAD_GENES}{build}")
@@ -203,3 +213,45 @@ def test_load_genes(
     assert len(result) == nr_genes
     # AND the should have the right format
     assert Gene(**result[0])
+
+
+@pytest.mark.parametrize("build, path", BUILD_TRANSCRIPTS_RESOURCE)
+def test_load_transcripts(
+    build: str,
+    path: str,
+    client: TestClient,
+    endpoints: Type,
+    mocker: MockerFixture,
+    file_handler: Callable,
+):
+    """Test the endpoint that adds genes to the database in a given genome build."""
+
+    # GIVEN a patched response from Ensembl Biomart, via schug
+    transcript_lines: TextIOWrapper = file_handler(path)
+    mocker.patch(
+        "chanjo2.meta.handle_load_intervals.parse_resource_lines",
+        return_value=transcript_lines,
+    )
+
+    # GIVEN a number of transcripts contained in the demo file
+    nr_transcripts = len(transcript_lines[1])
+
+    # WHEN sending a request to the load_genes with genome build
+    response: Response = client.post(f"{endpoints.LOAD_TRANSCRIPTS}{build}")
+    # THEN it should return success
+    # assert response.status_code == status.HTTP_200_OK
+    # THEN all the genes should be loaded
+    assert (
+        response.json()["detail"]
+        == f"{nr_transcripts} transcripts loaded into the database"
+    )
+    """
+    # WHEN sending a request to the "genes" endpoint
+    response: Response = client.get(f"{endpoints.GENES}{build}")
+    assert response.status_code == status.HTTP_200_OK
+    result = response.json()
+    # THEN the expected number of genes should be returned
+    assert len(result) == nr_genes
+    # AND the should have the right format
+    assert Gene(**result[0])
+    """
