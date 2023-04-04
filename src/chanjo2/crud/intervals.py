@@ -30,8 +30,8 @@ def count_intervals_for_build(
 
 def _filter_intervals_by_build(
     intervals: query.Query, interval_type: Union[SQLGene, SQLTranscript], build: Builds
-) -> List[Union[SQLGene]]:
-    """Filter samples by sample name."""
+) -> List[Union[SQLGene, SQLTranscript]]:
+    """Filter intervals by genome build."""
     return intervals.filter(interval_type.build == build)
 
 
@@ -48,13 +48,13 @@ def create_db_gene(gene: GeneBase) -> SQLGene:
     )
 
 
-def bulk_insert_genes(db: Session, gene_list: List[Gene]):
+def bulk_insert_genes(db: Session, gene_list: List[GeneBase]):
     """Bulk insert genes into the database."""
     db.bulk_save_objects([create_db_gene(gene) for gene in gene_list])
     db.commit()
 
 
-def get_genes(db: Session, build: Builds, limit: int) -> List[Gene]:
+def get_genes(db: Session, build: Builds, limit: int) -> List[SQLGene]:
     """Returns genes in the given genome build."""
     return (
         _filter_intervals_by_build(
@@ -90,13 +90,13 @@ def create_db_transcript(db: Session, transcript: TranscriptBase) -> SQLTranscri
     )
 
 
-def bulk_insert_transcripts(db: Session, transcript_list: List[Gene]):
+def bulk_insert_transcripts(db: Session, transcript_list: List[TranscriptBase]):
     """Bulk insert transcripts into the database."""
     db.bulk_save_objects([create_db_transcript(db, tx) for tx in transcript_list])
     db.commit()
 
 
-def get_transcripts(db: Session, build: Builds, limit: int) -> List[Gene]:
+def get_transcripts(db: Session, build: Builds, limit: int) -> List[SQLTranscript]:
     """Returns genes in the given genome build."""
     return (
         _filter_intervals_by_build(
