@@ -5,7 +5,7 @@ import pytest
 from _io import TextIOWrapper
 from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
 from chanjo2.demo import gene_panel_file, gene_panel_path
-from chanjo2.models.pydantic_models import Builds, CoverageInterval, Gene
+from chanjo2.models.pydantic_models import Builds, CoverageInterval, Gene, Transcript
 from fastapi import status
 from fastapi.testclient import TestClient
 from pytest_mock.plugin import MockerFixture
@@ -211,7 +211,7 @@ def test_load_genes(
     result = response.json()
     # THEN the expected number of genes should be returned
     assert len(result) == nr_genes
-    # AND the should have the right format
+    # AND the gene should have the right format
     assert Gene(**result[0])
 
 
@@ -240,18 +240,16 @@ def test_load_transcripts(
     response: Response = client.post(f"{endpoints.LOAD_TRANSCRIPTS}{build}")
     # THEN it should return success
     assert response.status_code == status.HTTP_200_OK
-    # THEN all the genes should be loaded
+    # THEN all transcripts should be loaded
     assert (
         response.json()["detail"]
         == f"{nr_transcripts} transcripts loaded into the database"
     )
-    """
-    # WHEN sending a request to the "genes" endpoint
-    response: Response = client.get(f"{endpoints.GENES}{build}")
+    # WHEN sending a request to the "transcripts" endpoint
+    response: Response = client.get(f"{endpoints.TRANSCRIPTS}{build}")
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
-    # THEN the expected number of genes should be returned
-    assert len(result) == nr_genes
-    # AND the should have the right format
-    assert Gene(**result[0])
-    """
+    # THEN the expected number of transcripts should be returned
+    assert len(result) == nr_transcripts
+    # AND the transcript should have the right format
+    assert Transcript(**result[0])

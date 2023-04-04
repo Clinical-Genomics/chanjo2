@@ -94,3 +94,14 @@ def bulk_insert_transcripts(db: Session, transcript_list: List[Gene]):
     """Bulk insert transcripts into the database."""
     db.bulk_save_objects([create_db_transcript(db, tx) for tx in transcript_list])
     db.commit()
+
+
+def get_transcripts(db: Session, build: Builds, limit: int) -> List[Gene]:
+    """Returns genes in the given genome build."""
+    return (
+        _filter_intervals_by_build(
+            intervals=db.query(SQLTranscript), interval_type=SQLTranscript, build=build
+        )
+        .limit(limit)
+        .all()
+    )

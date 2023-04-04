@@ -97,8 +97,7 @@ class TranscriptBase(IntervalBase):
 
 class Transcript(TranscriptBase):
     id: int
-    ensembl_gene_ref: int
-    hgnc_gene_ref: Optional[int]
+    ensembl_gene_ref: Optional[int]
 
 
 class CoverageInterval(BaseModel):
