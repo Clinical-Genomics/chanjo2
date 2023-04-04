@@ -18,7 +18,7 @@ from schug.demo import (
 
 BUILD_GENES_RESOURCE: List[Tuple[Builds, str]] = [
     (Builds.build_37, GENES_37_FILE_PATH),
-    # (Builds.build_38, GENES_38_FILE_PATH),
+    (Builds.build_38, GENES_38_FILE_PATH),
 ]
 
 BUILD_TRANSCRIPTS_RESOURCE: List[Tuple[Builds, str]] = [
