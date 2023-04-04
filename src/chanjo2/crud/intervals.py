@@ -97,7 +97,7 @@ def bulk_insert_transcripts(db: Session, transcript_list: List[TranscriptBase]):
 
 
 def get_transcripts(db: Session, build: Builds, limit: int) -> List[SQLTranscript]:
-    """Returns genes in the given genome build."""
+    """Returns transcripts in the given genome build."""
     return (
         _filter_intervals_by_build(
             intervals=db.query(SQLTranscript), interval_type=SQLTranscript, build=build
