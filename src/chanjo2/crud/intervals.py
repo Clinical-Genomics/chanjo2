@@ -80,6 +80,7 @@ def create_db_transcript(db: Session, transcript: TranscriptBase) -> SQLTranscri
         stop=transcript.stop,
         ensembl_id=transcript.ensembl_id,
         ensembl_gene_ref=gene_id,
+        ensembl_gene_id=transcript.ensembl_gene_id,
         refseq_mrna=transcript.refseq_mrna,
         refseq_mrna_pred=transcript.refseq_mrna_pred,
         refseq_ncrna=transcript.refseq_ncrna,

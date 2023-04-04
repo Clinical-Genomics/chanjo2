@@ -74,4 +74,5 @@ class Transcript(Base):
     ensembl_gene_ref = Column(
         Integer, ForeignKey("genes.id"), nullable=True, index=True
     )
+    ensembl_gene_id = Column(String(24), nullable=False, index=True)
     build = Column(Enum(Builds), index=True)
