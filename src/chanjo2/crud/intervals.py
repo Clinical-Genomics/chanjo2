@@ -68,8 +68,8 @@ def get_genes(db: Session, build: Builds, limit: int) -> List[Gene]:
 def create_db_transcript(db: Session, transcript: TranscriptBase) -> SQLTranscript:
     """Create a SQL transcript object."""
 
-    gene_id = (
-        db.query(SQLGene.id)
+    ensembl_gene = (
+        db.query(SQLGene)
         .filter(SQLGene.ensembl_id == transcript.ensembl_gene_id)
         .first()
     )
@@ -79,7 +79,7 @@ def create_db_transcript(db: Session, transcript: TranscriptBase) -> SQLTranscri
         start=transcript.start,
         stop=transcript.stop,
         ensembl_id=transcript.ensembl_id,
-        ensembl_gene_ref=gene_id,
+        ensembl_gene_ref=ensembl_gene.id,
         ensembl_gene_id=transcript.ensembl_gene_id,
         refseq_mrna=transcript.refseq_mrna,
         refseq_mrna_pred=transcript.refseq_mrna_pred,
