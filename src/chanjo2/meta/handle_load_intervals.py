@@ -62,7 +62,7 @@ async def update_genes(build: Builds, session: Session) -> int:
             f"Ensembl genes file has an unexpected format:{header}. Expected format: {GENES_FILE_HEADER[build]}"
         )
 
-    gene_list: List[SQLGene] = []
+    genes: List[SQLGene] = []
     for line in lines:
         items: List = _replace_empty_cols(line=line, nr_expected_columns=len(header))
 
@@ -76,10 +76,10 @@ async def update_genes(build: Builds, session: Session) -> int:
             hgnc_symbol=items[4],
             hgnc_id=items[5],
         )
-        gene_list.append(gene)
+        genes.append(gene)
 
     delete_intervals_for_build(db=session, interval_type=SQLGene, build=build)
-    bulk_insert_genes(db=session, genes=gene_list)
+    bulk_insert_genes(db=session, genes=genes)
     nr_loaded_genes: int = count_intervals_for_build(
         db=session, interval_type=SQLGene, build=build
     )
@@ -117,10 +117,10 @@ async def update_transcripts(build: Builds, session: Session) -> int:
             refseq_mane_plus_clinical=items[9] if build == "GRCh38" else None,
             build=build,
         )
-        transcript_list.append(transcript)
+        transcripts.append(transcript)
 
     delete_intervals_for_build(db=session, interval_type=SQLTranscript, build=build)
-    bulk_insert_transcripts(db=session, transcripts=transcript_list)
+    bulk_insert_transcripts(db=session, transcripts=transcripts)
 
     nr_loaded_transcripts: int = count_intervals_for_build(
         db=session, interval_type=SQLTranscript, build=build
