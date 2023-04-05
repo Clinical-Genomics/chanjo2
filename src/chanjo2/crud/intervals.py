@@ -90,7 +90,7 @@ def create_db_transcript(db: Session, transcript: TranscriptBase) -> SQLTranscri
     )
 
 
-def bulk_insert_transcripts(db: Session, transcript_list: List[TranscriptBase]):
+def bulk_insert_transcripts(db: Session, transcripts: List[TranscriptBase]):
     """Bulk insert transcripts into the database."""
     db.bulk_save_objects([create_db_transcript(db, tx) for tx in transcript_list])
     db.commit()
