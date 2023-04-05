@@ -10,6 +10,8 @@ from fastapi import status
 from fastapi.testclient import TestClient
 from pytest_mock.plugin import MockerFixture
 from schug.demo import (
+    EXONS_37_FILE_PATH,
+    EXONS_38_FILE_PATH,
     GENES_37_FILE_PATH,
     GENES_38_FILE_PATH,
     TRANSCRIPTS_37_FILE_PATH,
@@ -24,6 +26,11 @@ BUILD_GENES_RESOURCE: List[Tuple[Builds, str]] = [
 BUILD_TRANSCRIPTS_RESOURCE: List[Tuple[Builds, str]] = [
     (Builds.build_37, TRANSCRIPTS_37_FILE_PATH),
     (Builds.build_38, TRANSCRIPTS_38_FILE_PATH),
+]
+
+BUILD_EXONS_RESOURCE: List[Tuple[Builds, str]] = [
+    (Builds.build_37, EXONS_37_FILE_PATH),
+    (Builds.build_38, EXONS_38_FILE_PATH),
 ]
 
 
@@ -115,9 +122,7 @@ def test_d4_intervals_coverage_d4_not_found(
     d4_query = {"coverage_file_path": mock_coverage_file}
 
     # THEN a request to the endpoint should return 404 error
-    response = client.post(
-        endpoints.INTERVALS_FILE_COVERAGE, params=d4_query, files=files
-    )
+    response = client.post(endpoints.INTERVALS_FILE_COVERAGE, params=d4_query, files=files)
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
     # AND show a meaningful message
@@ -142,9 +147,7 @@ def test_d4_intervals_coverage_malformed_bed_file(
     ]
 
     # THEN a request to the endpoint should return 404 error
-    response = client.post(
-        endpoints.INTERVALS_FILE_COVERAGE, params=real_d4_query, files=files
-    )
+    response = client.post(endpoints.INTERVALS_FILE_COVERAGE, params=real_d4_query, files=files)
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
     # AND show a meaningful message
@@ -167,9 +170,7 @@ def test_d4_intervals_coverage(
     ]
 
     # THEN a request to the endpoint should return HTTP 200
-    response = client.post(
-        endpoints.INTERVALS_FILE_COVERAGE, params=real_d4_query, files=files
-    )
+    response = client.post(endpoints.INTERVALS_FILE_COVERAGE, params=real_d4_query, files=files)
     assert response.status_code == status.HTTP_200_OK
 
     # AND return coverage intervals data
@@ -241,10 +242,7 @@ def test_load_transcripts(
     # THEN it should return success
     assert response.status_code == status.HTTP_200_OK
     # THEN all transcripts should be loaded
-    assert (
-        response.json()["detail"]
-        == f"{nr_transcripts} transcripts loaded into the database"
-    )
+    assert response.json()["detail"] == f"{nr_transcripts} transcripts loaded into the database"
     # WHEN sending a request to the "transcripts" endpoint
     response: Response = client.get(f"{endpoints.TRANSCRIPTS}{build}")
     assert response.status_code == status.HTTP_200_OK
@@ -253,3 +251,44 @@ def test_load_transcripts(
     assert len(result) == nr_transcripts
     # AND the transcript should have the right format
     assert Transcript(**result[0])
+
+
+@pytest.mark.parametrize("build, path", BUILD_EXONS_RESOURCE)
+def test_load_exons(
+    build: str,
+    path: str,
+    client: TestClient,
+    endpoints: Type,
+    mocker: MockerFixture,
+    file_handler: Callable,
+):
+    """Test the endpoint that adds exons to the database in a given genome build."""
+
+    # GIVEN a patched response from Ensembl Biomart, via schug
+    exons_lines: TextIOWrapper = file_handler(path)
+    mocker.patch(
+        "chanjo2.meta.handle_load_intervals.parse_resource_lines",
+        return_value=exons_lines,
+    )
+
+    # GIVEN a number of exons contained in the demo file
+    nr_exons = len(exons_lines[1])
+
+    # WHEN sending a request to the load_genes with genome build
+    response: Response = client.post(f"{endpoints.LOAD_EXONS}{build}")
+
+    # THEN it should return success
+    assert response.status_code == status.HTTP_200_OK
+    # THEN all exons should be loaded
+    assert response.json()["detail"] == f"{nr_exons} exons loaded into the database"
+
+    """
+    # WHEN sending a request to the "transcripts" endpoint
+    response: Response = client.get(f"{endpoints.TRANSCRIPTS}{build}")
+    assert response.status_code == status.HTTP_200_OK
+    result = response.json()
+    # THEN the expected number of transcripts should be returned
+    assert len(result) == nr_transcripts
+    # AND the transcript should have the right format
+    assert Transcript(**result[0])
+    """

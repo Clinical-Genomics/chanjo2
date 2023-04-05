@@ -1,6 +1,6 @@
 from typing import Callable, Dict, List
 
-from schug.load.ensembl import fetch_ensembl_genes, fetch_ensembl_transcripts
+from schug.load.ensembl import fetch_ensembl_exons, fetch_ensembl_genes, fetch_ensembl_transcripts
 
 WRONG_COVERAGE_FILE_MSG: str = (
     "Coverage_file_path must be either an existing local file path or a URL"
@@ -10,6 +10,7 @@ WRONG_BED_FILE_MSG: str = "Provided intervals files is not a valid BED file"
 ENSEMBL_RESOURCE_CLIENT: Dict[str, Callable] = {
     "genes": fetch_ensembl_genes,
     "transcripts": fetch_ensembl_transcripts,
+    "exons": fetch_ensembl_exons,
 }
 
 GENES_FILE_HEADER: Dict[str, List[str]] = {
