@@ -303,7 +303,7 @@ def test_load_exons(
     response: Response = client.get(f"{endpoints.EXONS}{build}")
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
-    # THEN the expected number of transcripts should be returned
+    # THEN the expected number of exons should be returned
     assert len(result) == nr_exons
-    # AND the transcript should have the right format
+    # AND the exons should have the right format
     assert Exon(**result[0])
