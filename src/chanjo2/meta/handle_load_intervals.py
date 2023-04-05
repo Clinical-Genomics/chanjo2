@@ -42,7 +42,7 @@ def _get_ensembl_resource_url(build: Builds, resource_type: str) -> str:
     return shug_client.build_url(xml=shug_client.xml)
 
 
-def _replace_empty_cols(string_line: str, n_expected_cols: int) -> List:
+def _replace_empty_cols(line: str, nr_expected_columns: int) -> List:
     """Split gene line into columns, replacing empty columns with None values."""
     cols = [
         None if col == "" else col.replace("HGNC:", "")
