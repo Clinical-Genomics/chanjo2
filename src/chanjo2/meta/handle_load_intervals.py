@@ -1,5 +1,5 @@
 import logging
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 from chanjo2.constants import (
     ENSEMBL_RESOURCE_CLIENT,
@@ -42,7 +42,7 @@ def _get_ensembl_resource_url(build: Builds, resource_type: str) -> str:
     return shug_client.build_url(xml=shug_client.xml)
 
 
-def _replace_empty_cols(line: str, nr_expected_columns: int) -> List:
+def _replace_empty_cols(line: str, nr_expected_columns: int) -> List[Union[str, None]]:
     """Split gene line into columns, replacing empty columns with None values."""
     cols = [None if col == "" else col.replace("HGNC:", "") for col in line.split("\t")]
     # Make sure that expected nr of cols are returned if last cols are blank
@@ -79,7 +79,7 @@ async def update_genes(build: Builds, session: Session) -> int:
         gene_list.append(gene)
 
     delete_intervals_for_build(db=session, interval_type=SQLGene, build=build)
-    bulk_insert_genes(db=session, gene_list=gene_list)
+    bulk_insert_genes(db=session, genes=gene_list)
     nr_loaded_genes: int = count_intervals_for_build(
         db=session, interval_type=SQLGene, build=build
     )
@@ -104,7 +104,7 @@ async def update_transcripts(build: Builds, session: Session) -> int:
         items = _replace_empty_cols(line=line, nr_expected_columns=len(header))
 
         # Load transcript interval into the database
-        tx = TranscriptBase(
+        transcript = TranscriptBase(
             chromosome=items[0],
             ensembl_gene_id=items[1],
             ensembl_id=items[2],
@@ -117,10 +117,10 @@ async def update_transcripts(build: Builds, session: Session) -> int:
             refseq_mane_plus_clinical=items[9] if build == "GRCh38" else None,
             build=build,
         )
-        transcript_list.append(tx)
+        transcript_list.append(transcript)
 
     delete_intervals_for_build(db=session, interval_type=SQLTranscript, build=build)
-    bulk_insert_transcripts(db=session, transcript_list=transcript_list)
+    bulk_insert_transcripts(db=session, transcripts=transcript_list)
 
     nr_loaded_transcripts: int = count_intervals_for_build(
         db=session, interval_type=SQLTranscript, build=build

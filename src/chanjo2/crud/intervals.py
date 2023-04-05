@@ -48,9 +48,9 @@ def create_db_gene(gene: GeneBase) -> SQLGene:
     )
 
 
-def bulk_insert_genes(db: Session, gene_list: List[GeneBase]):
+def bulk_insert_genes(db: Session, genes: List[GeneBase]):
     """Bulk insert genes into the database."""
-    db.bulk_save_objects([create_db_gene(gene) for gene in gene_list])
+    db.bulk_save_objects([create_db_gene(gene) for gene in genes])
     db.commit()
 
 
