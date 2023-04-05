@@ -5,7 +5,13 @@ import pytest
 from _io import TextIOWrapper
 from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
 from chanjo2.demo import gene_panel_file, gene_panel_path
-from chanjo2.models.pydantic_models import Builds, CoverageInterval, Gene, Transcript
+from chanjo2.models.pydantic_models import (
+    Builds,
+    CoverageInterval,
+    Exon,
+    Gene,
+    Transcript,
+)
 from fastapi import status
 from fastapi.testclient import TestClient
 from pytest_mock.plugin import MockerFixture
@@ -291,13 +297,11 @@ def test_load_exons(
     # THEN all exons should be loaded
     assert response.json()["detail"] == f"{nr_exons} exons loaded into the database"
 
-    """
-    # WHEN sending a request to the "transcripts" endpoint
-    response: Response = client.get(f"{endpoints.TRANSCRIPTS}{build}")
+    # WHEN sending a request to the "exons" endpoint
+    response: Response = client.get(f"{endpoints.EXONS}{build}")
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
     # THEN the expected number of transcripts should be returned
-    assert len(result) == nr_transcripts
+    assert len(result) == nr_exons
     # AND the transcript should have the right format
-    assert Transcript(**result[0])
-    """
+    assert Exon(**result[0])

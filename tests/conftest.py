@@ -41,6 +41,7 @@ class Endpoints(str, Enum):
     INTERVAL_COVERAGE = "/intervals/coverage/d4/interval/"
     INTERVALS_FILE_COVERAGE = "/intervals/coverage/d4/interval_file/"
     LOAD_EXONS = "/intervals/load/exons/"
+    EXONS = "/intervals/exons/"
 
 
 class Helpers:

@@ -1,7 +1,7 @@
 from typing import List, Optional, Tuple, Union
 
 from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
-from chanjo2.crud.intervals import get_genes, get_transcripts
+from chanjo2.crud.intervals import get_exons, get_genes, get_transcripts
 from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import parse_bed
 from chanjo2.meta.handle_d4 import (
@@ -18,6 +18,7 @@ from chanjo2.meta.handle_load_intervals import (
 from chanjo2.models.pydantic_models import (
     Builds,
     CoverageInterval,
+    Exon,
     Gene,
     Interval,
     Transcript,
@@ -160,3 +161,11 @@ async def load_exons(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=ex.args,
         )
+
+
+@router.get("/intervals/exons/{build}")
+async def exons(
+    build: Builds, session: Session = Depends(get_session), limit: int = 100
+) -> List[Exon]:
+    """Return exons in the given genome build."""
+    return get_exons(db=session, build=build, limit=limit)

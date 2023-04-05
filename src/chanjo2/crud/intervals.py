@@ -159,3 +159,14 @@ def bulk_insert_exons(db: Session, exons: List[ExonBase]):
     """Bulk insert exons into the database."""
     db.bulk_save_objects([create_db_exon(db=db, exon=exon) for exon in exons])
     db.commit()
+
+
+def get_exons(db: Session, build: Builds, limit: int) -> List[SQLExon]:
+    """Returns exons in the given genome build."""
+    return (
+        _filter_intervals_by_build(
+            intervals=db.query(SQLExon), interval_type=SQLExon, build=build
+        )
+        .limit(limit)
+        .all()
+    )
