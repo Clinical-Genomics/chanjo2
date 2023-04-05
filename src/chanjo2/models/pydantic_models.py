@@ -15,7 +15,7 @@ class Builds(str, Enum):
 
 class IntervalType(str, Enum):
     GENES = "genes"
-    TRANCRIPTS = "transcripts"
+    TRANSCRIPTS = "transcripts"
     EXONS = "exons"
     CUSTOM = "custom_intervals"
 

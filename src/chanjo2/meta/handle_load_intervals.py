@@ -12,7 +12,12 @@ from chanjo2.crud.intervals import (
     count_intervals_for_build,
     delete_intervals_for_build,
 )
-from chanjo2.models.pydantic_models import Builds, GeneBase, TranscriptBase
+from chanjo2.models.pydantic_models import (
+    Builds,
+    GeneBase,
+    IntervalType,
+    TranscriptBase,
+)
 from chanjo2.models.sql_models import Gene as SQLGene
 from chanjo2.models.sql_models import Transcript as SQLTranscript
 from schug.load.biomart import EnsemblBiomartClient
@@ -34,9 +39,9 @@ async def parse_resource_lines(url) -> Tuple[List[List[str]], List[str]]:
     return resource_header.split("\t"), resource_lines
 
 
-def _get_ensembl_resource_url(build: Builds, resource_type: str) -> str:
+def _get_ensembl_resource_url(build: Builds, interval_type: IntervalType) -> str:
     """Return the URL to download genes using the Ensembl Biomart."""
-    shug_client: EnsemblBiomartClient = ENSEMBL_RESOURCE_CLIENT[resource_type](
+    shug_client: EnsemblBiomartClient = ENSEMBL_RESOURCE_CLIENT[interval_type](
         build=SchugBuild(build)
     )
     return shug_client.build_url(xml=shug_client.xml)
@@ -54,7 +59,7 @@ async def update_genes(build: Builds, session: Session) -> int:
     """Loads genes into the database."""
 
     LOG.info(f"Loading gene intervals. Genome build --> {build}")
-    url: str = _get_ensembl_resource_url(build=build, resource_type="genes")
+    url: str = _get_ensembl_resource_url(build=build, interval_type=IntervalType.GENES)
     header, lines = await parse_resource_lines(url)
 
     if header != GENES_FILE_HEADER[build]:
@@ -91,7 +96,9 @@ async def update_transcripts(build: Builds, session: Session) -> int:
     """Loads transcripts into the database."""
 
     LOG.info(f"Loading transcript intervals. Genome build --> {build}")
-    url: str = _get_ensembl_resource_url(build=build, resource_type="transcripts")
+    url: str = _get_ensembl_resource_url(
+        build=build, interval_type=IntervalType.TRANSCRIPTS
+    )
     header, lines = await parse_resource_lines(url)
 
     if header != TRANSCRIPTS_FILE_HEADER[build]:
