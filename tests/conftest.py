@@ -210,6 +210,6 @@ def file_handler() -> TextIOWrapper:
         resource = open(file_path, "r", encoding="utf-8")
         lines: List = resource.readlines()
         lines: List = [line.rstrip("\n") for line in lines]
-        return lines[0].split("\t"), lines[1:]
+        return iter(lines)
 
     return _resource_data
