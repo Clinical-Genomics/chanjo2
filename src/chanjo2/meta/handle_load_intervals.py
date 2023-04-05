@@ -99,7 +99,7 @@ async def update_transcripts(build: Builds, session: Session) -> int:
             f"Ensembl transcripts file has an unexpected format:{header}. Expected format: {TRANSCRIPTS_FILE_HEADER[build]}"
         )
 
-    transcript_list: List[TranscriptBase] = []
+    transcripts: List[TranscriptBase] = []
     for line in lines:
         items: List = _replace_empty_cols(line=line, nr_expected_columns=len(header))
 
