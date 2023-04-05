@@ -31,7 +31,7 @@ GENES_FILE_HEADER: dict = {
     ],
 }
 
-TRANSCRIPTS_FILE_HEADER: dict = {
+TRANSCRIPTS_FILE_HEADER: Dict[str, List[str]] = {
     "GRCh37": [
         "Chromosome Name",
         "Ensembl Gene ID",
