@@ -46,7 +46,7 @@ def _replace_empty_cols(line: str, nr_expected_columns: int) -> List:
     """Split gene line into columns, replacing empty columns with None values."""
     cols = [None if col == "" else col.replace("HGNC:", "") for col in line.split("\t")]
     # Make sure that expected nr of cols are returned if last cols are blank
-    cols += [None] * (nr_expected_cols - len(cols))
+    cols += [None] * (nr_expected_columns - len(cols))
     return cols
 
 
