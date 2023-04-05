@@ -57,7 +57,9 @@ def bulk_insert_genes(db: Session, gene_list: List[GeneBase]):
 def get_genes(db: Session, build: Builds, limit: int) -> List[SQLGene]:
     """Returns genes in the given genome build."""
     return (
-        _filter_intervals_by_build(intervals=db.query(SQLGene), interval_type=SQLGene, build=build)
+        _filter_intervals_by_build(
+            intervals=db.query(SQLGene), interval_type=SQLGene, build=build
+        )
         .limit(limit)
         .all()
     )
@@ -67,7 +69,9 @@ def create_db_transcript(db: Session, transcript: TranscriptBase) -> SQLTranscri
     """Create a SQL transcript object."""
 
     ensembl_gene: SQLGene = (
-        db.query(SQLGene).filter(SQLGene.ensembl_id == transcript.ensembl_gene_id).first()
+        db.query(SQLGene)
+        .filter(SQLGene.ensembl_id == transcript.ensembl_gene_id)
+        .first()
     )
 
     return SQLTranscript(
@@ -88,7 +92,9 @@ def create_db_transcript(db: Session, transcript: TranscriptBase) -> SQLTranscri
 
 def bulk_insert_transcripts(db: Session, transcripts: List[TranscriptBase]):
     """Bulk insert transcripts into the database."""
-    db.bulk_save_objects([create_db_transcript(db, transcripts) for transcripts in transcripts])
+    db.bulk_save_objects(
+        [create_db_transcript(db, transcripts) for transcripts in transcripts]
+    )
     db.commit()
 
 
