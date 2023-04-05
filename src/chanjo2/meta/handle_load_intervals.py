@@ -42,14 +42,14 @@ def _get_ensembl_resource_url(build: Builds, resource_type: str) -> str:
     return shug_client.build_url(xml=shug_client.xml)
 
 
-def _replace_empty_cols(string_line: str, n_expected_cols: int) -> List:
+def _replace_empty_cols(string_line: str, nr_expected_cols: int) -> List:
     """Split gene line into columns, replacing empty columns with None values."""
     cols = [
         None if col == "" else col.replace("HGNC:", "")
         for col in string_line.split("\t")
     ]
     # Make sure that expected nr of cols are returned if last cols are blank
-    cols += [None] * (n_expected_cols - len(cols))
+    cols += [None] * (nr_expected_cols - len(cols))
     return cols
 
 
@@ -67,7 +67,7 @@ async def update_genes(build: Builds, session: Session) -> int:
 
     gene_list: List[SQLGene] = []
     for line in lines:
-        items = _replace_empty_cols(string_line=line, n_expected_cols=len(header))
+        items = _replace_empty_cols(string_line=line, nr_expected_cols=len(header))
 
         # Load gene interval into the database
         gene: GeneBase = GeneBase(
@@ -104,7 +104,7 @@ async def update_transcripts(build: Builds, session: Session) -> int:
 
     transcript_list: List[TranscriptBase] = []
     for line in lines:
-        items = _replace_empty_cols(string_line=line, n_expected_cols=len(header))
+        items = _replace_empty_cols(string_line=line, nr_expected_cols=len(header))
 
         # Load transcript interval into the database
         tx = TranscriptBase(
