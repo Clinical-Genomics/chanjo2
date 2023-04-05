@@ -178,5 +178,4 @@ async def update_exons(build: Builds, session: Session) -> int:
     )
     LOG.info(f"{nr_loaded_exons} exons loaded into the database.")
 
-    return nr_loaded_transcripts
-    return 9
+    return nr_loaded_exons

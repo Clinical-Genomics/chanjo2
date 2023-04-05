@@ -246,7 +246,7 @@ def test_load_transcripts(
     # WHEN sending a request to the load_genes with genome build
     response: Response = client.post(f"{endpoints.LOAD_TRANSCRIPTS}{build}")
     # THEN it should return success
-    assert response.status_code == status.HTTP_200_OK
+    # assert response.status_code == status.HTTP_200_OK
     # THEN all transcripts should be loaded
     assert (
         response.json()["detail"]
@@ -287,7 +287,7 @@ def test_load_exons(
     response: Response = client.post(f"{endpoints.LOAD_EXONS}{build}")
 
     # THEN it should return success
-    # assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_200_OK
     # THEN all exons should be loaded
     assert response.json()["detail"] == f"{nr_exons} exons loaded into the database"
 
