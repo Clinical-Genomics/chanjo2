@@ -17,20 +17,25 @@ ENSEMBL_RESOURCE_CLIENT: Dict[str, Callable] = {
     "exons": fetch_ensembl_exon_lines,
 }
 
+CHROMOSOME_NAME_37: str = "Chromosome Name"
+CHROMOSOME_NAME_38: str = "Chromosome/scaffold name"
+ENSEMBL_GENE_ID_37: str = "Ensembl Gene ID"
+ENSEMBL_GENE_ID_38: str = "Gene stable ID"
+
 GENES_FILE_HEADER: Dict[str, List[str]] = {
     "GRCh37": [
-        "Chromosome Name",
+        CHROMOSOME_NAME_37,
         "Gene Start (bp)",
         "Gene End (bp)",
-        "Ensembl Gene ID",
+        ENSEMBL_GENE_ID_37,
         "HGNC symbol",
         "HGNC ID(s)",
     ],
     "GRCh38": [
-        "Chromosome/scaffold name",
+        CHROMOSOME_NAME_38,
         "Gene start (bp)",
         "Gene end (bp)",
-        "Gene stable ID",
+        ENSEMBL_GENE_ID_38,
         "HGNC symbol",
         "HGNC ID",
     ],
@@ -38,8 +43,8 @@ GENES_FILE_HEADER: Dict[str, List[str]] = {
 
 TRANSCRIPTS_FILE_HEADER: Dict[str, List[str]] = {
     "GRCh37": [
-        "Chromosome Name",
-        "Ensembl Gene ID",
+        CHROMOSOME_NAME_37,
+        ENSEMBL_GENE_ID_37,
         "Ensembl Transcript ID",
         "Transcript Start (bp)",
         "Transcript End (bp)",
@@ -48,8 +53,8 @@ TRANSCRIPTS_FILE_HEADER: Dict[str, List[str]] = {
         "RefSeq ncRNA [e.g. NR_002834]",
     ],
     "GRCh38": [
-        "Chromosome/scaffold name",
-        "Gene stable ID",
+        CHROMOSOME_NAME_38,
+        ENSEMBL_GENE_ID_38,
         "Transcript stable ID",
         "Transcript start (bp)",
         "Transcript end (bp)",
@@ -64,8 +69,8 @@ TRANSCRIPTS_FILE_HEADER: Dict[str, List[str]] = {
 
 EXONS_FILE_HEADER: Dict[str, List[str]] = {
     "GRCh37": [
-        "Chromosome Name",
-        "Ensembl Gene ID",
+        CHROMOSOME_NAME_37,
+        ENSEMBL_GENE_ID_37,
         "Ensembl Transcript ID",
         "Ensembl Exon ID",
         "Exon Chr Start (bp)",
@@ -78,8 +83,8 @@ EXONS_FILE_HEADER: Dict[str, List[str]] = {
         "Exon Rank in Transcript",
     ],
     "GRCh38": [
-        "Chromosome/scaffold name",
-        "Gene stable ID",
+        CHROMOSOME_NAME_38,
+        ENSEMBL_GENE_ID_38,
         "Transcript stable ID",
         "Exon stable ID",
         "Exon region start (bp)",

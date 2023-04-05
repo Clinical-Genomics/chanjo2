@@ -39,6 +39,8 @@ BUILD_EXONS_RESOURCE: List[Tuple[Builds, str]] = [
     (Builds.build_38, EXONS_38_FILE_PATH),
 ]
 
+MOCKED_FILE_PARSER = "chanjo2.meta.handle_load_intervals.parse_resource_lines"
+
 
 def test_d4_interval_coverage_d4_not_found(
     client: TestClient, mock_coverage_file: str, endpoints: Type, interval_query: dict
@@ -205,7 +207,7 @@ def test_load_genes(
     # GIVEN a patched response from Ensembl Biomart, via schug
     gene_lines: TextIOWrapper = file_handler(path)
     mocker.patch(
-        "chanjo2.meta.handle_load_intervals.parse_resource_lines",
+        MOCKED_FILE_PARSER,
         return_value=gene_lines,
     )
 
@@ -242,7 +244,7 @@ def test_load_transcripts(
     # GIVEN a patched response from Ensembl Biomart, via schug
     transcript_lines: TextIOWrapper = file_handler(path)
     mocker.patch(
-        "chanjo2.meta.handle_load_intervals.parse_resource_lines",
+        MOCKED_FILE_PARSER,
         return_value=transcript_lines,
     )
 
@@ -282,7 +284,7 @@ def test_load_exons(
     # GIVEN a patched response from Ensembl Biomart, via schug
     exons_lines: TextIOWrapper = file_handler(path)
     mocker.patch(
-        "chanjo2.meta.handle_load_intervals.parse_resource_lines",
+        MOCKED_FILE_PARSER,
         return_value=exons_lines,
     )
 
