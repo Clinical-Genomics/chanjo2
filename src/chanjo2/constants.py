@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Callable, Dict, List
 
 from schug.load.ensembl import fetch_ensembl_genes, fetch_ensembl_transcripts
 
@@ -7,7 +7,7 @@ WRONG_COVERAGE_FILE_MSG: str = (
 )
 WRONG_BED_FILE_MSG: str = "Provided intervals files is not a valid BED file"
 
-ENSEMBL_RESOURCE_CLIENT: dict = {
+ENSEMBL_RESOURCE_CLIENT: Dict[str, Callable] = {
     "genes": fetch_ensembl_genes,
     "transcripts": fetch_ensembl_transcripts,
 }
