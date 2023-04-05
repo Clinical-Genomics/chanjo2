@@ -58,7 +58,7 @@ async def update_genes(build: Builds, session: Session) -> int:
     LOG.info(f"Loading gene intervals. Genome build --> {build}")
     url: str = _get_ensembl_resource_url(build=build, interval_type=IntervalType.GENES)
 
-    lines: List[str] = resource_lines(url=url)
+    lines: Iterator[str] = resource_lines(url=url)
 
     header = next(lines).split("\t")
     if header != GENES_FILE_HEADER[build]:
@@ -105,7 +105,7 @@ async def update_transcripts(build: Builds, session: Session) -> int:
         build=build, interval_type=IntervalType.TRANSCRIPTS
     )
 
-    lines: List[str] = resource_lines(url=url)
+    lines: Iterator[str] = resource_lines(url=url)
 
     header = next(lines).split("\t")
     if header != TRANSCRIPTS_FILE_HEADER[build]:
@@ -138,11 +138,14 @@ async def update_transcripts(build: Builds, session: Session) -> int:
 
             if len(transcripts_bulk) > 10000:
                 bulk_insert_transcripts(db=session, transcripts=transcripts_bulk)
+                transcripts_bulk = []
 
         except Exception:
             LOG.info("End of resource file")
 
-    bulk_insert_transcripts(db=session, transcripts=transcripts_bulk)
+    bulk_insert_transcripts(
+        db=session, transcripts=transcripts_bulk
+    )  # Load the remaining transcripts
 
     nr_loaded_transcripts: int = count_intervals_for_build(
         db=session, interval_type=SQLTranscript, build=build
