@@ -1,7 +1,7 @@
 from typing import List, Optional, Tuple, Union
 
 from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
-from chanjo2.crud.intervals import get_genes
+from chanjo2.crud.intervals import get_genes, get_transcripts
 from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import parse_bed
 from chanjo2.meta.handle_d4 import (
@@ -10,8 +10,14 @@ from chanjo2.meta.handle_d4 import (
     set_d4_file,
     set_interval,
 )
-from chanjo2.meta.handle_load_intervals import update_genes
-from chanjo2.models.pydantic_models import Builds, CoverageInterval, Gene, Interval
+from chanjo2.meta.handle_load_intervals import update_genes, update_transcripts
+from chanjo2.models.pydantic_models import (
+    Builds,
+    CoverageInterval,
+    Gene,
+    Interval,
+    Transcript,
+)
 from fastapi import APIRouter, Depends, File, HTTPException, Response, status
 from fastapi.responses import JSONResponse
 from pyd4 import D4File
@@ -102,3 +108,32 @@ async def genes(
 ) -> List[Gene]:
     """Return genes in the given genome build."""
     return get_genes(db=session, build=build, limit=limit)
+
+
+@router.post("/intervals/load/transcripts/{build}")
+async def load_transcripts(
+    build: Builds, session: Session = Depends(get_session)
+) -> Union[Response, HTTPException]:
+    """Load transcripts in the given genome build."""
+
+    try:
+        nr_loaded_transcripts: int = await update_transcripts(build, session)
+        return JSONResponse(
+            content={
+                "detail": f"{nr_loaded_transcripts} transcripts loaded into the database"
+            }
+        )
+
+    except Exception as ex:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=ex.args,
+        )
+
+
+@router.get("/intervals/transcripts/{build}")
+async def transcripts(
+    build: Builds, session: Session = Depends(get_session), limit: int = 100
+) -> List[Transcript]:
+    """Return transcripts in the given genome build."""
+    return get_transcripts(db=session, build=build, limit=limit)
