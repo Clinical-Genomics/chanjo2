@@ -64,7 +64,7 @@ async def update_genes(build: Builds, session: Session) -> int:
 
     gene_list: List[SQLGene] = []
     for line in lines:
-        items = _replace_empty_cols(line=line, nr_expected_columns=len(header))
+        items: List = _replace_empty_cols(line=line, nr_expected_columns=len(header))
 
         # Load gene interval into the database
         gene: GeneBase = GeneBase(
@@ -101,7 +101,7 @@ async def update_transcripts(build: Builds, session: Session) -> int:
 
     transcript_list: List[TranscriptBase] = []
     for line in lines:
-        items = _replace_empty_cols(line=line, nr_expected_columns=len(header))
+        items: List = _replace_empty_cols(line=line, nr_expected_columns=len(header))
 
         # Load transcript interval into the database
         transcript = TranscriptBase(
