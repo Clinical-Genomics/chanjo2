@@ -1,14 +1,26 @@
 import logging
 from typing import List, Tuple, Union
 
-from chanjo2.constants import ENSEMBL_RESOURCE_CLIENT, GENES_FILE_HEADER, TRANSCRIPTS_FILE_HEADER
+from chanjo2.constants import (
+    ENSEMBL_RESOURCE_CLIENT,
+    EXONS_FILE_HEADER,
+    GENES_FILE_HEADER,
+    TRANSCRIPTS_FILE_HEADER,
+)
 from chanjo2.crud.intervals import (
+    bulk_insert_exons,
     bulk_insert_genes,
     bulk_insert_transcripts,
     count_intervals_for_build,
     delete_intervals_for_build,
 )
-from chanjo2.models.pydantic_models import Builds, GeneBase, IntervalType, TranscriptBase
+from chanjo2.models.pydantic_models import (
+    Builds,
+    ExonBase,
+    GeneBase,
+    IntervalType,
+    TranscriptBase,
+)
 from chanjo2.models.sql_models import Exon as SQLExon
 from chanjo2.models.sql_models import Gene as SQLGene
 from chanjo2.models.sql_models import Transcript as SQLTranscript
@@ -77,7 +89,9 @@ async def update_genes(build: Builds, session: Session) -> int:
 
     delete_intervals_for_build(db=session, interval_type=SQLGene, build=build)
     bulk_insert_genes(db=session, genes=genes)
-    nr_loaded_genes: int = count_intervals_for_build(db=session, interval_type=SQLGene, build=build)
+    nr_loaded_genes: int = count_intervals_for_build(
+        db=session, interval_type=SQLGene, build=build
+    )
     LOG.info(f"{nr_loaded_genes} genes loaded into the database.")
     return nr_loaded_genes
 
@@ -86,7 +100,9 @@ async def update_transcripts(build: Builds, session: Session) -> int:
     """Loads transcripts into the database."""
 
     LOG.info(f"Loading transcript intervals. Genome build --> {build}")
-    url: str = _get_ensembl_resource_url(build=build, interval_type=IntervalType.TRANSCRIPTS)
+    url: str = _get_ensembl_resource_url(
+        build=build, interval_type=IntervalType.TRANSCRIPTS
+    )
     header, lines = await parse_resource_lines(url)
 
     if header != TRANSCRIPTS_FILE_HEADER[build]:
@@ -129,42 +145,38 @@ async def update_exons(build: Builds, session: Session) -> int:
 
     LOG.info(f"Loading exon intervals. Genome build --> {build}")
     url: str = _get_ensembl_resource_url(build=build, interval_type=IntervalType.EXONS)
-    LOG.warning(url)
 
-    """
     header, lines = await parse_resource_lines(url)
-    if header != TRANSCRIPTS_FILE_HEADER[build]:
+
+    if header != EXONS_FILE_HEADER[build]:
         raise ValueError(
-            f"Ensembl transcripts file has an unexpected format:{header}. Expected format: {TRANSCRIPTS_FILE_HEADER[build]}"
+            f"Ensembl exons file has an unexpected format:{header}. Expected format: {EXONS_FILE_HEADER[build]}"
         )
 
-    transcripts: List[TranscriptBase] = []
+    exons: List[ExonBase] = []
+
     for line in lines:
         items: List = _replace_empty_cols(line=line, nr_expected_columns=len(header))
 
         # Load transcript interval into the database
-        transcript = TranscriptBase(
+        exon = ExonBase(
             chromosome=items[0],
             ensembl_gene_id=items[1],
-            ensembl_id=items[2],
-            start=int(items[3]),
-            stop=int(items[4]),
-            refseq_mrna=items[5],
-            refseq_mrna_pred=items[6],
-            refseq_ncrna=items[7],
-            refseq_mane_select=items[8] if build == "GRCh38" else None,
-            refseq_mane_plus_clinical=items[9] if build == "GRCh38" else None,
+            ensembl_transcript_id=items[2],
+            ensembl_id=items[3],
+            start=int(items[4]),
+            stop=int(items[5]),
             build=build,
         )
-        transcripts.append(transcript)
+        exons.append(exon)
 
-    delete_intervals_for_build(db=session, interval_type=SQLTranscript, build=build)
-    bulk_insert_transcripts(db=session, transcripts=transcripts)
-    """
-    """
-    nr_loaded_exons: int = count_intervals_for_build(db=session, interval_type=SQLExon, build=build)
+    delete_intervals_for_build(db=session, interval_type=SQLExon, build=build)
+    bulk_insert_exons(db=session, exons=exons)
+
+    nr_loaded_exons: int = count_intervals_for_build(
+        db=session, interval_type=SQLExon, build=build
+    )
     LOG.info(f"{nr_loaded_exons} exons loaded into the database.")
 
     return nr_loaded_transcripts
-    """
-    return 0
+    return 9

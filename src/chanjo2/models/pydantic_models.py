@@ -100,6 +100,21 @@ class Transcript(TranscriptBase):
     ensembl_gene_ref: Optional[int]
 
 
+class ExonBase(IntervalBase):
+    ensembl_gene_id: str
+    ensembl_transcript_id: str
+    ensembl_id: str
+    build: Builds
+
+
+class Exon(IntervalBase):
+    id: int
+    ensembl_id: str
+    ensembl_gene_ref: Optional[int]
+    ensembl_transcript_ref: Optional[int]
+    build: Builds
+
+
 class CoverageInterval(BaseModel):
     chromosome: str
     start: Optional[int]

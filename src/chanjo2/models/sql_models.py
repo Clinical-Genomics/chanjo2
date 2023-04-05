@@ -71,7 +71,9 @@ class Transcript(Base):
     refseq_ncrna = Column(String(24), nullable=True, index=False)
     refseq_mane_select = Column(String(24), nullable=True, index=True)
     refseq_mane_plus_clinical = Column(String(24), nullable=True, index=True)
-    ensembl_gene_ref = Column(Integer, ForeignKey("genes.id"), nullable=True, index=True)
+    ensembl_gene_ref = Column(
+        Integer, ForeignKey("genes.id"), nullable=True, index=True
+    )
     ensembl_gene_id = Column(String(24), nullable=False, index=True)
     build = Column(Enum(Builds), index=True)
 
@@ -89,4 +91,7 @@ class Exon(Base):
     ensembl_transcript_ref = Column(
         Integer, ForeignKey("transcripts.id"), nullable=True, index=True
     )
-    ensembl_gene_ref = Column(Integer, ForeignKey("genes.id"), nullable=True, index=True)
+    ensembl_gene_ref = Column(
+        Integer, ForeignKey("genes.id"), nullable=True, index=True
+    )
+    build = Column(Enum(Builds), index=True)
