@@ -1,4 +1,4 @@
-from typing import List
+from typing import Dict, List
 
 from schug.load.ensembl import fetch_ensembl_genes, fetch_ensembl_transcripts
 
@@ -12,7 +12,7 @@ ENSEMBL_RESOURCE_CLIENT: dict = {
     "transcripts": fetch_ensembl_transcripts,
 }
 
-GENES_FILE_HEADER: dict = {
+GENES_FILE_HEADER: Dict[str, List[str]] = {
     "GRCh37": [
         "Chromosome Name",
         "Gene Start (bp)",
