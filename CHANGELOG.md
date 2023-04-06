@@ -38,3 +38,5 @@
 - Installing the pyd4 module as a requirement of this repository
 - Moved the endpoints contants to a class in test fixtures
 - More explicit names for two endpoints
+- Load genes and transcripts in batches of 10K records
+- Simpler code to load genes and transcripts into the database
