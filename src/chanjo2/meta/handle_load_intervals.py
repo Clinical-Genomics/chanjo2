@@ -29,7 +29,7 @@ from sqlmodel import Session
 LOG = logging.getLogger("uvicorn.access")
 
 
-def resource_lines(url) -> Iterator[str]:
+def read_resource_lines(url) -> Iterator[str]:
     """Returns lines of a remote resource file."""
 
     resp: requests.models.responses = requests.get(url, stream=True)
