@@ -68,7 +68,7 @@ async def update_genes(build: Builds, session: Session) -> int:
 
     delete_intervals_for_build(db=session, interval_type=SQLGene, build=build)
 
-    genes: List[SQLGene] = []
+    genes_bulk: List[SQLGene] = []
 
     for line in lines:
         items: List = _replace_empty_cols(line=line, nr_expected_columns=len(header))
@@ -83,12 +83,16 @@ async def update_genes(build: Builds, session: Session) -> int:
                 hgnc_symbol=items[4],
                 hgnc_id=items[5],
             )
-            genes.append(gene)
+            genes_bulk.append(gene)
+
+            if len(genes_bulk) > 10000:
+                bulk_insert_genes(db=session, genes=genes_bulk)
+                genes_bulk = []
 
         except Exception:
             LOG.info("End of resource file")
 
-    bulk_insert_genes(db=session, genes=genes)
+    bulk_insert_genes(db=session, genes=genes_bulk)
 
     nr_loaded_genes: int = count_intervals_for_build(
         db=session, interval_type=SQLGene, build=build
