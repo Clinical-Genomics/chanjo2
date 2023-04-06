@@ -202,7 +202,7 @@ def test_load_genes(
     # WHEN sending a request to the load_genes with genome build
     response: Response = client.post(f"{endpoints.LOAD_GENES}{build}")
     # THEN it should return success
-    # assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_200_OK
 
     # THEN all the genes should be loaded
     assert response.json()["detail"] == f"{nr_genes} genes loaded into the database"
