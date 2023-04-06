@@ -30,7 +30,7 @@ LOG = logging.getLogger("uvicorn.access")
 
 
 def resource_lines(url) -> Iterator[str]:
-    """Returns lines of a remote resource file"""
+    """Returns lines of a remote resource file."""
 
     resp: requests.models.responses = requests.get(url, stream=True)
     return resp.iter_lines(decode_unicode=True)
