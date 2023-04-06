@@ -73,7 +73,7 @@ def get_genes(db: Session, build: Builds, limit: int) -> List[SQLGene]:
 
 
 def get_gene_from_ensembl_id(db: Session, ensembl_id: str) -> Optional[SQLGene]:
-    """Retrieve a gene given its ensembl ID"""
+    """Retrieve a gene given its ensembl ID."""
 
     return db.query(SQLGene).filter(SQLGene.ensembl_id == ensembl_id).first()
 
@@ -81,7 +81,7 @@ def get_gene_from_ensembl_id(db: Session, ensembl_id: str) -> Optional[SQLGene]:
 def get_transcript_from_ensembl_id(
     db: Session, ensembl_id: str
 ) -> Optional[SQLTranscript]:
-    """Retrieve a transcript given its ensembl ID"""
+    """Retrieve a transcript given its ensembl ID."""
 
     return (
         db.query(SQLTranscript).filter(SQLTranscript.ensembl_id == ensembl_id).first()
