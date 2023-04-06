@@ -140,7 +140,7 @@ def create_db_exon(db: Session, exon: ExonBase) -> SQLExon:
         db=db, ensembl_id=exon.ensembl_gene_id
     )
     ensembl_transcript: SQLTranscript = get_transcript_from_ensembl_id(
-        db=db, ensembl_id=exon.ensembl_gene_id
+        db=db, ensembl_id=exon.ensembl_transcript_id
     )
 
     return SQLExon(
