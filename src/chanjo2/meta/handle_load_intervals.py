@@ -27,9 +27,10 @@ from schug.models.common import Build as SchugBuild
 from sqlmodel import Session
 
 LOG = logging.getLogger("uvicorn.access")
+MAX_NR_OF_RECORDS = 10000
 
 
-def read_resource_lines(url) -> Iterator[str]:
+def read_resource_lines(url: str) -> Iterator[str]:
     """Returns lines of a remote resource file."""
 
     resp: requests.models.responses = requests.get(url, stream=True)
@@ -58,7 +59,7 @@ async def update_genes(build: Builds, session: Session) -> int:
     LOG.info(f"Loading gene intervals. Genome build --> {build}")
     url: str = _get_ensembl_resource_url(build=build, interval_type=IntervalType.GENES)
 
-    lines: Iterator[str] = resource_lines(url=url)
+    lines: Iterator[str] = read_resource_lines(url=url)
 
     header = next(lines).split("\t")
     if header != GENES_FILE_HEADER[build]:
@@ -85,7 +86,7 @@ async def update_genes(build: Builds, session: Session) -> int:
             )
             genes_bulk.append(gene)
 
-            if len(genes_bulk) > 10000:
+            if len(genes_bulk) > MAX_NR_OF_RECORDS:
                 bulk_insert_genes(db=session, genes=genes_bulk)
                 genes_bulk = []
 
@@ -109,7 +110,7 @@ async def update_transcripts(build: Builds, session: Session) -> int:
         build=build, interval_type=IntervalType.TRANSCRIPTS
     )
 
-    lines: Iterator[str] = resource_lines(url=url)
+    lines: Iterator[str] = read_resource_lines(url=url)
 
     header = next(lines).split("\t")
     if header != TRANSCRIPTS_FILE_HEADER[build]:
@@ -134,13 +135,15 @@ async def update_transcripts(build: Builds, session: Session) -> int:
                 refseq_mrna=items[5],
                 refseq_mrna_pred=items[6],
                 refseq_ncrna=items[7],
-                refseq_mane_select=items[8] if build == "GRCh38" else None,
-                refseq_mane_plus_clinical=items[9] if build == "GRCh38" else None,
+                refseq_mane_select=items[8] if build == Builds.build_38 else None,
+                refseq_mane_plus_clinical=items[9]
+                if build == Builds.build_38
+                else None,
                 build=build,
             )
             transcripts_bulk.append(transcript)
 
-            if len(transcripts_bulk) > 10000:
+            if len(transcripts_bulk) > MAX_NR_OF_RECORDS:
                 bulk_insert_transcripts(db=session, transcripts=transcripts_bulk)
                 transcripts_bulk = []
 

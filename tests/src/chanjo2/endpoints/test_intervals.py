@@ -192,7 +192,7 @@ def test_load_genes(
     # GIVEN a patched response from Ensembl Biomart, via schug
     gene_lines: Iterator = file_handler(path)
     mocker.patch(
-        "chanjo2.meta.handle_load_intervals.resource_lines",
+        "chanjo2.meta.handle_load_intervals.read_resource_lines",
         return_value=gene_lines,
     )
 
@@ -231,7 +231,7 @@ def test_load_transcripts(
     # GIVEN a patched response from Ensembl Biomart, via schug
     transcript_lines: Iterator = file_handler(path)
     mocker.patch(
-        "chanjo2.meta.handle_load_intervals.resource_lines",
+        "chanjo2.meta.handle_load_intervals.read_resource_lines",
         return_value=transcript_lines,
     )
 
