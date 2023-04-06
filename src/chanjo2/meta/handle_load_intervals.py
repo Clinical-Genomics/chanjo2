@@ -1,6 +1,7 @@
 import logging
-from typing import List, Tuple, Union
+from typing import Iterator, List, Tuple, Union
 
+import requests
 from chanjo2.constants import (
     ENSEMBL_RESOURCE_CLIENT,
     GENES_FILE_HEADER,
@@ -26,17 +27,14 @@ from schug.models.common import Build as SchugBuild
 from sqlmodel import Session
 
 LOG = logging.getLogger("uvicorn.access")
+MAX_NR_OF_RECORDS = 10000
 
 
-async def parse_resource_lines(url) -> Tuple[List[List[str]], List[str]]:
-    """Returns header and lines of a downloaded resource."""
-    all_lines: List[str] = "".join(
-        [i.decode("utf-8") async for i in stream_resource(url=url)]
-    ).split("\n")
-    all_lines = [line.rstrip("\n") for line in all_lines]
-    resource_header: str = all_lines[0]
-    resource_lines: List[str] = all_lines[1:-2]  # last 2 lines don't contain data
-    return resource_header.split("\t"), resource_lines
+def read_resource_lines(url: str) -> Iterator[str]:
+    """Returns lines of a remote resource file."""
+
+    resp: requests.models.responses = requests.get(url, stream=True)
+    return resp.iter_lines(decode_unicode=True)
 
 
 def _get_ensembl_resource_url(build: Builds, interval_type: IntervalType) -> str:
@@ -60,31 +58,43 @@ async def update_genes(build: Builds, session: Session) -> int:
 
     LOG.info(f"Loading gene intervals. Genome build --> {build}")
     url: str = _get_ensembl_resource_url(build=build, interval_type=IntervalType.GENES)
-    header, lines = await parse_resource_lines(url)
 
+    lines: Iterator[str] = read_resource_lines(url=url)
+
+    header = next(lines).split("\t")
     if header != GENES_FILE_HEADER[build]:
         raise ValueError(
             f"Ensembl genes file has an unexpected format:{header}. Expected format: {GENES_FILE_HEADER[build]}"
         )
 
-    genes: List[SQLGene] = []
+    delete_intervals_for_build(db=session, interval_type=SQLGene, build=build)
+
+    genes_bulk: List[SQLGene] = []
+
     for line in lines:
         items: List = _replace_empty_cols(line=line, nr_expected_columns=len(header))
 
-        # Load gene interval into the database
-        gene: GeneBase = GeneBase(
-            build=build,
-            chromosome=items[0],
-            start=int(items[1]),
-            stop=int(items[2]),
-            ensembl_id=items[3],
-            hgnc_symbol=items[4],
-            hgnc_id=items[5],
-        )
-        genes.append(gene)
+        try:
+            gene: GeneBase = GeneBase(
+                build=build,
+                chromosome=items[0],
+                start=int(items[1]),
+                stop=int(items[2]),
+                ensembl_id=items[3],
+                hgnc_symbol=items[4],
+                hgnc_id=items[5],
+            )
+            genes_bulk.append(gene)
 
-    delete_intervals_for_build(db=session, interval_type=SQLGene, build=build)
-    bulk_insert_genes(db=session, genes=genes)
+            if len(genes_bulk) > MAX_NR_OF_RECORDS:
+                bulk_insert_genes(db=session, genes=genes_bulk)
+                genes_bulk = []
+
+        except Exception:
+            LOG.info("End of resource file")
+
+    bulk_insert_genes(db=session, genes=genes_bulk)
+
     nr_loaded_genes: int = count_intervals_for_build(
         db=session, interval_type=SQLGene, build=build
     )
@@ -99,35 +109,50 @@ async def update_transcripts(build: Builds, session: Session) -> int:
     url: str = _get_ensembl_resource_url(
         build=build, interval_type=IntervalType.TRANSCRIPTS
     )
-    header, lines = await parse_resource_lines(url)
 
+    lines: Iterator[str] = read_resource_lines(url=url)
+
+    header = next(lines).split("\t")
     if header != TRANSCRIPTS_FILE_HEADER[build]:
         raise ValueError(
             f"Ensembl transcripts file has an unexpected format:{header}. Expected format: {TRANSCRIPTS_FILE_HEADER[build]}"
         )
 
-    transcripts: List[TranscriptBase] = []
+    delete_intervals_for_build(db=session, interval_type=SQLTranscript, build=build)
+
+    transcripts_bulk: List[TranscriptBase] = []
+
     for line in lines:
         items: List = _replace_empty_cols(line=line, nr_expected_columns=len(header))
 
-        # Load transcript interval into the database
-        transcript = TranscriptBase(
-            chromosome=items[0],
-            ensembl_gene_id=items[1],
-            ensembl_id=items[2],
-            start=int(items[3]),
-            stop=int(items[4]),
-            refseq_mrna=items[5],
-            refseq_mrna_pred=items[6],
-            refseq_ncrna=items[7],
-            refseq_mane_select=items[8] if build == "GRCh38" else None,
-            refseq_mane_plus_clinical=items[9] if build == "GRCh38" else None,
-            build=build,
-        )
-        transcripts.append(transcript)
+        try:
+            transcript = TranscriptBase(
+                chromosome=items[0],
+                ensembl_gene_id=items[1],
+                ensembl_id=items[2],
+                start=int(items[3]),
+                stop=int(items[4]),
+                refseq_mrna=items[5],
+                refseq_mrna_pred=items[6],
+                refseq_ncrna=items[7],
+                refseq_mane_select=items[8] if build == Builds.build_38 else None,
+                refseq_mane_plus_clinical=items[9]
+                if build == Builds.build_38
+                else None,
+                build=build,
+            )
+            transcripts_bulk.append(transcript)
 
-    delete_intervals_for_build(db=session, interval_type=SQLTranscript, build=build)
-    bulk_insert_transcripts(db=session, transcripts=transcripts)
+            if len(transcripts_bulk) > MAX_NR_OF_RECORDS:
+                bulk_insert_transcripts(db=session, transcripts=transcripts_bulk)
+                transcripts_bulk = []
+
+        except Exception:
+            LOG.info("End of resource file")
+
+    bulk_insert_transcripts(
+        db=session, transcripts=transcripts_bulk
+    )  # Load the remaining transcripts
 
     nr_loaded_transcripts: int = count_intervals_for_build(
         db=session, interval_type=SQLTranscript, build=build
