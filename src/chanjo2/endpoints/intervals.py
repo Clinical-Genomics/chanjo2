@@ -151,7 +151,7 @@ async def load_exons(
     """Load exons in the given genome build."""
 
     try:
-        nr_loaded_exons: int = await update_exons(build, session)
+        nr_loaded_exons: int = await update_exons(build=build, session=session)
         return JSONResponse(
             content={"detail": f"{nr_loaded_exons} exons loaded into the database"}
         )

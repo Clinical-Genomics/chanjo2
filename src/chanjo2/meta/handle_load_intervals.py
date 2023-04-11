@@ -31,7 +31,7 @@ from schug.models.common import Build as SchugBuild
 from sqlmodel import Session
 
 LOG = logging.getLogger("uvicorn.access")
-MAX_NR_OF_RECORDS = 10000
+MAX_NR_OF_RECORDS = 10_000
 END_OF_PARSED_FILE = "End of resource file"
 
 

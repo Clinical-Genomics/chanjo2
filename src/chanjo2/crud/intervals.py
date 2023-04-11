@@ -43,7 +43,7 @@ def _filter_intervals_by_build(
 
 
 def create_db_gene(gene: GeneBase) -> SQLGene:
-    """Create a SQL gene object."""
+    """Create and return a SQL gene object."""
     return SQLGene(
         build=gene.build,
         chromosome=gene.chromosome,
@@ -89,7 +89,7 @@ def get_transcript_from_ensembl_id(
 
 
 def create_db_transcript(db: Session, transcript: TranscriptBase) -> SQLTranscript:
-    """Create a SQL transcript object."""
+    """Create and return a SQL transcript object."""
 
     ensembl_gene: SQLGene = get_gene_from_ensembl_id(
         db=db, ensembl_id=transcript.ensembl_gene_id

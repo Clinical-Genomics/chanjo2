@@ -1,10 +1,7 @@
 from typing import Callable, Dict, List
 
-from schug.load.ensembl import (
-    fetch_ensembl_exon_lines,
-    fetch_ensembl_genes,
-    fetch_ensembl_transcripts,
-)
+from schug.load.ensembl import fetch_ensembl_exon_lines as fetch_ensembl_exons
+from schug.load.ensembl import fetch_ensembl_genes, fetch_ensembl_transcripts
 
 WRONG_COVERAGE_FILE_MSG: str = (
     "Coverage_file_path must be either an existing local file path or a URL"
@@ -14,16 +11,18 @@ WRONG_BED_FILE_MSG: str = "Provided intervals files is not a valid BED file"
 ENSEMBL_RESOURCE_CLIENT: Dict[str, Callable] = {
     "genes": fetch_ensembl_genes,
     "transcripts": fetch_ensembl_transcripts,
-    "exons": fetch_ensembl_exon_lines,
+    "exons": fetch_ensembl_exons,
 }
 
+BUILD_37 = "GRCh37"
+BUILD_38 = "GRCh38"
 CHROMOSOME_NAME_37: str = "Chromosome Name"
 CHROMOSOME_NAME_38: str = "Chromosome/scaffold name"
 ENSEMBL_GENE_ID_37: str = "Ensembl Gene ID"
 ENSEMBL_GENE_ID_38: str = "Gene stable ID"
 
 GENES_FILE_HEADER: Dict[str, List[str]] = {
-    "GRCh37": [
+    BUILD_37: [
         CHROMOSOME_NAME_37,
         "Gene Start (bp)",
         "Gene End (bp)",
@@ -31,7 +30,7 @@ GENES_FILE_HEADER: Dict[str, List[str]] = {
         "HGNC symbol",
         "HGNC ID(s)",
     ],
-    "GRCh38": [
+    BUILD_38: [
         CHROMOSOME_NAME_38,
         "Gene start (bp)",
         "Gene end (bp)",
@@ -42,7 +41,7 @@ GENES_FILE_HEADER: Dict[str, List[str]] = {
 }
 
 TRANSCRIPTS_FILE_HEADER: Dict[str, List[str]] = {
-    "GRCh37": [
+    BUILD_37: [
         CHROMOSOME_NAME_37,
         ENSEMBL_GENE_ID_37,
         "Ensembl Transcript ID",
@@ -52,7 +51,7 @@ TRANSCRIPTS_FILE_HEADER: Dict[str, List[str]] = {
         "RefSeq mRNA predicted [e.g. XM_001125684]",
         "RefSeq ncRNA [e.g. NR_002834]",
     ],
-    "GRCh38": [
+    BUILD_38: [
         CHROMOSOME_NAME_38,
         ENSEMBL_GENE_ID_38,
         "Transcript stable ID",
@@ -68,7 +67,7 @@ TRANSCRIPTS_FILE_HEADER: Dict[str, List[str]] = {
 
 
 EXONS_FILE_HEADER: Dict[str, List[str]] = {
-    "GRCh37": [
+    BUILD_37: [
         CHROMOSOME_NAME_37,
         ENSEMBL_GENE_ID_37,
         "Ensembl Transcript ID",
@@ -82,7 +81,7 @@ EXONS_FILE_HEADER: Dict[str, List[str]] = {
         "Strand",
         "Exon Rank in Transcript",
     ],
-    "GRCh38": [
+    BUILD_38: [
         CHROMOSOME_NAME_38,
         ENSEMBL_GENE_ID_38,
         "Transcript stable ID",
