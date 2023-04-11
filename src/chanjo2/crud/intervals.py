@@ -155,7 +155,7 @@ def create_db_exon(db: Session, exon: ExonBase) -> SQLExon:
     )
 
 
-def bulk_insert_exons(db: Session, exons: List[ExonBase]):
+def bulk_insert_exons(db: Session, exons: List[ExonBase]) -> None:
     """Bulk insert exons into the database."""
     db.bulk_save_objects([create_db_exon(db=db, exon=exon) for exon in exons])
     db.commit()
