@@ -11,14 +11,17 @@ jobs:
 
       - name: Verify Changed files
         uses: tj-actions/verify-changed-files@v14
-        id: files
-        with:
-          files: |
-            *.py
+        id: changed-files
+
+      - name: List all changed files
+        run: |
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            echo "$file was changed"
+          done
 
       - name: Scavenge
         uses: anaynayak/python-vulture-action@v1.0
         id: vulture
         with:
-          vulture-args: --min-confidence 80 --ignore-names kwargs cls ${{steps.files.outputs.all}}
+          vulture-args: --min-confidence 80 --ignore-names kwargs cls ${{steps.changed-files.outputs.all_changed_files}}
         continue-on-error: true
