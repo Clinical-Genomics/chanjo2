@@ -17,15 +17,10 @@ jobs:
             src
             tests
 
-      - name: List all changed files
-        run: |
-          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
-            echo "$file was changed"
-          done
-
       - name: Scavenge
+        if: steps.changed-files.outputs.any_changed == 'true'
         uses: anaynayak/python-vulture-action@v1.0
         id: vulture
         with:
-          vulture-args: --min-confidence 80 --ignore-names kwargs ${{steps.changed-files.outputs.all_changed_files}}
+          vulture-args: --min-confidence 80 ${{steps.changed-files.outputs.all_changed_files}}
         continue-on-error: true
