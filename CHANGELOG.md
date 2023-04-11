@@ -40,3 +40,4 @@
 - More explicit names for two endpoints
 - Load genes, transcripts and exons in batches of 10K records
 - Simpler code to load genes and transcripts into the database
+- Updated version of several GitHub actions

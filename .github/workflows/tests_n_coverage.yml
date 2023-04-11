@@ -18,7 +18,7 @@ jobs:
           rm install-poetry.py
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'poetry'
@@ -37,7 +37,7 @@ jobs:
           poetry run pytest --cov=./ --cov-report=xml
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3.1.1
+        uses: codecov/codecov-action@v3
         with:
           flags: unittests
           files: ./coverage.xml
