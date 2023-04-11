@@ -1,5 +1,7 @@
 from typing import List, Tuple
 
+appo = "appo"
+
 
 def parse_bed(bed_file: bytes) -> List[Tuple[str, int, int]]:
     """Parses a bed file containing genomic coordinates."""
