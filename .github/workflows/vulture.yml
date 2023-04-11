@@ -12,6 +12,9 @@ jobs:
       - name: Get changed files
         id: changed-files
         uses: tj-actions/changed-files@v35
+        with:
+          files: |
+            *.py
 
       - name: List all changed files
         run: |
@@ -23,5 +26,5 @@ jobs:
         uses: anaynayak/python-vulture-action@v1.0
         id: vulture
         with:
-          vulture-args: --min-confidence 80 --ignore-names kwargs cls ${{steps.changed-files.outputs.all_changed_files}}
+          vulture-args: --min-confidence 80 --ignore-names kwargs ${{steps.changed-files.outputs.all_changed_files}}
         continue-on-error: true
