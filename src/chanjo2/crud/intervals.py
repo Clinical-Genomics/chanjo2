@@ -134,7 +134,7 @@ def get_transcripts(db: Session, build: Builds, limit: int) -> List[SQLTranscrip
 
 
 def create_db_exon(db: Session, exon: ExonBase) -> SQLExon:
-    """Create a SQL exoon object."""
+    """Create and return a SQL exon object."""
 
     ensembl_gene: SQLGene = get_gene_from_ensembl_id(
         db=db, ensembl_id=exon.ensembl_gene_id
