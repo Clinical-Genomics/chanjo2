@@ -79,7 +79,7 @@ class Transcript(Base):
 
 
 class Exon(Base):
-    """Used to define an e entity."""
+    """Used to define an exon entity."""
 
     __tablename__ = "exons"
     id = Column(Integer, primary_key=True, index=True)
