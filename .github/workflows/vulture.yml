@@ -14,6 +14,7 @@ jobs:
         uses: tj-actions/changed-files@v35
         with:
           files: |
+            .
             *.py
 
       - name: List all changed files
