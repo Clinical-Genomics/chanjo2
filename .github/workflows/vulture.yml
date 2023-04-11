@@ -13,7 +13,10 @@ jobs:
         id: files
         uses: masesgroup/retrieve-changed-files@v2
         with:
-          filter: "*.py"
+          # Format of the steps output context.
+          # Can be 'space-delimited', 'csv', or 'json'.
+          # Default: 'space-delimited'
+          format: ''
 
       - name: Scavenge
         uses: anaynayak/python-vulture-action@v1.0
