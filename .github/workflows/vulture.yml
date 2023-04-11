@@ -14,7 +14,7 @@ jobs:
         id: files
         with:
           files: |
-            **/*.py
+            *.py
 
       - name: Scavenge
         uses: anaynayak/python-vulture-action@v1.0
