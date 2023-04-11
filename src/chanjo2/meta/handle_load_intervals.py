@@ -4,10 +4,12 @@ from typing import Iterator, List, Tuple, Union
 import requests
 from chanjo2.constants import (
     ENSEMBL_RESOURCE_CLIENT,
+    EXONS_FILE_HEADER,
     GENES_FILE_HEADER,
     TRANSCRIPTS_FILE_HEADER,
 )
 from chanjo2.crud.intervals import (
+    bulk_insert_exons,
     bulk_insert_genes,
     bulk_insert_transcripts,
     count_intervals_for_build,
@@ -15,10 +17,12 @@ from chanjo2.crud.intervals import (
 )
 from chanjo2.models.pydantic_models import (
     Builds,
+    ExonBase,
     GeneBase,
     IntervalType,
     TranscriptBase,
 )
+from chanjo2.models.sql_models import Exon as SQLExon
 from chanjo2.models.sql_models import Gene as SQLGene
 from chanjo2.models.sql_models import Transcript as SQLTranscript
 from schug.load.biomart import EnsemblBiomartClient
@@ -27,7 +31,8 @@ from schug.models.common import Build as SchugBuild
 from sqlmodel import Session
 
 LOG = logging.getLogger("uvicorn.access")
-MAX_NR_OF_RECORDS = 10000
+MAX_NR_OF_RECORDS = 10_000
+END_OF_PARSED_FILE = "End of resource file"
 
 
 def read_resource_lines(url: str) -> Iterator[str]:
@@ -91,9 +96,9 @@ async def update_genes(build: Builds, session: Session) -> int:
                 genes_bulk = []
 
         except Exception:
-            LOG.info("End of resource file")
+            LOG.info(END_OF_PARSED_FILE)
 
-    bulk_insert_genes(db=session, genes=genes_bulk)
+    bulk_insert_genes(db=session, genes=genes_bulk)  # Load the remaining genes
 
     nr_loaded_genes: int = count_intervals_for_build(
         db=session, interval_type=SQLGene, build=build
@@ -148,7 +153,7 @@ async def update_transcripts(build: Builds, session: Session) -> int:
                 transcripts_bulk = []
 
         except Exception:
-            LOG.info("End of resource file")
+            LOG.info(END_OF_PARSED_FILE)
 
     bulk_insert_transcripts(
         db=session, transcripts=transcripts_bulk
@@ -159,3 +164,54 @@ async def update_transcripts(build: Builds, session: Session) -> int:
     )
     LOG.info(f"{nr_loaded_transcripts} transcripts loaded into the database.")
     return nr_loaded_transcripts
+
+
+async def update_exons(build: Builds, session: Session) -> int:
+    """Loads exons into the database."""
+
+    LOG.info(f"Loading exon intervals. Genome build --> {build}")
+    url: str = _get_ensembl_resource_url(build=build, interval_type=IntervalType.EXONS)
+
+    lines: Iterator[str] = read_resource_lines(url=url)
+
+    header = next(lines).split("\t")
+    if header != EXONS_FILE_HEADER[build]:
+        raise ValueError(
+            f"Ensembl exons file has an unexpected format:{header}. Expected format: {EXONS_FILE_HEADER[build]}"
+        )
+
+    delete_intervals_for_build(db=session, interval_type=SQLExon, build=build)
+
+    exons_bulk: List[ExonBase] = []
+
+    for line in lines:
+        items: List = _replace_empty_cols(line=line, nr_expected_columns=len(header))
+
+        try:
+            # Load transcript interval into the database
+            exon = ExonBase(
+                chromosome=items[0],
+                ensembl_gene_id=items[1],
+                ensembl_transcript_id=items[2],
+                ensembl_id=items[3],
+                start=int(items[4]),
+                stop=int(items[5]),
+                build=build,
+            )
+            exons_bulk.append(exon)
+
+            if len(exons_bulk) > MAX_NR_OF_RECORDS:
+                bulk_insert_exons(db=session, exons=exons_bulk)
+                exons_bulk = []
+
+        except Exception:
+            LOG.info(END_OF_PARSED_FILE)
+
+    bulk_insert_exons(db=session, exons=exons_bulk)  # Load the remaining exons
+
+    nr_loaded_exons: int = count_intervals_for_build(
+        db=session, interval_type=SQLExon, build=build
+    )
+    LOG.info(f"{nr_loaded_exons} exons loaded into the database.")
+
+    return nr_loaded_exons

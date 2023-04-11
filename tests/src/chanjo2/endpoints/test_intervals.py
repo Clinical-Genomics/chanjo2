@@ -5,11 +5,19 @@ import pytest
 from _io import TextIOWrapper
 from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
 from chanjo2.demo import gene_panel_file, gene_panel_path
-from chanjo2.models.pydantic_models import Builds, CoverageInterval, Gene, Transcript
+from chanjo2.models.pydantic_models import (
+    Builds,
+    CoverageInterval,
+    Exon,
+    Gene,
+    Transcript,
+)
 from fastapi import status
 from fastapi.testclient import TestClient
 from pytest_mock.plugin import MockerFixture
 from schug.demo import (
+    EXONS_37_FILE_PATH,
+    EXONS_38_FILE_PATH,
     GENES_37_FILE_PATH,
     GENES_38_FILE_PATH,
     TRANSCRIPTS_37_FILE_PATH,
@@ -25,6 +33,13 @@ BUILD_TRANSCRIPTS_RESOURCE: List[Tuple[Builds, str]] = [
     (Builds.build_37, TRANSCRIPTS_37_FILE_PATH),
     (Builds.build_38, TRANSCRIPTS_38_FILE_PATH),
 ]
+
+BUILD_EXONS_RESOURCE: List[Tuple[Builds, str]] = [
+    (Builds.build_37, EXONS_37_FILE_PATH),
+    (Builds.build_38, EXONS_38_FILE_PATH),
+]
+
+MOCKED_FILE_PARSER = "chanjo2.meta.handle_load_intervals.read_resource_lines"
 
 
 def test_d4_interval_coverage_d4_not_found(
@@ -192,7 +207,7 @@ def test_load_genes(
     # GIVEN a patched response from Ensembl Biomart, via schug
     gene_lines: Iterator = file_handler(path)
     mocker.patch(
-        "chanjo2.meta.handle_load_intervals.read_resource_lines",
+        MOCKED_FILE_PARSER,
         return_value=gene_lines,
     )
 
@@ -231,7 +246,7 @@ def test_load_transcripts(
     # GIVEN a patched response from Ensembl Biomart, via schug
     transcript_lines: Iterator = file_handler(path)
     mocker.patch(
-        "chanjo2.meta.handle_load_intervals.read_resource_lines",
+        MOCKED_FILE_PARSER,
         return_value=transcript_lines,
     )
 
@@ -255,3 +270,42 @@ def test_load_transcripts(
     assert len(result) == nr_transcripts
     # AND the transcript should have the right format
     assert Transcript(**result[0])
+
+
+@pytest.mark.parametrize("build, path", BUILD_EXONS_RESOURCE)
+def test_load_exons(
+    build: str,
+    path: str,
+    client: TestClient,
+    endpoints: Type,
+    mocker: MockerFixture,
+    file_handler: Callable,
+):
+    """Test the endpoint that adds exons to the database in a given genome build."""
+
+    # GIVEN a patched response from Ensembl Biomart, via schug
+    exons_lines: TextIOWrapper = file_handler(path)
+    mocker.patch(
+        MOCKED_FILE_PARSER,
+        return_value=exons_lines,
+    )
+
+    # GIVEN a number of exons contained in the demo file
+    nr_exons = len(list(file_handler(path))) - 1
+
+    # WHEN sending a request to the load_genes with genome build
+    response: Response = client.post(f"{endpoints.LOAD_EXONS}{build}")
+
+    # THEN it should return success
+    assert response.status_code == status.HTTP_200_OK
+    # THEN all exons should be loaded
+    assert response.json()["detail"] == f"{nr_exons} exons loaded into the database"
+
+    # WHEN sending a request to the "exons" endpoint
+    response: Response = client.get(f"{endpoints.EXONS}{build}")
+    assert response.status_code == status.HTTP_200_OK
+    result = response.json()
+    # THEN the expected number of exons should be returned
+    assert len(result) == nr_exons
+    # AND the exons should have the right format
+    assert Exon(**result[0])

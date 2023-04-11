@@ -1,7 +1,7 @@
 from typing import List, Optional, Tuple, Union
 
 from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
-from chanjo2.crud.intervals import get_genes, get_transcripts
+from chanjo2.crud.intervals import get_exons, get_genes, get_transcripts
 from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import parse_bed
 from chanjo2.meta.handle_d4 import (
@@ -10,10 +10,15 @@ from chanjo2.meta.handle_d4 import (
     set_d4_file,
     set_interval,
 )
-from chanjo2.meta.handle_load_intervals import update_genes, update_transcripts
+from chanjo2.meta.handle_load_intervals import (
+    update_exons,
+    update_genes,
+    update_transcripts,
+)
 from chanjo2.models.pydantic_models import (
     Builds,
     CoverageInterval,
+    Exon,
     Gene,
     Interval,
     Transcript,
@@ -137,3 +142,30 @@ async def transcripts(
 ) -> List[Transcript]:
     """Return transcripts in the given genome build."""
     return get_transcripts(db=session, build=build, limit=limit)
+
+
+@router.post("/intervals/load/exons/{build}")
+async def load_exons(
+    build: Builds, session: Session = Depends(get_session)
+) -> Union[Response, HTTPException]:
+    """Load exons in the given genome build."""
+
+    try:
+        nr_loaded_exons: int = await update_exons(build=build, session=session)
+        return JSONResponse(
+            content={"detail": f"{nr_loaded_exons} exons loaded into the database"}
+        )
+
+    except Exception as ex:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=ex.args,
+        )
+
+
+@router.get("/intervals/exons/{build}")
+async def exons(
+    build: Builds, session: Session = Depends(get_session), limit: int = 100
+) -> List[Exon]:
+    """Return exons in the given genome build."""
+    return get_exons(db=session, build=build, limit=limit)

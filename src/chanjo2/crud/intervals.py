@@ -1,7 +1,14 @@
 import logging
 from typing import List, Optional, Union
 
-from chanjo2.models.pydantic_models import Builds, Gene, GeneBase, TranscriptBase
+from chanjo2.models.pydantic_models import (
+    Builds,
+    ExonBase,
+    Gene,
+    GeneBase,
+    TranscriptBase,
+)
+from chanjo2.models.sql_models import Exon as SQLExon
 from chanjo2.models.sql_models import Gene as SQLGene
 from chanjo2.models.sql_models import Transcript as SQLTranscript
 from sqlalchemy import delete, insert, select
@@ -13,7 +20,7 @@ LOG = logging.getLogger("uvicorn.access")
 
 
 def delete_intervals_for_build(
-    db: Session, interval_type: Union[SQLGene, SQLTranscript], build: Builds
+    db: Session, interval_type: Union[SQLGene, SQLTranscript, SQLExon], build: Builds
 ) -> None:
     """Delete intervals from a given table by specifying a genome build."""
     statement: Delete = delete(interval_type).where(interval_type.build == build)
@@ -22,7 +29,7 @@ def delete_intervals_for_build(
 
 
 def count_intervals_for_build(
-    db: Session, interval_type: Union[SQLGene, SQLTranscript], build: Builds
+    db: Session, interval_type: Union[SQLGene, SQLTranscript, SQLExon], build: Builds
 ) -> int:
     """Count intervals in table by specifying a genome build."""
     return db.query(interval_type).where(interval_type.build == build).count()
@@ -36,7 +43,7 @@ def _filter_intervals_by_build(
 
 
 def create_db_gene(gene: GeneBase) -> SQLGene:
-    """Create a SQL gene object."""
+    """Create and return a SQL gene object."""
     return SQLGene(
         build=gene.build,
         chromosome=gene.chromosome,
@@ -65,13 +72,27 @@ def get_genes(db: Session, build: Builds, limit: int) -> List[SQLGene]:
     )
 
 
-def create_db_transcript(db: Session, transcript: TranscriptBase) -> SQLTranscript:
-    """Create a SQL transcript object."""
+def get_gene_from_ensembl_id(db: Session, ensembl_id: str) -> Optional[SQLGene]:
+    """Return a gene given its Ensembl ID."""
 
-    ensembl_gene: SQLGene = (
-        db.query(SQLGene)
-        .filter(SQLGene.ensembl_id == transcript.ensembl_gene_id)
-        .first()
+    return db.query(SQLGene).filter(SQLGene.ensembl_id == ensembl_id).first()
+
+
+def get_transcript_from_ensembl_id(
+    db: Session, ensembl_id: str
+) -> Optional[SQLTranscript]:
+    """Return a transcript given its Ensembl ID."""
+
+    return (
+        db.query(SQLTranscript).filter(SQLTranscript.ensembl_id == ensembl_id).first()
+    )
+
+
+def create_db_transcript(db: Session, transcript: TranscriptBase) -> SQLTranscript:
+    """Create and return a SQL transcript object."""
+
+    ensembl_gene: SQLGene = get_gene_from_ensembl_id(
+        db=db, ensembl_id=transcript.ensembl_gene_id
     )
 
     return SQLTranscript(
@@ -93,7 +114,10 @@ def create_db_transcript(db: Session, transcript: TranscriptBase) -> SQLTranscri
 def bulk_insert_transcripts(db: Session, transcripts: List[TranscriptBase]):
     """Bulk insert transcripts into the database."""
     db.bulk_save_objects(
-        [create_db_transcript(db, transcripts) for transcripts in transcripts]
+        [
+            create_db_transcript(db=db, transcript=transcript)
+            for transcript in transcripts
+        ]
     )
     db.commit()
 
@@ -103,6 +127,45 @@ def get_transcripts(db: Session, build: Builds, limit: int) -> List[SQLTranscrip
     return (
         _filter_intervals_by_build(
             intervals=db.query(SQLTranscript), interval_type=SQLTranscript, build=build
+        )
+        .limit(limit)
+        .all()
+    )
+
+
+def create_db_exon(db: Session, exon: ExonBase) -> SQLExon:
+    """Create and return a SQL exon object."""
+
+    ensembl_gene: SQLGene = get_gene_from_ensembl_id(
+        db=db, ensembl_id=exon.ensembl_gene_id
+    )
+    ensembl_transcript: SQLTranscript = get_transcript_from_ensembl_id(
+        db=db, ensembl_id=exon.ensembl_transcript_id
+    )
+
+    return SQLExon(
+        chromosome=exon.chromosome,
+        start=exon.start,
+        stop=exon.stop,
+        ensembl_id=exon.ensembl_id,
+        ensembl_gene_id=exon.ensembl_gene_id,
+        ensembl_gene_ref=ensembl_gene.id if ensembl_gene else None,
+        ensembl_transcript_ref=ensembl_transcript.id if ensembl_transcript else None,
+        build=exon.build,
+    )
+
+
+def bulk_insert_exons(db: Session, exons: List[ExonBase]) -> None:
+    """Bulk insert exons into the database."""
+    db.bulk_save_objects([create_db_exon(db=db, exon=exon) for exon in exons])
+    db.commit()
+
+
+def get_exons(db: Session, build: Builds, limit: int) -> List[SQLExon]:
+    """Returns exons in the given genome build."""
+    return (
+        _filter_intervals_by_build(
+            intervals=db.query(SQLExon), interval_type=SQLExon, build=build
         )
         .limit(limit)
         .all()
