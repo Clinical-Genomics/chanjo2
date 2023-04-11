@@ -14,8 +14,8 @@ jobs:
         uses: tj-actions/changed-files@v35
         with:
           files: |
-            .
-            *.py
+            src/*.py
+            tests/*.py
 
       - name: List all changed files
         run: |
