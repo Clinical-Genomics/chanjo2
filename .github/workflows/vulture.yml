@@ -11,9 +11,9 @@ jobs:
 
       - name: Find changed Python files
         id: files
-        uses: Ana06/get-changed-files@v2.0.0
+        uses: masesgroup/retrieve-changed-files@v2
         with:
-          filter: "*.py"
+          format: 'py'
 
       - name: Scavenge
         uses: anaynayak/python-vulture-action@v1.0
