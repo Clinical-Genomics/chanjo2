@@ -13,7 +13,7 @@ jobs:
         id: files
         uses: masesgroup/retrieve-changed-files@v2
         with:
-          format: 'py'
+          filter: "*.py"
 
       - name: Scavenge
         uses: anaynayak/python-vulture-action@v1.0
