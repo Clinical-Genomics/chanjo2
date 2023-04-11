@@ -81,7 +81,7 @@ def get_gene_from_ensembl_id(db: Session, ensembl_id: str) -> Optional[SQLGene]:
 def get_transcript_from_ensembl_id(
     db: Session, ensembl_id: str
 ) -> Optional[SQLTranscript]:
-    """Retrieve a transcript given its ensembl ID."""
+    """Return a transcript given its Ensembl ID."""
 
     return (
         db.query(SQLTranscript).filter(SQLTranscript.ensembl_id == ensembl_id).first()
