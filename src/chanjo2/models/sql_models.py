@@ -26,7 +26,7 @@ class Sample(Base):
     name = Column(String(64), nullable=False, unique=True, index=True)
     display_name = Column(String(64), nullable=True, unique=False)
     case_id = Column(Integer, ForeignKey("cases.id"), nullable=False)
-    coverage_file_path = Column(String, nullable=False)
+    coverage_file_path = Column(String(512), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     case = relationship("Case", back_populates="samples")
