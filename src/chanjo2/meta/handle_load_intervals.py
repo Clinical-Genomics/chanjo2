@@ -76,7 +76,7 @@ async def update_genes(build: Builds, session: Session) -> int:
 
     genes_bulk: List[SQLGene] = []
 
-    for line in lines:
+    for line in list(lines)[:10]:
         items: List = _replace_empty_cols(line=line, nr_expected_columns=len(header))
 
         try:
@@ -89,6 +89,7 @@ async def update_genes(build: Builds, session: Session) -> int:
                 hgnc_symbol=items[4],
                 hgnc_id=items[5],
             )
+            LOG.warning(gene)
             genes_bulk.append(gene)
 
             if len(genes_bulk) > MAX_NR_OF_RECORDS:
@@ -98,7 +99,9 @@ async def update_genes(build: Builds, session: Session) -> int:
         except Exception:
             LOG.info(END_OF_PARSED_FILE)
 
+    LOG.error("HERE")
     bulk_insert_genes(db=session, genes=genes_bulk)  # Load the remaining genes
+    LOG.error("THERE")
 
     nr_loaded_genes: int = count_intervals_for_build(
         db=session, interval_type=SQLGene, build=build

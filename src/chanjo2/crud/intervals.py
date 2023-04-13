@@ -45,7 +45,7 @@ def _filter_intervals_by_build(
 def create_db_gene(gene: GeneBase) -> SQLGene:
     """Create and return a SQL gene object."""
     return SQLGene(
-        build=gene.build,
+        build=gene.build.value,
         chromosome=gene.chromosome,
         start=gene.start,
         stop=gene.stop,

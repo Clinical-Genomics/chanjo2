@@ -19,7 +19,8 @@
 - Bugs preventing the gunicorn app to launch
 - Code to compose DB url to work when app is invoked from docker-compose
 - Dockerfile building error due to missing d4tools lib
-- Add VARCHAR length to sample.coverage_file_path SQL field 
+- Add VARCHAR length to sample.coverage_file_path SQL field
+- Format of Build field in genes, transcripts and exons tables
 ### Changed
 - Renamed root endpoint to heartbeat
 - Use a multi-stage build in Dockerfile to reduce its size
