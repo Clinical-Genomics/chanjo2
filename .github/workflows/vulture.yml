@@ -9,18 +9,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Get changed files
-        id: changed-files
-        uses: tj-actions/changed-files@v35
+      - name: Find changed Python files
+        id: files
+        uses: Ana06/get-changed-files@v2.2.0
         with:
-          files: |
-            src
-            tests
+          filter: "*.py"
 
       - name: Scavenge
-        if: steps.changed-files.outputs.any_changed == 'true'
         uses: anaynayak/python-vulture-action@v1.0
         id: vulture
         with:
-          vulture-args: --min-confidence 80 ${{steps.changed-files.outputs.all_changed_files}}
+          vulture-args: --min-confidence 80 --ignore-names kwargs cls ${{steps.files.outputs.all}}
         continue-on-error: true
