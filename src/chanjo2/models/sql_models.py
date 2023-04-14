@@ -54,7 +54,9 @@ class Gene(Base):
     ensembl_id = Column(String(24), nullable=False, index=True)
     hgnc_id = Column(Integer, nullable=True, index=True)
     hgnc_symbol = Column(String(24), nullable=True, index=True)
-    build = Column(Enum(Builds), index=True)
+    build = Column(
+        Enum(Builds, values_callable=lambda x: Builds.get_enum_values()), index=True
+    )
 
 
 class Transcript(Base):
@@ -75,7 +77,9 @@ class Transcript(Base):
         Integer, ForeignKey("genes.id"), nullable=True, index=True
     )
     ensembl_gene_id = Column(String(24), nullable=False, index=True)
-    build = Column(Enum(Builds), index=True)
+    build = Column(
+        Enum(Builds, values_callable=lambda x: Builds.get_enum_values()), index=True
+    )
 
 
 class Exon(Base):
@@ -94,4 +98,6 @@ class Exon(Base):
     ensembl_gene_ref = Column(
         Integer, ForeignKey("genes.id"), nullable=True, index=True
     )
-    build = Column(Enum(Builds), index=True)
+    build = Column(
+        Enum(Builds, values_callable=lambda x: Builds.get_enum_values()), index=True
+    )

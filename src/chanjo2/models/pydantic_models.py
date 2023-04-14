@@ -12,6 +12,11 @@ class Builds(str, Enum):
     build_37 = "GRCh37"
     build_38 = "GRCh38"
 
+    @staticmethod
+    def get_enum_values() -> List[str]:
+        """Returns the values of the available genome builds."""
+        return [member.value for member in Builds]
+
 
 class IntervalType(str, Enum):
     GENES = "genes"
