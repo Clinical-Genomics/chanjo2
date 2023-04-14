@@ -14,6 +14,7 @@ class Builds(str, Enum):
 
     @staticmethod
     def get_enum_values() -> List[str]:
+        """Returns the values of the available genome builds"""
         return [member.value for member in Builds]
 
 
