@@ -33,7 +33,7 @@ else:
     mysql_url = f"mysql://root:{root_password}@{host}/{db_name}"
     engine = create_engine(mysql_url, echo=True, future=True)
 
-LOG.error(f"Engine--->{engine}")
+LOG.debug(f"Connection engine->{engine}")
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, future=True)
 Base = declarative_base()
