@@ -23,6 +23,7 @@ services:
 
   api:
     container_name: api
+    platform: linux/x86_64
     build:
       context: .
       dockerfile: Dockerfile
