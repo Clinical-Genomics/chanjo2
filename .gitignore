@@ -40,7 +40,6 @@ htmlcov
 .mr.developer.cfg
 .project
 .pydevproject
-.env
 TRASH*
 *.tar.gz
 .vagrant

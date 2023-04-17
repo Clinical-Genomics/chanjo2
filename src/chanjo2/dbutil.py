@@ -1,9 +1,11 @@
+import logging
 import os
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy.pool import StaticPool
 
+LOG = logging.getLogger("uvicorn.access")
 DEMO_DB = "sqlite://"
 DEMO_CONNECT_ARGS = {"check_same_thread": False}
 
@@ -23,13 +25,15 @@ if os.getenv("DEMO") or not db_name:
     )
 
 else:
-    if port_no is None:
+    if port_no == "":
         host = host_name
     else:
         host = ":".join([host_name, port_no])
 
     mysql_url = f"mysql://root:{root_password}@{host}/{db_name}"
     engine = create_engine(mysql_url, echo=True, future=True)
+
+LOG.error(f"Engine--->{engine}")
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, future=True)
 Base = declarative_base()
