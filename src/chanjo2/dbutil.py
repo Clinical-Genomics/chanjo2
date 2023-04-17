@@ -23,7 +23,7 @@ if os.getenv("DEMO") or not db_name:
     )
 
 else:
-    if port_no is None:
+    if port_no == "":
         host = host_name
     else:
         host = ":".join([host_name, port_no])

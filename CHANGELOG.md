@@ -1,5 +1,7 @@
 ## [unreleased]
+
 ### Added
+
 - Instructions on how to install and run the app on a Conda environment
 - Test for heartbeat endpoint
 - Automated tests GitHub workflow
@@ -15,13 +17,18 @@
 - Endpoint for coverage queries over a single interval of a provided D4 file
 - Demo case and demo sample loaded with demo instance startup
 - Endpoint for coverage queries over the intervals of a BED file
+- Include a default .env file loaded on app startup
+
 ### Fixed
+
 - Bugs preventing the gunicorn app to launch
 - Code to compose DB url to work when app is invoked from docker-compose
 - Dockerfile building error due to missing d4tools lib
 - Add VARCHAR length to sample.coverage_file_path SQL field
 - Format of Build field in genes, transcripts and exons tables
+
 ### Changed
+
 - Renamed root endpoint to heartbeat
 - Use a multi-stage build in Dockerfile to reduce its size
 - SQLite database launched instead of MySQL as the default demo database

@@ -8,10 +8,10 @@ services:
     restart: 'always'
     environment:
       - MYSQL_USER=${DB_USER_NAME}
-      - MYSQL_ROOT_PASSWORD=${DB_USER_PASSWORD}
-      - MYSQL_DATABASE_NAME=${DB_NAME}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE_NAME=${MYSQL_DATABASE_NAME}
     healthcheck: # Wait for the service to be ready before accepting incoming connections
-      test: "mysql --user=${DB_USER_NAME} --password=${DB_USER_PASSWORD} --execute \"SHOW DATABASES;\""
+      test: "mysql --user=${DB_USER_NAME} --password=${MYSQL_ROOT_PASSWORD} --execute \"SHOW DATABASES;\""
       timeout: 10s
       retries: 20
     volumes:
@@ -26,14 +26,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    environment:
-      - MYSQL_ROOT_PASSWORD=${DB_USER_PASSWORD}
-      - MYSQL_DATABASE_NAME=${DB_NAME}
-      - MYSQL_HOST_NAME=${MYSQL_HOST_NAME}
     depends_on:
       mariadb:
         condition: service_healthy
     volumes:
+      - ./template.env:/home/worker/app/.env
       - ${HOST_DATA_VOLUME}:${CONTAINER_DATA_VOLUME}
     networks:
       - chanjo-net

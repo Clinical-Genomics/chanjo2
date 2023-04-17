@@ -18,6 +18,7 @@ pytest-mock = "^3.10.0"
 uvicorn = "^0.21.1"
 schug = "^1.2"
 pyd4 = "^0.3.6.2"
+python-dotenv = "^1.0.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
