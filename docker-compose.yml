@@ -5,7 +5,5 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    environment:
-      - DEMO=y
     ports:
       - "8000:8000"

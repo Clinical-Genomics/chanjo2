@@ -26,14 +26,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    environment:
-      - MYSQL_ROOT_PASSWORD=${DB_USER_PASSWORD}
-      - MYSQL_DATABASE_NAME=${DB_NAME}
-      - MYSQL_HOST_NAME=${MYSQL_HOST_NAME}
     depends_on:
       mariadb:
         condition: service_healthy
     volumes:
+      - ./chanjo2/template.env:/home/worker/app/chanjo2/.env
       - ${HOST_DATA_VOLUME}:${CONTAINER_DATA_VOLUME}
     networks:
       - chanjo-net
