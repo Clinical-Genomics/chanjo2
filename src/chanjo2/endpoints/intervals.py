@@ -25,8 +25,9 @@ from chanjo2.models.pydantic_models import (
     Exon,
     Gene,
     Transcript,
+    IntervalQuery,
 )
-from fastapi import APIRouter, Depends, File, HTTPException, Response, status, Query
+from fastapi import APIRouter, Depends, File, HTTPException, Response, status
 from fastapi.responses import JSONResponse
 from pyd4 import D4File
 from sqlmodel import Session
@@ -110,18 +111,14 @@ async def load_genes(
         )
 
 
-@router.get("/intervals/genes")
+@router.post("/intervals/genes")
 async def genes(
-    build: Builds,
-    ensembl_ids: List[str] = Query(None),
-    hgnc_ids: List[int] = Query(None),
-    hgnc_symbols: List[str] = Query(None),
-    session: Session = Depends(get_session),
-    limit: Optional[int] = 100,
+    query: IntervalQuery, session: Session = Depends(get_session)
 ) -> List[Gene]:
     """Return genes according to query parameters."""
     nr_filters = sum(
-        param is not None for param in [ensembl_ids, hgnc_ids, hgnc_symbols]
+        param is not None
+        for param in [query.ensembl_ids, query.hgnc_ids, query.hgnc_symbols]
     )
     if nr_filters > 1:
         raise HTTPException(
@@ -131,11 +128,11 @@ async def genes(
 
     return get_genes(
         db=session,
-        build=build,
-        ensembl_ids=ensembl_ids,
-        hgnc_ids=hgnc_ids,
-        hgnc_symbols=hgnc_symbols,
-        limit=limit if nr_filters == 0 else None,
+        build=query.build,
+        ensembl_ids=query.ensembl_ids,
+        hgnc_ids=query.hgnc_ids,
+        hgnc_symbols=query.hgnc_symbols,
+        limit=query.limit if nr_filters == 0 else None,
     )
 
 

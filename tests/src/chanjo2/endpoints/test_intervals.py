@@ -227,7 +227,7 @@ def test_load_genes(
     assert response.json()["detail"] == f"{nr_genes} genes loaded into the database"
 
     # WHEN sending a request to the "genes" endpoint
-    response: Response = client.get(endpoints.GENES, params={"build": build})
+    response: Response = client.post(endpoints.GENES, json={"build": build})
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
     # THEN the expected number of genes should be returned
@@ -243,13 +243,13 @@ def test_genes_by_multiple_ids(
     """Test filtering gene intervals providing more than one arg list"""
 
     # GIVEN a query with genome build and more than one gene ID:
-    params = {
+    data = {
         "build": build,
         "ensembl_ids": gene_lists[build]["ensembl_ids"],
         "hgnc_ids": gene_lists[build]["hgnc_ids"],
     }
     # WHEN sending a GET request to the genes endpoint with the query params above
-    response: Response = client.get(endpoints.GENES, params=params)
+    response: Response = client.post(endpoints.GENES, json=data)
     # THEN it should return HTTP 400 error
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     result = response.json()
@@ -279,11 +279,11 @@ def test_genes_by_ensembl_ids(
     client.post(f"{endpoints.LOAD_GENES}{build}")
 
     # WHEN sending a request to the "genes" endpoint with a list of Ensembl IDs
-    params = {
+    data = {
         "build": build,
         "ensembl_ids": gene_lists[build]["ensembl_ids"],
     }
-    response: Response = client.get(endpoints.GENES, params=params)
+    response: Response = client.post(endpoints.GENES, json=data)
     # THEN the expected number of genes should be returned
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
@@ -314,11 +314,11 @@ def test_genes_by_hgnc_ids(
     client.post(f"{endpoints.LOAD_GENES}{build}")
 
     # WHEN sending a request to the "genes" endpoint with a list of HGNC ids
-    params = {
+    data = {
         "build": build,
         "hgnc_ids": gene_lists[build]["hgnc_ids"],
     }
-    response: Response = client.get(endpoints.GENES, params=params)
+    response: Response = client.post(endpoints.GENES, json=data)
     # THEN the expected number of genes should be returned
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
@@ -349,11 +349,11 @@ def test_genes_by_hgnc_symbols(
     client.post(f"{endpoints.LOAD_GENES}{build}")
 
     # WHEN sending a request to the "genes" endpoint with a list of HGNC symbols
-    params = {
+    data = {
         "build": build,
         "hgnc_symbols": gene_lists[build]["hgnc_symbols"],
     }
-    response: Response = client.get(endpoints.GENES, params=params)
+    response: Response = client.post(endpoints.GENES, json=data)
     # THEN the expected number of genes should be returned
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
