@@ -4,17 +4,15 @@ from typing import List, Optional, Union
 from chanjo2.models.pydantic_models import (
     Builds,
     ExonBase,
-    Gene,
     GeneBase,
     TranscriptBase,
 )
 from chanjo2.models.sql_models import Exon as SQLExon
 from chanjo2.models.sql_models import Gene as SQLGene
 from chanjo2.models.sql_models import Transcript as SQLTranscript
-from sqlalchemy import delete, insert, select
-from sqlalchemy.engine.cursor import CursorResult
+from sqlalchemy import delete
 from sqlalchemy.orm import Session, query
-from sqlalchemy.sql.expression import Delete, Select
+from sqlalchemy.sql.expression import Delete
 
 LOG = logging.getLogger("uvicorn.access")
 
@@ -61,7 +59,14 @@ def bulk_insert_genes(db: Session, genes: List[GeneBase]):
     db.commit()
 
 
-def get_genes(db: Session, build: Builds, limit: int) -> List[SQLGene]:
+def get_genes(
+    db: Session,
+    build: Builds,
+    ensembl_id: Optional[str],
+    hgnc_id: Optional[int],
+    hgnc_symbol: Optional[str],
+    limit: int,
+) -> List[SQLGene]:
     """Returns genes in the given genome build."""
     return (
         _filter_intervals_by_build(

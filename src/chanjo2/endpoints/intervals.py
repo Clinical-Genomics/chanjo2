@@ -108,10 +108,22 @@ async def load_genes(
 
 @router.get("/intervals/genes")
 async def genes(
-    build: Builds, session: Session = Depends(get_session), limit: int = 100
+    build: Builds,
+    ensembl_id: Optional[str] = None,
+    hgnc_id: Optional[int] = None,
+    hgnc_symbol: Optional[str] = None,
+    session: Session = Depends(get_session),
+    limit: int = 100,
 ) -> List[Gene]:
-    """Return genes in the given genome build."""
-    return get_genes(db=session, build=build, limit=limit)
+    """Return genes according to query parameters."""
+    return get_genes(
+        db=session,
+        build=build,
+        ensembl_id=ensembl_id,
+        hgnc_id=hgnc_id,
+        hgnc_symbol=hgnc_symbol,
+        limit=limit,
+    )
 
 
 @router.post("/intervals/load/transcripts/{build}")
