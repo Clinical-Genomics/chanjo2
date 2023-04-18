@@ -117,10 +117,13 @@ async def genes(
     hgnc_ids: List[int] = Query(None),
     hgnc_symbols: List[str] = Query(None),
     session: Session = Depends(get_session),
-    limit: int = 100,
+    limit: Optional[int] = 100,
 ) -> List[Gene]:
     """Return genes according to query parameters."""
-    if sum(param is not None for param in [ensembl_ids, hgnc_ids, hgnc_symbols]) > 1:
+    nr_filters = sum(
+        param is not None for param in [ensembl_ids, hgnc_ids, hgnc_symbols]
+    )
+    if nr_filters > 1:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=MULTIPLE_PARAMS_NOT_SUPPORTED_MSG,
@@ -132,7 +135,7 @@ async def genes(
         ensembl_ids=ensembl_ids,
         hgnc_ids=hgnc_ids,
         hgnc_symbols=hgnc_symbols,
-        limit=limit,
+        limit=limit if nr_filters == 0 else None,
     )
 
 

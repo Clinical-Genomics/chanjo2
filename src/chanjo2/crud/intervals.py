@@ -33,13 +33,30 @@ def count_intervals_for_build(
     return db.query(interval_type).where(interval_type.build == build).count()
 
 
-def _filter_intervals_by_ensembl_id(
+def _filter_intervals_by_ensembl_ids(
+    intervals: query.Query,
+    ensembl_ids: List[str],
+) -> List[Union[SQLGene, SQLTranscript, SQLExon]]:
+    """Filter intervals using a list of Ensembl IDs"""
+    return intervals.filter(interval_type.ensembl_id.in_(ensembl_ids))
+
+
+def _filter_intervals_by_hgnc_ids(
     intervals: query.Query,
     interval_type: Union[SQLGene, SQLTranscript, SQLExon],
-    id: str,
+    hgnc_ids: List[int],
 ) -> List[Union[SQLGene, SQLTranscript, SQLExon]]:
-    """Filter intervals by Ensembl ID"""
-    return intervals.filter(interval_type.ensembl_id == id)
+    """Filter intervals using a list of HGNC IDs"""
+    return intervals.filter(interval_type.hgnc_id.in_(hgnc_ids))
+
+
+def _filter_intervals_by_hgnc_symbols(
+    intervals: query.Query,
+    interval_type: Union[SQLGene, SQLTranscript, SQLExon],
+    hgnc_symbols: List[str],
+) -> List[Union[SQLGene, SQLTranscript, SQLExon]]:
+    """Filter intervals using a list of HGNC symbols"""
+    return intervals.filter(interval_type.hgnc_symbol.in_(hgnc_symbols))
 
 
 def _filter_intervals_by_build(
@@ -76,16 +93,28 @@ def get_genes(
     ensembl_ids: Optional[List[str]],
     hgnc_ids: Optional[List[int]],
     hgnc_symbols: Optional[List[str]],
-    limit: int,
+    limit: Optional[int],
 ) -> List[SQLGene]:
-    """Returns genes in the given genome build."""
-    return (
-        _filter_intervals_by_build(
-            intervals=db.query(SQLGene), interval_type=SQLGene, build=build
+    """Return genes according to specified fields."""
+    intervals = db.query(SQLGene)
+    if ensembl_ids:
+        intervals = _filter_intervals_by_ensembl_ids(
+            intervals=intervals, interval_type=SQLGene, ensembl_ids=ensembl_ids
         )
-        .limit(limit)
-        .all()
+    elif hgnc_ids:
+        intervals = _filter_intervals_by_hgnc_ids(
+            intervals=intervals, interval_type=SQLGene, hgnc_ids=hgnc_ids
+        )
+    elif hgnc_symbols:
+        intervals = _filter_intervals_by_hgnc_symbols(
+            intervals=intervals, interval_type=SQLGene, hgnc_symbols=hgnc_symbols
+        )
+    intervals = _filter_intervals_by_build(
+        intervals=intervals, interval_type=SQLGene, build=build
     )
+    if limit:
+        return intervals.limit(limit).all()
+    return intervals.all()
 
 
 def get_gene_from_ensembl_id(db: Session, ensembl_id: str) -> Optional[SQLGene]:
