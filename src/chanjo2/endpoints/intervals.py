@@ -116,7 +116,7 @@ async def genes(
     query: IntervalQuery, session: Session = Depends(get_session)
 ) -> List[Gene]:
     """Return genes according to query parameters."""
-    nr_filters = sum(
+    nr_filters: int = sum(
         param is not None
         for param in [query.ensembl_ids, query.hgnc_ids, query.hgnc_symbols]
     )
