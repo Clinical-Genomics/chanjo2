@@ -248,7 +248,7 @@ def test_genes_by_multiple_ids(
         "ensembl_ids": gene_lists[build]["ensembl_ids"],
         "hgnc_ids": gene_lists[build]["hgnc_ids"],
     }
-    # WHEN sending a GET request to the genes endpoint with the query params above
+    # WHEN sending a POST request to the genes endpoint with the query params above
     response: Response = client.post(endpoints.GENES, json=data)
     # THEN it should return HTTP 400 error
     assert response.status_code == status.HTTP_400_BAD_REQUEST
