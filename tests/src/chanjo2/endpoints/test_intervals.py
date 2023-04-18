@@ -43,7 +43,7 @@ MOCKED_FILE_PARSER = "chanjo2.meta.handle_load_intervals.read_resource_lines"
 
 
 def test_d4_interval_coverage_d4_not_found(
-        client: TestClient, mock_coverage_file: str, endpoints: Type, interval_query: dict
+    client: TestClient, mock_coverage_file: str, endpoints: Type, interval_query: dict
 ):
     """Test the function that returns the coverage over an interval of a D4 file.
     Testing with a D4 file not found on disk or on a remote server."""
@@ -61,10 +61,10 @@ def test_d4_interval_coverage_d4_not_found(
 
 
 def test_d4_interval_coverage(
-        client: TestClient,
-        real_coverage_path: str,
-        endpoints: Type,
-        interval_query: dict,
+    client: TestClient,
+    real_coverage_path: str,
+    endpoints: Type,
+    interval_query: dict,
 ):
     """Test the function that returns the coverage over an interval of a D4 file."""
 
@@ -87,10 +87,10 @@ def test_d4_interval_coverage(
 
 
 def test_d4_interval_coverage_single_chromosome(
-        client: TestClient,
-        real_coverage_path: str,
-        endpoints: Type,
-        interval_query: dict,
+    client: TestClient,
+    real_coverage_path: str,
+    endpoints: Type,
+    interval_query: dict,
 ):
     """Test the function that returns the coverage over an entire chsomosome of a D4 file."""
 
@@ -116,7 +116,7 @@ def test_d4_interval_coverage_single_chromosome(
 
 
 def test_d4_intervals_coverage_d4_not_found(
-        mock_coverage_file: str, client: TestClient, endpoints: Type
+    mock_coverage_file: str, client: TestClient, endpoints: Type
 ):
     """Test the function that returns the coverage over multiple intervals of a D4 file.
     Testing with a D4 file not found on disk or on a remote server."""
@@ -142,11 +142,11 @@ def test_d4_intervals_coverage_d4_not_found(
 
 
 def test_d4_intervals_coverage_malformed_bed_file(
-        bed_path_malformed: PosixPath,
-        real_coverage_path: str,
-        client: TestClient,
-        endpoints: Type,
-        real_d4_query: Dict[str, str],
+    bed_path_malformed: PosixPath,
+    real_coverage_path: str,
+    client: TestClient,
+    endpoints: Type,
+    real_d4_query: Dict[str, str],
 ):
     """Test the function that returns the coverage over multiple intervals of a D4 file.
     Testing with a BED file that is not correctly formatted."""
@@ -169,10 +169,10 @@ def test_d4_intervals_coverage_malformed_bed_file(
 
 
 def test_d4_intervals_coverage(
-        real_coverage_path: str,
-        client: TestClient,
-        endpoints: Type,
-        real_d4_query: Dict[str, str],
+    real_coverage_path: str,
+    client: TestClient,
+    endpoints: Type,
+    real_d4_query: Dict[str, str],
 ):
     """Test the function that returns the coverage over multiple intervals of a D4 file."""
 
@@ -195,12 +195,12 @@ def test_d4_intervals_coverage(
 
 @pytest.mark.parametrize("build, path", BUILD_GENES_RESOURCE)
 def test_load_genes(
-        build: str,
-        path: str,
-        client: TestClient,
-        endpoints: Type,
-        mocker: MockerFixture,
-        file_handler: Callable,
+    build: str,
+    path: str,
+    client: TestClient,
+    endpoints: Type,
+    mocker: MockerFixture,
+    file_handler: Callable,
 ):
     """Test the endpoint that adds genes to the database in a given genome build."""
 
@@ -234,12 +234,12 @@ def test_load_genes(
 
 @pytest.mark.parametrize("build, path", BUILD_TRANSCRIPTS_RESOURCE)
 def test_load_transcripts(
-        build: str,
-        path: str,
-        client: TestClient,
-        endpoints: Type,
-        mocker: MockerFixture,
-        file_handler: Callable,
+    build: str,
+    path: str,
+    client: TestClient,
+    endpoints: Type,
+    mocker: MockerFixture,
+    file_handler: Callable,
 ):
     """Test the endpoint that adds genes to the database in a given genome build."""
 
@@ -259,8 +259,8 @@ def test_load_transcripts(
     assert response.status_code == status.HTTP_200_OK
     # THEN all transcripts should be loaded
     assert (
-            response.json()["detail"]
-            == f"{nr_transcripts} transcripts loaded into the database"
+        response.json()["detail"]
+        == f"{nr_transcripts} transcripts loaded into the database"
     )
     # WHEN sending a request to the "transcripts" endpoint
     response: Response = client.get(f"{endpoints.TRANSCRIPTS}{build}")
@@ -274,12 +274,12 @@ def test_load_transcripts(
 
 @pytest.mark.parametrize("build, path", BUILD_EXONS_RESOURCE)
 def test_load_exons(
-        build: str,
-        path: str,
-        client: TestClient,
-        endpoints: Type,
-        mocker: MockerFixture,
-        file_handler: Callable,
+    build: str,
+    path: str,
+    client: TestClient,
+    endpoints: Type,
+    mocker: MockerFixture,
+    file_handler: Callable,
 ):
     """Test the endpoint that adds exons to the database in a given genome build."""
 

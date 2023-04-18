@@ -32,11 +32,11 @@ router = APIRouter()
 
 @router.get("/intervals/coverage/d4/interval/", response_model=CoverageInterval)
 def d4_interval_coverage(
-        coverage_file_path: str,
-        chromosome: str,
-        start: Optional[int] = None,
-        end: Optional[int] = None,
-        session: Session = Depends(get_session),
+    coverage_file_path: str,
+    chromosome: str,
+    start: Optional[int] = None,
+    end: Optional[int] = None,
+    session: Session = Depends(get_session),
 ):
     """Return coverage on the given interval for a D4 resource located on the disk or on a remote server."""
 
@@ -89,7 +89,7 @@ def d4_intervals_coverage(coverage_file_path: str, bed_file: bytes = File(...)):
 
 @router.post("/intervals/load/genes/{build}")
 async def load_genes(
-        build: Builds, session: Session = Depends(get_session)
+    build: Builds, session: Session = Depends(get_session)
 ) -> Union[Response, HTTPException]:
     """Load genes in the given genome build."""
 
@@ -108,7 +108,7 @@ async def load_genes(
 
 @router.get("/intervals/genes")
 async def genes(
-        build: Builds, session: Session = Depends(get_session), limit: int = 100
+    build: Builds, session: Session = Depends(get_session), limit: int = 100
 ) -> List[Gene]:
     """Return genes in the given genome build."""
     return get_genes(db=session, build=build, limit=limit)
@@ -116,7 +116,7 @@ async def genes(
 
 @router.post("/intervals/load/transcripts/{build}")
 async def load_transcripts(
-        build: Builds, session: Session = Depends(get_session)
+    build: Builds, session: Session = Depends(get_session)
 ) -> Union[Response, HTTPException]:
     """Load transcripts in the given genome build."""
 
@@ -137,7 +137,7 @@ async def load_transcripts(
 
 @router.get("/intervals/transcripts/{build}")
 async def transcripts(
-        build: Builds, session: Session = Depends(get_session), limit: int = 100
+    build: Builds, session: Session = Depends(get_session), limit: int = 100
 ) -> List[Transcript]:
     """Return transcripts in the given genome build."""
     return get_transcripts(db=session, build=build, limit=limit)
@@ -145,7 +145,7 @@ async def transcripts(
 
 @router.post("/intervals/load/exons/{build}")
 async def load_exons(
-        build: Builds, session: Session = Depends(get_session)
+    build: Builds, session: Session = Depends(get_session)
 ) -> Union[Response, HTTPException]:
     """Load exons in the given genome build."""
 
@@ -164,7 +164,7 @@ async def load_exons(
 
 @router.get("/intervals/exons/{build}")
 async def exons(
-        build: Builds, session: Session = Depends(get_session), limit: int = 100
+    build: Builds, session: Session = Depends(get_session), limit: int = 100
 ) -> List[Exon]:
     """Return exons in the given genome build."""
     return get_exons(db=session, build=build, limit=limit)
