@@ -97,20 +97,20 @@ def get_genes(
     limit: Optional[int],
 ) -> List[SQLGene]:
     """Return genes according to specified fields."""
-    intervals = db.query(SQLGene)
+    intervals: query.Query = db.query(SQLGene)
     if ensembl_ids:
-        intervals = _filter_intervals_by_ensembl_ids(
+        intervals: query.Query = _filter_intervals_by_ensembl_ids(
             intervals=intervals, interval_type=SQLGene, ensembl_ids=ensembl_ids
         )
     elif hgnc_ids:
-        intervals = _filter_intervals_by_hgnc_ids(
+        intervals: query.Query = _filter_intervals_by_hgnc_ids(
             intervals=intervals, interval_type=SQLGene, hgnc_ids=hgnc_ids
         )
     elif hgnc_symbols:
-        intervals = _filter_intervals_by_hgnc_symbols(
+        intervals: query.Query = _filter_intervals_by_hgnc_symbols(
             intervals=intervals, interval_type=SQLGene, hgnc_symbols=hgnc_symbols
         )
-    intervals = _filter_intervals_by_build(
+    intervals: query.Query = _filter_intervals_by_build(
         intervals=intervals, interval_type=SQLGene, build=build
     )
     if limit:

@@ -8,7 +8,7 @@ WRONG_COVERAGE_FILE_MSG: str = (
 )
 WRONG_BED_FILE_MSG: str = "Provided intervals files is not a valid BED file"
 MULTIPLE_PARAMS_NOT_SUPPORTED_MSG = (
-    "Please provide Ensembl IDs OR HGNC IDs OR HGNC symbols"
+    "Please provide EITHER Ensembl IDs OR HGNC IDs OR HGNC symbols"
 )
 
 ENSEMBL_RESOURCE_CLIENT: Dict[str, Callable] = {

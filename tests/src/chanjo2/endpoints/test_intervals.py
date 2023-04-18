@@ -237,7 +237,7 @@ def test_load_genes(
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
-def test_genes_filter_multiple_args(
+def test_genes_by_multiple_ids(
     build: str, client: TestClient, endpoints: Type, gene_lists: Dict[str, List]
 ):
     """Test filtering gene intervals providing more than one arg list"""
@@ -254,6 +254,111 @@ def test_genes_filter_multiple_args(
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     result = response.json()
     assert result["detail"] == MULTIPLE_PARAMS_NOT_SUPPORTED_MSG
+
+
+@pytest.mark.parametrize("build, path", BUILD_GENES_RESOURCE)
+def test_genes_by_ensembl_ids(
+    build: str,
+    path: str,
+    client: TestClient,
+    endpoints: Type,
+    mocker: MockerFixture,
+    file_handler: Callable,
+    gene_lists: Dict[str, List],
+):
+    """Test the endpoint that filters database genes using a list of ensembl IDs."""
+
+    # GIVEN a patched response from Ensembl Biomart, via schug
+    gene_lines: Iterator = file_handler(path)
+    mocker.patch(
+        MOCKED_FILE_PARSER,
+        return_value=gene_lines,
+    )
+
+    # GIVEN that genes present in the database
+    client.post(f"{endpoints.LOAD_GENES}{build}")
+
+    # WHEN sending a request to the "genes" endpoint with a list of Ensembl IDs
+    params = {
+        "build": build,
+        "ensembl_ids": gene_lists[build]["ensembl_ids"],
+    }
+    response: Response = client.get(endpoints.GENES, params=params)
+    # THEN the expected number of genes should be returned
+    assert response.status_code == status.HTTP_200_OK
+    result = response.json()
+    assert len(result) == len(gene_lists[build]["ensembl_ids"])
+    assert Gene(**result[0])
+
+
+@pytest.mark.parametrize("build, path", BUILD_GENES_RESOURCE)
+def test_genes_by_hgnc_ids(
+    build: str,
+    path: str,
+    client: TestClient,
+    endpoints: Type,
+    mocker: MockerFixture,
+    file_handler: Callable,
+    gene_lists: Dict[str, List],
+):
+    """Test the endpoint that filters database genes using a list of HGNC IDs."""
+
+    # GIVEN a patched response from Ensembl Biomart, via schug
+    gene_lines: Iterator = file_handler(path)
+    mocker.patch(
+        MOCKED_FILE_PARSER,
+        return_value=gene_lines,
+    )
+
+    # GIVEN that genes present in the database
+    client.post(f"{endpoints.LOAD_GENES}{build}")
+
+    # WHEN sending a request to the "genes" endpoint with a list of HGNC ids
+    params = {
+        "build": build,
+        "hgnc_ids": gene_lists[build]["hgnc_ids"],
+    }
+    response: Response = client.get(endpoints.GENES, params=params)
+    # THEN the expected number of genes should be returned
+    assert response.status_code == status.HTTP_200_OK
+    result = response.json()
+    assert len(result) == len(gene_lists[build]["hgnc_ids"])
+    assert Gene(**result[0])
+
+
+@pytest.mark.parametrize("build, path", BUILD_GENES_RESOURCE)
+def test_genes_by_hgnc_symbols(
+    build: str,
+    path: str,
+    client: TestClient,
+    endpoints: Type,
+    mocker: MockerFixture,
+    file_handler: Callable,
+    gene_lists: Dict[str, List],
+):
+    """Test the endpoint that filters database genes using a list of HGNC symbols."""
+
+    # GIVEN a patched response from Ensembl Biomart, via schug
+    gene_lines: Iterator = file_handler(path)
+    mocker.patch(
+        MOCKED_FILE_PARSER,
+        return_value=gene_lines,
+    )
+
+    # GIVEN that genes present in the database
+    client.post(f"{endpoints.LOAD_GENES}{build}")
+
+    # WHEN sending a request to the "genes" endpoint with a list of HGNC symbols
+    params = {
+        "build": build,
+        "hgnc_symbols": gene_lists[build]["hgnc_symbols"],
+    }
+    response: Response = client.get(endpoints.GENES, params=params)
+    # THEN the expected number of genes should be returned
+    assert response.status_code == status.HTTP_200_OK
+    result = response.json()
+    assert len(result) == len(gene_lists[build]["hgnc_symbols"])
+    assert Gene(**result[0])
 
 
 @pytest.mark.parametrize("build, path", BUILD_TRANSCRIPTS_RESOURCE)
