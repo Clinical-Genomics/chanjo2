@@ -230,5 +230,5 @@ def file_handler() -> TextIOWrapper:
 
 @pytest.fixture(name="gene_lists")
 def gene_lists() -> Dict[str, List]:
-    """Return lists with test genes in different formats"""
+    """Return a dict containing lists with test genes in different build specific formats."""
     return {BUILD_37: GENE_LISTS_37, BUILD_38: GENE_LISTS_38}
