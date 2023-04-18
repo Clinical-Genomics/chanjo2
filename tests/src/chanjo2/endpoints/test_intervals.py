@@ -238,15 +238,15 @@ def test_load_genes(
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_genes_by_multiple_ids(
-    build: str, client: TestClient, endpoints: Type, gene_lists: Dict[str, List]
+    build: str, client: TestClient, endpoints: Type, genes_per_build: Dict[str, List]
 ):
     """Test filtering gene intervals providing more than one arg list"""
 
     # GIVEN a query with genome build and more than one gene ID:
     data = {
         "build": build,
-        "ensembl_ids": gene_lists[build]["ensembl_ids"],
-        "hgnc_ids": gene_lists[build]["hgnc_ids"],
+        "ensembl_ids": genes_per_build[build]["ensembl_ids"],
+        "hgnc_ids": genes_per_build[build]["hgnc_ids"],
     }
     # WHEN sending a POST request to the genes endpoint with the query params above
     response: Response = client.post(endpoints.GENES, json=data)
@@ -264,7 +264,7 @@ def test_genes_by_ensembl_ids(
     endpoints: Type,
     mocker: MockerFixture,
     file_handler: Callable,
-    gene_lists: Dict[str, List],
+    genes_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database genes using a list of ensembl IDs."""
 
@@ -281,13 +281,13 @@ def test_genes_by_ensembl_ids(
     # WHEN sending a request to the "genes" endpoint with a list of Ensembl IDs
     data = {
         "build": build,
-        "ensembl_ids": gene_lists[build]["ensembl_ids"],
+        "ensembl_ids": genes_per_build[build]["ensembl_ids"],
     }
     response: Response = client.post(endpoints.GENES, json=data)
     # THEN the expected number of genes should be returned
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
-    assert len(result) == len(gene_lists[build]["ensembl_ids"])
+    assert len(result) == len(genes_per_build[build]["ensembl_ids"])
     assert Gene(**result[0])
 
 
@@ -299,7 +299,7 @@ def test_genes_by_hgnc_ids(
     endpoints: Type,
     mocker: MockerFixture,
     file_handler: Callable,
-    gene_lists: Dict[str, List],
+    genes_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database genes using a list of HGNC IDs."""
 
@@ -316,13 +316,13 @@ def test_genes_by_hgnc_ids(
     # WHEN sending a request to the "genes" endpoint with a list of HGNC ids
     data = {
         "build": build,
-        "hgnc_ids": gene_lists[build]["hgnc_ids"],
+        "hgnc_ids": genes_per_build[build]["hgnc_ids"],
     }
     response: Response = client.post(endpoints.GENES, json=data)
     # THEN the expected number of genes should be returned
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
-    assert len(result) == len(gene_lists[build]["hgnc_ids"])
+    assert len(result) == len(genes_per_build[build]["hgnc_ids"])
     assert Gene(**result[0])
 
 
@@ -334,7 +334,7 @@ def test_genes_by_hgnc_symbols(
     endpoints: Type,
     mocker: MockerFixture,
     file_handler: Callable,
-    gene_lists: Dict[str, List],
+    genes_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database genes using a list of HGNC symbols."""
 
@@ -351,13 +351,13 @@ def test_genes_by_hgnc_symbols(
     # WHEN sending a request to the "genes" endpoint with a list of HGNC symbols
     data = {
         "build": build,
-        "hgnc_symbols": gene_lists[build]["hgnc_symbols"],
+        "hgnc_symbols": genes_per_build[build]["hgnc_symbols"],
     }
     response: Response = client.post(endpoints.GENES, json=data)
     # THEN the expected number of genes should be returned
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
-    assert len(result) == len(gene_lists[build]["hgnc_symbols"])
+    assert len(result) == len(genes_per_build[build]["hgnc_symbols"])
     assert Gene(**result[0])
 
 
