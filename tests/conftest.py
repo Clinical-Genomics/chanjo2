@@ -228,7 +228,7 @@ def file_handler() -> TextIOWrapper:
     return _resource_data
 
 
-@pytest.fixture(name="gene_lists")
-def gene_lists() -> Dict[str, List]:
+@pytest.fixture(name="genes_per_build")
+def genes_per_build() -> Dict[str, List]:
     """Return a dict containing lists with test genes in different build specific formats."""
     return {BUILD_37: GENE_LISTS_37, BUILD_38: GENE_LISTS_38}
