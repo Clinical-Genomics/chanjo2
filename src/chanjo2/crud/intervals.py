@@ -35,6 +35,7 @@ def count_intervals_for_build(
 
 def _filter_intervals_by_ensembl_ids(
     intervals: query.Query,
+    interval_type: Union[SQLGene, SQLTranscript, SQLExon],
     ensembl_ids: List[str],
 ) -> List[Union[SQLGene, SQLTranscript, SQLExon]]:
     """Filter intervals using a list of Ensembl IDs"""
