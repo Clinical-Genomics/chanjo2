@@ -1,9 +1,9 @@
+from _io import TextIOWrapper
 from enum import Enum
 from pathlib import PosixPath
 from typing import Dict, Iterator, List, Tuple
 
 import pytest
-from _io import TextIOWrapper
 from chanjo2.dbutil import DEMO_CONNECT_ARGS, get_session
 from chanjo2.demo import d4_demo_path, gene_panel_path
 from chanjo2.main import Base, app, engine
@@ -35,7 +35,7 @@ class Endpoints(str, Enum):
     INTERVAL = "/intervals/interval/"
     INTERVALS = "/intervals/"
     LOAD_GENES = "/intervals/load/genes/"
-    GENES = "/intervals/genes/"
+    GENES = "/intervals/genes"
     LOAD_TRANSCRIPTS = "/intervals/load/transcripts/"
     TRANSCRIPTS = "/intervals/transcripts/"
     INTERVAL_COVERAGE = "/intervals/coverage/d4/interval/"
