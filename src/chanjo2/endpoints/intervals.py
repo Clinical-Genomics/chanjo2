@@ -1,6 +1,10 @@
 from typing import List, Optional, Tuple, Union
 
-from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
+from chanjo2.constants import (
+    WRONG_BED_FILE_MSG,
+    WRONG_COVERAGE_FILE_MSG,
+    MULTIPLE_PARAMS_NOT_SUPPORTED_MSG,
+)
 from chanjo2.crud.intervals import get_exons, get_genes, get_transcripts
 from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import parse_bed
@@ -20,13 +24,13 @@ from chanjo2.models.pydantic_models import (
     CoverageInterval,
     Exon,
     Gene,
-    Interval,
     Transcript,
+    IntervalQuery,
 )
 from fastapi import APIRouter, Depends, File, HTTPException, Response, status
 from fastapi.responses import JSONResponse
 from pyd4 import D4File
-from sqlmodel import Session, select
+from sqlmodel import Session
 
 router = APIRouter()
 
@@ -107,12 +111,29 @@ async def load_genes(
         )
 
 
-@router.get("/intervals/genes/{build}")
+@router.post("/intervals/genes")
 async def genes(
-    build: Builds, session: Session = Depends(get_session), limit: int = 100
+    query: IntervalQuery, session: Session = Depends(get_session)
 ) -> List[Gene]:
-    """Return genes in the given genome build."""
-    return get_genes(db=session, build=build, limit=limit)
+    """Return genes according to query parameters."""
+    nr_filters: int = sum(
+        param is not None
+        for param in [query.ensembl_ids, query.hgnc_ids, query.hgnc_symbols]
+    )
+    if nr_filters > 1:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=MULTIPLE_PARAMS_NOT_SUPPORTED_MSG,
+        )
+
+    return get_genes(
+        db=session,
+        build=query.build,
+        ensembl_ids=query.ensembl_ids,
+        hgnc_ids=query.hgnc_ids,
+        hgnc_symbols=query.hgnc_symbols,
+        limit=query.limit if nr_filters == 0 else None,
+    )
 
 
 @router.post("/intervals/load/transcripts/{build}")

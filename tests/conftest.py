@@ -1,9 +1,10 @@
+from _io import TextIOWrapper
 from enum import Enum
 from pathlib import PosixPath
 from typing import Dict, Iterator, List, Tuple
 
 import pytest
-from _io import TextIOWrapper
+from chanjo2.constants import BUILD_38, BUILD_37
 from chanjo2.dbutil import DEMO_CONNECT_ARGS, get_session
 from chanjo2.demo import d4_demo_path, gene_panel_path
 from chanjo2.main import Base, app, engine
@@ -22,6 +23,16 @@ COVERAGE_FILE = "a_file.d4"
 BED_FILE = "a_file.bed"
 REMOTE_COVERAGE_FILE = "https://a_remote_host/a_file.d4"
 CONTENT: str = "content"
+GENE_LISTS_37 = {
+    "ensembl_ids": ["ENSG00000233440", "ENSG00000207157", "ENSG00000196593"],
+    "hgnc_ids": [19121, 42488, 42737],
+    "hgnc_symbols": ["HMGA1P6", "RNY3P4", "ANKRD20A19P"],
+}
+GENE_LISTS_38 = {
+    "ensembl_ids": ["ENSG00000160072", "ENSG00000142611", "ENSG00000171729"],
+    "hgnc_ids": [24007, 14000, 25488],
+    "hgnc_symbols": ["ATAD3B", "PRDM16", "TMEM51"],
+}
 
 engine = create_engine(TEST_DB, connect_args=DEMO_CONNECT_ARGS)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -35,7 +46,7 @@ class Endpoints(str, Enum):
     INTERVAL = "/intervals/interval/"
     INTERVALS = "/intervals/"
     LOAD_GENES = "/intervals/load/genes/"
-    GENES = "/intervals/genes/"
+    GENES = "/intervals/genes"
     LOAD_TRANSCRIPTS = "/intervals/load/transcripts/"
     TRANSCRIPTS = "/intervals/transcripts/"
     INTERVAL_COVERAGE = "/intervals/coverage/d4/interval/"
@@ -215,3 +226,9 @@ def file_handler() -> TextIOWrapper:
         return iter(lines)
 
     return _resource_data
+
+
+@pytest.fixture(name="genes_per_build")
+def genes_per_build() -> Dict[str, List]:
+    """Return a dict containing lists with test genes in different build specific formats."""
+    return {BUILD_37: GENE_LISTS_37, BUILD_38: GENE_LISTS_38}

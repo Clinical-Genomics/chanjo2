@@ -1,9 +1,13 @@
+from _io import TextIOWrapper
 from pathlib import PosixPath
 from typing import Callable, Dict, Iterator, List, Tuple, Type
 
 import pytest
-from _io import TextIOWrapper
-from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
+from chanjo2.constants import (
+    WRONG_BED_FILE_MSG,
+    WRONG_COVERAGE_FILE_MSG,
+    MULTIPLE_PARAMS_NOT_SUPPORTED_MSG,
+)
 from chanjo2.demo import gene_panel_file, gene_panel_path
 from chanjo2.models.pydantic_models import (
     Builds,
@@ -223,12 +227,137 @@ def test_load_genes(
     assert response.json()["detail"] == f"{nr_genes} genes loaded into the database"
 
     # WHEN sending a request to the "genes" endpoint
-    response: Response = client.get(f"{endpoints.GENES}{build}")
+    response: Response = client.post(endpoints.GENES, json={"build": build})
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
     # THEN the expected number of genes should be returned
     assert len(result) == nr_genes
     # AND the gene should have the right format
+    assert Gene(**result[0])
+
+
+@pytest.mark.parametrize("build", Builds.get_enum_values())
+def test_genes_by_multiple_ids(
+    build: str, client: TestClient, endpoints: Type, genes_per_build: Dict[str, List]
+):
+    """Test filtering gene intervals providing more than one arg list"""
+
+    # GIVEN a query with genome build and more than one gene ID:
+    data = {
+        "build": build,
+        "ensembl_ids": genes_per_build[build]["ensembl_ids"],
+        "hgnc_ids": genes_per_build[build]["hgnc_ids"],
+    }
+    # WHEN sending a POST request to the genes endpoint with the query params above
+    response: Response = client.post(endpoints.GENES, json=data)
+    # THEN it should return HTTP 400 error
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    result = response.json()
+    assert result["detail"] == MULTIPLE_PARAMS_NOT_SUPPORTED_MSG
+
+
+@pytest.mark.parametrize("build, path", BUILD_GENES_RESOURCE)
+def test_genes_by_ensembl_ids(
+    build: str,
+    path: str,
+    client: TestClient,
+    endpoints: Type,
+    mocker: MockerFixture,
+    file_handler: Callable,
+    genes_per_build: Dict[str, List],
+):
+    """Test the endpoint that filters database genes using a list of ensembl IDs."""
+
+    # GIVEN a patched response from Ensembl Biomart, via schug
+    gene_lines: Iterator = file_handler(path)
+    mocker.patch(
+        MOCKED_FILE_PARSER,
+        return_value=gene_lines,
+    )
+
+    # GIVEN that genes present in the database
+    client.post(f"{endpoints.LOAD_GENES}{build}")
+
+    # WHEN sending a request to the "genes" endpoint with a list of Ensembl IDs
+    data = {
+        "build": build,
+        "ensembl_ids": genes_per_build[build]["ensembl_ids"],
+    }
+    response: Response = client.post(endpoints.GENES, json=data)
+    # THEN the expected number of genes should be returned
+    assert response.status_code == status.HTTP_200_OK
+    result = response.json()
+    assert len(result) == len(genes_per_build[build]["ensembl_ids"])
+    assert Gene(**result[0])
+
+
+@pytest.mark.parametrize("build, path", BUILD_GENES_RESOURCE)
+def test_genes_by_hgnc_ids(
+    build: str,
+    path: str,
+    client: TestClient,
+    endpoints: Type,
+    mocker: MockerFixture,
+    file_handler: Callable,
+    genes_per_build: Dict[str, List],
+):
+    """Test the endpoint that filters database genes using a list of HGNC IDs."""
+
+    # GIVEN a patched response from Ensembl Biomart, via schug
+    gene_lines: Iterator = file_handler(path)
+    mocker.patch(
+        MOCKED_FILE_PARSER,
+        return_value=gene_lines,
+    )
+
+    # GIVEN that genes present in the database
+    client.post(f"{endpoints.LOAD_GENES}{build}")
+
+    # WHEN sending a request to the "genes" endpoint with a list of HGNC ids
+    data = {
+        "build": build,
+        "hgnc_ids": genes_per_build[build]["hgnc_ids"],
+    }
+    response: Response = client.post(endpoints.GENES, json=data)
+    # THEN the expected number of genes should be returned
+    assert response.status_code == status.HTTP_200_OK
+    result = response.json()
+    assert len(result) == len(genes_per_build[build]["hgnc_ids"])
+    assert Gene(**result[0])
+
+
+@pytest.mark.parametrize("build, path", BUILD_GENES_RESOURCE)
+def test_genes_by_hgnc_symbols(
+    build: str,
+    path: str,
+    client: TestClient,
+    endpoints: Type,
+    mocker: MockerFixture,
+    file_handler: Callable,
+    genes_per_build: Dict[str, List],
+):
+    """Test the endpoint that filters database genes using a list of HGNC symbols."""
+
+    # GIVEN a patched response from Ensembl Biomart, via schug
+    gene_lines: Iterator = file_handler(path)
+    mocker.patch(
+        MOCKED_FILE_PARSER,
+        return_value=gene_lines,
+    )
+
+    # GIVEN that genes present in the database
+    client.post(f"{endpoints.LOAD_GENES}{build}")
+
+    # WHEN sending a request to the "genes" endpoint with a list of HGNC symbols
+    data = {
+        "build": build,
+        "hgnc_symbols": genes_per_build[build]["hgnc_symbols"],
+    }
+    response: Response = client.post(endpoints.GENES, json=data)
+    # THEN the expected number of genes should be returned
+    assert response.status_code == status.HTTP_200_OK
+    result = response.json()
+    assert len(result) == len(genes_per_build[build]["hgnc_symbols"])
     assert Gene(**result[0])
 
 

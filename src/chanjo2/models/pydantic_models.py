@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any, List, Optional
 
 import validators
-from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
+from chanjo2.constants import WRONG_COVERAGE_FILE_MSG
 from pydantic import BaseModel, validator
 
 
@@ -83,6 +83,14 @@ class GeneBase(IntervalBase):
     hgnc_id: Optional[int]
     hgnc_symbol: Optional[str]
     build: Builds
+
+
+class IntervalQuery(BaseModel):
+    build: Builds
+    ensembl_ids: Optional[List[str]]
+    hgnc_ids: Optional[List[int]]
+    hgnc_symbols: Optional[List[str]]
+    limit: Optional[int] = 100
 
 
 class Gene(IntervalBase):
