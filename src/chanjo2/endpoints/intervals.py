@@ -1,6 +1,10 @@
 from typing import List, Optional, Tuple, Union
 
-from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
+from chanjo2.constants import (
+    WRONG_BED_FILE_MSG,
+    WRONG_COVERAGE_FILE_MSG,
+    MULTIPLE_PARAMS_NOT_SUPPORTED_MSG,
+)
 from chanjo2.crud.intervals import get_exons, get_genes, get_transcripts
 from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import parse_bed
@@ -22,7 +26,7 @@ from chanjo2.models.pydantic_models import (
     Gene,
     Transcript,
 )
-from fastapi import APIRouter, Depends, File, HTTPException, Response, status
+from fastapi import APIRouter, Depends, File, HTTPException, Response, status, Query
 from fastapi.responses import JSONResponse
 from pyd4 import D4File
 from sqlmodel import Session
@@ -109,19 +113,25 @@ async def load_genes(
 @router.get("/intervals/genes")
 async def genes(
     build: Builds,
-    ensembl_id: Optional[str] = None,
-    hgnc_id: Optional[int] = None,
-    hgnc_symbol: Optional[str] = None,
+    ensembl_ids: List[str] = Query(None),
+    hgnc_ids: List[int] = Query(None),
+    hgnc_symbols: List[str] = Query(None),
     session: Session = Depends(get_session),
     limit: int = 100,
 ) -> List[Gene]:
     """Return genes according to query parameters."""
+    if sum(param is not None for param in [ensembl_ids, hgnc_ids, hgnc_symbols]) > 1:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=MULTIPLE_PARAMS_NOT_SUPPORTED_MSG,
+        )
+
     return get_genes(
         db=session,
         build=build,
-        ensembl_id=ensembl_id,
-        hgnc_id=hgnc_id,
-        hgnc_symbol=hgnc_symbol,
+        ensembl_ids=ensembl_ids,
+        hgnc_ids=hgnc_ids,
+        hgnc_symbols=hgnc_symbols,
         limit=limit,
     )
 

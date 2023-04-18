@@ -33,9 +33,20 @@ def count_intervals_for_build(
     return db.query(interval_type).where(interval_type.build == build).count()
 
 
+def _filter_intervals_by_ensembl_id(
+    intervals: query.Query,
+    interval_type: Union[SQLGene, SQLTranscript, SQLExon],
+    id: str,
+) -> List[Union[SQLGene, SQLTranscript, SQLExon]]:
+    """Filter intervals by Ensembl ID"""
+    return intervals.filter(interval_type.ensembl_id == id)
+
+
 def _filter_intervals_by_build(
-    intervals: query.Query, interval_type: Union[SQLGene, SQLTranscript], build: Builds
-) -> List[Union[SQLGene, SQLTranscript]]:
+    intervals: query.Query,
+    interval_type: Union[SQLGene, SQLTranscript, SQLExon],
+    build: Builds,
+) -> List[Union[SQLGene, SQLTranscript, SQLExon]]:
     """Filter intervals by genome build."""
     return intervals.filter(interval_type.build == build)
 
@@ -62,9 +73,9 @@ def bulk_insert_genes(db: Session, genes: List[GeneBase]):
 def get_genes(
     db: Session,
     build: Builds,
-    ensembl_id: Optional[str],
-    hgnc_id: Optional[int],
-    hgnc_symbol: Optional[str],
+    ensembl_ids: Optional[List[str]],
+    hgnc_ids: Optional[List[int]],
+    hgnc_symbols: Optional[List[str]],
     limit: int,
 ) -> List[SQLGene]:
     """Returns genes in the given genome build."""

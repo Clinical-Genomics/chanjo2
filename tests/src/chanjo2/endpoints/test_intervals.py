@@ -3,7 +3,11 @@ from pathlib import PosixPath
 from typing import Callable, Dict, Iterator, List, Tuple, Type
 
 import pytest
-from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
+from chanjo2.constants import (
+    WRONG_BED_FILE_MSG,
+    WRONG_COVERAGE_FILE_MSG,
+    MULTIPLE_PARAMS_NOT_SUPPORTED_MSG,
+)
 from chanjo2.demo import gene_panel_file, gene_panel_path
 from chanjo2.models.pydantic_models import (
     Builds,
@@ -230,6 +234,26 @@ def test_load_genes(
     assert len(result) == nr_genes
     # AND the gene should have the right format
     assert Gene(**result[0])
+
+
+@pytest.mark.parametrize("build", Builds.get_enum_values())
+def test_genes_filter_multiple_args(
+    build: str, client: TestClient, endpoints: Type, gene_lists: Dict[str, List]
+):
+    """Test filtering gene intervals providing more than one arg list"""
+
+    # GIVEN a query with genome build and more than one gene ID:
+    params = {
+        "build": build,
+        "ensembl_ids": gene_lists[build]["ensembl_ids"],
+        "hgnc_ids": gene_lists[build]["hgnc_ids"],
+    }
+    # WHEN sending a GET request to the genes endpoint with the query params above
+    response: Response = client.get(endpoints.GENES, params=params)
+    # THEN it should return HTTP 400 error
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    result = response.json()
+    assert result["detail"] == MULTIPLE_PARAMS_NOT_SUPPORTED_MSG
 
 
 @pytest.mark.parametrize("build, path", BUILD_TRANSCRIPTS_RESOURCE)
