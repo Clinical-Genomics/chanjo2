@@ -19,6 +19,7 @@
 - Endpoint for coverage queries over the intervals of a BED file
 - Include a default .env file loaded on app startup
 - Filter genes by Ensemble id, HGNC id, HGNC symbol
+- Demo genes, transcripts and exons loaded on demo instance startup
 
 ### Fixed
 
