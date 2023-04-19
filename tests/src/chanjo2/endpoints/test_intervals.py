@@ -392,7 +392,7 @@ def test_load_transcripts(
         == f"{nr_transcripts} transcripts loaded into the database"
     )
     # WHEN sending a request to the "transcripts" endpoint
-    response: Response = client.get(f"{endpoints.TRANSCRIPTS}{build}")
+    response: Response = client.post(f"{endpoints.TRANSCRIPTS}", json={"build": build})
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
     # THEN the expected number of transcripts should be returned

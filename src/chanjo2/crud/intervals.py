@@ -168,7 +168,14 @@ def bulk_insert_transcripts(db: Session, transcripts: List[TranscriptBase]):
     db.commit()
 
 
-def get_transcripts(db: Session, build: Builds, limit: int) -> List[SQLTranscript]:
+def get_transcripts(
+    db: Session,
+    build: Builds,
+    ensembl_ids: Optional[List[str]],
+    hgnc_ids: Optional[List[int]],
+    hgnc_symbols: Optional[List[str]],
+    limit: Optional[int],
+) -> List[SQLTranscript]:
     """Returns transcripts in the given genome build."""
     return (
         _filter_intervals_by_build(
@@ -177,6 +184,38 @@ def get_transcripts(db: Session, build: Builds, limit: int) -> List[SQLTranscrip
         .limit(limit)
         .all()
     )
+
+
+"""
+def get_genes(
+    db: Session,
+    build: Builds,
+    ensembl_ids: Optional[List[str]],
+    hgnc_ids: Optional[List[int]],
+    hgnc_symbols: Optional[List[str]],
+    limit: Optional[int],
+) -> List[SQLGene]:
+
+    intervals: query.Query = db.query(SQLGene)
+    if ensembl_ids:
+        intervals: query.Query = _filter_intervals_by_ensembl_ids(
+            intervals=intervals, interval_type=SQLGene, ensembl_ids=ensembl_ids
+        )
+    elif hgnc_ids:
+        intervals: query.Query = _filter_intervals_by_hgnc_ids(
+            intervals=intervals, interval_type=SQLGene, hgnc_ids=hgnc_ids
+        )
+    elif hgnc_symbols:
+        intervals: query.Query = _filter_intervals_by_hgnc_symbols(
+            intervals=intervals, interval_type=SQLGene, hgnc_symbols=hgnc_symbols
+        )
+    intervals: query.Query = _filter_intervals_by_build(
+        intervals=intervals, interval_type=SQLGene, build=build
+    )
+    if limit:
+        return intervals.limit(limit).all()
+    return intervals.all()
+"""
 
 
 def create_db_exon(db: Session, exon: ExonBase) -> SQLExon:

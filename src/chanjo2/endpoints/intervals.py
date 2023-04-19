@@ -35,6 +35,11 @@ from sqlmodel import Session
 router = APIRouter()
 
 
+def count_nr_filters(params: List[str]) -> int:
+    """Count the items in a query list that aren't null"""
+    return sum(param is not None for param in params)
+
+
 @router.get("/intervals/coverage/d4/interval/", response_model=CoverageInterval)
 def d4_interval_coverage(
     coverage_file_path: str,
@@ -116,9 +121,8 @@ async def genes(
     query: IntervalQuery, session: Session = Depends(get_session)
 ) -> List[Gene]:
     """Return genes according to query parameters."""
-    nr_filters: int = sum(
-        param is not None
-        for param in [query.ensembl_ids, query.hgnc_ids, query.hgnc_symbols]
+    nr_filters = count_nr_filters(
+        [query.ensembl_ids, query.hgnc_ids, query.hgnc_symbols]
     )
     if nr_filters > 1:
         raise HTTPException(
@@ -157,12 +161,27 @@ async def load_transcripts(
         )
 
 
-@router.get("/intervals/transcripts/{build}")
+@router.post("/intervals/transcripts")
 async def transcripts(
-    build: Builds, session: Session = Depends(get_session), limit: int = 100
+    query: IntervalQuery, session: Session = Depends(get_session)
 ) -> List[Transcript]:
-    """Return transcripts in the given genome build."""
-    return get_transcripts(db=session, build=build, limit=limit)
+    """Return transcripts according to query parameters."""
+    nr_filters = count_nr_filters(
+        [query.ensembl_ids, query.hgnc_ids, query.hgnc_symbols]
+    )
+    if nr_filters > 1:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=MULTIPLE_PARAMS_NOT_SUPPORTED_MSG,
+        )
+    return get_transcripts(
+        db=session,
+        build=query.build,
+        ensembl_ids=query.ensembl_ids,
+        hgnc_ids=query.hgnc_ids,
+        hgnc_symbols=query.hgnc_symbols,
+        limit=query.limit if nr_filters == 0 else None,
+    )
 
 
 @router.post("/intervals/load/exons/{build}")
