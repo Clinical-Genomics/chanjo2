@@ -4,7 +4,11 @@ from chanjo2.crud.cases import create_db_case
 from chanjo2.crud.samples import create_sample_in_case
 from chanjo2.dbutil import get_session
 from chanjo2.demo import d4_demo_path
-from chanjo2.meta.handle_load_intervals import update_genes, update_transcripts
+from chanjo2.meta.handle_load_intervals import (
+    update_genes,
+    update_transcripts,
+    update_exons,
+)
 from chanjo2.models.pydantic_models import CaseCreate, SampleCreate, Builds
 from schug.demo import (
     EXONS_37_FILE_PATH,
@@ -46,13 +50,13 @@ def resource_lines(file_path: str) -> Iterator[str]:
     return iter(lines)
 
 
-def load_demo_data() -> None:
+async def load_demo_data() -> None:
     """Loads demo data into the database of a demo instance of Chanjo2."""
     load_demo_case()
     load_demo_sample()
-    load_demo_genes()
-    load_demo_transcripts()
-    load_demo_exons()
+    await load_demo_genes()
+    await load_demo_transcripts()
+    await load_demo_exons()
 
 
 def load_demo_case() -> None:
@@ -67,25 +71,25 @@ def load_demo_sample() -> None:
     create_sample_in_case(db=db, sample=sample)
 
 
-def load_demo_genes() -> None:
+async def load_demo_genes() -> None:
     """Load 50 test genes into the database"""
 
     for build, path in BUILD_GENES_RESOURCE:
         gene_lines: Iterator = resource_lines(path)
-        update_genes(build=build, session=db, lines=gene_lines)
+        await update_genes(build=build, session=db, lines=gene_lines)
 
 
-def load_demo_transcripts() -> None:
+async def load_demo_transcripts() -> None:
     """Load 50 test transcripts into the database"""
 
     for build, path in BUILD_TRANSCRIPTS_RESOURCE:
         transcript_lines: Iterator = resource_lines(path)
-        update_transcripts(build=build, session=db, lines=transcript_lines)
+        await update_transcripts(build=build, session=db, lines=transcript_lines)
 
 
-def load_demo_exons() -> None:
+async def load_demo_exons() -> None:
     """Load 50 test genes into the database"""
 
     for build, path in BUILD_EXONS_RESOURCE:
         exon_lines: Iterator = resource_lines(path)
-        update_transcripts(build=build, session=db, lines=exon_lines)
+        await update_exons(build=build, session=db, lines=exon_lines)
