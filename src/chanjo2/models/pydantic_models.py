@@ -85,12 +85,16 @@ class GeneBase(IntervalBase):
     build: Builds
 
 
-class IntervalQuery(BaseModel):
+class GeneQuery(BaseModel):
     build: Builds
     ensembl_ids: Optional[List[str]]
     hgnc_ids: Optional[List[int]]
     hgnc_symbols: Optional[List[str]]
     limit: Optional[int] = 100
+
+
+class TranscriptQuery(GeneQuery):
+    ensembl_gene_ids: Optional[List[str]]
 
 
 class Gene(IntervalBase):

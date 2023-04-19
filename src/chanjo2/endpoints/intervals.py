@@ -25,7 +25,8 @@ from chanjo2.models.pydantic_models import (
     Exon,
     Gene,
     Transcript,
-    IntervalQuery,
+    GeneQuery,
+    TranscriptQuery,
 )
 from fastapi import APIRouter, Depends, File, HTTPException, Response, status
 from fastapi.responses import JSONResponse
@@ -118,7 +119,7 @@ async def load_genes(
 
 @router.post("/intervals/genes")
 async def genes(
-    query: IntervalQuery, session: Session = Depends(get_session)
+    query: GeneQuery, session: Session = Depends(get_session)
 ) -> List[Gene]:
     """Return genes according to query parameters."""
     nr_filters = count_nr_filters(
@@ -163,11 +164,11 @@ async def load_transcripts(
 
 @router.post("/intervals/transcripts")
 async def transcripts(
-    query: IntervalQuery, session: Session = Depends(get_session)
+    query: TranscriptQuery, session: Session = Depends(get_session)
 ) -> List[Transcript]:
     """Return transcripts according to query parameters."""
     nr_filters = count_nr_filters(
-        [query.ensembl_ids, query.hgnc_ids, query.hgnc_symbols]
+        [query.ensembl_ids, query.hgnc_ids, query.hgnc_symbols, query.ensembl_gene_ids]
     )
     if nr_filters > 1:
         raise HTTPException(
@@ -180,6 +181,7 @@ async def transcripts(
         ensembl_ids=query.ensembl_ids,
         hgnc_ids=query.hgnc_ids,
         hgnc_symbols=query.hgnc_symbols,
+        ensembl_gene_ids=query.ensembl_gene_ids,
         limit=query.limit if nr_filters == 0 else None,
     )
 
