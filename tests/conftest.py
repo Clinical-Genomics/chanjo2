@@ -35,15 +35,15 @@ GENE_LISTS_38 = {
 }
 TRANSCRIPT_LISTS_37 = {
     "ensembl_ids": ["ENST00000418454", "ENST00000384428", "ENST00000414345"],
-    "ensembl_gene_ids": GENE_LISTS_37["ensembl_ids"]
-    "hgnc_ids": GENE_LISTS_37["hgnc_ids"]
-    "hgnc_symbols": GENE_LISTS_37["hgnc_symbols"]
+    "ensembl_gene_ids": GENE_LISTS_37["ensembl_ids"],
+    "hgnc_ids": GENE_LISTS_37["hgnc_ids"],
+    "hgnc_symbols": GENE_LISTS_37["hgnc_symbols"],
 }
 TRANSCRIPT_LISTS_38 = {
     "ensembl_ids": ["ENST00000673477", "ENST00000378391", "ENST00000270722"],
-    "ensembl_gene_ids": GENE_LISTS_38["ensembl_ids"]
-    "hgnc_ids": GENE_LISTS_38["hgnc_ids"]
-    "hgnc_symbols": GENE_LISTS_38["hgnc_symbols"]
+    "ensembl_gene_ids": GENE_LISTS_38["ensembl_ids"],
+    "hgnc_ids": GENE_LISTS_38["hgnc_ids"],
+    "hgnc_symbols": GENE_LISTS_38["hgnc_symbols"],
 }
 
 engine = create_engine(TEST_DB, connect_args=DEMO_CONNECT_ARGS)
