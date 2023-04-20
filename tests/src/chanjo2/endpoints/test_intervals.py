@@ -345,6 +345,121 @@ def test_load_transcripts(
     assert Transcript(**result[0])
 
 
+@pytest.mark.parametrize("build", Builds.get_enum_values())
+def test_transcripts_by_multiple_ids(
+    build: str,
+    client: TestClient,
+    endpoints: Type,
+    transcripts_per_build: Dict[str, List],
+):
+    """Test filtering transcript intervals providing more than one arg list"""
+
+    # GIVEN a query to "transcripts" enspoint with genome build and more than one ID:
+    data = {
+        "build": build,
+        "ensembl_ids": transcripts_per_build[build]["ensembl_ids"],
+        "ensembl_gene_ids": transcripts_per_build[build]["ensembl_gene_ids"],
+    }
+    # WHEN sending a POST request to the transcripts endpoint with the query params above
+    response: Response = client.post(endpoints.TRANSCRIPTS, json=data)
+    # THEN it should return HTTP 400 error
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    result = response.json()
+    assert result["detail"] == MULTIPLE_PARAMS_NOT_SUPPORTED_MSG
+
+
+@pytest.mark.parametrize("build", Builds.get_enum_values())
+def test_transcripts_by_ensembl_ids(
+    build: str,
+    demo_client: TestClient,
+    endpoints: Type,
+    transcripts_per_build: Dict[str, List],
+):
+    """Test the endpoint that filters database transcripts using a list of Ensembl IDs."""
+
+    # GIVEN a populated demo database
+    # WHEN sending a request to the "transcripts" endpoint with a list of Ensembl IDs
+    data = {
+        "build": build,
+        "ensembl_ids": transcripts_per_build[build]["ensembl_ids"],
+    }
+    response: Response = demo_client.post(endpoints.TRANSCRIPTS, json=data)
+
+    # THEN transcript documents should be returned
+    assert response.status_code == status.HTTP_200_OK
+    result = response.json()
+    assert Transcript(**result[0])
+
+
+@pytest.mark.parametrize("build", Builds.get_enum_values())
+def test_transcripts_by_ensembl_gene_ids(
+    build: str,
+    demo_client: TestClient,
+    endpoints: Type,
+    transcripts_per_build: Dict[str, List],
+):
+    """Test the endpoint that filters database transcripts using a list of Ensembl gene IDs."""
+
+    # GIVEN a populated demo database
+    # WHEN sending a request to the "transcripts" endpoint with a list of Ensembl gene IDs
+    data = {
+        "build": build,
+        "ensembl_gene_ids": transcripts_per_build[build]["ensembl_gene_ids"],
+    }
+    response: Response = demo_client.post(endpoints.TRANSCRIPTS, json=data)
+
+    # THEN transcript documents should be returned
+    assert response.status_code == status.HTTP_200_OK
+    result = response.json()
+    assert Transcript(**result[0])
+
+
+@pytest.mark.parametrize("build", Builds.get_enum_values())
+def test_transcripts_by_hgnc_ids(
+    build: str,
+    demo_client: TestClient,
+    endpoints: Type,
+    transcripts_per_build: Dict[str, List],
+):
+    """Test the endpoint that filters database transcripts using a list of HGNC gene IDs."""
+
+    # GIVEN a populated demo database
+    # WHEN sending a request to the "transcripts" endpoint with a list of HGNC gene IDs
+    data = {
+        "build": build,
+        "hgnc_gene_ids": transcripts_per_build[build]["hgnc_ids"],
+    }
+    response: Response = demo_client.post(endpoints.TRANSCRIPTS, json=data)
+
+    # THEN transcript documents should be returned
+    assert response.status_code == status.HTTP_200_OK
+    result = response.json()
+    assert Transcript(**result[0])
+
+
+@pytest.mark.parametrize("build", Builds.get_enum_values())
+def test_transcripts_by_hgnc_symbols(
+    build: str,
+    demo_client: TestClient,
+    endpoints: Type,
+    transcripts_per_build: Dict[str, List],
+):
+    """Test the endpoint that filters database transcripts using a list of HGNC gene symbols."""
+
+    # GIVEN a populated demo database
+    # WHEN sending a request to the "transcripts" endpoint with a list of HGNC gene symbols
+    data = {
+        "build": build,
+        "hgnc_gene_symbols": transcripts_per_build[build]["hgnc_symbols"],
+    }
+    response: Response = demo_client.post(endpoints.TRANSCRIPTS, json=data)
+
+    # THEN transcript documents should be returned
+    assert response.status_code == status.HTTP_200_OK
+    result = response.json()
+    assert Transcript(**result[0])
+
+
 @pytest.mark.parametrize("build, path", BUILD_EXONS_RESOURCE)
 def test_load_exons(
     build: str,

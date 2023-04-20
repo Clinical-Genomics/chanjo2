@@ -109,13 +109,13 @@ def client_fixture(session) -> TestClient:
     return TestClient(app)
 
 
-@pytest.fixture(name="demo_session", scope="module")
+@pytest.fixture(name="demo_session", scope="function")
 def demo_session_fixture() -> TestClient:
     """Returns an object of type sqlalchemy.orm.session.sessionmaker containing demo data."""
     return next(get_session())
 
 
-@pytest.fixture(name="demo_client", scope="module")
+@pytest.fixture(name="demo_client", scope="function")
 def demo_client_fixture(demo_session) -> TestClient:
     """Returns a fastapi.testclient.TestClient used to test the endpoints of an app with a populated demo database."""
 
@@ -237,3 +237,9 @@ def real_d4_query(real_coverage_path) -> Dict[str, str]:
 def genes_per_build() -> Dict[str, List]:
     """Return a dict containing lists with test genes in different build specific formats."""
     return {BUILD_37: GENE_LISTS_37, BUILD_38: GENE_LISTS_38}
+
+
+@pytest.fixture(name="transcripts_per_build")
+def transcripts_per_build() -> Dict[str, List]:
+    """Return a dict containing lists with test transcripts in different build specific formats."""
+    return {BUILD_37: TRANSCRIPT_LISTS_37, BUILD_38: TRANSCRIPT_LISTS_38}
