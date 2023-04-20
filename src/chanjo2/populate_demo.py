@@ -72,7 +72,7 @@ def load_demo_sample() -> None:
 
 
 async def load_demo_genes() -> None:
-    """Load 50 test genes into the database"""
+    """Load test genes into the database."""
 
     for build, path in BUILD_GENES_RESOURCE:
         gene_lines: Iterator = resource_lines(path)
