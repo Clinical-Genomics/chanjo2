@@ -88,7 +88,7 @@ async def load_demo_transcripts() -> None:
 
 
 async def load_demo_exons() -> None:
-    """Load 50 test genes into the database"""
+    """Load test exons into the database."""
 
     for build, path in BUILD_EXONS_RESOURCE:
         exon_lines: Iterator = resource_lines(path)
