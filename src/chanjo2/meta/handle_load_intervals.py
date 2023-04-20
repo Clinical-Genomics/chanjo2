@@ -42,7 +42,7 @@ def read_resource_lines(build: Builds, interval_type: IntervalType) -> Iterator[
     )
     url: str = shug_client.build_url(xml=shug_client.xml)
     response: requests.models.responses = requests.get(url, stream=True)
-    return resp.iter_lines(decode_unicode=True)
+    return response.iter_lines(decode_unicode=True)
 
 
 def _replace_empty_cols(line: str, nr_expected_columns: int) -> List[Union[str, None]]:
