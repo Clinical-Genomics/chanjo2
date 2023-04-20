@@ -41,7 +41,7 @@ def read_resource_lines(build: Builds, interval_type: IntervalType) -> Iterator[
         build=SchugBuild(build)
     )
     url: str = shug_client.build_url(xml=shug_client.xml)
-    resp: requests.models.responses = requests.get(url, stream=True)
+    response: requests.models.responses = requests.get(url, stream=True)
     return resp.iter_lines(decode_unicode=True)
 
 
