@@ -40,7 +40,7 @@ def read_resource_lines(build: Builds, interval_type: IntervalType) -> Iterator[
     shug_client: EnsemblBiomartClient = ENSEMBL_RESOURCE_CLIENT[interval_type](
         build=SchugBuild(build)
     )
-    url = shug_client.build_url(xml=shug_client.xml)
+    url: str = shug_client.build_url(xml=shug_client.xml)
     resp: requests.models.responses = requests.get(url, stream=True)
     return resp.iter_lines(decode_unicode=True)
 
