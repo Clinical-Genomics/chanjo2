@@ -114,7 +114,7 @@ async def update_transcripts(
 
     if lines is None:
         lines: Iterator[str] = read_resource_lines(
-            build=build, interval_type=IntervalType.GENES
+            build=build, interval_type=IntervalType.TRANSCRIPTS
         )
 
     header = next(lines).split("\t")
@@ -175,7 +175,7 @@ async def update_exons(
 
     if lines is None:
         lines: Iterator[str] = read_resource_lines(
-            build=build, interval_type=IntervalType.GENES
+            build=build, interval_type=IntervalType.EXONS
         )
 
     header = next(lines).split("\t")
