@@ -397,7 +397,7 @@ def test_load_exons(
     )
 
     # GIVEN a number of exons contained in the demo file
-    nr_exons = len(list(resource_lines(path))) - 1
+    nr_exons: int = len(list(resource_lines(path))) - 1
 
     # WHEN sending a request to the load_genes with genome build
     response: Response = client.post(f"{endpoints.LOAD_EXONS}{build}")
