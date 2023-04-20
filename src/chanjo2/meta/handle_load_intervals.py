@@ -1,5 +1,5 @@
 import logging
-from typing import Iterator, List, Tuple, Union
+from typing import Iterator, List, Union, Optional
 
 import requests
 from chanjo2.constants import (
@@ -26,7 +26,6 @@ from chanjo2.models.sql_models import Exon as SQLExon
 from chanjo2.models.sql_models import Gene as SQLGene
 from chanjo2.models.sql_models import Transcript as SQLTranscript
 from schug.load.biomart import EnsemblBiomartClient
-from schug.load.fetch_resource import stream_resource
 from schug.models.common import Build as SchugBuild
 from sqlmodel import Session
 
@@ -58,13 +57,17 @@ def _replace_empty_cols(line: str, nr_expected_columns: int) -> List[Union[str, 
     return cols
 
 
-async def update_genes(build: Builds, session: Session) -> int:
+async def update_genes(
+    build: Builds, session: Session, lines: Optional[Iterator] = None
+) -> int:
     """Loads genes into the database."""
 
     LOG.info(f"Loading gene intervals. Genome build --> {build}")
-    url: str = _get_ensembl_resource_url(build=build, interval_type=IntervalType.GENES)
-
-    lines: Iterator[str] = read_resource_lines(url=url)
+    if lines is None:
+        url: str = _get_ensembl_resource_url(
+            build=build, interval_type=IntervalType.GENES
+        )
+        lines: Iterator[str] = read_resource_lines(url=url)
 
     header = next(lines).split("\t")
     if header != GENES_FILE_HEADER[build]:
@@ -107,15 +110,18 @@ async def update_genes(build: Builds, session: Session) -> int:
     return nr_loaded_genes
 
 
-async def update_transcripts(build: Builds, session: Session) -> int:
+async def update_transcripts(
+    build: Builds, session: Session, lines: Optional[Iterator] = None
+) -> int:
     """Loads transcripts into the database."""
 
     LOG.info(f"Loading transcript intervals. Genome build --> {build}")
-    url: str = _get_ensembl_resource_url(
-        build=build, interval_type=IntervalType.TRANSCRIPTS
-    )
 
-    lines: Iterator[str] = read_resource_lines(url=url)
+    if lines is None:
+        url: str = _get_ensembl_resource_url(
+            build=build, interval_type=IntervalType.TRANSCRIPTS
+        )
+        lines: Iterator[str] = read_resource_lines(url=url)
 
     header = next(lines).split("\t")
     if header != TRANSCRIPTS_FILE_HEADER[build]:
@@ -166,13 +172,18 @@ async def update_transcripts(build: Builds, session: Session) -> int:
     return nr_loaded_transcripts
 
 
-async def update_exons(build: Builds, session: Session) -> int:
+async def update_exons(
+    build: Builds, session: Session, lines: Optional[Iterator] = None
+) -> int:
     """Loads exons into the database."""
 
     LOG.info(f"Loading exon intervals. Genome build --> {build}")
-    url: str = _get_ensembl_resource_url(build=build, interval_type=IntervalType.EXONS)
 
-    lines: Iterator[str] = read_resource_lines(url=url)
+    if lines is None:
+        url: str = _get_ensembl_resource_url(
+            build=build, interval_type=IntervalType.EXONS
+        )
+        lines: Iterator[str] = read_resource_lines(url=url)
 
     header = next(lines).split("\t")
     if header != EXONS_FILE_HEADER[build]:

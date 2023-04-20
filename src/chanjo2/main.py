@@ -53,7 +53,7 @@ async def on_startup():
 
     if os.getenv("DEMO") or not os.getenv("MYSQL_DATABASE_NAME"):
         LOG.warning("Running a demo instance of Chanjo2")
-        if load_demo_data():
+        if await load_demo_data():
             LOG.info("Demo data loaded into database")
 
 

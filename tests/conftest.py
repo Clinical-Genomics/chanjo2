@@ -1,7 +1,7 @@
-from _io import TextIOWrapper
+from enum import Enum
 from enum import Enum
 from pathlib import PosixPath
-from typing import Dict, Iterator, List, Tuple
+from typing import Dict, List, Tuple
 
 import pytest
 from chanjo2.constants import BUILD_38, BUILD_37
@@ -225,19 +225,6 @@ def real_d4_query(real_coverage_path) -> Dict[str, str]:
     return {
         "coverage_file_path": real_coverage_path,
     }
-
-
-@pytest.fixture(name="file_handler")
-def file_handler() -> TextIOWrapper:
-    """Get a file handler to a resource file."""
-
-    def _resource_data(file_path: str) -> Iterator[str]:
-        resource = open(file_path, "r", encoding="utf-8")
-        lines: List = resource.readlines()
-        lines: List = [line.rstrip("\n") for line in lines]
-        return iter(lines)
-
-    return _resource_data
 
 
 @pytest.fixture(name="genes_per_build")

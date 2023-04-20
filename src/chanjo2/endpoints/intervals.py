@@ -105,7 +105,7 @@ async def load_genes(
     """Load genes in the given genome build."""
 
     try:
-        nr_loaded_genes: int = await update_genes(build, session)
+        nr_loaded_genes: int = await update_genes(build=build, session=session)
         return JSONResponse(
             content={"detail": f"{nr_loaded_genes} genes loaded into the database"}
         )
@@ -148,7 +148,9 @@ async def load_transcripts(
     """Load transcripts in the given genome build."""
 
     try:
-        nr_loaded_transcripts: int = await update_transcripts(build, session)
+        nr_loaded_transcripts: int = await update_transcripts(
+            build=build, session=session
+        )
         return JSONResponse(
             content={
                 "detail": f"{nr_loaded_transcripts} transcripts loaded into the database"
