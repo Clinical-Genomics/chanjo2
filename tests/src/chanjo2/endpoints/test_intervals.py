@@ -390,7 +390,7 @@ def test_load_exons(
     """Test the endpoint that adds exons to the database in a given genome build."""
 
     # GIVEN a patched response from Ensembl Biomart, via schug
-    exons_lines: TextIOWrapper = resource_lines(path)
+    exons_lines: Iterator = resource_lines(path)
     mocker.patch(
         MOCKED_FILE_PARSER,
         return_value=exons_lines,
