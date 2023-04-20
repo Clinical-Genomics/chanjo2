@@ -352,7 +352,7 @@ def test_transcripts_by_multiple_ids(
     endpoints: Type,
     transcripts_per_build: Dict[str, List],
 ):
-    """Test filtering transcript intervals providing more than one arg list"""
+    """Test filtering transcript intervals providing more than one arg list."""
 
     # GIVEN a query to "transcripts" enspoint with genome build and more than one ID:
     data = {

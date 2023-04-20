@@ -37,7 +37,7 @@ router = APIRouter()
 
 
 def count_nr_filters(params: List[str]) -> int:
-    """Count the items in a query list that aren't null"""
+    """Count the items in a query list that aren't null."""
     return sum(param is not None for param in params)
 
 

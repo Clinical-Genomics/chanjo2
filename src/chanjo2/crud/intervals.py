@@ -47,7 +47,7 @@ def _filter_intervals_by_ensembl_gene_ids(
     interval_type: Union[SQLGene, SQLTranscript, SQLExon],
     ensembl_gene_ids: List[str],
 ) -> List[Union[SQLGene, SQLTranscript, SQLExon]]:
-    """Filter intervals using a list of Ensembl gene IDs"""
+    """Filter intervals using a list of Ensembl gene IDs."""
     return intervals.filter(interval_type.ensembl_gene_id.in_(ensembl_gene_ids))
 
 
@@ -56,7 +56,7 @@ def _filter_intervals_by_hgnc_ids(
     interval_type: Union[SQLGene, SQLTranscript, SQLExon],
     hgnc_ids: List[int],
 ) -> List[Union[SQLGene, SQLTranscript, SQLExon]]:
-    """Filter intervals using a list of HGNC IDs"""
+    """Filter intervals using a list of HGNC IDs."""
     return intervals.filter(interval_type.hgnc_id.in_(hgnc_ids))
 
 
@@ -65,7 +65,7 @@ def _filter_intervals_by_hgnc_symbols(
     interval_type: Union[SQLGene, SQLTranscript, SQLExon],
     hgnc_symbols: List[str],
 ) -> List[Union[SQLGene, SQLTranscript, SQLExon]]:
-    """Filter intervals using a list of HGNC symbols"""
+    """Filter intervals using a list of HGNC symbols."""
     return intervals.filter(interval_type.hgnc_symbol.in_(hgnc_symbols))
 
 
@@ -186,7 +186,7 @@ def get_transcripts(
     ensembl_gene_ids: Optional[List[str]],
     limit: Optional[int],
 ) -> List[SQLTranscript]:
-    """Returns transcripts in the given genome build."""
+    """Return transcripts according to specified fields."""
 
     transcripts: query.Query = db.query(SQLTranscript)
     genes = db.query(SQLGene)

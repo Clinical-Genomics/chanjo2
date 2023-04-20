@@ -22,23 +22,23 @@ COVERAGE_FILE = "a_file.d4"
 BED_FILE = "a_file.bed"
 REMOTE_COVERAGE_FILE = "https://a_remote_host/a_file.d4"
 CONTENT: str = "content"
-GENE_LISTS_37 = {
+GENE_LISTS_37: Dict[str, List] = {
     "ensembl_ids": ["ENSG00000233440", "ENSG00000207157", "ENSG00000196593"],
     "hgnc_ids": [19121, 42488, 42737],
     "hgnc_symbols": ["HMGA1P6", "RNY3P4", "ANKRD20A19P"],
 }
-GENE_LISTS_38 = {
+GENE_LISTS_38: Dict[str, List] = {
     "ensembl_ids": ["ENSG00000160072", "ENSG00000142611", "ENSG00000171729"],
     "hgnc_ids": [24007, 14000, 25488],
     "hgnc_symbols": ["ATAD3B", "PRDM16", "TMEM51"],
 }
-TRANSCRIPT_LISTS_37 = {
+TRANSCRIPT_LISTS_37: Dict[str, List] = {
     "ensembl_ids": ["ENST00000418454", "ENST00000384428", "ENST00000414345"],
     "ensembl_gene_ids": GENE_LISTS_37["ensembl_ids"],
     "hgnc_ids": GENE_LISTS_37["hgnc_ids"],
     "hgnc_symbols": GENE_LISTS_37["hgnc_symbols"],
 }
-TRANSCRIPT_LISTS_38 = {
+TRANSCRIPT_LISTS_38: Dict[str, List] = {
     "ensembl_ids": ["ENST00000673477", "ENST00000378391", "ENST00000270722"],
     "ensembl_gene_ids": GENE_LISTS_38["ensembl_ids"],
     "hgnc_ids": GENE_LISTS_38["hgnc_ids"],
