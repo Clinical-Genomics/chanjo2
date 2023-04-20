@@ -97,13 +97,13 @@ def client_fixture(session) -> TestClient:
     return TestClient(app)
 
 
-@pytest.fixture(name="demo_session", scope="function")
+@pytest.fixture(name="demo_session", scope="module")
 def demo_session_fixture() -> TestClient:
     """Returns an object of type sqlalchemy.orm.session.sessionmaker containing demo data."""
     return next(get_session())
 
 
-@pytest.fixture(name="demo_client", scope="function")
+@pytest.fixture(name="demo_client", scope="module")
 def demo_client_fixture(demo_session) -> TestClient:
     """Returns a fastapi.testclient.TestClient used to test the endpoints of an app with a populated demo database."""
 
