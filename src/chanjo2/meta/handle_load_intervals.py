@@ -35,7 +35,7 @@ END_OF_PARSED_FILE = "End of resource file"
 
 
 def read_resource_lines(build: Builds, interval_type: IntervalType) -> Iterator[str]:
-    """Returns lines of a remote Ensembl Biomart resource file."""
+    """Returns lines of a remote Ensembl Biomart resource (genes, transcripts or exons) in a given genome build."""
 
     shug_client: EnsemblBiomartClient = ENSEMBL_RESOURCE_CLIENT[interval_type](
         build=SchugBuild(build)
@@ -54,7 +54,7 @@ def _replace_empty_cols(line: str, nr_expected_columns: int) -> List[Union[str, 
 
 
 async def update_genes(
-    build: Builds, session: Session, lines: Optional[Iterator] = None
+        build: Builds, session: Session, lines: Optional[Iterator] = None
 ) -> int:
     """Loads genes into the database."""
 
@@ -106,7 +106,7 @@ async def update_genes(
 
 
 async def update_transcripts(
-    build: Builds, session: Session, lines: Optional[Iterator] = None
+        build: Builds, session: Session, lines: Optional[Iterator] = None
 ) -> int:
     """Loads transcripts into the database."""
 
@@ -167,7 +167,7 @@ async def update_transcripts(
 
 
 async def update_exons(
-    build: Builds, session: Session, lines: Optional[Iterator] = None
+        build: Builds, session: Session, lines: Optional[Iterator] = None
 ) -> int:
     """Loads exons into the database."""
 
