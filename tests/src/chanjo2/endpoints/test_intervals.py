@@ -1,4 +1,3 @@
-from _io import TextIOWrapper
 from pathlib import PosixPath
 from typing import Dict, Iterator, List, Type
 
@@ -238,33 +237,22 @@ def test_genes_by_multiple_ids(
     assert result["detail"] == MULTIPLE_PARAMS_NOT_SUPPORTED_MSG
 
 
-@pytest.mark.parametrize("build, path", BUILD_GENES_RESOURCE)
+@pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_genes_by_ensembl_ids(
     build: str,
-    path: str,
-    client: TestClient,
+    demo_client: TestClient,
     endpoints: Type,
-    mocker: MockerFixture,
     genes_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database genes using a list of ensembl IDs."""
 
-    # GIVEN a patched response from Ensembl Biomart, via schug
-    gene_lines: Iterator = resource_lines(path)
-    mocker.patch(
-        MOCKED_FILE_PARSER,
-        return_value=gene_lines,
-    )
-
-    # GIVEN that genes present in the database
-    client.post(f"{endpoints.LOAD_GENES}{build}")
-
+    # GIVEN a populated demo database
     # WHEN sending a request to the "genes" endpoint with a list of Ensembl IDs
     data = {
         "build": build,
         "ensembl_ids": genes_per_build[build]["ensembl_ids"],
     }
-    response: Response = client.post(endpoints.GENES, json=data)
+    response: Response = demo_client.post(endpoints.GENES, json=data)
     # THEN the expected number of genes should be returned
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
@@ -272,33 +260,22 @@ def test_genes_by_ensembl_ids(
     assert Gene(**result[0])
 
 
-@pytest.mark.parametrize("build, path", BUILD_GENES_RESOURCE)
+@pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_genes_by_hgnc_ids(
     build: str,
-    path: str,
-    client: TestClient,
+    demo_client: TestClient,
     endpoints: Type,
-    mocker: MockerFixture,
     genes_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database genes using a list of HGNC IDs."""
 
-    # GIVEN a patched response from Ensembl Biomart, via schug
-    gene_lines: Iterator = resource_lines(path)
-    mocker.patch(
-        MOCKED_FILE_PARSER,
-        return_value=gene_lines,
-    )
-
-    # GIVEN that genes present in the database
-    client.post(f"{endpoints.LOAD_GENES}{build}")
-
+    # GIVEN a populated demo database
     # WHEN sending a request to the "genes" endpoint with a list of HGNC ids
     data = {
         "build": build,
         "hgnc_ids": genes_per_build[build]["hgnc_ids"],
     }
-    response: Response = client.post(endpoints.GENES, json=data)
+    response: Response = demo_client.post(endpoints.GENES, json=data)
     # THEN the expected number of genes should be returned
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
@@ -306,33 +283,22 @@ def test_genes_by_hgnc_ids(
     assert Gene(**result[0])
 
 
-@pytest.mark.parametrize("build, path", BUILD_GENES_RESOURCE)
+@pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_genes_by_hgnc_symbols(
     build: str,
-    path: str,
-    client: TestClient,
+    demo_client: TestClient,
     endpoints: Type,
-    mocker: MockerFixture,
     genes_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database genes using a list of HGNC symbols."""
 
-    # GIVEN a patched response from Ensembl Biomart, via schug
-    gene_lines: Iterator = resource_lines(path)
-    mocker.patch(
-        MOCKED_FILE_PARSER,
-        return_value=gene_lines,
-    )
-
-    # GIVEN that genes present in the database
-    client.post(f"{endpoints.LOAD_GENES}{build}")
-
+    # GIVEN a populated demo database
     # WHEN sending a request to the "genes" endpoint with a list of HGNC symbols
     data = {
         "build": build,
         "hgnc_symbols": genes_per_build[build]["hgnc_symbols"],
     }
-    response: Response = client.post(endpoints.GENES, json=data)
+    response: Response = demo_client.post(endpoints.GENES, json=data)
     # THEN the expected number of genes should be returned
     assert response.status_code == status.HTTP_200_OK
     result = response.json()

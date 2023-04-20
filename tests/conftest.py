@@ -1,5 +1,4 @@
 from enum import Enum
-from enum import Enum
 from pathlib import PosixPath
 from typing import Dict, List, Tuple
 
@@ -67,25 +66,10 @@ class Endpoints(str, Enum):
     EXONS = "/intervals/exons/"
 
 
-class Helpers:
-    @staticmethod
-    def session_commit_item(session, item):
-        """Creates a database item and refreshes the session."""
-        session.add(item)
-        session.commit()
-        session.refresh(item)
-
-
 @pytest.fixture
 def endpoints() -> Endpoints:
     """returns an instance of the class Endpoints"""
     return Endpoints
-
-
-@pytest.fixture
-def helpers() -> Helpers:
-    """returns an instance of the class Helpers"""
-    return Helpers
 
 
 @pytest.fixture(name="test_db")
@@ -116,6 +100,28 @@ def client_fixture(session) -> TestClient:
     def _override_get_db():
         try:
             db = session
+            yield db
+        finally:
+            db.close()
+
+    app.dependency_overrides[get_session] = _override_get_db
+
+    return TestClient(app)
+
+
+@pytest.fixture(name="demo_session", scope="module")
+def demo_session_fixture() -> TestClient:
+    """Returns an object of type sqlalchemy.orm.session.sessionmaker containing demo data."""
+    return next(get_session())
+
+
+@pytest.fixture(name="demo_client", scope="module")
+def demo_client_fixture(demo_session) -> TestClient:
+    """Returns a fastapi.testclient.TestClient used to test the endpoints of an app with a populated demo database."""
+
+    def _override_get_db():
+        try:
+            db = demo_session
             yield db
         finally:
             db.close()
