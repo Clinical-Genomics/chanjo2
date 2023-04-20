@@ -198,7 +198,7 @@ def test_load_genes(
     )
 
     # GIVEN a number of genes contained in the demo file
-    nr_genes = len(list(resource_lines(path))) - 1
+    nr_genes: int = len(list(resource_lines(path))) - 1
 
     # WHEN sending a request to the load_genes with genome build
     response: Response = client.post(f"{endpoints.LOAD_GENES}{build}")
