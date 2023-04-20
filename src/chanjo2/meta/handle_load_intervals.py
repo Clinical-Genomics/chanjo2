@@ -34,19 +34,15 @@ MAX_NR_OF_RECORDS = 10_000
 END_OF_PARSED_FILE = "End of resource file"
 
 
-def read_resource_lines(url: str) -> Iterator[str]:
-    """Returns lines of a remote resource file."""
+def read_resource_lines(build: Builds, interval_type: IntervalType) -> Iterator[str]:
+    """Returns lines of a remote Ensembl Biomart resource (genes, transcripts or exons) in a given genome build."""
 
-    resp: requests.models.responses = requests.get(url, stream=True)
-    return resp.iter_lines(decode_unicode=True)
-
-
-def _get_ensembl_resource_url(build: Builds, interval_type: IntervalType) -> str:
-    """Return the URL to download genes using the Ensembl Biomart."""
     shug_client: EnsemblBiomartClient = ENSEMBL_RESOURCE_CLIENT[interval_type](
         build=SchugBuild(build)
     )
-    return shug_client.build_url(xml=shug_client.xml)
+    url: str = shug_client.build_url(xml=shug_client.xml)
+    response: requests.models.responses = requests.get(url, stream=True)
+    return response.iter_lines(decode_unicode=True)
 
 
 def _replace_empty_cols(line: str, nr_expected_columns: int) -> List[Union[str, None]]:
@@ -64,10 +60,9 @@ async def update_genes(
 
     LOG.info(f"Loading gene intervals. Genome build --> {build}")
     if lines is None:
-        url: str = _get_ensembl_resource_url(
+        lines: Iterator[str] = read_resource_lines(
             build=build, interval_type=IntervalType.GENES
         )
-        lines: Iterator[str] = read_resource_lines(url=url)
 
     header = next(lines).split("\t")
     if header != GENES_FILE_HEADER[build]:
@@ -118,10 +113,9 @@ async def update_transcripts(
     LOG.info(f"Loading transcript intervals. Genome build --> {build}")
 
     if lines is None:
-        url: str = _get_ensembl_resource_url(
+        lines: Iterator[str] = read_resource_lines(
             build=build, interval_type=IntervalType.TRANSCRIPTS
         )
-        lines: Iterator[str] = read_resource_lines(url=url)
 
     header = next(lines).split("\t")
     if header != TRANSCRIPTS_FILE_HEADER[build]:
@@ -180,10 +174,9 @@ async def update_exons(
     LOG.info(f"Loading exon intervals. Genome build --> {build}")
 
     if lines is None:
-        url: str = _get_ensembl_resource_url(
+        lines: Iterator[str] = read_resource_lines(
             build=build, interval_type=IntervalType.EXONS
         )
-        lines: Iterator[str] = read_resource_lines(url=url)
 
     header = next(lines).split("\t")
     if header != EXONS_FILE_HEADER[build]:
