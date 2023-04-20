@@ -1,13 +1,11 @@
 from pathlib import PosixPath
 from typing import Dict, Type
 
-from chanjo2.models.pydantic_models import WRONG_COVERAGE_FILE_MSG, Sample, validators
-from chanjo2.models.sql_models import Case as SQLCase
-from chanjo2.models.sql_models import Sample as SQLSample
+from chanjo2.models.pydantic_models import WRONG_COVERAGE_FILE_MSG, Sample
+from chanjo2.populate_demo import DEMO_CASE, DEMO_SAMPLE
 from fastapi import status
 from fastapi.testclient import TestClient
 from pytest_mock.plugin import MockerFixture
-from sqlalchemy.orm import sessionmaker
 
 
 def test_create_sample_for_case_no_local_coverage_file(
@@ -87,7 +85,7 @@ def test_create_sample_for_case_local_coverage_file(
     """Test the function that creates a new sample for a case with a local coverage file."""
 
     # GIVEN a case that exists in the database:
-    saved_case = client.post(endpoints.CASES, json=raw_case).json()
+    client.post(endpoints.CASES, json=raw_case).json()
 
     # GIVEN a json-like object containing the new sample data:
     raw_sample["coverage_file_path"] = str(coverage_path)
@@ -118,7 +116,7 @@ def test_create_sample_for_case_remote_coverage_file(
     mocker.patch("validators.url", return_value=True)
 
     # GIVEN a case that exists in the database:
-    saved_case = client.post(endpoints.CASES, json=raw_case).json()
+    client.post(endpoints.CASES, json=raw_case).json()
 
     # GIVEN a json-like object containing the new sample data:
     raw_sample["coverage_file_path"] = remote_coverage_file
@@ -135,23 +133,14 @@ def test_create_sample_for_case_remote_coverage_file(
 
 
 def test_read_samples(
-    client: TestClient,
-    session: sessionmaker,
-    db_case: SQLCase,
-    db_sample: SQLSample,
+    demo_client: TestClient,
     endpoints: Type,
-    helpers: Type,
 ):
     """Test endpoint that returns all samples present in the database."""
 
-    # GIVEN a case object saved in the database
-    helpers.session_commit_item(session, db_case)
-
-    # Which contains a sample
-    helpers.session_commit_item(session, db_sample)
-
+    # GIVEN a populated demo database
     # THEN the read_samples endpoint should return the sample in the right format
-    response = client.get(endpoints.SAMPLES)
+    response = demo_client.get(endpoints.SAMPLES)
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
     assert len(result) == 1
@@ -159,48 +148,30 @@ def test_read_samples(
 
 
 def test_read_samples_for_case(
-    session: sessionmaker,
-    client: TestClient,
-    db_case: SQLCase,
-    db_sample: SQLSample,
+    demo_client: TestClient,
     endpoints: Type,
-    helpers: Type,
 ):
     """Test the endpoint that returns all samples for a given case name."""
 
-    # GIVEN a case object saved in the database
-    helpers.session_commit_item(session, db_case)
-
-    # Which contains a sample
-    helpers.session_commit_item(session, db_sample)
-
+    # GIVEN a populated demo database
     # THEN the read_samples_for_case endpoint should return the sample
-    url = f"/{db_case.name}{endpoints.SAMPLES}"
-    response = client.get(url)
+    url = f"/{DEMO_CASE['name']}{endpoints.SAMPLES}"
+    response = demo_client.get(url)
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
     assert Sample(**result[0])
 
 
 def test_read_sample(
-    session: sessionmaker,
-    client: TestClient,
-    db_case: SQLCase,
-    db_sample: SQLSample,
+    demo_client: TestClient,
     endpoints: Type,
-    helpers: Type,
 ):
     """Test the endpoint that returns a single sample when providing its name."""
 
-    # GIVEN a case object saved in the database
-    helpers.session_commit_item(session, db_case)
-
-    # Which contains a sample
-    helpers.session_commit_item(session, db_sample)
-
+    # GIVEN a populated demo database
     # THEN the read_sample endpoint should return the sample
-    url = f"{endpoints.SAMPLES}{db_sample.name}"
-    response = client.get(url)
+    url = f"{endpoints.SAMPLES}{DEMO_SAMPLE['name']}"
+    response = demo_client.get(url)
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
     assert Sample(**result)

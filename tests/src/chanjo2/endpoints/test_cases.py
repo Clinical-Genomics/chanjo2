@@ -1,10 +1,9 @@
 from typing import Dict, Type
 
 from chanjo2.models.pydantic_models import Case
-from chanjo2.models.sql_models import Case as SQLCase
+from chanjo2.populate_demo import DEMO_CASE
 from fastapi import status
 from fastapi.testclient import TestClient
-from sqlalchemy.orm import sessionmaker
 
 
 def test_create_case(client: TestClient, raw_case: Dict[str, str], endpoints: Type):
@@ -25,19 +24,14 @@ def test_create_case(client: TestClient, raw_case: Dict[str, str], endpoints: Ty
 
 
 def test_read_cases(
-    client: TestClient,
-    session: sessionmaker,
-    db_case: SQLCase,
+    demo_client: TestClient,
     endpoints: Type,
-    helpers: Type,
 ):
     """Test the endpoint returning all cases found in the database."""
 
-    # GIVEN a case object saved in the database
-    helpers.session_commit_item(session, db_case)
-
+    # GIVEN a populated database
     # THEN the read_cases endpoint should return the case
-    response = client.get(endpoints.CASES)
+    response = demo_client.get(endpoints.CASES)
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
     assert len(result) == 1
@@ -45,19 +39,14 @@ def test_read_cases(
 
 
 def test_read_case(
-    client: TestClient,
-    session: sessionmaker,
-    db_case: SQLCase,
+    demo_client: TestClient,
     endpoints: Type,
-    helpers: Type,
 ):
     """Test the endpoint that returns a specific case."""
 
-    # GIVEN a case object saved in the database
-    helpers.session_commit_item(session, db_case)
-
+    # GIVEN a populated database
     # WHEN sending a GET request to retrieve the specific case using its name
-    response = client.get(f"{endpoints.CASES}{db_case.name}")
+    response = demo_client.get(f"{endpoints.CASES}{DEMO_CASE['name']}")
 
     # THEN it should  return success
     assert response.status_code == status.HTTP_200_OK
