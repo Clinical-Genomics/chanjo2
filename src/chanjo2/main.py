@@ -4,7 +4,7 @@ import os
 import uvicorn
 from chanjo2 import __version__
 from chanjo2.dbutil import engine
-from chanjo2.endpoints import cases, intervals, samples
+from chanjo2.endpoints import cases, intervals, samples, coverage
 from chanjo2.models.sql_models import Base
 from chanjo2.populate_demo import load_demo_data
 from fastapi import FastAPI, status
@@ -21,6 +21,12 @@ app = FastAPI()
 app.include_router(
     intervals.router,
     tags=["intervals"],
+    responses={status.HTTP_404_NOT_FOUND: {"description": "Not found"}},
+)
+
+app.include_router(
+    coverage.router,
+    tags=["coverage"],
     responses={status.HTTP_404_NOT_FOUND: {"description": "Not found"}},
 )
 
