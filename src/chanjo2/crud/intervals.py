@@ -55,7 +55,7 @@ def _filter_intervals_by_hgnc_ids(
     intervals: query.Query,
     interval_type: Union[SQLGene, SQLTranscript, SQLExon],
     hgnc_ids: List[int],
-) -> List[Union[SQLGene, SQLTranscript, SQLExon]]:
+) -> query.Query:
     """Filter intervals using a list of HGNC IDs."""
     return intervals.filter(interval_type.hgnc_id.in_(hgnc_ids))
 
@@ -73,7 +73,7 @@ def _filter_intervals_by_build(
     intervals: query.Query,
     interval_type: Union[SQLGene, SQLTranscript, SQLExon],
     build: Builds,
-) -> List[Union[SQLGene, SQLTranscript, SQLExon]]:
+) -> query.Query:
     """Filter intervals by genome build."""
     return intervals.filter(interval_type.build == build)
 
