@@ -47,7 +47,7 @@ def test_load_demo_data(demo_client: TestClient, demo_session: sessionmaker):
             assert isinstance(transcripts[0], Transcript)
 
             # database should contain exons
-            exons: List[Transcripts] = get_gene_intervals(
+            exons: List[Exon] = get_gene_intervals(
                 db=demo_session,
                 build=build,
                 ensembl_ids=None,
