@@ -93,12 +93,8 @@ class GeneQuery(BaseModel):
     limit: Optional[int] = 100
 
 
-class TranscriptQuery(GeneQuery):
+class GeneIntervalQuery(GeneQuery):
     ensembl_gene_ids: Optional[List[str]]
-
-
-class ExonQuery(TranscriptQuery):
-    pass
 
 
 class Gene(IntervalBase):

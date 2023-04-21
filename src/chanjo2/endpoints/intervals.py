@@ -26,8 +26,7 @@ from chanjo2.models.pydantic_models import (
     Gene,
     Transcript,
     GeneQuery,
-    TranscriptQuery,
-    ExonQuery,
+    GeneIntervalQuery,
 )
 from chanjo2.models.sql_models import Exon as SQLExon
 from chanjo2.models.sql_models import Transcript as SQLTranscript
@@ -169,7 +168,7 @@ async def load_transcripts(
 
 @router.post("/intervals/transcripts")
 async def transcripts(
-    query: TranscriptQuery, session: Session = Depends(get_session)
+    query: GeneIntervalQuery, session: Session = Depends(get_session)
 ) -> List[Transcript]:
     """Return transcripts according to query parameters."""
     nr_filters = count_nr_filters(
@@ -218,7 +217,7 @@ async def load_exons(
 
 @router.post("/intervals/exons")
 async def exons(
-    query: ExonQuery, session: Session = Depends(get_session)
+    query: GeneIntervalQuery, session: Session = Depends(get_session)
 ) -> List[Exon]:
     """Return exons in the given genome build."""
     nr_filters = count_nr_filters(
