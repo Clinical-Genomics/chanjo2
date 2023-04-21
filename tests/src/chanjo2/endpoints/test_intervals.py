@@ -355,7 +355,7 @@ def test_transcripts_multiple_filters(
     endpoints: Type,
     genomic_ids_per_build: Dict[str, List],
 ):
-    """Test filtering transcript intervals providing more than one filter.."""
+    """Test filtering transcript intervals providing more than one filter."""
 
     # GIVEN a query to "transcripts" enspoind with genome build and more than one ID:
     data = {
