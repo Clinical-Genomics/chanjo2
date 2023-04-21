@@ -123,7 +123,7 @@ async def genes(
 ) -> List[Gene]:
     """Return genes according to query parameters."""
     nr_filters = count_nr_filters(
-        [query.ensembl_ids, query.hgnc_ids, query.hgnc_symbols]
+       filters=[query.ensembl_ids, query.hgnc_ids, query.hgnc_symbols]
     )
     if nr_filters > 1:
         raise HTTPException(
