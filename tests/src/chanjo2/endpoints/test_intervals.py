@@ -224,7 +224,7 @@ def test_genes_multiple_filters(
     endpoints: Type,
     genomic_ids_per_build: Dict[str, List],
 ):
-    """Test filtering gene intervals providing more than one filter"""
+    """Test filtering gene intervals providing more than one filter."""
 
     # GIVEN a query with genome build and more than one gene ID:
     data = {
