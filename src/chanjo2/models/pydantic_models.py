@@ -97,6 +97,10 @@ class TranscriptQuery(GeneQuery):
     ensembl_gene_ids: Optional[List[str]]
 
 
+class ExonQuery(GeneQuery):
+    ensembl_transcript_id: Optional[List[str]]
+
+
 class Gene(IntervalBase):
     id: int
 

@@ -27,6 +27,7 @@ from chanjo2.models.pydantic_models import (
     Transcript,
     GeneQuery,
     TranscriptQuery,
+    ExonQuery,
 )
 from fastapi import APIRouter, Depends, File, HTTPException, Response, status
 from fastapi.responses import JSONResponse
@@ -212,9 +213,9 @@ async def load_exons(
         )
 
 
-@router.get("/intervals/exons/{build}")
+@router.post("/intervals/exons")
 async def exons(
-    build: Builds, session: Session = Depends(get_session), limit: int = 100
+    query: ExonQuery, session: Session = Depends(get_session)
 ) -> List[Exon]:
     """Return exons in the given genome build."""
-    return get_exons(db=session, build=build, limit=limit)
+    return get_exons(db=session, build=query.build, limit=query.limit)

@@ -489,7 +489,7 @@ def test_load_exons(
     assert response.json()["detail"] == f"{nr_exons} exons loaded into the database"
 
     # WHEN sending a request to the "exons" endpoint
-    response: Response = client.get(f"{endpoints.EXONS}{build}")
+    response: Response = client.post(endpoints.EXONS, json={"build": build})
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
     # THEN the expected number of exons should be returned
