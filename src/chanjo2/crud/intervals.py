@@ -64,7 +64,7 @@ def _filter_intervals_by_hgnc_symbols(
     intervals: query.Query,
     interval_type: Union[SQLGene, SQLTranscript, SQLExon],
     hgnc_symbols: List[str],
-) -> List[Union[SQLGene, SQLTranscript, SQLExon]]:
+) -> query.Query:
     """Filter intervals using a list of HGNC symbols."""
     return intervals.filter(interval_type.hgnc_symbol.in_(hgnc_symbols))
 
