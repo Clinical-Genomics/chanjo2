@@ -5,7 +5,7 @@ from chanjo2.models.sql_models import Case as SQLCase
 from sqlalchemy.orm import Session, query
 
 
-def filter_cases_by_name(cases: query.Query, case_name: str, **kwargs) -> SQLCase:
+def filter_cases_by_name(cases: query.Query, case_name: str) -> SQLCase:
     """Filter cases by case name."""
     return cases.filter(SQLCase.name == case_name).first()
 
