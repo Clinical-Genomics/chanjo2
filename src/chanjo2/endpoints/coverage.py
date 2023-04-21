@@ -29,7 +29,7 @@ def d4_interval_coverage(
     )
     try:
         d4_file: D4File = set_d4_file(coverage_file_path)
-    except:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=WRONG_COVERAGE_FILE_MSG,
@@ -50,7 +50,7 @@ def d4_intervals_coverage(coverage_file_path: str, bed_file: bytes = File(...)):
 
     try:
         d4_file: D4File = set_d4_file(coverage_file_path=coverage_file_path)
-    except:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=WRONG_COVERAGE_FILE_MSG,
@@ -60,7 +60,7 @@ def d4_intervals_coverage(coverage_file_path: str, bed_file: bytes = File(...)):
         intervals: List[Tuple[str, Optional[int], Optional[int]]] = parse_bed(
             bed_file=bed_file
         )
-    except:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=WRONG_BED_FILE_MSG,
