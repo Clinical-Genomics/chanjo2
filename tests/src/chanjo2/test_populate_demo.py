@@ -35,7 +35,13 @@ def test_load_demo_data(demo_client: TestClient, demo_session: sessionmaker):
 
             # database should contain transcripts
             transcripts: List[Transcripts] = get_transcripts(
-                db=demo_session, build=build, limit=1
+                db=demo_session,
+                build=build,
+                ensembl_ids=None,
+                hgnc_ids=None,
+                hgnc_symbols=None,
+                ensembl_gene_ids=None,
+                limit=1,
             )
             assert isinstance(transcripts[0], Transcript)
 

@@ -25,7 +25,8 @@ from chanjo2.models.pydantic_models import (
     Exon,
     Gene,
     Transcript,
-    IntervalQuery,
+    GeneQuery,
+    TranscriptQuery,
 )
 from fastapi import APIRouter, Depends, File, HTTPException, Response, status
 from fastapi.responses import JSONResponse
@@ -33,6 +34,11 @@ from pyd4 import D4File
 from sqlmodel import Session
 
 router = APIRouter()
+
+
+def count_nr_filters(filters: List[str]) -> int:
+    """Count the items in a query list that aren't null."""
+    return sum(filter is not None for filter in filters)
 
 
 @router.get("/intervals/coverage/d4/interval/", response_model=CoverageInterval)
@@ -113,12 +119,11 @@ async def load_genes(
 
 @router.post("/intervals/genes")
 async def genes(
-    query: IntervalQuery, session: Session = Depends(get_session)
+    query: GeneQuery, session: Session = Depends(get_session)
 ) -> List[Gene]:
     """Return genes according to query parameters."""
-    nr_filters: int = sum(
-        param is not None
-        for param in [query.ensembl_ids, query.hgnc_ids, query.hgnc_symbols]
+    nr_filters = count_nr_filters(
+        filters=[query.ensembl_ids, query.hgnc_ids, query.hgnc_symbols]
     )
     if nr_filters > 1:
         raise HTTPException(
@@ -159,12 +164,33 @@ async def load_transcripts(
         )
 
 
-@router.get("/intervals/transcripts/{build}")
+@router.post("/intervals/transcripts")
 async def transcripts(
-    build: Builds, session: Session = Depends(get_session), limit: int = 100
+    query: TranscriptQuery, session: Session = Depends(get_session)
 ) -> List[Transcript]:
-    """Return transcripts in the given genome build."""
-    return get_transcripts(db=session, build=build, limit=limit)
+    """Return transcripts according to query parameters."""
+    nr_filters = count_nr_filters(
+        filters=[
+            query.ensembl_ids,
+            query.hgnc_ids,
+            query.hgnc_symbols,
+            query.ensembl_gene_ids,
+        ]
+    )
+    if nr_filters > 1:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=MULTIPLE_PARAMS_NOT_SUPPORTED_MSG,
+        )
+    return get_transcripts(
+        db=session,
+        build=query.build,
+        ensembl_ids=query.ensembl_ids,
+        hgnc_ids=query.hgnc_ids,
+        hgnc_symbols=query.hgnc_symbols,
+        ensembl_gene_ids=query.ensembl_gene_ids,
+        limit=query.limit if nr_filters == 0 else None,
+    )
 
 
 @router.post("/intervals/load/exons/{build}")

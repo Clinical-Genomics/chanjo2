@@ -22,15 +22,27 @@ COVERAGE_FILE = "a_file.d4"
 BED_FILE = "a_file.bed"
 REMOTE_COVERAGE_FILE = "https://a_remote_host/a_file.d4"
 CONTENT: str = "content"
-GENE_LISTS_37 = {
+GENE_LISTS_37: Dict[str, List] = {
     "ensembl_ids": ["ENSG00000233440", "ENSG00000207157", "ENSG00000196593"],
     "hgnc_ids": [19121, 42488, 42737],
     "hgnc_symbols": ["HMGA1P6", "RNY3P4", "ANKRD20A19P"],
 }
-GENE_LISTS_38 = {
+GENE_LISTS_38: Dict[str, List] = {
     "ensembl_ids": ["ENSG00000160072", "ENSG00000142611", "ENSG00000171729"],
     "hgnc_ids": [24007, 14000, 25488],
     "hgnc_symbols": ["ATAD3B", "PRDM16", "TMEM51"],
+}
+TRANSCRIPT_LISTS_37: Dict[str, List] = {
+    "ensembl_ids": ["ENST00000418454", "ENST00000384428", "ENST00000414345"],
+    "ensembl_gene_ids": GENE_LISTS_37["ensembl_ids"],
+    "hgnc_ids": GENE_LISTS_37["hgnc_ids"],
+    "hgnc_symbols": GENE_LISTS_37["hgnc_symbols"],
+}
+TRANSCRIPT_LISTS_38: Dict[str, List] = {
+    "ensembl_ids": ["ENST00000673477", "ENST00000378391", "ENST00000270722"],
+    "ensembl_gene_ids": GENE_LISTS_38["ensembl_ids"],
+    "hgnc_ids": GENE_LISTS_38["hgnc_ids"],
+    "hgnc_symbols": GENE_LISTS_38["hgnc_symbols"],
 }
 
 engine = create_engine(TEST_DB, connect_args=DEMO_CONNECT_ARGS)
@@ -47,7 +59,7 @@ class Endpoints(str, Enum):
     LOAD_GENES = "/intervals/load/genes/"
     GENES = "/intervals/genes"
     LOAD_TRANSCRIPTS = "/intervals/load/transcripts/"
-    TRANSCRIPTS = "/intervals/transcripts/"
+    TRANSCRIPTS = "/intervals/transcripts"
     INTERVAL_COVERAGE = "/intervals/coverage/d4/interval/"
     INTERVALS_FILE_COVERAGE = "/intervals/coverage/d4/interval_file/"
     LOAD_EXONS = "/intervals/load/exons/"
@@ -97,13 +109,13 @@ def client_fixture(session) -> TestClient:
     return TestClient(app)
 
 
-@pytest.fixture(name="demo_session", scope="module")
+@pytest.fixture(name="demo_session", scope="function")
 def demo_session_fixture() -> TestClient:
     """Returns an object of type sqlalchemy.orm.session.sessionmaker containing demo data."""
     return next(get_session())
 
 
-@pytest.fixture(name="demo_client", scope="module")
+@pytest.fixture(name="demo_client", scope="function")
 def demo_client_fixture(demo_session) -> TestClient:
     """Returns a fastapi.testclient.TestClient used to test the endpoints of an app with a populated demo database."""
 
@@ -225,3 +237,9 @@ def real_d4_query(real_coverage_path) -> Dict[str, str]:
 def genes_per_build() -> Dict[str, List]:
     """Return a dict containing lists with test genes in different build specific formats."""
     return {BUILD_37: GENE_LISTS_37, BUILD_38: GENE_LISTS_38}
+
+
+@pytest.fixture(name="transcripts_per_build")
+def transcripts_per_build() -> Dict[str, List]:
+    """Return a dict containing lists with test transcripts in different build specific formats."""
+    return {BUILD_37: TRANSCRIPT_LISTS_37, BUILD_38: TRANSCRIPT_LISTS_38}
