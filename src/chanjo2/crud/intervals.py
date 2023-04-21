@@ -199,7 +199,7 @@ def get_transcripts(
             intervals=genes, interval_type=SQLGene, hgnc_symbols=hgnc_symbols
         ).all()
     if hgnc_ids or hgnc_symbols:
-        ensembl_gene_ids = [gene.ensembl_id for gene in genes]
+        ensembl_gene_ids: List[str] = [gene.ensembl_id for gene in genes]
 
     if ensembl_ids:
         transcripts: query.Query = _filter_intervals_by_ensembl_ids(
