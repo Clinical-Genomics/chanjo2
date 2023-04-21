@@ -143,7 +143,7 @@ def get_transcript_from_ensembl_id(
     )
 
 
-def create_db_transcript(db: Session, transcript: TranscriptBase) -> SQLTranscript:
+def create_db_transcript(transcript: TranscriptBase) -> SQLTranscript:
     """Create and return a SQL transcript object."""
 
     return SQLTranscript(
@@ -164,10 +164,7 @@ def create_db_transcript(db: Session, transcript: TranscriptBase) -> SQLTranscri
 def bulk_insert_transcripts(db: Session, transcripts: List[TranscriptBase]):
     """Bulk insert transcripts into the database."""
     db.bulk_save_objects(
-        [
-            create_db_transcript(db=db, transcript=transcript)
-            for transcript in transcripts
-        ]
+        [create_db_transcript(transcript=transcript) for transcript in transcripts]
     )
     db.commit()
 
@@ -218,7 +215,7 @@ def get_gene_intervals(
     return intervals.all()
 
 
-def create_db_exon(db: Session, exon: ExonBase) -> SQLExon:
+def create_db_exon(exon: ExonBase) -> SQLExon:
     """Create and return a SQL exon object."""
 
     return SQLExon(
@@ -233,5 +230,5 @@ def create_db_exon(db: Session, exon: ExonBase) -> SQLExon:
 
 def bulk_insert_exons(db: Session, exons: List[ExonBase]) -> None:
     """Bulk insert exons into the database."""
-    db.bulk_save_objects([create_db_exon(db=db, exon=exon) for exon in exons])
+    db.bulk_save_objects([create_db_exon(exon=exon) for exon in exons])
     db.commit()
