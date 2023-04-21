@@ -46,7 +46,7 @@ def _filter_intervals_by_ensembl_gene_ids(
     intervals: query.Query,
     interval_type: Union[SQLGene, SQLTranscript, SQLExon],
     ensembl_gene_ids: List[str],
-) -> List[Union[SQLGene, SQLTranscript, SQLExon]]:
+) -> query.Query:
     """Filter intervals using a list of Ensembl gene IDs."""
     return intervals.filter(interval_type.ensembl_gene_id.in_(ensembl_gene_ids))
 
