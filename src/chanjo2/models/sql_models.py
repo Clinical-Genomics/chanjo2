@@ -1,6 +1,6 @@
 from chanjo2.dbutil import Base
 from chanjo2.models.pydantic_models import Builds
-from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, String, Table
+from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -73,9 +73,6 @@ class Transcript(Base):
     refseq_ncrna = Column(String(24), nullable=True, index=False)
     refseq_mane_select = Column(String(24), nullable=True, index=True)
     refseq_mane_plus_clinical = Column(String(24), nullable=True, index=True)
-    ensembl_gene_ref = Column(
-        Integer, ForeignKey("genes.id"), nullable=True, index=True
-    )
     ensembl_gene_id = Column(String(24), nullable=False, index=True)
     build = Column(
         Enum(Builds, values_callable=lambda x: Builds.get_enum_values()), index=True
@@ -92,12 +89,6 @@ class Exon(Base):
     stop = Column(Integer, nullable=False)
     ensembl_id = Column(String(24), nullable=False, index=False)
     ensembl_gene_id = Column(String(24), nullable=False, index=True)
-    ensembl_transcript_ref = Column(
-        Integer, ForeignKey("transcripts.id"), nullable=True, index=True
-    )
-    ensembl_gene_ref = Column(
-        Integer, ForeignKey("genes.id"), nullable=True, index=True
-    )
     build = Column(
         Enum(Builds, values_callable=lambda x: Builds.get_enum_values()), index=True
     )
