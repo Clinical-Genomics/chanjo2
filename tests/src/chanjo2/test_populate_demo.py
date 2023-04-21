@@ -1,5 +1,5 @@
 from chanjo2.crud.cases import get_cases
-from chanjo2.crud.intervals import get_genes, get_transcripts, get_exons
+from chanjo2.crud.intervals import get_genes, get_gene_intervals
 from chanjo2.crud.samples import get_samples
 from chanjo2.models.pydantic_models import Builds
 from chanjo2.models.sql_models import Case, Sample, Gene, Transcript, Exon
@@ -34,7 +34,7 @@ def test_load_demo_data(demo_client: TestClient, demo_session: sessionmaker):
             assert isinstance(genes[0], Gene)
 
             # database should contain transcripts
-            transcripts: List[Transcripts] = get_transcripts(
+            transcripts: List[Transcripts] = get_gene_intervals(
                 db=demo_session,
                 build=build,
                 ensembl_ids=None,
@@ -42,9 +42,19 @@ def test_load_demo_data(demo_client: TestClient, demo_session: sessionmaker):
                 hgnc_symbols=None,
                 ensembl_gene_ids=None,
                 limit=1,
+                interval_type=Transcript,
             )
             assert isinstance(transcripts[0], Transcript)
 
             # database should contain exons
-            exons: List[exons] = get_exons(db=demo_session, build=build, limit=1)
+            exons: List[Transcripts] = get_gene_intervals(
+                db=demo_session,
+                build=build,
+                ensembl_ids=None,
+                hgnc_ids=None,
+                hgnc_symbols=None,
+                ensembl_gene_ids=None,
+                limit=1,
+                interval_type=Exon,
+            )
             assert isinstance(exons[0], Exon)

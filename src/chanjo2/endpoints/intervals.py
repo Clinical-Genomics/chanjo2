@@ -5,7 +5,7 @@ from chanjo2.constants import (
     WRONG_COVERAGE_FILE_MSG,
     MULTIPLE_PARAMS_NOT_SUPPORTED_MSG,
 )
-from chanjo2.crud.intervals import get_exons, get_genes, get_transcripts
+from chanjo2.crud.intervals import get_genes, get_gene_intervals
 from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import parse_bed
 from chanjo2.meta.handle_d4 import (
@@ -29,6 +29,8 @@ from chanjo2.models.pydantic_models import (
     TranscriptQuery,
     ExonQuery,
 )
+from chanjo2.models.sql_models import Exon as SQLExon
+from chanjo2.models.sql_models import Transcript as SQLTranscript
 from fastapi import APIRouter, Depends, File, HTTPException, Response, status
 from fastapi.responses import JSONResponse
 from pyd4 import D4File
@@ -183,7 +185,7 @@ async def transcripts(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=MULTIPLE_PARAMS_NOT_SUPPORTED_MSG,
         )
-    return get_transcripts(
+    return get_gene_intervals(
         db=session,
         build=query.build,
         ensembl_ids=query.ensembl_ids,
@@ -191,6 +193,7 @@ async def transcripts(
         hgnc_symbols=query.hgnc_symbols,
         ensembl_gene_ids=query.ensembl_gene_ids,
         limit=query.limit if nr_filters == 0 else None,
+        interval_type=SQLTranscript,
     )
 
 
@@ -218,4 +221,26 @@ async def exons(
     query: ExonQuery, session: Session = Depends(get_session)
 ) -> List[Exon]:
     """Return exons in the given genome build."""
-    return get_exons(db=session, build=query.build, limit=query.limit)
+    nr_filters = count_nr_filters(
+        filters=[
+            query.ensembl_ids,
+            query.hgnc_ids,
+            query.hgnc_symbols,
+            query.ensembl_gene_ids,
+        ]
+    )
+    if nr_filters > 1:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=MULTIPLE_PARAMS_NOT_SUPPORTED_MSG,
+        )
+    return get_gene_intervals(
+        db=session,
+        build=query.build,
+        ensembl_ids=query.ensembl_ids,
+        hgnc_ids=query.hgnc_ids,
+        hgnc_symbols=query.hgnc_symbols,
+        ensembl_gene_ids=query.ensembl_gene_ids,
+        limit=query.limit if nr_filters == 0 else None,
+        interval_type=SQLExon,
+    )
