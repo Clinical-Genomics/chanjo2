@@ -146,16 +146,11 @@ def get_transcript_from_ensembl_id(
 def create_db_transcript(db: Session, transcript: TranscriptBase) -> SQLTranscript:
     """Create and return a SQL transcript object."""
 
-    ensembl_gene: SQLGene = get_gene_from_ensembl_id(
-        db=db, ensembl_id=transcript.ensembl_gene_id
-    )
-
     return SQLTranscript(
         chromosome=transcript.chromosome,
         start=transcript.start,
         stop=transcript.stop,
         ensembl_id=transcript.ensembl_id,
-        ensembl_gene_ref=ensembl_gene.id if ensembl_gene else None,
         ensembl_gene_id=transcript.ensembl_gene_id,
         refseq_mrna=transcript.refseq_mrna,
         refseq_mrna_pred=transcript.refseq_mrna_pred,
@@ -193,11 +188,11 @@ def get_gene_intervals(
     genes = db.query(SQLGene)
     if hgnc_ids:
         genes: query.Query = _filter_intervals_by_hgnc_ids(
-            intervals=genes, interval_type=interval_type, hgnc_ids=hgnc_ids
+            intervals=genes, interval_type=SQLGene, hgnc_ids=hgnc_ids
         ).all()
     elif hgnc_symbols:
         genes: query.Query = _filter_intervals_by_hgnc_symbols(
-            intervals=genes, interval_type=interval_type, hgnc_symbols=hgnc_symbols
+            intervals=genes, interval_type=SQLGene, hgnc_symbols=hgnc_symbols
         ).all()
     if hgnc_ids or hgnc_symbols:
         ensembl_gene_ids: List[str] = [gene.ensembl_id for gene in genes]
@@ -226,21 +221,12 @@ def get_gene_intervals(
 def create_db_exon(db: Session, exon: ExonBase) -> SQLExon:
     """Create and return a SQL exon object."""
 
-    ensembl_gene: SQLGene = get_gene_from_ensembl_id(
-        db=db, ensembl_id=exon.ensembl_gene_id
-    )
-    ensembl_transcript: SQLTranscript = get_transcript_from_ensembl_id(
-        db=db, ensembl_id=exon.ensembl_transcript_id
-    )
-
     return SQLExon(
         chromosome=exon.chromosome,
         start=exon.start,
         stop=exon.stop,
         ensembl_id=exon.ensembl_id,
         ensembl_gene_id=exon.ensembl_gene_id,
-        ensembl_gene_ref=ensembl_gene.id if ensembl_gene else None,
-        ensembl_transcript_ref=ensembl_transcript.id if ensembl_transcript else None,
         build=exon.build,
     )
 
