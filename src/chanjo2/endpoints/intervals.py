@@ -170,7 +170,12 @@ async def transcripts(
 ) -> List[Transcript]:
     """Return transcripts according to query parameters."""
     nr_filters = count_nr_filters(
-        [query.ensembl_ids, query.hgnc_ids, query.hgnc_symbols, query.ensembl_gene_ids]
+        filters=[
+            query.ensembl_ids,
+            query.hgnc_ids,
+            query.hgnc_symbols,
+            query.ensembl_gene_ids,
+        ]
     )
     if nr_filters > 1:
         raise HTTPException(
