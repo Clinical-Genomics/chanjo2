@@ -38,7 +38,7 @@ router = APIRouter()
 
 def count_nr_filters(filters: List[str]) -> int:
     """Count the items in a query list that aren't null."""
-    return sum(param is not None for param in params)
+    return sum(filter is not None for filter in filters)
 
 
 @router.get("/intervals/coverage/d4/interval/", response_model=CoverageInterval)
@@ -123,7 +123,7 @@ async def genes(
 ) -> List[Gene]:
     """Return genes according to query parameters."""
     nr_filters = count_nr_filters(
-       filters=[query.ensembl_ids, query.hgnc_ids, query.hgnc_symbols]
+        filters=[query.ensembl_ids, query.hgnc_ids, query.hgnc_symbols]
     )
     if nr_filters > 1:
         raise HTTPException(
