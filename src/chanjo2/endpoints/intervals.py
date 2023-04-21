@@ -36,7 +36,7 @@ from sqlmodel import Session
 router = APIRouter()
 
 
-def count_nr_filters(params: List[str]) -> int:
+def count_nr_filters(filters: List[str]) -> int:
     """Count the items in a query list that aren't null."""
     return sum(param is not None for param in params)
 
