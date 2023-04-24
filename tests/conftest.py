@@ -52,10 +52,10 @@ class Endpoints(str, Enum):
     GENES = "/intervals/genes"
     LOAD_TRANSCRIPTS = "/intervals/load/transcripts/"
     TRANSCRIPTS = "/intervals/transcripts"
-    INTERVAL_COVERAGE = "/intervals/coverage/d4/interval/"
-    INTERVALS_FILE_COVERAGE = "/intervals/coverage/d4/interval_file/"
     LOAD_EXONS = "/intervals/load/exons/"
     EXONS = "/intervals/exons"
+    INTERVAL_COVERAGE = "/coverage/d4/interval/"
+    INTERVALS_FILE_COVERAGE = "/coverage/d4/interval_file/"
 
 
 @pytest.fixture
