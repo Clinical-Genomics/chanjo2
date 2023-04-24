@@ -218,16 +218,19 @@ def test_load_genes(
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
-def test_genes_by_multiple_ids(
-    build: str, client: TestClient, endpoints: Type, genes_per_build: Dict[str, List]
+def test_genes_multiple_filters(
+    build: str,
+    client: TestClient,
+    endpoints: Type,
+    genomic_ids_per_build: Dict[str, List],
 ):
-    """Test filtering gene intervals providing more than one arg list"""
+    """Test filtering gene intervals providing more than one filter."""
 
     # GIVEN a query with genome build and more than one gene ID:
     data = {
         "build": build,
-        "ensembl_ids": genes_per_build[build]["ensembl_ids"],
-        "hgnc_ids": genes_per_build[build]["hgnc_ids"],
+        "ensembl_ids": genomic_ids_per_build[build]["ensembl_gene_ids"],
+        "hgnc_ids": genomic_ids_per_build[build]["hgnc_ids"],
     }
     # WHEN sending a POST request to the genes endpoint with the query params above
     response: Response = client.post(endpoints.GENES, json=data)
@@ -242,7 +245,7 @@ def test_genes_by_ensembl_ids(
     build: str,
     demo_client: TestClient,
     endpoints: Type,
-    genes_per_build: Dict[str, List],
+    genomic_ids_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database genes using a list of ensembl IDs."""
 
@@ -250,13 +253,13 @@ def test_genes_by_ensembl_ids(
     # WHEN sending a request to the "genes" endpoint with a list of Ensembl IDs
     data = {
         "build": build,
-        "ensembl_ids": genes_per_build[build]["ensembl_ids"],
+        "ensembl_ids": genomic_ids_per_build[build]["ensembl_gene_ids"],
     }
     response: Response = demo_client.post(endpoints.GENES, json=data)
     # THEN the expected number of genes should be returned
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
-    assert len(result) == len(genes_per_build[build]["ensembl_ids"])
+    assert len(result) == len(genomic_ids_per_build[build]["ensembl_gene_ids"])
     assert Gene(**result[0])
 
 
@@ -265,7 +268,7 @@ def test_genes_by_hgnc_ids(
     build: str,
     demo_client: TestClient,
     endpoints: Type,
-    genes_per_build: Dict[str, List],
+    genomic_ids_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database genes using a list of HGNC IDs."""
 
@@ -273,13 +276,13 @@ def test_genes_by_hgnc_ids(
     # WHEN sending a request to the "genes" endpoint with a list of HGNC ids
     data = {
         "build": build,
-        "hgnc_ids": genes_per_build[build]["hgnc_ids"],
+        "hgnc_ids": genomic_ids_per_build[build]["hgnc_ids"],
     }
     response: Response = demo_client.post(endpoints.GENES, json=data)
     # THEN the expected number of genes should be returned
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
-    assert len(result) == len(genes_per_build[build]["hgnc_ids"])
+    assert len(result) == len(genomic_ids_per_build[build]["hgnc_ids"])
     assert Gene(**result[0])
 
 
@@ -288,7 +291,7 @@ def test_genes_by_hgnc_symbols(
     build: str,
     demo_client: TestClient,
     endpoints: Type,
-    genes_per_build: Dict[str, List],
+    genomic_ids_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database genes using a list of HGNC symbols."""
 
@@ -296,13 +299,13 @@ def test_genes_by_hgnc_symbols(
     # WHEN sending a request to the "genes" endpoint with a list of HGNC symbols
     data = {
         "build": build,
-        "hgnc_symbols": genes_per_build[build]["hgnc_symbols"],
+        "hgnc_symbols": genomic_ids_per_build[build]["hgnc_symbols"],
     }
     response: Response = demo_client.post(endpoints.GENES, json=data)
     # THEN the expected number of genes should be returned
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
-    assert len(result) == len(genes_per_build[build]["hgnc_symbols"])
+    assert len(result) == len(genomic_ids_per_build[build]["hgnc_symbols"])
     assert Gene(**result[0])
 
 
@@ -346,19 +349,19 @@ def test_load_transcripts(
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
-def test_transcripts_by_multiple_ids(
+def test_transcripts_multiple_filters(
     build: str,
     client: TestClient,
     endpoints: Type,
-    transcripts_per_build: Dict[str, List],
+    genomic_ids_per_build: Dict[str, List],
 ):
-    """Test filtering transcript intervals providing more than one arg list."""
+    """Test filtering transcript intervals providing more than one filter."""
 
-    # GIVEN a query to "transcripts" enspoint with genome build and more than one ID:
+    # GIVEN a query to "transcripts" enspoind with genome build and more than one ID:
     data = {
         "build": build,
-        "ensembl_ids": transcripts_per_build[build]["ensembl_ids"],
-        "ensembl_gene_ids": transcripts_per_build[build]["ensembl_gene_ids"],
+        "ensembl_ids": genomic_ids_per_build[build]["ensembl_transcript_ids"],
+        "ensembl_gene_ids": genomic_ids_per_build[build]["ensembl_gene_ids"],
     }
     # WHEN sending a POST request to the transcripts endpoint with the query params above
     response: Response = client.post(endpoints.TRANSCRIPTS, json=data)
@@ -373,7 +376,7 @@ def test_transcripts_by_ensembl_ids(
     build: str,
     demo_client: TestClient,
     endpoints: Type,
-    transcripts_per_build: Dict[str, List],
+    genomic_ids_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database transcripts using a list of Ensembl IDs."""
 
@@ -381,7 +384,7 @@ def test_transcripts_by_ensembl_ids(
     # WHEN sending a request to the "transcripts" endpoint with a list of Ensembl IDs
     data = {
         "build": build,
-        "ensembl_ids": transcripts_per_build[build]["ensembl_ids"],
+        "ensembl_ids": genomic_ids_per_build[build]["ensembl_transcript_ids"],
     }
     response: Response = demo_client.post(endpoints.TRANSCRIPTS, json=data)
 
@@ -396,7 +399,7 @@ def test_transcripts_by_ensembl_gene_ids(
     build: str,
     demo_client: TestClient,
     endpoints: Type,
-    transcripts_per_build: Dict[str, List],
+    genomic_ids_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database transcripts using a list of Ensembl gene IDs."""
 
@@ -404,7 +407,7 @@ def test_transcripts_by_ensembl_gene_ids(
     # WHEN sending a request to the "transcripts" endpoint with a list of Ensembl gene IDs
     data = {
         "build": build,
-        "ensembl_gene_ids": transcripts_per_build[build]["ensembl_gene_ids"],
+        "ensembl_gene_ids": genomic_ids_per_build[build]["ensembl_gene_ids"],
     }
     response: Response = demo_client.post(endpoints.TRANSCRIPTS, json=data)
 
@@ -419,7 +422,7 @@ def test_transcripts_by_hgnc_ids(
     build: str,
     demo_client: TestClient,
     endpoints: Type,
-    transcripts_per_build: Dict[str, List],
+    genomic_ids_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database transcripts using a list of HGNC gene IDs."""
 
@@ -427,7 +430,7 @@ def test_transcripts_by_hgnc_ids(
     # WHEN sending a request to the "transcripts" endpoint with a list of HGNC gene IDs
     data = {
         "build": build,
-        "hgnc_gene_ids": transcripts_per_build[build]["hgnc_ids"],
+        "hgnc_gene_ids": genomic_ids_per_build[build]["hgnc_ids"],
     }
     response: Response = demo_client.post(endpoints.TRANSCRIPTS, json=data)
 
@@ -442,7 +445,7 @@ def test_transcripts_by_hgnc_symbols(
     build: str,
     demo_client: TestClient,
     endpoints: Type,
-    transcripts_per_build: Dict[str, List],
+    genomic_ids_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database transcripts using a list of HGNC gene symbols."""
 
@@ -450,7 +453,7 @@ def test_transcripts_by_hgnc_symbols(
     # WHEN sending a request to the "transcripts" endpoint with a list of HGNC gene symbols
     data = {
         "build": build,
-        "hgnc_gene_symbols": transcripts_per_build[build]["hgnc_symbols"],
+        "hgnc_gene_symbols": genomic_ids_per_build[build]["hgnc_symbols"],
     }
     response: Response = demo_client.post(endpoints.TRANSCRIPTS, json=data)
 
@@ -489,10 +492,125 @@ def test_load_exons(
     assert response.json()["detail"] == f"{nr_exons} exons loaded into the database"
 
     # WHEN sending a request to the "exons" endpoint
-    response: Response = client.get(f"{endpoints.EXONS}{build}")
+    response: Response = client.post(endpoints.EXONS, json={"build": build})
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
     # THEN the expected number of exons should be returned
     assert len(result) == nr_exons
     # AND the exons should have the right format
+    assert Exon(**result[0])
+
+
+@pytest.mark.parametrize("build", Builds.get_enum_values())
+def test_exons_multiple_filters(
+    build: str,
+    client: TestClient,
+    endpoints: Type,
+    genomic_ids_per_build: Dict[str, List],
+):
+    """Test filtering exon intervals providing more than one filter."""
+
+    # GIVEN a query to "exons" enspoint with genome build and more than one ID:
+    data = {
+        "build": build,
+        "ensembl_ids": genomic_ids_per_build[build]["ensembl_exons_ids"],
+        "ensembl_gene_ids": genomic_ids_per_build[build]["ensembl_gene_ids"],
+    }
+    # WHEN sending a POST request to the exons endpoint with the query params above
+    response: Response = client.post(endpoints.EXONS, json=data)
+    # THEN it should return HTTP 400 error
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    result = response.json()
+    assert result["detail"] == MULTIPLE_PARAMS_NOT_SUPPORTED_MSG
+
+
+@pytest.mark.parametrize("build", Builds.get_enum_values())
+def test_exons_by_ensembl_ids(
+    build: str,
+    demo_client: TestClient,
+    endpoints: Type,
+    genomic_ids_per_build: Dict[str, List],
+):
+    """Test the endpoint that filters database exons using a list of Ensembl IDs."""
+
+    # GIVEN a populated demo database
+    # WHEN sending a request to the "exons" endpoint with a list of Ensembl IDs
+    data = {
+        "build": build,
+        "ensembl_ids": genomic_ids_per_build[build]["ensembl_exons_ids"],
+    }
+    response: Response = demo_client.post(endpoints.EXONS, json=data)
+
+    # THEN exon documents should be returned
+    assert response.status_code == status.HTTP_200_OK
+    result = response.json()
+    assert Exon(**result[0])
+
+
+@pytest.mark.parametrize("build", Builds.get_enum_values())
+def test_exons_by_ensembl_gene_ids(
+    build: str,
+    demo_client: TestClient,
+    endpoints: Type,
+    genomic_ids_per_build: Dict[str, List],
+):
+    """Test the endpoint that filters database exons using a list of Ensembl gene IDs."""
+
+    # GIVEN a populated demo database
+    # WHEN sending a request to the "exons" endpoint with a list of Ensembl gene IDs
+    data = {
+        "build": build,
+        "ensembl_gene_ids": genomic_ids_per_build[build]["ensembl_gene_ids"],
+    }
+    response: Response = demo_client.post(endpoints.EXONS, json=data)
+
+    # THEN exons documents should be returned
+    assert response.status_code == status.HTTP_200_OK
+    result = response.json()
+    assert Exon(**result[0])
+
+
+@pytest.mark.parametrize("build", Builds.get_enum_values())
+def test_exons_by_hgnc_ids(
+    build: str,
+    demo_client: TestClient,
+    endpoints: Type,
+    genomic_ids_per_build: Dict[str, List],
+):
+    """Test the endpoint that filters database exons using a list of HGNC gene IDs."""
+
+    # GIVEN a populated demo database
+    # WHEN sending a request to the "exons" endpoint with a list of HGNC gene IDs
+    data = {
+        "build": build,
+        "hgnc_gene_ids": genomic_ids_per_build[build]["hgnc_ids"],
+    }
+    response: Response = demo_client.post(endpoints.EXONS, json=data)
+
+    # THEN exon documents should be returned
+    assert response.status_code == status.HTTP_200_OK
+    result = response.json()
+    assert Exon(**result[0])
+
+
+@pytest.mark.parametrize("build", Builds.get_enum_values())
+def test_exons_by_hgnc_symbols(
+    build: str,
+    demo_client: TestClient,
+    endpoints: Type,
+    genomic_ids_per_build: Dict[str, List],
+):
+    """Test the endpoint that filters database exons using a list of HGNC gene symbols."""
+
+    # GIVEN a populated demo database
+    # WHEN sending a request to the "exons" endpoint with a list of HGNC gene symbols
+    data = {
+        "build": build,
+        "hgnc_gene_symbols": genomic_ids_per_build[build]["hgnc_symbols"],
+    }
+    response: Response = demo_client.post(endpoints.EXONS, json=data)
+
+    # THEN transcript documents should be returned
+    assert response.status_code == status.HTTP_200_OK
+    result = response.json()
     assert Exon(**result[0])

@@ -22,27 +22,19 @@ COVERAGE_FILE = "a_file.d4"
 BED_FILE = "a_file.bed"
 REMOTE_COVERAGE_FILE = "https://a_remote_host/a_file.d4"
 CONTENT: str = "content"
-GENE_LISTS_37: Dict[str, List] = {
-    "ensembl_ids": ["ENSG00000233440", "ENSG00000207157", "ENSG00000196593"],
+GENOMIC_IDS_37: Dict[str, List] = {
+    "ensembl_exons_ids": ["ENSE00001799379", "ENSE00001499436", "ENSE00001676225"],
+    "ensembl_transcript_ids": ["ENST00000418454", "ENST00000384428", "ENST00000414345"],
+    "ensembl_gene_ids": ["ENSG00000233440", "ENSG00000207157", "ENSG00000196593"],
     "hgnc_ids": [19121, 42488, 42737],
     "hgnc_symbols": ["HMGA1P6", "RNY3P4", "ANKRD20A19P"],
 }
-GENE_LISTS_38: Dict[str, List] = {
-    "ensembl_ids": ["ENSG00000160072", "ENSG00000142611", "ENSG00000171729"],
+GENOMIC_IDS_38: Dict[str, List] = {
+    "ensembl_exons_ids": ["ENSE00003889014", "ENSE00003689846", "ENSE00003510521"],
+    "ensembl_transcript_ids": ["ENST00000673477", "ENST00000378391", "ENST00000270722"],
+    "ensembl_gene_ids": ["ENSG00000160072", "ENSG00000142611", "ENSG00000171729"],
     "hgnc_ids": [24007, 14000, 25488],
     "hgnc_symbols": ["ATAD3B", "PRDM16", "TMEM51"],
-}
-TRANSCRIPT_LISTS_37: Dict[str, List] = {
-    "ensembl_ids": ["ENST00000418454", "ENST00000384428", "ENST00000414345"],
-    "ensembl_gene_ids": GENE_LISTS_37["ensembl_ids"],
-    "hgnc_ids": GENE_LISTS_37["hgnc_ids"],
-    "hgnc_symbols": GENE_LISTS_37["hgnc_symbols"],
-}
-TRANSCRIPT_LISTS_38: Dict[str, List] = {
-    "ensembl_ids": ["ENST00000673477", "ENST00000378391", "ENST00000270722"],
-    "ensembl_gene_ids": GENE_LISTS_38["ensembl_ids"],
-    "hgnc_ids": GENE_LISTS_38["hgnc_ids"],
-    "hgnc_symbols": GENE_LISTS_38["hgnc_symbols"],
 }
 
 engine = create_engine(TEST_DB, connect_args=DEMO_CONNECT_ARGS)
@@ -61,7 +53,7 @@ class Endpoints(str, Enum):
     LOAD_TRANSCRIPTS = "/intervals/load/transcripts/"
     TRANSCRIPTS = "/intervals/transcripts"
     LOAD_EXONS = "/intervals/load/exons/"
-    EXONS = "/intervals/exons/"
+    EXONS = "/intervals/exons"
     INTERVAL_COVERAGE = "/coverage/d4/interval/"
     INTERVALS_FILE_COVERAGE = "/coverage/d4/interval_file/"
 
@@ -233,13 +225,7 @@ def real_d4_query(real_coverage_path) -> Dict[str, str]:
     }
 
 
-@pytest.fixture(name="genes_per_build")
-def genes_per_build() -> Dict[str, List]:
+@pytest.fixture(name="genomic_ids_per_build")
+def genomic_ids_per_build() -> Dict[str, List]:
     """Return a dict containing lists with test genes in different build specific formats."""
-    return {BUILD_37: GENE_LISTS_37, BUILD_38: GENE_LISTS_38}
-
-
-@pytest.fixture(name="transcripts_per_build")
-def transcripts_per_build() -> Dict[str, List]:
-    """Return a dict containing lists with test transcripts in different build specific formats."""
-    return {BUILD_37: TRANSCRIPT_LISTS_37, BUILD_38: TRANSCRIPT_LISTS_38}
+    return {BUILD_37: GENOMIC_IDS_37, BUILD_38: GENOMIC_IDS_38}

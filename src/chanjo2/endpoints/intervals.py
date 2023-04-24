@@ -3,7 +3,7 @@ from typing import List, Union
 from chanjo2.constants import (
     MULTIPLE_PARAMS_NOT_SUPPORTED_MSG,
 )
-from chanjo2.crud.intervals import get_exons, get_genes, get_transcripts
+from chanjo2.crud.intervals import get_genes, get_gene_intervals
 from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_load_intervals import (
     update_exons,
@@ -16,8 +16,10 @@ from chanjo2.models.pydantic_models import (
     Gene,
     Transcript,
     GeneQuery,
-    TranscriptQuery,
+    GeneIntervalQuery,
 )
+from chanjo2.models.sql_models import Exon as SQLExon
+from chanjo2.models.sql_models import Transcript as SQLTranscript
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from fastapi.responses import JSONResponse
 from sqlmodel import Session
@@ -98,7 +100,7 @@ async def load_transcripts(
 
 @router.post("/intervals/transcripts")
 async def transcripts(
-    query: TranscriptQuery, session: Session = Depends(get_session)
+    query: GeneIntervalQuery, session: Session = Depends(get_session)
 ) -> List[Transcript]:
     """Return transcripts according to query parameters."""
     nr_filters = count_nr_filters(
@@ -114,7 +116,7 @@ async def transcripts(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=MULTIPLE_PARAMS_NOT_SUPPORTED_MSG,
         )
-    return get_transcripts(
+    return get_gene_intervals(
         db=session,
         build=query.build,
         ensembl_ids=query.ensembl_ids,
@@ -122,6 +124,7 @@ async def transcripts(
         hgnc_symbols=query.hgnc_symbols,
         ensembl_gene_ids=query.ensembl_gene_ids,
         limit=query.limit if nr_filters == 0 else None,
+        interval_type=SQLTranscript,
     )
 
 
@@ -144,9 +147,31 @@ async def load_exons(
         )
 
 
-@router.get("/intervals/exons/{build}")
+@router.post("/intervals/exons")
 async def exons(
-    build: Builds, session: Session = Depends(get_session), limit: int = 100
+    query: GeneIntervalQuery, session: Session = Depends(get_session)
 ) -> List[Exon]:
     """Return exons in the given genome build."""
-    return get_exons(db=session, build=build, limit=limit)
+    nr_filters = count_nr_filters(
+        filters=[
+            query.ensembl_ids,
+            query.hgnc_ids,
+            query.hgnc_symbols,
+            query.ensembl_gene_ids,
+        ]
+    )
+    if nr_filters > 1:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=MULTIPLE_PARAMS_NOT_SUPPORTED_MSG,
+        )
+    return get_gene_intervals(
+        db=session,
+        build=query.build,
+        ensembl_ids=query.ensembl_ids,
+        hgnc_ids=query.hgnc_ids,
+        hgnc_symbols=query.hgnc_symbols,
+        ensembl_gene_ids=query.ensembl_gene_ids,
+        limit=query.limit if nr_filters == 0 else None,
+        interval_type=SQLExon,
+    )

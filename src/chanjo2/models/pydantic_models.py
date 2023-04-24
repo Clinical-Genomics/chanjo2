@@ -93,7 +93,7 @@ class GeneQuery(BaseModel):
     limit: Optional[int] = 100
 
 
-class TranscriptQuery(GeneQuery):
+class GeneIntervalQuery(GeneQuery):
     ensembl_gene_ids: Optional[List[str]]
 
 
@@ -102,8 +102,8 @@ class Gene(IntervalBase):
 
 
 class TranscriptBase(IntervalBase):
-    ensembl_gene_id: str
     ensembl_id: str
+    ensembl_gene_id: str
     refseq_mrna: Optional[str]
     refseq_mrna_pred: Optional[str]
     refseq_ncrna: Optional[str]
@@ -114,10 +114,10 @@ class TranscriptBase(IntervalBase):
 
 class Transcript(TranscriptBase):
     id: int
-    ensembl_gene_ref: Optional[int]
 
 
 class ExonBase(IntervalBase):
+    ensembl_id: str
     ensembl_gene_id: str
     ensembl_transcript_id: str
     ensembl_id: str
@@ -126,10 +126,6 @@ class ExonBase(IntervalBase):
 
 class Exon(IntervalBase):
     id: int
-    ensembl_id: str
-    ensembl_gene_ref: Optional[int]
-    ensembl_transcript_ref: Optional[int]
-    build: Builds
 
 
 class CoverageInterval(BaseModel):
