@@ -98,6 +98,7 @@ async def update_genes(
 
         except Exception as ex:
             LOG.error(ex)
+            return
 
     bulk_insert_genes(db=session, genes=genes_bulk)  # Load the remaining genes
 
