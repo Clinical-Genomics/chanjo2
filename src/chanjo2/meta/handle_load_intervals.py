@@ -176,7 +176,7 @@ async def update_transcripts(
 
 async def update_exons(
     build: Builds, session: Session, lines: Optional[Iterator] = None
-) -> Union[int, None]:
+) -> Optional[int]:
     """Loads exons into the database."""
 
     LOG.info(f"Loading exon intervals. Genome build --> {build}")
