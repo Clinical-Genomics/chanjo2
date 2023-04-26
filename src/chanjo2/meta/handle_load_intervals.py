@@ -54,7 +54,7 @@ def _replace_empty_cols(line: str, nr_expected_columns: int) -> List[Union[str, 
 
 
 async def update_genes(
-        build: Builds, session: Session, lines: Optional[Iterator] = None
+    build: Builds, session: Session, lines: Optional[Iterator] = None
 ) -> int:
     """Loads genes into the database."""
 
@@ -107,7 +107,7 @@ async def update_genes(
 
 
 async def update_transcripts(
-        build: Builds, session: Session, lines: Optional[Iterator] = None
+    build: Builds, session: Session, lines: Optional[Iterator] = None
 ) -> int:
     """Loads transcripts into the database."""
 
@@ -168,7 +168,7 @@ async def update_transcripts(
 
 
 async def update_exons(
-        build: Builds, session: Session, lines: Optional[Iterator] = None
+    build: Builds, session: Session, lines: Optional[Iterator] = None
 ) -> int:
     """Loads exons into the database."""
 
