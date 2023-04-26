@@ -54,7 +54,7 @@ def _replace_empty_cols(line: str, nr_expected_columns: int) -> List[Union[str, 
 
 
 async def update_genes(
-    build: Builds, session: Session, lines: Optional[Iterator] = None
+        build: Builds, session: Session, lines: Optional[Iterator] = None
 ) -> int:
     """Loads genes into the database."""
 
@@ -70,7 +70,8 @@ async def update_genes(
             f"Ensembl genes file has an unexpected format:{header}. Expected format: {GENES_FILE_HEADER[build]}"
         )
 
-    delete_intervals_for_build(db=session, interval_type=SQLGene, build=build)
+    for interval_type in [SQLExon, SQLTranscript, SQLGene]:
+        delete_intervals_for_build(db=session, interval_type=interval_type, build=build)
 
     genes_bulk: List[SQLGene] = []
 
@@ -106,7 +107,7 @@ async def update_genes(
 
 
 async def update_transcripts(
-    build: Builds, session: Session, lines: Optional[Iterator] = None
+        build: Builds, session: Session, lines: Optional[Iterator] = None
 ) -> int:
     """Loads transcripts into the database."""
 
@@ -167,7 +168,7 @@ async def update_transcripts(
 
 
 async def update_exons(
-    build: Builds, session: Session, lines: Optional[Iterator] = None
+        build: Builds, session: Session, lines: Optional[Iterator] = None
 ) -> int:
     """Loads exons into the database."""
 
