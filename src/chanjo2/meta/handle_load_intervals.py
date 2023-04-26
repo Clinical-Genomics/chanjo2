@@ -31,7 +31,7 @@ from sqlmodel import Session
 
 LOG = logging.getLogger("uvicorn.access")
 MAX_NR_OF_RECORDS = 10_000
-END_OF_PARSED_FILE = "[success]"
+END_OF_PARSED_FILE: str = "[success]"
 
 
 def read_resource_lines(build: Builds, interval_type: IntervalType) -> Iterator[str]:
