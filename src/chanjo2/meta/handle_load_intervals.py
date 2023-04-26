@@ -31,7 +31,7 @@ from sqlmodel import Session
 
 LOG = logging.getLogger("uvicorn.access")
 MAX_NR_OF_RECORDS = 10_000
-END_OF_PARSED_FILE = "End of resource file"
+END_OF_PARSED_FILE = "[success]"
 
 
 def read_resource_lines(build: Builds, interval_type: IntervalType) -> Iterator[str]:
@@ -75,6 +75,9 @@ async def update_genes(
     genes_bulk: List[SQLGene] = []
 
     for line in lines:
+        if line == END_OF_PARSED_FILE:
+            break
+
         items: List = _replace_empty_cols(line=line, nr_expected_columns=len(header))
 
         try:
@@ -93,8 +96,8 @@ async def update_genes(
                 bulk_insert_genes(db=session, genes=genes_bulk)
                 genes_bulk = []
 
-        except Exception:
-            LOG.info(END_OF_PARSED_FILE)
+        except Exception as ex:
+            LOG.error(ex)
 
     bulk_insert_genes(db=session, genes=genes_bulk)  # Load the remaining genes
 
@@ -128,6 +131,9 @@ async def update_transcripts(
     transcripts_bulk: List[TranscriptBase] = []
 
     for line in lines:
+        if line == END_OF_PARSED_FILE:
+            break
+
         items: List = _replace_empty_cols(line=line, nr_expected_columns=len(header))
 
         try:
@@ -152,8 +158,9 @@ async def update_transcripts(
                 bulk_insert_transcripts(db=session, transcripts=transcripts_bulk)
                 transcripts_bulk = []
 
-        except Exception:
-            LOG.info(END_OF_PARSED_FILE)
+        except Exception as ex:
+            LOG.error(ex)
+            return
 
     bulk_insert_transcripts(
         db=session, transcripts=transcripts_bulk
@@ -189,6 +196,9 @@ async def update_exons(
     exons_bulk: List[ExonBase] = []
 
     for line in lines:
+        if line == END_OF_PARSED_FILE:
+            break
+
         items: List = _replace_empty_cols(line=line, nr_expected_columns=len(header))
 
         try:
@@ -208,8 +218,9 @@ async def update_exons(
                 bulk_insert_exons(db=session, exons=exons_bulk)
                 exons_bulk = []
 
-        except Exception:
-            LOG.info(END_OF_PARSED_FILE)
+        except Exception as ex:
+            LOG.error(ex)
+            return
 
     bulk_insert_exons(db=session, exons=exons_bulk)  # Load the remaining exons
 

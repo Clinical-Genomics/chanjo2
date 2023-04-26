@@ -53,7 +53,7 @@ class Gene(Base):
     stop = Column(Integer, nullable=False)
     ensembl_id = Column(String(24), nullable=False, index=True)
     hgnc_id = Column(Integer, nullable=True, index=True)
-    hgnc_symbol = Column(String(24), nullable=True, index=True)
+    hgnc_symbol = Column(String(64), nullable=True, index=True)
     build = Column(
         Enum(Builds, values_callable=lambda x: Builds.get_enum_values()), index=True
     )
