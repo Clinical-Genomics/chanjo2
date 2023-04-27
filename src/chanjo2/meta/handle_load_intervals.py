@@ -70,7 +70,8 @@ async def update_genes(
             f"Ensembl genes file has an unexpected format:{header}. Expected format: {GENES_FILE_HEADER[build]}"
         )
 
-    delete_intervals_for_build(db=session, interval_type=SQLGene, build=build)
+    for interval_type in [SQLExon, SQLTranscript, SQLGene]:
+        delete_intervals_for_build(db=session, interval_type=interval_type, build=build)
 
     genes_bulk: List[SQLGene] = []
 

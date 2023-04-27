@@ -18,7 +18,7 @@
 - Demo case and demo sample loaded with demo instance startup
 - Endpoint for coverage queries over the intervals of a BED file
 - Include a default .env file loaded on app startup
-- Filter genes by Ensemble id, HGNC id, HGNC symbol
+- Filter genes, transcripts and exons by Ensemble id, HGNC id, HGNC symbol
 - Demo genes, transcripts and exons loaded on demo instance startup
 
 ### Fixed
@@ -29,6 +29,7 @@
 - Add VARCHAR length to sample.coverage_file_path SQL field
 - Format of Build field in genes, transcripts and exons tables
 - Increased size of allowed HGNC symbols in the MySQL gene model
+- Remove old exons and transcripts data when updating genes
 
 ### Changed
 
