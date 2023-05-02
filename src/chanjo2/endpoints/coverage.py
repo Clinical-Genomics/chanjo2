@@ -107,4 +107,4 @@ async def sample_genes_coverage(
         limit=None,
     )
 
-    return genes_coverage(d4_file=d4_file, genes=genes, sample=sample)
+    return genes_coverage(d4_file=d4_file, genes=genes)

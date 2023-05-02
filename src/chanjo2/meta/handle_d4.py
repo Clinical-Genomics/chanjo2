@@ -43,7 +43,7 @@ def intervals_coverage(
 
 
 def genes_coverage(d4_file: D4File, genes: List[SQLGene]) -> List[CoverageInterval]:
-    """Return coverage over a list of genes for a sample."""
+    """Return coverage over a list of genes."""
     genes_cov: List[CoverageInterval] = []
     for gene in genes:
         genes_cov.append(
