@@ -5,7 +5,12 @@ from sqlalchemy import delete
 from sqlalchemy.orm import Session, query
 from sqlalchemy.sql.expression import Delete
 
-from chanjo2.models.pydantic_models import Builds, ExonBase, GeneBase, TranscriptBase
+from chanjo2.models.pydantic_models import (
+    Builds,
+    ExonBase,
+    GeneBase,
+    TranscriptBase,
+)
 from chanjo2.models.sql_models import Exon as SQLExon
 from chanjo2.models.sql_models import Gene as SQLGene
 from chanjo2.models.sql_models import Transcript as SQLTranscript
@@ -99,7 +104,7 @@ def get_genes(
     ensembl_ids: Optional[List[str]],
     hgnc_ids: Optional[List[int]],
     hgnc_symbols: Optional[List[str]],
-    limit: Optional[int] = 100,
+    limit: Optional[int],
 ) -> List[SQLGene]:
     """Return genes according to specified fields."""
     genes: query.Query = db.query(SQLGene)
