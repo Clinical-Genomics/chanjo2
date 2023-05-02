@@ -141,8 +141,8 @@ class CoverageInterval(BaseModel):
 
 
 class SampleGeneQuery(BaseModel):
-    sample_name: str
     build: Builds
     ensembl_ids: Optional[List[str]]
     hgnc_ids: Optional[List[int]]
     hgnc_symbols: Optional[List[str]]
+    sample_name: str
