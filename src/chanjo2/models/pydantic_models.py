@@ -4,8 +4,9 @@ from pathlib import Path
 from typing import Any, List, Optional
 
 import validators
-from chanjo2.constants import WRONG_COVERAGE_FILE_MSG
 from pydantic import BaseModel, validator
+
+from chanjo2.constants import WRONG_COVERAGE_FILE_MSG
 
 
 class Builds(str, Enum):
@@ -129,10 +130,19 @@ class Exon(IntervalBase):
 
 
 class CoverageInterval(BaseModel):
+    ensembl_gene_id: Optional[str]
+    hgnc_id: Optional[int]
+    hgnc_symbol: Optional[str]
     chromosome: str
     start: Optional[int]
     end: Optional[int]
-    individual_id: Optional[int]
     interval_id: Optional[int]
-    case_id: Optional[int]
     mean_coverage: float
+
+
+class SampleGeneQuery(BaseModel):
+    build: Builds
+    ensembl_ids: Optional[List[str]]
+    hgnc_ids: Optional[List[int]]
+    hgnc_symbols: Optional[List[str]]
+    sample_name: str

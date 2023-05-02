@@ -1,7 +1,9 @@
 from typing import List, Optional, Tuple
 
-from chanjo2.models.pydantic_models import CoverageInterval
 from pyd4 import D4File
+
+from chanjo2.models.pydantic_models import CoverageInterval
+from chanjo2.models.sql_models import Gene as SQLGene
 
 
 def set_interval(
@@ -38,3 +40,21 @@ def intervals_coverage(
             )
         )
     return intervals_cov
+
+
+def genes_coverage(d4_file: D4File, genes: List[SQLGene]) -> List[CoverageInterval]:
+    """Return coverage over a list of genes."""
+    genes_cov: List[CoverageInterval] = []
+    for gene in genes:
+        genes_cov.append(
+            CoverageInterval(
+                ensembl_gene_id=gene.ensembl_id,
+                hgnc_id=gene.hgnc_id,
+                hgnc_symbol=gene.hgnc_symbol,
+                chromosome=gene.chromosome,
+                start=gene.start,
+                end=gene.stop,
+                mean_coverage=d4_file.mean((gene.chromosome, gene.start, gene.stop)),
+            )
+        )
+    return genes_cov

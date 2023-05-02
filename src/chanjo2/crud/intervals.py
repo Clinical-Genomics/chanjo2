@@ -1,6 +1,10 @@
 import logging
 from typing import List, Optional, Union
 
+from sqlalchemy import delete
+from sqlalchemy.orm import Session, query
+from sqlalchemy.sql.expression import Delete
+
 from chanjo2.models.pydantic_models import (
     Builds,
     ExonBase,
@@ -10,9 +14,6 @@ from chanjo2.models.pydantic_models import (
 from chanjo2.models.sql_models import Exon as SQLExon
 from chanjo2.models.sql_models import Gene as SQLGene
 from chanjo2.models.sql_models import Transcript as SQLTranscript
-from sqlalchemy import delete
-from sqlalchemy.orm import Session, query
-from sqlalchemy.sql.expression import Delete
 
 LOG = logging.getLogger("uvicorn.access")
 

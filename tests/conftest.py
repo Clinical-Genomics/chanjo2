@@ -3,15 +3,16 @@ from pathlib import PosixPath
 from typing import Dict, List, Tuple
 
 import pytest
+from fastapi.testclient import TestClient
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
 from chanjo2.constants import BUILD_38, BUILD_37
 from chanjo2.dbutil import DEMO_CONNECT_ARGS, get_session
 from chanjo2.demo import d4_demo_path, gene_panel_path
 from chanjo2.main import Base, app, engine
 from chanjo2.meta.handle_bed import parse_bed
 from chanjo2.models import sql_models
-from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 
 TEST_DB = "sqlite:///./test.db"
 CASE_NAME = "123"
@@ -56,6 +57,7 @@ class Endpoints(str, Enum):
     EXONS = "/intervals/exons"
     INTERVAL_COVERAGE = "/coverage/d4/interval/"
     INTERVALS_FILE_COVERAGE = "/coverage/d4/interval_file/"
+    INTERVALS_SAMPLE_COVERAGE = "/coverage/sample/genes_coverage"
 
 
 @pytest.fixture

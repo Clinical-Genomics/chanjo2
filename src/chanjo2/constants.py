@@ -3,6 +3,7 @@ from typing import Callable, Dict, List
 from schug.load.ensembl import fetch_ensembl_exon_lines as fetch_ensembl_exons
 from schug.load.ensembl import fetch_ensembl_genes, fetch_ensembl_transcripts
 
+SAMPLE_NOT_FOUND: str = "Sample not present in the database"
 WRONG_COVERAGE_FILE_MSG: str = (
     "Coverage_file_path must be either an existing local file path or a URL"
 )
