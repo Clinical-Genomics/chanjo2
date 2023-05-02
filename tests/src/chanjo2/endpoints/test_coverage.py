@@ -1,16 +1,23 @@
 from pathlib import PosixPath
-from typing import Type, Dict
+from typing import Type, Dict, List
 
+import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
 
 from chanjo2.constants import WRONG_COVERAGE_FILE_MSG, WRONG_BED_FILE_MSG
 from chanjo2.demo import gene_panel_file, gene_panel_path
-from chanjo2.models.pydantic_models import CoverageInterval
+from chanjo2.models.pydantic_models import (
+    CoverageInterval,
+    Builds,
+    IntervalType,
+    IntervalFormat,
+)
+from chanjo2.populate_demo import DEMO_SAMPLE
 
 
 def test_d4_interval_coverage_d4_not_found(
-        client: TestClient, mock_coverage_file: str, endpoints: Type, interval_query: dict
+    client: TestClient, mock_coverage_file: str, endpoints: Type, interval_query: dict
 ):
     """Test the function that returns the coverage over an interval of a D4 file.
     Testing with a D4 file not found on disk or on a remote server."""
@@ -28,10 +35,10 @@ def test_d4_interval_coverage_d4_not_found(
 
 
 def test_d4_interval_coverage(
-        client: TestClient,
-        real_coverage_path: str,
-        endpoints: Type,
-        interval_query: dict,
+    client: TestClient,
+    real_coverage_path: str,
+    endpoints: Type,
+    interval_query: dict,
 ):
     """Test the function that returns the coverage over an interval of a D4 file."""
 
@@ -54,10 +61,7 @@ def test_d4_interval_coverage(
 
 
 def test_d4_interval_coverage_single_chromosome(
-        client: TestClient,
-        real_coverage_path: str,
-        endpoints: Type,
-        interval_query: dict,
+    client: TestClient, real_coverage_path: str, endpoints: Type, interval_query: dict
 ):
     """Test the function that returns the coverage over an entire chsomosome of a D4 file."""
 
@@ -83,7 +87,7 @@ def test_d4_interval_coverage_single_chromosome(
 
 
 def test_d4_intervals_coverage_d4_not_found(
-        mock_coverage_file: str, client: TestClient, endpoints: Type
+    mock_coverage_file: str, client: TestClient, endpoints: Type
 ):
     """Test the function that returns the coverage over multiple intervals of a D4 file.
     Testing with a D4 file not found on disk or on a remote server."""
@@ -109,11 +113,11 @@ def test_d4_intervals_coverage_d4_not_found(
 
 
 def test_d4_intervals_coverage_malformed_bed_file(
-        bed_path_malformed: PosixPath,
-        real_coverage_path: str,
-        client: TestClient,
-        endpoints: Type,
-        real_d4_query: Dict[str, str],
+    bed_path_malformed: PosixPath,
+    real_coverage_path: str,
+    client: TestClient,
+    endpoints: Type,
+    real_d4_query: Dict[str, str],
 ):
     """Test the function that returns the coverage over multiple intervals of a D4 file.
     Testing with a BED file that is not correctly formatted."""
@@ -136,10 +140,10 @@ def test_d4_intervals_coverage_malformed_bed_file(
 
 
 def test_d4_intervals_coverage(
-        real_coverage_path: str,
-        client: TestClient,
-        endpoints: Type,
-        real_d4_query: Dict[str, str],
+    real_coverage_path: str,
+    client: TestClient,
+    endpoints: Type,
+    real_d4_query: Dict[str, str],
 ):
     """Test the function that returns the coverage over multiple intervals of a D4 file."""
 
@@ -158,3 +162,27 @@ def test_d4_intervals_coverage(
     result = response.json()
     for interval in result:
         assert CoverageInterval(**interval)
+
+
+@pytest.mark.parametrize("build", Builds.get_enum_values())
+def test_sample_intervals_coverage_gens_hgnc_symbols(
+    build: str,
+    demo_client: TestClient,
+    endpoints: Type,
+    genomic_ids_per_build: Dict[str, List],
+):
+    """Test the function that returns the coverage over multiple genomic intervals (genes) of a sample."""
+
+    # GIVING a sample coverage query containing HGNC gene symbols
+    data = {
+        "sample_name": DEMO_SAMPLE["name"],
+        "interval_type": IntervalType.GENES,
+        "interval_format": IntervalFormat.HGNC_SYMBOLS,
+        "intervals": genomic_ids_per_build[build]["hgnc_symbols"],
+        "build": build,
+    }
+
+    # THEN
+    response = demo_client.post(endpoints.INTERVALS_SAMPLE_COVERAGE, json=data)
+
+    assert response.status_code == status.HTTP_200_OK

@@ -24,11 +24,11 @@ MOCKED_FILE_PARSER = "chanjo2.meta.handle_load_intervals.read_resource_lines"
 
 @pytest.mark.parametrize("build, path", BUILD_GENES_RESOURCE)
 def test_load_genes(
-        build: str,
-        path: str,
-        client: TestClient,
-        endpoints: Type,
-        mocker: MockerFixture,
+    build: str,
+    path: str,
+    client: TestClient,
+    endpoints: Type,
+    mocker: MockerFixture,
 ):
     """Test the endpoint that adds genes to the database in a given genome build."""
 
@@ -62,10 +62,10 @@ def test_load_genes(
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_genes_multiple_filters(
-        build: str,
-        client: TestClient,
-        endpoints: Type,
-        genomic_ids_per_build: Dict[str, List],
+    build: str,
+    client: TestClient,
+    endpoints: Type,
+    genomic_ids_per_build: Dict[str, List],
 ):
     """Test filtering gene intervals providing more than one filter."""
 
@@ -85,10 +85,10 @@ def test_genes_multiple_filters(
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_genes_by_ensembl_ids(
-        build: str,
-        demo_client: TestClient,
-        endpoints: Type,
-        genomic_ids_per_build: Dict[str, List],
+    build: str,
+    demo_client: TestClient,
+    endpoints: Type,
+    genomic_ids_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database genes using a list of ensembl IDs."""
 
@@ -108,10 +108,10 @@ def test_genes_by_ensembl_ids(
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_genes_by_hgnc_ids(
-        build: str,
-        demo_client: TestClient,
-        endpoints: Type,
-        genomic_ids_per_build: Dict[str, List],
+    build: str,
+    demo_client: TestClient,
+    endpoints: Type,
+    genomic_ids_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database genes using a list of HGNC IDs."""
 
@@ -131,10 +131,10 @@ def test_genes_by_hgnc_ids(
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_genes_by_hgnc_symbols(
-        build: str,
-        demo_client: TestClient,
-        endpoints: Type,
-        genomic_ids_per_build: Dict[str, List],
+    build: str,
+    demo_client: TestClient,
+    endpoints: Type,
+    genomic_ids_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database genes using a list of HGNC symbols."""
 
@@ -154,11 +154,11 @@ def test_genes_by_hgnc_symbols(
 
 @pytest.mark.parametrize("build, path", BUILD_TRANSCRIPTS_RESOURCE)
 def test_load_transcripts(
-        build: str,
-        path: str,
-        client: TestClient,
-        endpoints: Type,
-        mocker: MockerFixture,
+    build: str,
+    path: str,
+    client: TestClient,
+    endpoints: Type,
+    mocker: MockerFixture,
 ):
     """Test the endpoint that adds genes to the database in a given genome build."""
 
@@ -178,8 +178,8 @@ def test_load_transcripts(
     assert response.status_code == status.HTTP_200_OK
     # THEN all transcripts should be loaded
     assert (
-            response.json()["detail"]
-            == f"{nr_transcripts} transcripts loaded into the database"
+        response.json()["detail"]
+        == f"{nr_transcripts} transcripts loaded into the database"
     )
     # WHEN sending a request to the "transcripts" endpoint
     response: Response = client.post(f"{endpoints.TRANSCRIPTS}", json={"build": build})
@@ -193,10 +193,10 @@ def test_load_transcripts(
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_transcripts_multiple_filters(
-        build: str,
-        client: TestClient,
-        endpoints: Type,
-        genomic_ids_per_build: Dict[str, List],
+    build: str,
+    client: TestClient,
+    endpoints: Type,
+    genomic_ids_per_build: Dict[str, List],
 ):
     """Test filtering transcript intervals providing more than one filter."""
 
@@ -216,10 +216,10 @@ def test_transcripts_multiple_filters(
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_transcripts_by_ensembl_ids(
-        build: str,
-        demo_client: TestClient,
-        endpoints: Type,
-        genomic_ids_per_build: Dict[str, List],
+    build: str,
+    demo_client: TestClient,
+    endpoints: Type,
+    genomic_ids_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database transcripts using a list of Ensembl IDs."""
 
@@ -239,10 +239,10 @@ def test_transcripts_by_ensembl_ids(
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_transcripts_by_ensembl_gene_ids(
-        build: str,
-        demo_client: TestClient,
-        endpoints: Type,
-        genomic_ids_per_build: Dict[str, List],
+    build: str,
+    demo_client: TestClient,
+    endpoints: Type,
+    genomic_ids_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database transcripts using a list of Ensembl gene IDs."""
 
@@ -262,10 +262,10 @@ def test_transcripts_by_ensembl_gene_ids(
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_transcripts_by_hgnc_ids(
-        build: str,
-        demo_client: TestClient,
-        endpoints: Type,
-        genomic_ids_per_build: Dict[str, List],
+    build: str,
+    demo_client: TestClient,
+    endpoints: Type,
+    genomic_ids_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database transcripts using a list of HGNC gene IDs."""
 
@@ -285,10 +285,10 @@ def test_transcripts_by_hgnc_ids(
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_transcripts_by_hgnc_symbols(
-        build: str,
-        demo_client: TestClient,
-        endpoints: Type,
-        genomic_ids_per_build: Dict[str, List],
+    build: str,
+    demo_client: TestClient,
+    endpoints: Type,
+    genomic_ids_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database transcripts using a list of HGNC gene symbols."""
 
@@ -308,11 +308,11 @@ def test_transcripts_by_hgnc_symbols(
 
 @pytest.mark.parametrize("build, path", BUILD_EXONS_RESOURCE)
 def test_load_exons(
-        build: str,
-        path: str,
-        client: TestClient,
-        endpoints: Type,
-        mocker: MockerFixture,
+    build: str,
+    path: str,
+    client: TestClient,
+    endpoints: Type,
+    mocker: MockerFixture,
 ):
     """Test the endpoint that adds exons to the database in a given genome build."""
 
@@ -346,10 +346,10 @@ def test_load_exons(
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_exons_multiple_filters(
-        build: str,
-        client: TestClient,
-        endpoints: Type,
-        genomic_ids_per_build: Dict[str, List],
+    build: str,
+    client: TestClient,
+    endpoints: Type,
+    genomic_ids_per_build: Dict[str, List],
 ):
     """Test filtering exon intervals providing more than one filter."""
 
@@ -369,10 +369,10 @@ def test_exons_multiple_filters(
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_exons_by_ensembl_ids(
-        build: str,
-        demo_client: TestClient,
-        endpoints: Type,
-        genomic_ids_per_build: Dict[str, List],
+    build: str,
+    demo_client: TestClient,
+    endpoints: Type,
+    genomic_ids_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database exons using a list of Ensembl IDs."""
 
@@ -392,10 +392,10 @@ def test_exons_by_ensembl_ids(
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_exons_by_ensembl_gene_ids(
-        build: str,
-        demo_client: TestClient,
-        endpoints: Type,
-        genomic_ids_per_build: Dict[str, List],
+    build: str,
+    demo_client: TestClient,
+    endpoints: Type,
+    genomic_ids_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database exons using a list of Ensembl gene IDs."""
 
@@ -415,10 +415,10 @@ def test_exons_by_ensembl_gene_ids(
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_exons_by_hgnc_ids(
-        build: str,
-        demo_client: TestClient,
-        endpoints: Type,
-        genomic_ids_per_build: Dict[str, List],
+    build: str,
+    demo_client: TestClient,
+    endpoints: Type,
+    genomic_ids_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database exons using a list of HGNC gene IDs."""
 
@@ -438,10 +438,10 @@ def test_exons_by_hgnc_ids(
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_exons_by_hgnc_symbols(
-        build: str,
-        demo_client: TestClient,
-        endpoints: Type,
-        genomic_ids_per_build: Dict[str, List],
+    build: str,
+    demo_client: TestClient,
+    endpoints: Type,
+    genomic_ids_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database exons using a list of HGNC gene symbols."""
 

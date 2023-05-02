@@ -5,8 +5,8 @@ from fastapi import APIRouter, HTTPException, File, status, Depends
 from pyd4 import D4File
 from sqlmodel import Session
 
-from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG, SAMPLE_NOT_FOUND
-from chanjo2.crud.intervals import coordinates_from_interval_list
+from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
+from chanjo2.crud.intervals import get_genes
 from chanjo2.crud.samples import get_sample
 from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import parse_bed
@@ -15,9 +15,9 @@ from chanjo2.meta.handle_d4 import (
     intervals_coverage,
     set_d4_file,
     set_interval,
+    genes_coverage,
 )
-from chanjo2.models.pydantic_models import CoverageInterval, SampleCoverageQuery
-from chanjo2.models.sql_models import Sample as SQLSample
+from chanjo2.models.pydantic_models import CoverageInterval, SampleGeneQuery
 
 LOG = logging.getLogger("uvicorn.access")
 router = APIRouter()
@@ -25,10 +25,10 @@ router = APIRouter()
 
 @router.get("/coverage/d4/interval/", response_model=CoverageInterval)
 def d4_interval_coverage(
-        coverage_file_path: str,
-        chromosome: str,
-        start: Optional[int] = None,
-        end: Optional[int] = None,
+    coverage_file_path: str,
+    chromosome: str,
+    start: Optional[int] = None,
+    end: Optional[int] = None,
 ):
     """Return coverage on the given interval for a D4 resource located on the disk or on a remote server."""
 
@@ -77,9 +77,11 @@ def d4_intervals_coverage(coverage_file_path: str, bed_file: bytes = File(...)):
     return intervals_coverage(d4_file=d4_file, intervals=intervals)
 
 
-@router.post("/coverage/sample/interval_list", response_model=str)
-def sample_intervals_coverage(query: SampleCoverageQuery, db: Session = Depends(get_session)):
-    """Returns coverage over a list of intervals for a given sample in the database."""
+@router.post("/coverage/sample/interval_list", response_model=List[CoverageInterval])
+async def sample_genes_coverage(
+    query: SampleGeneQuery, db: Session = Depends(get_session)
+):
+    """Returns coverage over a list of genes (entire gene) for a given sample in the database."""
 
     sample: SQLSample = get_sample(db=db, sample_name=query.sample_name)
     if sample is None:
@@ -94,7 +96,14 @@ def sample_intervals_coverage(query: SampleCoverageQuery, db: Session = Depends(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=WRONG_COVERAGE_FILE_MSG,
         )
-    coverage_intervals = coordinates_from_interval_list(intervals=query.intervals, interval_type=query.interval_type,
-                                                        build=query.build)
 
-    return f"You passed sample:{query.sample_name} - interval_list:{query.intervals} - interval_type:{query.interval_type}"
+    genes = get_genes(
+        db=db,
+        build=query.build,
+        ensembl_ids=query.ensembl_ids,
+        hgnc_ids=query.hgnc_ids,
+        hgnc_symbols=query.hgnc_symbols,
+        limit=None,
+    )
+
+    return genes_coverage(d4_file=d4_file, genes=genes, sample=sample)

@@ -1,7 +1,7 @@
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, List, Optional, Union
+from typing import Any, List, Optional
 
 import validators
 from pydantic import BaseModel, validator
@@ -24,6 +24,13 @@ class IntervalType(str, Enum):
     TRANSCRIPTS = "transcripts"
     EXONS = "exons"
     CUSTOM = "custom_intervals"
+
+
+class IntervalFormat(str, Enum):
+    ENSEMBL_IDS = "ensembl_ids"
+    HGNC_IDS = "hgnc_ids"
+    HGNC_SYMBOLS = "hgnc_symbols"
+    ENSEMBL_GENE_IDS = "ensembl_gene_ids"
 
 
 class CaseBase(BaseModel):
@@ -130,17 +137,19 @@ class Exon(IntervalBase):
 
 
 class CoverageInterval(BaseModel):
+    ensembl_gene_id: Optional[str]
+    hgnc_id: Optional[int]
+    hgnc_symbol: Optional[str]
     chromosome: str
     start: Optional[int]
     end: Optional[int]
-    individual_id: Optional[int]
     interval_id: Optional[int]
-    case_id: Optional[int]
     mean_coverage: float
 
 
-class SampleCoverageQuery(BaseModel):
+class SampleGeneQuery(BaseModel):
     sample_name: str
-    interval_type: IntervalType
-    intervals: List[Union[str, int]]
     build: Builds
+    ensembl_ids: Optional[List[str]]
+    hgnc_ids: Optional[List[int]]
+    hgnc_symbols: Optional[List[str]]
