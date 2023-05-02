@@ -18,7 +18,7 @@ from chanjo2.meta.handle_d4 import (
     genes_coverage,
 )
 from chanjo2.models.pydantic_models import CoverageInterval, SampleGeneQuery
-from chanjo2.models.sql_models import SQLGene
+from chanjo2.models.sql_models import Gene as SQLGene
 
 LOG = logging.getLogger("uvicorn.access")
 router = APIRouter()
