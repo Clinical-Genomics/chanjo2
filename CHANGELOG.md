@@ -20,6 +20,7 @@
 - Include a default .env file loaded on app startup
 - Filter genes, transcripts and exons by Ensemble id, HGNC id, HGNC symbol
 - Demo genes, transcripts and exons loaded on demo instance startup
+- Return coverage over a list of genes for a sample in the database
 
 ### Fixed
 
