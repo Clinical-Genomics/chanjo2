@@ -1,4 +1,3 @@
-import logging
 from typing import List, Optional, Tuple
 
 from fastapi import APIRouter, HTTPException, File, status, Depends
@@ -20,7 +19,6 @@ from chanjo2.meta.handle_d4 import (
 from chanjo2.models.pydantic_models import CoverageInterval, SampleGeneQuery
 from chanjo2.models.sql_models import Gene as SQLGene
 
-LOG = logging.getLogger("uvicorn.access")
 router = APIRouter()
 
 
