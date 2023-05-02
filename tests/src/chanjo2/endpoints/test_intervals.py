@@ -1,16 +1,13 @@
-from pathlib import PosixPath
 from typing import Dict, Iterator, List, Type
 
 import pytest
-from chanjo2.constants import (
-    WRONG_BED_FILE_MSG,
-    WRONG_COVERAGE_FILE_MSG,
-    MULTIPLE_PARAMS_NOT_SUPPORTED_MSG,
-)
-from chanjo2.demo import gene_panel_file, gene_panel_path
+from fastapi import status
+from fastapi.testclient import TestClient
+from pytest_mock.plugin import MockerFixture
+
+from chanjo2.constants import MULTIPLE_PARAMS_NOT_SUPPORTED_MSG
 from chanjo2.models.pydantic_models import (
     Builds,
-    CoverageInterval,
     Exon,
     Gene,
     Transcript,
@@ -21,171 +18,17 @@ from chanjo2.populate_demo import (
     BUILD_EXONS_RESOURCE,
 )
 from chanjo2.populate_demo import resource_lines
-from fastapi import status
-from fastapi.testclient import TestClient
-from pytest_mock.plugin import MockerFixture
 
 MOCKED_FILE_PARSER = "chanjo2.meta.handle_load_intervals.read_resource_lines"
 
 
-def test_d4_interval_coverage_d4_not_found(
-    client: TestClient, mock_coverage_file: str, endpoints: Type, interval_query: dict
-):
-    """Test the function that returns the coverage over an interval of a D4 file.
-    Testing with a D4 file not found on disk or on a remote server."""
-
-    # WHEN using a query for a genomic interval with a D4 not present on disk
-    interval_query["coverage_file_path"] = mock_coverage_file
-
-    # THEN a request to the read_single_interval should return 404 error
-    response = client.get(endpoints.INTERVAL_COVERAGE, params=interval_query)
-    assert response.status_code == status.HTTP_404_NOT_FOUND
-
-    # THEN show a meaningful message
-    result = response.json()
-    assert result["detail"] == WRONG_COVERAGE_FILE_MSG
-
-
-def test_d4_interval_coverage(
-    client: TestClient,
-    real_coverage_path: str,
-    endpoints: Type,
-    interval_query: dict,
-):
-    """Test the function that returns the coverage over an interval of a D4 file."""
-
-    # WHEN using a query for the coverage over a genomic interval in a local D4 file
-    interval_query["coverage_file_path"] = real_coverage_path
-
-    # THEN a request to the read_single_interval should be successful
-    response = client.get(endpoints.INTERVAL_COVERAGE, params=interval_query)
-    assert response.status_code == status.HTTP_200_OK
-
-    # THEN the mean coverage over the interval should be returned
-    result = response.json()
-    coverage_data = CoverageInterval(**result)
-    assert coverage_data.mean_coverage > 0
-
-    # THEN the queried interval should also be present
-    assert coverage_data.chromosome
-    assert coverage_data.start
-    assert coverage_data.end
-
-
-def test_d4_interval_coverage_single_chromosome(
-    client: TestClient,
-    real_coverage_path: str,
-    endpoints: Type,
-    interval_query: dict,
-):
-    """Test the function that returns the coverage over an entire chsomosome of a D4 file."""
-
-    # GIVEN an interval query without start and and  coordinates
-    interval_query.pop("start")
-    interval_query.pop("end")
-
-    # WHEN using the query for the coverage over a local D4 file
-    interval_query["coverage_file_path"] = real_coverage_path
-
-    # THEN a request to the read_single_intervalshould be successful
-    response = client.get(endpoints.INTERVAL_COVERAGE, params=interval_query)
-    assert response.status_code == status.HTTP_200_OK
-
-    # AND the mean coverage over the entire chromosome should be present in the result
-    result = response.json()
-    coverage_data = CoverageInterval(**result)
-    assert coverage_data.mean_coverage > 0
-    # together with the queried interval
-    assert coverage_data.chromosome
-    assert coverage_data.start is None
-    assert coverage_data.end is None
-
-
-def test_d4_intervals_coverage_d4_not_found(
-    mock_coverage_file: str, client: TestClient, endpoints: Type
-):
-    """Test the function that returns the coverage over multiple intervals of a D4 file.
-    Testing with a D4 file not found on disk or on a remote server."""
-
-    # GIVEN a valid BED file containing genomic intervals
-    files = [
-        ("bed_file", (gene_panel_file, open(gene_panel_path, "rb"))),
-    ]
-
-    # WHEN using a query for genomic intervals with a D4 not present on disk
-    d4_query = {"coverage_file_path": mock_coverage_file}
-
-    # THEN a request to the endpoint should return 404 error
-    response = client.post(
-        endpoints.INTERVALS_FILE_COVERAGE, params=d4_query, files=files
-    )
-    assert response.status_code == status.HTTP_404_NOT_FOUND
-
-    # AND show a meaningful message
-    result = response.json()
-
-    assert result["detail"] == WRONG_COVERAGE_FILE_MSG
-
-
-def test_d4_intervals_coverage_malformed_bed_file(
-    bed_path_malformed: PosixPath,
-    real_coverage_path: str,
-    client: TestClient,
-    endpoints: Type,
-    real_d4_query: Dict[str, str],
-):
-    """Test the function that returns the coverage over multiple intervals of a D4 file.
-    Testing with a BED file that is not correctly formatted."""
-
-    # GIVEN a malformed BED file
-    files = [
-        ("bed_file", ("a_file.bed", open(bed_path_malformed, "rb"))),
-    ]
-
-    # THEN a request to the endpoint should return 404 error
-    response = client.post(
-        endpoints.INTERVALS_FILE_COVERAGE, params=real_d4_query, files=files
-    )
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-
-    # AND show a meaningful message
-    result = response.json()
-
-    assert result["detail"] == WRONG_BED_FILE_MSG
-
-
-def test_d4_intervals_coverage(
-    real_coverage_path: str,
-    client: TestClient,
-    endpoints: Type,
-    real_d4_query: Dict[str, str],
-):
-    """Test the function that returns the coverage over multiple intervals of a D4 file."""
-
-    # GIVEN a valid BED file containing genomic intervals
-    files = [
-        ("bed_file", (gene_panel_file, open(gene_panel_path, "rb"))),
-    ]
-
-    # THEN a request to the endpoint should return HTTP 200
-    response = client.post(
-        endpoints.INTERVALS_FILE_COVERAGE, params=real_d4_query, files=files
-    )
-    assert response.status_code == status.HTTP_200_OK
-
-    # AND return coverage intervals data
-    result = response.json()
-    for interval in result:
-        assert CoverageInterval(**interval)
-
-
 @pytest.mark.parametrize("build, path", BUILD_GENES_RESOURCE)
 def test_load_genes(
-    build: str,
-    path: str,
-    client: TestClient,
-    endpoints: Type,
-    mocker: MockerFixture,
+        build: str,
+        path: str,
+        client: TestClient,
+        endpoints: Type,
+        mocker: MockerFixture,
 ):
     """Test the endpoint that adds genes to the database in a given genome build."""
 
@@ -219,10 +62,10 @@ def test_load_genes(
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_genes_multiple_filters(
-    build: str,
-    client: TestClient,
-    endpoints: Type,
-    genomic_ids_per_build: Dict[str, List],
+        build: str,
+        client: TestClient,
+        endpoints: Type,
+        genomic_ids_per_build: Dict[str, List],
 ):
     """Test filtering gene intervals providing more than one filter."""
 
@@ -242,10 +85,10 @@ def test_genes_multiple_filters(
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_genes_by_ensembl_ids(
-    build: str,
-    demo_client: TestClient,
-    endpoints: Type,
-    genomic_ids_per_build: Dict[str, List],
+        build: str,
+        demo_client: TestClient,
+        endpoints: Type,
+        genomic_ids_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database genes using a list of ensembl IDs."""
 
@@ -265,10 +108,10 @@ def test_genes_by_ensembl_ids(
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_genes_by_hgnc_ids(
-    build: str,
-    demo_client: TestClient,
-    endpoints: Type,
-    genomic_ids_per_build: Dict[str, List],
+        build: str,
+        demo_client: TestClient,
+        endpoints: Type,
+        genomic_ids_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database genes using a list of HGNC IDs."""
 
@@ -288,10 +131,10 @@ def test_genes_by_hgnc_ids(
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_genes_by_hgnc_symbols(
-    build: str,
-    demo_client: TestClient,
-    endpoints: Type,
-    genomic_ids_per_build: Dict[str, List],
+        build: str,
+        demo_client: TestClient,
+        endpoints: Type,
+        genomic_ids_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database genes using a list of HGNC symbols."""
 
@@ -311,11 +154,11 @@ def test_genes_by_hgnc_symbols(
 
 @pytest.mark.parametrize("build, path", BUILD_TRANSCRIPTS_RESOURCE)
 def test_load_transcripts(
-    build: str,
-    path: str,
-    client: TestClient,
-    endpoints: Type,
-    mocker: MockerFixture,
+        build: str,
+        path: str,
+        client: TestClient,
+        endpoints: Type,
+        mocker: MockerFixture,
 ):
     """Test the endpoint that adds genes to the database in a given genome build."""
 
@@ -335,8 +178,8 @@ def test_load_transcripts(
     assert response.status_code == status.HTTP_200_OK
     # THEN all transcripts should be loaded
     assert (
-        response.json()["detail"]
-        == f"{nr_transcripts} transcripts loaded into the database"
+            response.json()["detail"]
+            == f"{nr_transcripts} transcripts loaded into the database"
     )
     # WHEN sending a request to the "transcripts" endpoint
     response: Response = client.post(f"{endpoints.TRANSCRIPTS}", json={"build": build})
@@ -350,10 +193,10 @@ def test_load_transcripts(
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_transcripts_multiple_filters(
-    build: str,
-    client: TestClient,
-    endpoints: Type,
-    genomic_ids_per_build: Dict[str, List],
+        build: str,
+        client: TestClient,
+        endpoints: Type,
+        genomic_ids_per_build: Dict[str, List],
 ):
     """Test filtering transcript intervals providing more than one filter."""
 
@@ -373,10 +216,10 @@ def test_transcripts_multiple_filters(
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_transcripts_by_ensembl_ids(
-    build: str,
-    demo_client: TestClient,
-    endpoints: Type,
-    genomic_ids_per_build: Dict[str, List],
+        build: str,
+        demo_client: TestClient,
+        endpoints: Type,
+        genomic_ids_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database transcripts using a list of Ensembl IDs."""
 
@@ -396,10 +239,10 @@ def test_transcripts_by_ensembl_ids(
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_transcripts_by_ensembl_gene_ids(
-    build: str,
-    demo_client: TestClient,
-    endpoints: Type,
-    genomic_ids_per_build: Dict[str, List],
+        build: str,
+        demo_client: TestClient,
+        endpoints: Type,
+        genomic_ids_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database transcripts using a list of Ensembl gene IDs."""
 
@@ -419,10 +262,10 @@ def test_transcripts_by_ensembl_gene_ids(
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_transcripts_by_hgnc_ids(
-    build: str,
-    demo_client: TestClient,
-    endpoints: Type,
-    genomic_ids_per_build: Dict[str, List],
+        build: str,
+        demo_client: TestClient,
+        endpoints: Type,
+        genomic_ids_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database transcripts using a list of HGNC gene IDs."""
 
@@ -442,10 +285,10 @@ def test_transcripts_by_hgnc_ids(
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_transcripts_by_hgnc_symbols(
-    build: str,
-    demo_client: TestClient,
-    endpoints: Type,
-    genomic_ids_per_build: Dict[str, List],
+        build: str,
+        demo_client: TestClient,
+        endpoints: Type,
+        genomic_ids_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database transcripts using a list of HGNC gene symbols."""
 
@@ -465,11 +308,11 @@ def test_transcripts_by_hgnc_symbols(
 
 @pytest.mark.parametrize("build, path", BUILD_EXONS_RESOURCE)
 def test_load_exons(
-    build: str,
-    path: str,
-    client: TestClient,
-    endpoints: Type,
-    mocker: MockerFixture,
+        build: str,
+        path: str,
+        client: TestClient,
+        endpoints: Type,
+        mocker: MockerFixture,
 ):
     """Test the endpoint that adds exons to the database in a given genome build."""
 
@@ -503,10 +346,10 @@ def test_load_exons(
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_exons_multiple_filters(
-    build: str,
-    client: TestClient,
-    endpoints: Type,
-    genomic_ids_per_build: Dict[str, List],
+        build: str,
+        client: TestClient,
+        endpoints: Type,
+        genomic_ids_per_build: Dict[str, List],
 ):
     """Test filtering exon intervals providing more than one filter."""
 
@@ -526,10 +369,10 @@ def test_exons_multiple_filters(
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_exons_by_ensembl_ids(
-    build: str,
-    demo_client: TestClient,
-    endpoints: Type,
-    genomic_ids_per_build: Dict[str, List],
+        build: str,
+        demo_client: TestClient,
+        endpoints: Type,
+        genomic_ids_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database exons using a list of Ensembl IDs."""
 
@@ -549,10 +392,10 @@ def test_exons_by_ensembl_ids(
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_exons_by_ensembl_gene_ids(
-    build: str,
-    demo_client: TestClient,
-    endpoints: Type,
-    genomic_ids_per_build: Dict[str, List],
+        build: str,
+        demo_client: TestClient,
+        endpoints: Type,
+        genomic_ids_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database exons using a list of Ensembl gene IDs."""
 
@@ -572,10 +415,10 @@ def test_exons_by_ensembl_gene_ids(
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_exons_by_hgnc_ids(
-    build: str,
-    demo_client: TestClient,
-    endpoints: Type,
-    genomic_ids_per_build: Dict[str, List],
+        build: str,
+        demo_client: TestClient,
+        endpoints: Type,
+        genomic_ids_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database exons using a list of HGNC gene IDs."""
 
@@ -595,10 +438,10 @@ def test_exons_by_hgnc_ids(
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_exons_by_hgnc_symbols(
-    build: str,
-    demo_client: TestClient,
-    endpoints: Type,
-    genomic_ids_per_build: Dict[str, List],
+        build: str,
+        demo_client: TestClient,
+        endpoints: Type,
+        genomic_ids_per_build: Dict[str, List],
 ):
     """Test the endpoint that filters database exons using a list of HGNC gene symbols."""
 

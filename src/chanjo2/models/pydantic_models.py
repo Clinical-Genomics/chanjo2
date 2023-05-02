@@ -1,11 +1,12 @@
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Union
 
 import validators
-from chanjo2.constants import WRONG_COVERAGE_FILE_MSG
 from pydantic import BaseModel, validator
+
+from chanjo2.constants import WRONG_COVERAGE_FILE_MSG
 
 
 class Builds(str, Enum):
@@ -136,3 +137,10 @@ class CoverageInterval(BaseModel):
     interval_id: Optional[int]
     case_id: Optional[int]
     mean_coverage: float
+
+
+class SampleCoverageQuery(BaseModel):
+    sample_name: str
+    interval_type: IntervalType
+    intervals: List[Union[str, int]]
+    build: Builds

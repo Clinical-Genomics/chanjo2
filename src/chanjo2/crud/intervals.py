@@ -1,24 +1,26 @@
 import logging
 from typing import List, Optional, Union
 
+from sqlalchemy import delete
+from sqlalchemy.orm import Session, query
+from sqlalchemy.sql.expression import Delete
+
 from chanjo2.models.pydantic_models import (
     Builds,
     ExonBase,
     GeneBase,
     TranscriptBase,
+    IntervalType
 )
 from chanjo2.models.sql_models import Exon as SQLExon
 from chanjo2.models.sql_models import Gene as SQLGene
 from chanjo2.models.sql_models import Transcript as SQLTranscript
-from sqlalchemy import delete
-from sqlalchemy.orm import Session, query
-from sqlalchemy.sql.expression import Delete
 
 LOG = logging.getLogger("uvicorn.access")
 
 
 def delete_intervals_for_build(
-    db: Session, interval_type: Union[SQLGene, SQLTranscript, SQLExon], build: Builds
+        db: Session, interval_type: Union[SQLGene, SQLTranscript, SQLExon], build: Builds
 ) -> None:
     """Delete intervals from a given table by specifying a genome build."""
     statement: Delete = delete(interval_type).where(interval_type.build == build)
@@ -27,52 +29,52 @@ def delete_intervals_for_build(
 
 
 def count_intervals_for_build(
-    db: Session, interval_type: Union[SQLGene, SQLTranscript, SQLExon], build: Builds
+        db: Session, interval_type: Union[SQLGene, SQLTranscript, SQLExon], build: Builds
 ) -> int:
     """Count intervals in table by specifying a genome build."""
     return db.query(interval_type).where(interval_type.build == build).count()
 
 
 def _filter_intervals_by_ensembl_ids(
-    intervals: query.Query,
-    interval_type: Union[SQLGene, SQLTranscript, SQLExon],
-    ensembl_ids: List[str],
+        intervals: query.Query,
+        interval_type: Union[SQLGene, SQLTranscript, SQLExon],
+        ensembl_ids: List[str],
 ) -> List[Union[SQLGene, SQLTranscript, SQLExon]]:
     """Filter intervals using a list of Ensembl IDs"""
     return intervals.filter(interval_type.ensembl_id.in_(ensembl_ids))
 
 
 def _filter_intervals_by_ensembl_gene_ids(
-    intervals: query.Query,
-    interval_type: Union[SQLGene, SQLTranscript, SQLExon],
-    ensembl_gene_ids: List[str],
+        intervals: query.Query,
+        interval_type: Union[SQLGene, SQLTranscript, SQLExon],
+        ensembl_gene_ids: List[str],
 ) -> query.Query:
     """Filter intervals using a list of Ensembl gene IDs."""
     return intervals.filter(interval_type.ensembl_gene_id.in_(ensembl_gene_ids))
 
 
 def _filter_intervals_by_hgnc_ids(
-    intervals: query.Query,
-    interval_type: Union[SQLGene, SQLTranscript, SQLExon],
-    hgnc_ids: List[int],
+        intervals: query.Query,
+        interval_type: Union[SQLGene, SQLTranscript, SQLExon],
+        hgnc_ids: List[int],
 ) -> query.Query:
     """Filter intervals using a list of HGNC IDs."""
     return intervals.filter(interval_type.hgnc_id.in_(hgnc_ids))
 
 
 def _filter_intervals_by_hgnc_symbols(
-    intervals: query.Query,
-    interval_type: Union[SQLGene, SQLTranscript, SQLExon],
-    hgnc_symbols: List[str],
+        intervals: query.Query,
+        interval_type: Union[SQLGene, SQLTranscript, SQLExon],
+        hgnc_symbols: List[str],
 ) -> query.Query:
     """Filter intervals using a list of HGNC symbols."""
     return intervals.filter(interval_type.hgnc_symbol.in_(hgnc_symbols))
 
 
 def _filter_intervals_by_build(
-    intervals: query.Query,
-    interval_type: Union[SQLGene, SQLTranscript, SQLExon],
-    build: Builds,
+        intervals: query.Query,
+        interval_type: Union[SQLGene, SQLTranscript, SQLExon],
+        build: Builds,
 ) -> query.Query:
     """Filter intervals by genome build."""
     return intervals.filter(interval_type.build == build)
@@ -98,12 +100,12 @@ def bulk_insert_genes(db: Session, genes: List[GeneBase]):
 
 
 def get_genes(
-    db: Session,
-    build: Builds,
-    ensembl_ids: Optional[List[str]],
-    hgnc_ids: Optional[List[int]],
-    hgnc_symbols: Optional[List[str]],
-    limit: Optional[int],
+        db: Session,
+        build: Builds,
+        ensembl_ids: Optional[List[str]],
+        hgnc_ids: Optional[List[int]],
+        hgnc_symbols: Optional[List[str]],
+        limit: Optional[int],
 ) -> List[SQLGene]:
     """Return genes according to specified fields."""
     genes: query.Query = db.query(SQLGene)
@@ -134,7 +136,7 @@ def get_gene_from_ensembl_id(db: Session, ensembl_id: str) -> Optional[SQLGene]:
 
 
 def get_transcript_from_ensembl_id(
-    db: Session, ensembl_id: str
+        db: Session, ensembl_id: str
 ) -> Optional[SQLTranscript]:
     """Return a transcript given its Ensembl ID."""
 
@@ -170,14 +172,14 @@ def bulk_insert_transcripts(db: Session, transcripts: List[TranscriptBase]):
 
 
 def get_gene_intervals(
-    db: Session,
-    build: Builds,
-    ensembl_ids: Optional[List[str]],
-    hgnc_ids: Optional[List[int]],
-    hgnc_symbols: Optional[List[str]],
-    ensembl_gene_ids: Optional[List[str]],
-    limit: Optional[int],
-    interval_type: Union[SQLTranscript, SQLExon],
+        db: Session,
+        build: Builds,
+        ensembl_ids: Optional[List[str]],
+        hgnc_ids: Optional[List[int]],
+        hgnc_symbols: Optional[List[str]],
+        ensembl_gene_ids: Optional[List[str]],
+        limit: Optional[int],
+        interval_type: Union[SQLTranscript, SQLExon],
 ) -> List[SQLTranscript]:
     """Return transcripts according to specified fields."""
 
@@ -232,3 +234,8 @@ def bulk_insert_exons(db: Session, exons: List[ExonBase]) -> None:
     """Bulk insert exons into the database."""
     db.bulk_save_objects([create_db_exon(exon=exon) for exon in exons])
     db.commit()
+
+
+def coordinates_from_interval_list(intervals: List[Union[int, str]], interval_type: IntervalType, build: Builds) -> \
+        List:
+    """Returns genomic intervals coordinates corresponding to the provided IDs."""
