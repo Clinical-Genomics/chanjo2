@@ -10,8 +10,6 @@ from chanjo2.demo import gene_panel_file, gene_panel_path
 from chanjo2.models.pydantic_models import (
     CoverageInterval,
     Builds,
-    IntervalType,
-    IntervalFormat,
 )
 from chanjo2.populate_demo import DEMO_SAMPLE
 
@@ -165,7 +163,7 @@ def test_d4_intervals_coverage(
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
-def test_sample_intervals_coverage_gens_hgnc_symbols(
+def test_samples_gene_coverage_hgnc_symbols(
     build: str,
     demo_client: TestClient,
     endpoints: Type,
@@ -176,13 +174,15 @@ def test_sample_intervals_coverage_gens_hgnc_symbols(
     # GIVING a sample coverage query containing HGNC gene symbols
     data = {
         "sample_name": DEMO_SAMPLE["name"],
-        "interval_type": IntervalType.GENES,
-        "interval_format": IntervalFormat.HGNC_SYMBOLS,
-        "intervals": genomic_ids_per_build[build]["hgnc_symbols"],
         "build": build,
+        "hgnc_symbols": genomic_ids_per_build[build]["hgnc_symbols"],
     }
 
-    # THEN
+    # THEN the response should be successful
     response = demo_client.post(endpoints.INTERVALS_SAMPLE_COVERAGE, json=data)
-
     assert response.status_code == status.HTTP_200_OK
+
+    # AND return coverage intervals data
+    result = response.json()
+    for interval in result:
+        assert CoverageInterval(**interval)

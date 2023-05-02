@@ -61,17 +61,3 @@ def genes_coverage(
             )
         )
     return genes_cov
-
-
-"""
-
-class CoverageInterval(BaseModel):
-    ensembl_gene_id: Optional[str]
-    hgnc_id: Optional[str]
-    hgnc_symbol: Optional[int]
-    chromosome: str
-    start: Optional[int]
-    end: Optional[int]
-    interval_id: Optional[int]
-    mean_coverage: float
-"""

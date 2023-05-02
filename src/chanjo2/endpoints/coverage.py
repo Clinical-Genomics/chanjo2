@@ -77,7 +77,7 @@ def d4_intervals_coverage(coverage_file_path: str, bed_file: bytes = File(...)):
     return intervals_coverage(d4_file=d4_file, intervals=intervals)
 
 
-@router.post("/coverage/sample/interval_list", response_model=List[CoverageInterval])
+@router.post("/coverage/sample/genes_coverage", response_model=List[CoverageInterval])
 async def sample_genes_coverage(
     query: SampleGeneQuery, db: Session = Depends(get_session)
 ):
