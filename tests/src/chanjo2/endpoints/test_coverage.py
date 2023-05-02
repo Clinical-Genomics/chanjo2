@@ -179,7 +179,7 @@ def test_samples_gene_coverage_hgnc_symbols(
     }
 
     # THEN the response should be successful
-    response = demo_client.post(endpoints.INTERVALS_SAMPLE_COVERAGE, json=data)
+    response = demo_client.post(endpoints.INTERVALS_SAMPLE_COVERAGE, json=sample_query)
     assert response.status_code == status.HTTP_200_OK
 
     # AND return coverage intervals data
@@ -198,14 +198,14 @@ def test_samples_gene_coverage_hgnc_ids(
     """Test the function that returns the coverage over multiple genes of a sampl when a list of HGNC IDs is providede."""
 
     # GIVING a sample coverage query containing HGNC IDs
-    data = {
+    sample_query: Dict[str, str] = {
         "sample_name": DEMO_SAMPLE["name"],
         "build": build,
         "hgnc_ids": genomic_ids_per_build[build]["hgnc_ids"],
     }
 
     # THEN the response should be successful
-    response = demo_client.post(endpoints.INTERVALS_SAMPLE_COVERAGE, json=data)
+    response = demo_client.post(endpoints.INTERVALS_SAMPLE_COVERAGE, json=sample_query)
     assert response.status_code == status.HTTP_200_OK
 
     # AND return coverage intervals data
@@ -224,14 +224,14 @@ def test_samples_gene_coverage_ensembl_ids(
     """Test the function that returns the coverage over multiple genes of a sample when a list of Enseml IDs is provided."""
 
     # GIVING a sample coverage query containing Ensembl IDs
-    data = {
+    sample_query: Dict[str, str] = {
         "sample_name": DEMO_SAMPLE["name"],
         "build": build,
         "ensembl_ids": genomic_ids_per_build[build]["ensembl_gene_ids"],
     }
 
     # THEN the response should be successful
-    response = demo_client.post(endpoints.INTERVALS_SAMPLE_COVERAGE, json=data)
+    response = demo_client.post(endpoints.INTERVALS_SAMPLE_COVERAGE, json=sample_query)
     assert response.status_code == status.HTTP_200_OK
 
     # AND return coverage intervals data
