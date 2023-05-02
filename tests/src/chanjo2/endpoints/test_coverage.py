@@ -172,7 +172,7 @@ def test_samples_gene_coverage_hgnc_symbols(
     """Test the function that returns the coverage over multiple genes of a sample when a list of HGNC symbols is provided."""
 
     # GIVING a sample coverage query containing HGNC gene symbols
-    data = {
+    sample_query: Dict[str, str] = {
         "sample_name": DEMO_SAMPLE["name"],
         "build": build,
         "hgnc_symbols": genomic_ids_per_build[build]["hgnc_symbols"],
