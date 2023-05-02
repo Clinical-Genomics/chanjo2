@@ -4,7 +4,6 @@ from pyd4 import D4File
 
 from chanjo2.models.pydantic_models import CoverageInterval
 from chanjo2.models.sql_models import Gene as SQLGene
-from chanjo2.models.sql_models import Sample as SQLSample
 
 
 def set_interval(
@@ -43,9 +42,7 @@ def intervals_coverage(
     return intervals_cov
 
 
-def genes_coverage(
-    d4_file: D4File, genes: List[SQLGene], sample: SQLSample
-) -> List[CoverageInterval]:
+def genes_coverage(d4_file: D4File, genes: List[SQLGene]) -> List[CoverageInterval]:
     """Return coverage over a list of genes for a sample."""
     genes_cov: List[CoverageInterval] = []
     for gene in genes:
