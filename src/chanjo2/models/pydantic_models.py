@@ -26,13 +26,6 @@ class IntervalType(str, Enum):
     CUSTOM = "custom_intervals"
 
 
-class IntervalFormat(str, Enum):
-    ENSEMBL_IDS = "ensembl_ids"
-    HGNC_IDS = "hgnc_ids"
-    HGNC_SYMBOLS = "hgnc_symbols"
-    ENSEMBL_GENE_IDS = "ensembl_gene_ids"
-
-
 class CaseBase(BaseModel):
     name: str
     display_name: Optional[str] = None
