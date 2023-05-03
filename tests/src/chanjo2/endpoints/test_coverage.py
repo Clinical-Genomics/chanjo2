@@ -179,7 +179,7 @@ def test_samples_gene_coverage_hgnc_symbols(
     }
 
     # THEN the response should be successful
-    response = demo_client.post(endpoints.INTERVALS_SAMPLE_COVERAGE, json=sample_query)
+    response = demo_client.post(endpoints.SAMPLE_GENES_COVERAGE, json=sample_query)
     assert response.status_code == status.HTTP_200_OK
 
     # AND return coverage intervals data
@@ -205,7 +205,7 @@ def test_samples_gene_coverage_hgnc_ids(
     }
 
     # THEN the response should be successful
-    response = demo_client.post(endpoints.INTERVALS_SAMPLE_COVERAGE, json=sample_query)
+    response = demo_client.post(endpoints.SAMPLE_GENES_COVERAGE, json=sample_query)
     assert response.status_code == status.HTTP_200_OK
 
     # AND return coverage intervals data
@@ -231,7 +231,7 @@ def test_samples_gene_coverage_ensembl_ids(
     }
 
     # THEN the response should be successful
-    response = demo_client.post(endpoints.INTERVALS_SAMPLE_COVERAGE, json=sample_query)
+    response = demo_client.post(endpoints.SAMPLE_GENES_COVERAGE, json=sample_query)
     assert response.status_code == status.HTTP_200_OK
 
     # AND return coverage intervals data
