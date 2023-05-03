@@ -309,7 +309,7 @@ def test_sample_transcripts_coverage_ensembl_ids(
     sample_query: Dict[str, str] = {
         "sample_name": DEMO_SAMPLE["name"],
         "build": build,
-        "ensembl_ids": genomic_ids_per_build[build]["ensembl_gene_ids"],
+        "ensembl_gene_ids": genomic_ids_per_build[build]["ensembl_gene_ids"],
     }
 
     # THEN the response should be successful
