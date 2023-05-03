@@ -1,4 +1,3 @@
-import logging
 from typing import List, Optional, Tuple
 
 from fastapi import APIRouter, HTTPException, File, status, Depends
@@ -30,7 +29,6 @@ from chanjo2.models.pydantic_models import (
 from chanjo2.models.sql_models import Gene as SQLGene
 
 router = APIRouter()
-LOG = logging.getLogger("uvicorn.access")
 
 
 @router.get("/coverage/d4/interval/", response_model=CoverageInterval)
@@ -125,7 +123,7 @@ async def sample_genes_coverage(
 async def sample_transcripts_coverage(
     query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
 ):
-    """Returns coverage over genes transcripts for a given sample in the database."""
+    """Returns coverage over a list of genes (transcripts intervals only) for a given sample in the database."""
 
     sample: SQLSample = get_sample(db=db, sample_name=query.sample_name)
     if sample is None:
