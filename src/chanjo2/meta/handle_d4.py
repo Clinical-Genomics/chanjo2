@@ -78,6 +78,16 @@ def genes_transcript_coverage(db: Session, d4_file: D4File, genes: List[SQLGene]
             ensembl_gene_ids=[gene.ensembl_id],
             limit=None,
         )
+        mean_gene_cov = 0
+        if gene_transcripts:
+            mean_gene_cov = mean(
+                d4_file.mean(
+                    [
+                        (transcript.chromosome, transcript.start, transcript.stop)
+                        for transcript in gene_transcripts
+                    ]
+                )
+            )
 
         transcripts_cov.append(
             CoverageInterval(
@@ -87,14 +97,7 @@ def genes_transcript_coverage(db: Session, d4_file: D4File, genes: List[SQLGene]
                 chromosome=gene.chromosome,
                 start=gene.start,
                 end=gene.stop,
-                mean_coverage=mean(
-                    d4_file.mean(
-                        [
-                            (transcript.chromosome, transcript.start, transcript.stop)
-                            for transcript in gene_transcripts
-                        ]
-                    )
-                ),
+                mean_coverage=mean_gene_cov,
             )
         )
     return transcripts_cov
