@@ -133,16 +133,24 @@ class CoverageInterval(BaseModel):
     ensembl_gene_id: Optional[str]
     hgnc_id: Optional[int]
     hgnc_symbol: Optional[str]
+    interval_id: Optional[int]
     chromosome: str
     start: Optional[int]
     end: Optional[int]
-    interval_id: Optional[int]
     mean_coverage: float
 
 
 class SampleGeneQuery(BaseModel):
     build: Builds
     ensembl_ids: Optional[List[str]]
+    hgnc_ids: Optional[List[int]]
+    hgnc_symbols: Optional[List[str]]
+    sample_name: str
+
+
+class SampleGeneIntervalQuery(BaseModel):
+    build: Builds
+    ensembl_gene_ids: Optional[List[str]]
     hgnc_ids: Optional[List[int]]
     hgnc_symbols: Optional[List[str]]
     sample_name: str

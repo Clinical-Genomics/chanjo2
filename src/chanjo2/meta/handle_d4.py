@@ -7,7 +7,7 @@ from chanjo2.models.sql_models import Gene as SQLGene
 
 
 def set_interval(
-    chrom: str, start: Optional[int] = None, end: Optional[int] = None
+        chrom: str, start: Optional[int] = None, end: Optional[int] = None
 ) -> Tuple[str, Optional[int], Optional[int]]:
     """Create the interval tuple used by the pyd4 utility."""
     return (chrom, start, end) if start and end else chrom
@@ -19,14 +19,14 @@ def set_d4_file(coverage_file_path: str) -> D4File:
 
 
 def interval_coverage(
-    d4_file: D4File, interval: Tuple[str, Optional[int], Optional[int]]
+        d4_file: D4File, interval: Tuple[str, Optional[int], Optional[int]]
 ) -> float:
     """Return coverage over a single interval of a D4 file."""
     return d4_file.mean([interval])[0]
 
 
 def intervals_coverage(
-    d4_file: D4File, intervals: List[Tuple[str, int, int]]
+        d4_file: D4File, intervals: List[Tuple[str, int, int]]
 ) -> List[CoverageInterval]:
     """Return coverage over a list of intervals."""
     intervals_cov: List[CoverageInterval] = []
@@ -58,3 +58,8 @@ def genes_coverage(d4_file: D4File, genes: List[SQLGene]) -> List[CoverageInterv
             )
         )
     return genes_cov
+
+
+"""
+def gene_transcripts_coverage()
+"""
