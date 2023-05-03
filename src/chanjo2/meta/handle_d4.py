@@ -78,9 +78,9 @@ def genes_transcript_coverage(db: Session, d4_file: D4File, genes: List[SQLGene]
             ensembl_gene_ids=[gene.ensembl_id],
             limit=None,
         )
-        mean_gene_cov = 0
+        mean_gene_cov: float = 0
         if gene_transcripts:
-            mean_gene_cov = mean(
+            mean_gene_cov: float = mean(
                 d4_file.mean(
                     [
                         (transcript.chromosome, transcript.start, transcript.stop)
