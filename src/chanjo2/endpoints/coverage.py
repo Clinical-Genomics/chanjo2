@@ -5,8 +5,12 @@ from fastapi import APIRouter, HTTPException, File, status, Depends
 from pyd4 import D4File
 from sqlmodel import Session
 
-from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
-from chanjo2.crud.intervals import get_genes, get_gene_intervals
+from chanjo2.constants import (
+    WRONG_BED_FILE_MSG,
+    WRONG_COVERAGE_FILE_MSG,
+    SAMPLE_NOT_FOUND,
+)
+from chanjo2.crud.intervals import get_genes
 from chanjo2.crud.samples import get_sample
 from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import parse_bed
@@ -16,10 +20,14 @@ from chanjo2.meta.handle_d4 import (
     set_d4_file,
     set_interval,
     genes_coverage,
+    genes_transcript_coverage,
 )
-from chanjo2.models.pydantic_models import CoverageInterval, SampleGeneQuery, SampleGeneIntervalQuery
+from chanjo2.models.pydantic_models import (
+    CoverageInterval,
+    SampleGeneQuery,
+    SampleGeneIntervalQuery,
+)
 from chanjo2.models.sql_models import Gene as SQLGene
-from chanjo2.models.sql_models import Transcript as SQLTranscript
 
 router = APIRouter()
 LOG = logging.getLogger("uvicorn.access")
@@ -27,10 +35,10 @@ LOG = logging.getLogger("uvicorn.access")
 
 @router.get("/coverage/d4/interval/", response_model=CoverageInterval)
 def d4_interval_coverage(
-        coverage_file_path: str,
-        chromosome: str,
-        start: Optional[int] = None,
-        end: Optional[int] = None,
+    coverage_file_path: str,
+    chromosome: str,
+    start: Optional[int] = None,
+    end: Optional[int] = None,
 ):
     """Return coverage on the given interval for a D4 resource located on the disk or on a remote server."""
 
@@ -81,7 +89,7 @@ def d4_intervals_coverage(coverage_file_path: str, bed_file: bytes = File(...)):
 
 @router.post("/coverage/sample/genes_coverage", response_model=List[CoverageInterval])
 async def sample_genes_coverage(
-        query: SampleGeneQuery, db: Session = Depends(get_session)
+    query: SampleGeneQuery, db: Session = Depends(get_session)
 ):
     """Returns coverage over a list of genes (entire gene) for a given sample in the database."""
 
@@ -111,8 +119,12 @@ async def sample_genes_coverage(
     return genes_coverage(d4_file=d4_file, genes=genes)
 
 
-@router.post("/coverage/sample/transcripts_coverage", response_model=str)
-async def sample_transcripts_coverage(query: SampleGeneIntervalQuery, db: Session = Depends(get_session)):
+@router.post(
+    "/coverage/sample/transcripts_coverage", response_model=List[CoverageInterval]
+)
+async def sample_transcripts_coverage(
+    query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
+):
     """Returns coverage over genes transcripts for a given sample in the database."""
 
     sample: SQLSample = get_sample(db=db, sample_name=query.sample_name)
@@ -129,18 +141,13 @@ async def sample_transcripts_coverage(query: SampleGeneIntervalQuery, db: Sessio
             detail=WRONG_COVERAGE_FILE_MSG,
         )
 
-    transcripts: List[SQLTranscript] = get_gene_intervals(
+    genes: List[SQLGene] = get_genes(
         db=db,
         build=query.build,
-        ensembl_ids=None,
+        ensembl_ids=query.ensembl_gene_ids,
         hgnc_ids=query.hgnc_ids,
         hgnc_symbols=query.hgnc_symbols,
-        ensembl_gene_ids=query.ensembl_gene_ids,
         limit=None,
-        interval_type=SQLTranscript,
     )
-    """
-    for tx in transcripts:
-        LOG.warning(tx.)
-    """
-    return "HELLO BITCHES"
+
+    return genes_transcript_coverage(db=db, d4_file=d4_file, genes=genes)
