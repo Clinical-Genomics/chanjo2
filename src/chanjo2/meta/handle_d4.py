@@ -97,4 +97,4 @@ def genes_transcript_coverage(db: Session, d4_file: D4File, genes: List[SQLGene]
                 ),
             )
         )
-        return transcripts_cov
+    return transcripts_cov
