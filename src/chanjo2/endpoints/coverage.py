@@ -4,7 +4,11 @@ from fastapi import APIRouter, HTTPException, File, status, Depends
 from pyd4 import D4File
 from sqlmodel import Session
 
-from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
+from chanjo2.constants import (
+    WRONG_BED_FILE_MSG,
+    WRONG_COVERAGE_FILE_MSG,
+    SAMPLE_NOT_FOUND,
+)
 from chanjo2.crud.intervals import get_genes
 from chanjo2.crud.samples import get_sample
 from chanjo2.dbutil import get_session
@@ -14,7 +18,7 @@ from chanjo2.meta.handle_d4 import (
     intervals_coverage,
     set_d4_file,
     set_interval,
-    genes_coverage,
+    genes_coverage_completeness,
 )
 from chanjo2.models.pydantic_models import CoverageInterval, SampleGeneQuery
 from chanjo2.models.sql_models import Gene as SQLGene
@@ -105,4 +109,8 @@ async def sample_genes_coverage(
         limit=None,
     )
 
-    return genes_coverage(d4_file=d4_file, genes=genes)
+    return genes_coverage_completeness(
+        d4_file=d4_file,
+        genes=genes,
+        completeness_threholds=query.completeness_thresholds,
+    )
