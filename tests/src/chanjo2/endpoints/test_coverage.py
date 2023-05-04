@@ -13,6 +13,8 @@ from chanjo2.models.pydantic_models import (
 )
 from chanjo2.populate_demo import DEMO_SAMPLE
 
+COVERAGE_COMPLETENESS_THRESHOLDS = [10, 20, 30]
+
 
 def test_d4_interval_coverage_d4_not_found(
     client: TestClient, mock_coverage_file: str, endpoints: Type, interval_query: dict
@@ -176,6 +178,7 @@ def test_samples_gene_coverage_hgnc_symbols(
         "sample_name": DEMO_SAMPLE["name"],
         "build": build,
         "hgnc_symbols": genomic_ids_per_build[build]["hgnc_symbols"],
+        "completeness_thresholds": COVERAGE_COMPLETENESS_THRESHOLDS,
     }
 
     # THEN the response should be successful
@@ -202,6 +205,7 @@ def test_samples_gene_coverage_hgnc_ids(
         "sample_name": DEMO_SAMPLE["name"],
         "build": build,
         "hgnc_ids": genomic_ids_per_build[build]["hgnc_ids"],
+        "completeness_thresholds": COVERAGE_COMPLETENESS_THRESHOLDS,
     }
 
     # THEN the response should be successful
@@ -228,6 +232,7 @@ def test_samples_gene_coverage_ensembl_ids(
         "sample_name": DEMO_SAMPLE["name"],
         "build": build,
         "ensembl_ids": genomic_ids_per_build[build]["ensembl_gene_ids"],
+        "completeness_thresholds": COVERAGE_COMPLETENESS_THRESHOLDS,
     }
 
     # THEN the response should be successful
