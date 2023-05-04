@@ -28,8 +28,8 @@ class IntervalType(str, Enum):
 
 
 class CaseBase(BaseModel):
-    name: str
     display_name: Optional[str] = None
+    name: str
 
 
 class CaseCreate(CaseBase):
@@ -37,9 +37,9 @@ class CaseCreate(CaseBase):
 
 
 class SampleBase(BaseModel):
-    name: str
-    display_name: str
     coverage_file_path: str
+    display_name: str
+    name: str
 
     @validator("coverage_file_path", pre=True)
     def validate_coverage_path(cls, value: str) -> Any:
@@ -54,9 +54,9 @@ class SampleCreate(SampleBase):
 
 
 class Sample(SampleBase):
-    id: int
-    created_at: datetime
     case_id: int
+    created_at: datetime
+    id: int
 
     class Config:
         orm_mode = True
@@ -81,10 +81,10 @@ class Interval(IntervalBase):
 
 
 class GeneBase(IntervalBase):
+    build: Builds
     ensembl_id: str
     hgnc_id: Optional[int]
     hgnc_symbol: Optional[str]
-    build: Builds
 
 
 class GeneQuery(BaseModel):
@@ -104,6 +104,7 @@ class Gene(IntervalBase):
 
 
 class TranscriptBase(IntervalBase):
+    build: Builds
     ensembl_id: str
     ensembl_gene_id: str
     refseq_mrna: Optional[str]
@@ -111,7 +112,6 @@ class TranscriptBase(IntervalBase):
     refseq_ncrna: Optional[str]
     refseq_mane_select: Optional[str]
     refseq_mane_plus_clinical: Optional[str]
-    build: Builds
 
 
 class Transcript(TranscriptBase):
@@ -119,11 +119,10 @@ class Transcript(TranscriptBase):
 
 
 class ExonBase(IntervalBase):
+    build: Builds
     ensembl_id: str
     ensembl_gene_id: str
     ensembl_transcript_id: str
-    ensembl_id: str
-    build: Builds
 
 
 class Exon(IntervalBase):
@@ -131,20 +130,20 @@ class Exon(IntervalBase):
 
 
 class CoverageInterval(BaseModel):
+    chromosome: str
+    completeness: List[Tuple[int, Decimal]] = Field(default_factory=list)
     ensembl_gene_id: Optional[str]
+    end: Optional[int]
     hgnc_id: Optional[int]
     hgnc_symbol: Optional[str]
     interval_id: Optional[int]
-    chromosome: str
-    start: Optional[int]
-    end: Optional[int]
     mean_coverage: float
-    completeness: List[Tuple[int, Decimal]] = Field(default_factory=list)
+    start: Optional[int]
 
 
 class SampleGeneQuery(BaseModel):
-    completeness_thresholds: Optional[List[int]]
     build: Builds
+    completeness_thresholds: Optional[List[int]]
     ensembl_ids: Optional[List[str]]
     hgnc_ids: Optional[List[int]]
     hgnc_symbols: Optional[List[str]]
