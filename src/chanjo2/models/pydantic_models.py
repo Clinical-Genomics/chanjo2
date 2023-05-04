@@ -1,5 +1,4 @@
 from datetime import datetime
-from decimal import Decimal
 from enum import Enum
 from pathlib import Path
 from typing import Any, List, Optional, Tuple
@@ -131,7 +130,7 @@ class Exon(IntervalBase):
 
 class CoverageInterval(BaseModel):
     chromosome: str
-    completeness: List[Tuple[int, Decimal]] = Field(default_factory=list)
+    completeness: List[Tuple] = Field(default_factory=list)
     ensembl_gene_id: Optional[str]
     end: Optional[int]
     hgnc_id: Optional[int]
