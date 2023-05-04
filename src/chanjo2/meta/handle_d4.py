@@ -1,11 +1,15 @@
 from decimal import Decimal
+from statistics import mean
 from typing import List, Optional, Tuple
 
 from numpy import ndarray
 from pyd4 import D4File
+from sqlmodel import Session
 
+from chanjo2.crud.intervals import get_gene_intervals
 from chanjo2.models.pydantic_models import CoverageInterval
 from chanjo2.models.sql_models import Gene as SQLGene
+from chanjo2.models.sql_models import Transcript as SQLTranscript
 
 
 def set_interval(
@@ -20,11 +24,11 @@ def set_d4_file(coverage_file_path: str) -> D4File:
     return D4File(coverage_file_path)
 
 
-def interval_coverage(
-    d4_file: D4File, interval: Tuple[str, Optional[int], Optional[int]]
-) -> float:
-    """Return coverage over a single interval of a D4 file."""
-    return d4_file.mean([interval])[0]
+def intervals_mean_coverage(
+    d4_file: D4File, intervals: List[Tuple[str, int, int]]
+) -> List[float]:
+    """Return the mean value over a list of intervals of a D4 file."""
+    return d4_file.mean(intervals)
 
 
 def intervals_coverage(
@@ -83,7 +87,9 @@ def genes_coverage_completeness(
                 chromosome=gene.chromosome,
                 start=gene.start,
                 end=gene.stop,
-                mean_coverage=d4_file.mean((gene.chromosome, gene.start, gene.stop)),
+                mean_coverage=intervals_mean_coverage(
+                    d4_file, intervals=[(gene.chromosome, gene.start, gene.stop)]
+                )[0],
                 completeness=evaluate_region_completeness(
                     d4_file=d4_file,
                     chromosome=gene.chromosome,
@@ -94,3 +100,45 @@ def genes_coverage_completeness(
             )
         )
     return genes_cov
+
+
+def get_genes_transcript_coverage(
+    db: Session, d4_file: D4File, genes: List[SQLGene]
+) -> List[CoverageInterval]:
+    """Return coverage of transcripts for a list of genes."""
+    transcripts_cov: List[CoverageInterval] = []
+    for gene in genes:
+        gene_transcripts: List[SQLTranscript] = get_gene_intervals(
+            db=db,
+            build=gene.build,
+            interval_type=SQLTranscript,
+            ensembl_ids=None,
+            hgnc_ids=None,
+            hgnc_symbols=None,
+            ensembl_gene_ids=[gene.ensembl_id],
+            limit=None,
+        )
+        mean_gene_cov: float = 0
+        if gene_transcripts:
+            mean_gene_cov: float = mean(
+                intervals_mean_coverage(
+                    d4_file=d4_file,
+                    intervals=[
+                        (transcript.chromosome, transcript.start, transcript.stop)
+                        for transcript in gene_transcripts
+                    ],
+                )
+            )
+
+        transcripts_cov.append(
+            CoverageInterval(
+                ensembl_gene_id=gene.ensembl_id,
+                hgnc_id=gene.hgnc_id,
+                hgnc_symbol=gene.hgnc_symbol,
+                chromosome=gene.chromosome,
+                start=gene.start,
+                end=gene.stop,
+                mean_coverage=mean_gene_cov,
+            )
+        )
+    return transcripts_cov
