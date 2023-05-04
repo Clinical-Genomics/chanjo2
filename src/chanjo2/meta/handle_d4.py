@@ -100,7 +100,9 @@ def genes_coverage_completeness(
     return genes_cov
 
 
-def get_genes_transcript_coverage(db: Session, d4_file: D4File, genes: List[SQLGene]):
+def get_genes_transcript_coverage(
+    db: Session, d4_file: D4File, genes: List[SQLGene]
+) -> List[CoverageInterval]:
     """Return coverage of transcripts for a list of genes."""
     transcripts_cov: List[CoverageInterval] = []
     for gene in genes:
