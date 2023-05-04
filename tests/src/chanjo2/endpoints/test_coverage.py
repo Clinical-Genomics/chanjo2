@@ -159,8 +159,8 @@ def test_d4_intervals_coverage(
     assert response.status_code == status.HTTP_200_OK
 
     # AND return coverage intervals data
-    result = response.json()
-    for interval in result:
+    coverage_intervals = response.json()
+    for interval in coverage_intervals:
         assert CoverageInterval(**interval)
 
 
@@ -186,8 +186,8 @@ def test_sample_gene_coverage_hgnc_symbols(
     assert response.status_code == status.HTTP_200_OK
 
     # AND return coverage intervals data
-    result = response.json()
-    for interval in result:
+    coverage_intervals = response.json()
+    for interval in coverage_intervals:
         assert CoverageInterval(**interval)
 
 
@@ -213,8 +213,8 @@ def test_sample_gene_coverage_hgnc_ids(
     assert response.status_code == status.HTTP_200_OK
 
     # AND return coverage intervals data
-    result = response.json()
-    for interval in result:
+    coverage_intervals = response.json()
+    for interval in coverage_intervals:
         assert CoverageInterval(**interval)
 
 
@@ -240,8 +240,8 @@ def test_sample_gene_coverage_ensembl_ids(
     assert response.status_code == status.HTTP_200_OK
 
     # AND return coverage intervals data
-    result = response.json()
-    for interval in result:
+    coverage_intervals = response.json()
+    for interval in coverage_intervals:
         assert CoverageInterval(**interval)
 
 
@@ -268,8 +268,8 @@ def test_sample_transcripts_coverage_hgnc_symbols(
     assert response.status_code == status.HTTP_200_OK
 
     # AND return coverage intervals data
-    result = response.json()
-    for interval in result:
+    coverage_intervals = response.json()
+    for interval in coverage_intervals:
         assert CoverageInterval(**interval)
 
 
@@ -296,8 +296,8 @@ def test_sample_transcripts_coverage_hgnc_ids(
     assert response.status_code == status.HTTP_200_OK
 
     # AND return coverage intervals data
-    result = response.json()
-    for interval in result:
+    coverage_intervals = response.json()
+    for interval in coverage_intervals:
         assert CoverageInterval(**interval)
 
 
@@ -324,6 +324,6 @@ def test_sample_transcripts_coverage_ensembl_ids(
     assert response.status_code == status.HTTP_200_OK
 
     # AND return coverage intervals data
-    result = response.json()
-    for interval in result:
+    coverage_intervals = response.json()
+    for interval in coverage_intervals:
         assert CoverageInterval(**interval)
