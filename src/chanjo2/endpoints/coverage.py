@@ -18,7 +18,7 @@ from chanjo2.meta.handle_d4 import (
     intervals_coverage,
     set_d4_file,
     set_interval,
-    genes_coverage,
+    genes_coverage_completeness,
     genes_transcript_coverage,
 )
 from chanjo2.models.pydantic_models import (
@@ -114,7 +114,11 @@ async def sample_genes_coverage(
         limit=None,
     )
 
-    return genes_coverage(d4_file=d4_file, genes=genes)
+    return genes_coverage_completeness(
+        d4_file=d4_file,
+        genes=genes,
+        completeness_threholds=query.completeness_thresholds,
+    )
 
 
 @router.post(

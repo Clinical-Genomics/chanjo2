@@ -1,10 +1,11 @@
 from datetime import datetime
+from decimal import Decimal
 from enum import Enum
 from pathlib import Path
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Tuple
 
 import validators
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, validator, Field
 
 from chanjo2.constants import WRONG_COVERAGE_FILE_MSG
 
@@ -138,9 +139,11 @@ class CoverageInterval(BaseModel):
     start: Optional[int]
     end: Optional[int]
     mean_coverage: float
+    completeness: List[Tuple[int, Decimal]] = Field(default_factory=list)
 
 
 class SampleGeneQuery(BaseModel):
+    completeness_thresholds: Optional[List[int]]
     build: Builds
     ensembl_ids: Optional[List[str]]
     hgnc_ids: Optional[List[int]]
