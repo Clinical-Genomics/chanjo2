@@ -13,7 +13,7 @@ from chanjo2.models.pydantic_models import (
 )
 from chanjo2.populate_demo import DEMO_SAMPLE
 
-COVERAGE_COMPLETENESS_THRESHOLDS = [10, 20, 30]
+COVERAGE_COMPLETENESS_THRESHOLDS: List[int] = [10, 20, 30]
 
 
 def test_d4_interval_coverage_d4_not_found(
