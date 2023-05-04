@@ -173,7 +173,7 @@ def test_sample_gene_coverage_hgnc_symbols(
 ):
     """Test the function that returns the coverage over multiple genes of a sample when a list of HGNC symbols is provided."""
 
-    # GIVING a sample gene coverage query containing HGNC gene symbols
+    # GIVEN a sample gene coverage query containing HGNC gene symbols
     sample_query: Dict[str, str] = {
         "sample_name": DEMO_SAMPLE["name"],
         "build": build,
@@ -308,7 +308,7 @@ def test_sample_transcripts_coverage_ensembl_ids(
     endpoints: Type,
     genomic_ids_per_build: Dict[str, List],
 ):
-    """Test the function that returns the coverage over  transcripts of multiple genes of a sample when a list of Enseml IDs is provided."""
+    """Test the function that returns the coverage over transcripts of multiple genes of a sample when a list of Enseml IDs is provided."""
 
     # GIVING a sample transcript coverage query containing Ensembl IDs
     sample_query: Dict[str, str] = {
