@@ -68,7 +68,12 @@ def evaluate_intervals_completeness(
             nr_complete_bases += (per_base_depth_region > threshold).sum()
 
         completeness_values.append(
-            (threshold, Decimal(nr_complete_bases.item() / total_region_length))
+            (
+                threshold,
+                Decimal(nr_complete_bases.item() / total_region_length)
+                if nr_complete_bases
+                else 0,
+            )
         )
 
     return completeness_values
