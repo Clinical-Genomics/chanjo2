@@ -151,6 +151,7 @@ class SampleGeneQuery(BaseModel):
 
 class SampleGeneIntervalQuery(BaseModel):
     build: Builds
+    completeness_thresholds: Optional[List[int]]
     ensembl_gene_ids: Optional[List[str]]
     hgnc_ids: Optional[List[int]]
     hgnc_symbols: Optional[List[str]]

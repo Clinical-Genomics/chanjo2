@@ -1,8 +1,9 @@
+import logging
 from decimal import Decimal
 from statistics import mean
 from typing import List, Optional, Tuple
 
-from numpy import ndarray
+from numpy import ndarray, int64
 from pyd4 import D4File
 from sqlmodel import Session
 
@@ -10,6 +11,8 @@ from chanjo2.crud.intervals import get_gene_intervals
 from chanjo2.models.pydantic_models import CoverageInterval
 from chanjo2.models.sql_models import Gene as SQLGene
 from chanjo2.models.sql_models import Transcript as SQLTranscript
+
+LOG = logging.getLogger("uvicorn.access")
 
 
 def set_interval(
@@ -48,31 +51,33 @@ def intervals_coverage(
     return intervals_cov
 
 
-def evaluate_region_completeness(
+def evaluate_intervals_completeness(
     d4_file: D4File,
-    chromosome: str,
-    start: int,
-    stop: int,
+    intervals: List[Tuple[str, int, int]],
     completeness_threholds: Optional[List[int]],
 ) -> List[Tuple[int, Decimal]]:
-    """Use NumPy to Calculate the coverage completeness over a list of threshold values for a chromosomal region."""
+    """Use NumPy to calculate the coverage completeness over a list of threshold values for a chromosomal region."""
 
     if completeness_threholds is None:
         return []
 
-    region_size: int = stop - start
-    per_base_depth: ndarray = d4_file.load_to_np(f"{chromosome}:{start}-{stop}")
-
     completeness_values: List[Tuple[int, Decimal]] = []
+    total_region_length = sum([interval[2] - interval[1] for interval in intervals])
+    per_base_depth: ndarray = d4_file.load_to_np(intervals)
 
     for threshold in completeness_threholds:
-        completeness = Decimal((per_base_depth > threshold).sum() / region_size)
-        completeness_values.append((threshold, completeness))
+        nr_complete_bases: int64 = 0
+        for per_base_depth_region in per_base_depth:
+            nr_complete_bases += (per_base_depth_region > threshold).sum()
+
+        completeness_values.append(
+            (threshold, Decimal(nr_complete_bases.item() / total_region_length))
+        )
 
     return completeness_values
 
 
-def genes_coverage_completeness(
+def get_genes_coverage_completeness(
     d4_file: D4File, genes: List[SQLGene], completeness_threholds: List[Optional[int]]
 ) -> List[CoverageInterval]:
     """Return mean coverage and coverage completeness over a list of genes."""
@@ -90,11 +95,9 @@ def genes_coverage_completeness(
                 mean_coverage=intervals_mean_coverage(
                     d4_file, intervals=[(gene.chromosome, gene.start, gene.stop)]
                 )[0],
-                completeness=evaluate_region_completeness(
+                completeness=evaluate_intervals_completeness(
                     d4_file=d4_file,
-                    chromosome=gene.chromosome,
-                    start=gene.start,
-                    stop=gene.stop,
+                    intervals=[(gene.chromosome, gene.start, gene.stop)],
                     completeness_threholds=completeness_threholds,
                 ),
             )
@@ -102,8 +105,11 @@ def genes_coverage_completeness(
     return genes_cov
 
 
-def get_genes_transcript_coverage(
-    db: Session, d4_file: D4File, genes: List[SQLGene]
+def get_transcripts_coverage_completeness(
+    db: Session,
+    d4_file: D4File,
+    genes: List[SQLGene],
+    completeness_threholds: List[Optional[int]],
 ) -> List[CoverageInterval]:
     """Return coverage of transcripts for a list of genes."""
     transcripts_cov: List[CoverageInterval] = []
@@ -118,16 +124,15 @@ def get_genes_transcript_coverage(
             ensembl_gene_ids=[gene.ensembl_id],
             limit=None,
         )
+        intervals: List[Tuple[str, int, int]] = [
+            (transcript.chromosome, transcript.start, transcript.stop)
+            for transcript in gene_transcripts
+        ]
         mean_gene_cov: float = 0
+
         if gene_transcripts:
             mean_gene_cov: float = mean(
-                intervals_mean_coverage(
-                    d4_file=d4_file,
-                    intervals=[
-                        (transcript.chromosome, transcript.start, transcript.stop)
-                        for transcript in gene_transcripts
-                    ],
-                )
+                intervals_mean_coverage(d4_file=d4_file, intervals=intervals)
             )
 
         transcripts_cov.append(
@@ -139,6 +144,11 @@ def get_genes_transcript_coverage(
                 start=gene.start,
                 end=gene.stop,
                 mean_coverage=mean_gene_cov,
+                completeness=evaluate_intervals_completeness(
+                    d4_file=d4_file,
+                    intervals=intervals,
+                    completeness_threholds=completeness_threholds,
+                ),
             )
         )
     return transcripts_cov
