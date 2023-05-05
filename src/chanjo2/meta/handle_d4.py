@@ -1,4 +1,3 @@
-import logging
 from decimal import Decimal
 from statistics import mean
 from typing import List, Optional, Tuple
@@ -11,8 +10,6 @@ from chanjo2.crud.intervals import get_gene_intervals
 from chanjo2.models.pydantic_models import CoverageInterval
 from chanjo2.models.sql_models import Gene as SQLGene
 from chanjo2.models.sql_models import Transcript as SQLTranscript
-
-LOG = logging.getLogger("uvicorn.access")
 
 
 def set_interval(
