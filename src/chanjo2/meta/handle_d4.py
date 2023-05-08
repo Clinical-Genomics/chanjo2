@@ -59,7 +59,9 @@ def evaluate_intervals_completeness(
         return []
 
     completeness_values: List[Tuple[int, Decimal]] = []
-    total_region_length: int = sum([interval[2] - interval[1] for interval in intervals])
+    total_region_length: int = sum(
+        [interval[2] - interval[1] for interval in intervals]
+    )
     per_base_depth: ndarray = d4_file.load_to_np(intervals)
 
     for threshold in completeness_threholds:
