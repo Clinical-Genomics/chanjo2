@@ -1,6 +1,6 @@
 from decimal import Decimal
 from statistics import mean
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 from numpy import ndarray, int64
 from pyd4 import D4File
@@ -8,6 +8,7 @@ from sqlmodel import Session
 
 from chanjo2.crud.intervals import get_gene_intervals
 from chanjo2.models.pydantic_models import CoverageInterval
+from chanjo2.models.sql_models import Exon as SQLExon
 from chanjo2.models.sql_models import Gene as SQLGene
 from chanjo2.models.sql_models import Transcript as SQLTranscript
 
@@ -22,6 +23,16 @@ def set_interval(
 def set_d4_file(coverage_file_path: str) -> D4File:
     """Create a D4 file from a file path/URL."""
     return D4File(coverage_file_path)
+
+
+def get_intervals_coords_list(
+    intervals: List[Union[SQLGene, SQLTranscript, SQLExon]]
+) -> List[Tuple[str, int, int]]:
+    """Return the coordinates of a list of intervals as a list of tuples."""
+    interval_coords: List[Tuple[str, int, int]] = []
+    for interval in intervals:
+        interval_coords.append((interval.chromosome, interval.start, interval.stop))
+    return interval_coords
 
 
 def get_intervals_mean_coverage(
@@ -97,8 +108,8 @@ def get_genes_coverage_completeness(
                 start=gene.start,
                 end=gene.stop,
                 mean_coverage=get_intervals_mean_coverage(
-                    d4_file, intervals=[(gene.chromosome, gene.start, gene.stop)]
-                )[0],
+                    d4_file, intervals=get_intervals_coords_list(intervals=[gene])[0]
+                ),
                 completeness=evaluate_intervals_completeness(
                     d4_file=d4_file,
                     intervals=[(gene.chromosome, gene.start, gene.stop)],
@@ -128,10 +139,9 @@ def get_transcripts_coverage_completeness(
             ensembl_gene_ids=[gene.ensembl_id],
             limit=None,
         )
-        intervals: List[Tuple[str, int, int]] = [
-            (transcript.chromosome, transcript.start, transcript.stop)
-            for transcript in gene_transcripts
-        ]
+        intervals: List[Tuple[str, int, int]] = get_intervals_coords_list(
+            intervals=gene_transcripts
+        )
         mean_gene_cov: float = 0
 
         if gene_transcripts:
