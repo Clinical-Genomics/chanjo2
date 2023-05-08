@@ -140,36 +140,12 @@ class CoverageInterval(BaseModel):
     start: Optional[int]
 
 
-class SampleGeneQuery(BaseModel):
-    build: Builds
-    completeness_thresholds: Optional[List[int]]
-    ensembl_ids: Optional[List[str]]
-    hgnc_ids: Optional[List[int]]
-    hgnc_symbols: Optional[List[str]]
-    sample_name: str
-
-    @root_validator
-    def check_genes_lists(cls, values):
-        nr_provided_gene_lists = 0
-        for gene_list in [
-            values.get("ensembl_ids"),
-            values.get("hgnc_ids"),
-            values.get("hgnc_symbols"),
-        ]:
-            if gene_list:
-                nr_provided_gene_lists += 1
-        if nr_provided_gene_lists != 1:
-            raise ValueError(
-                "Please provide either Ensembl IDs, HGNC IDS or HGNC symbols "
-            )
-
-
 class SampleGeneIntervalQuery(BaseModel):
     build: Builds
     completeness_thresholds: Optional[List[int]]
     ensembl_gene_ids: Optional[List[str]]
-    hgnc_ids: Optional[List[int]]
-    hgnc_symbols: Optional[List[str]]
+    hgnc_gene_ids: Optional[List[int]]
+    hgnc_gene_symbols: Optional[List[str]]
     sample_name: str
 
     @root_validator
@@ -177,12 +153,13 @@ class SampleGeneIntervalQuery(BaseModel):
         nr_provided_gene_lists = 0
         for gene_list in [
             values.get("ensembl_gene_ids"),
-            values.get("hgnc_ids"),
-            values.get("hgnc_symbols"),
+            values.get("hgnc_gene_ids"),
+            values.get("hgnc_gene_symbols"),
         ]:
             if gene_list:
                 nr_provided_gene_lists += 1
         if nr_provided_gene_lists != 1:
             raise ValueError(
-                "Please provide either Ensembl gene IDs, HGNC IDS or HGNC symbols "
+                "Please provide either Ensembl gene IDs, HGNC gene IDS or HGNC gene symbols "
             )
+        return values
