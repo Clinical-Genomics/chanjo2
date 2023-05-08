@@ -120,19 +120,20 @@ def get_genes_coverage_completeness(
     return genes_cov
 
 
-def get_transcripts_coverage_completeness(
+def get_gene_interval_coverage_completeness(
     db: Session,
     d4_file: D4File,
     genes: List[SQLGene],
+    interval_type: Union[SQLTranscript, SQLExon],
     completeness_threholds: List[Optional[int]],
 ) -> List[CoverageInterval]:
     """Return coverage of transcripts for a list of genes."""
     transcripts_cov: List[CoverageInterval] = []
     for gene in genes:
-        gene_transcripts: List[SQLTranscript] = get_gene_intervals(
+        sql_intervals: List[Union[SQLTranscript, SQLExon]] = get_gene_intervals(
             db=db,
             build=gene.build,
-            interval_type=SQLTranscript,
+            interval_type=interval_type,
             ensembl_ids=None,
             hgnc_ids=None,
             hgnc_symbols=None,
@@ -140,11 +141,11 @@ def get_transcripts_coverage_completeness(
             limit=None,
         )
         intervals: List[Tuple[str, int, int]] = get_intervals_coords_list(
-            intervals=gene_transcripts
+            intervals=sql_intervals
         )
         mean_gene_cov: float = 0
 
-        if gene_transcripts:
+        if sql_intervals:
             mean_gene_cov: float = mean(
                 get_intervals_mean_coverage(d4_file=d4_file, intervals=intervals)
             )
