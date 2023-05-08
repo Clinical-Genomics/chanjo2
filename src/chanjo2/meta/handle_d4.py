@@ -59,7 +59,7 @@ def intervals_coverage(
     return intervals_cov
 
 
-def evaluate_intervals_completeness(
+def get_intervals_completeness(
     d4_file: D4File,
     intervals: List[Tuple[str, int, int]],
     completeness_threholds: Optional[List[int]],
@@ -110,7 +110,7 @@ def get_genes_coverage_completeness(
                 mean_coverage=get_intervals_mean_coverage(
                     d4_file, intervals=get_intervals_coords_list(intervals=[gene])[0]
                 ),
-                completeness=evaluate_intervals_completeness(
+                completeness=get_intervals_completeness(
                     d4_file=d4_file,
                     intervals=[(gene.chromosome, gene.start, gene.stop)],
                     completeness_threholds=completeness_threholds,
@@ -158,7 +158,7 @@ def get_transcripts_coverage_completeness(
                 start=gene.start,
                 end=gene.stop,
                 mean_coverage=mean_gene_cov,
-                completeness=evaluate_intervals_completeness(
+                completeness=get_intervals_completeness(
                     d4_file=d4_file,
                     intervals=intervals,
                     completeness_threholds=completeness_threholds,
