@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any, List, Optional, Tuple
 
 import validators
-from pydantic import BaseModel, validator, Field
+from pydantic import BaseModel, validator, Field, root_validator
 
 from chanjo2.constants import WRONG_COVERAGE_FILE_MSG
 
@@ -148,6 +148,21 @@ class SampleGeneQuery(BaseModel):
     hgnc_symbols: Optional[List[str]]
     sample_name: str
 
+    @root_validator
+    def check_genes_lists(cls, values):
+        nr_provided_gene_lists = 0
+        for gene_list in [
+            values.get("ensembl_ids"),
+            values.get("hgnc_ids"),
+            values.get("hgnc_symbols"),
+        ]:
+            if gene_list:
+                nr_provided_gene_lists += 1
+        if nr_provided_gene_lists != 1:
+            raise ValueError(
+                "Please provide either Ensembl IDs, HGNC IDS or HGNC symbols "
+            )
+
 
 class SampleGeneIntervalQuery(BaseModel):
     build: Builds
@@ -156,3 +171,18 @@ class SampleGeneIntervalQuery(BaseModel):
     hgnc_ids: Optional[List[int]]
     hgnc_symbols: Optional[List[str]]
     sample_name: str
+
+    @root_validator
+    def check_genes_lists(cls, values):
+        nr_provided_gene_lists = 0
+        for gene_list in [
+            values.get("ensembl_gene_ids"),
+            values.get("hgnc_ids"),
+            values.get("hgnc_symbols"),
+        ]:
+            if gene_list:
+                nr_provided_gene_lists += 1
+        if nr_provided_gene_lists != 1:
+            raise ValueError(
+                "Please provide either Ensembl gene IDs, HGNC IDS or HGNC symbols "
+            )
