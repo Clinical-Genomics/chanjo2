@@ -24,7 +24,7 @@ def set_d4_file(coverage_file_path: str) -> D4File:
     return D4File(coverage_file_path)
 
 
-def intervals_mean_coverage(
+def get_intervals_mean_coverage(
     d4_file: D4File, intervals: List[Tuple[str, int, int]]
 ) -> List[float]:
     """Return the mean value over a list of intervals of a D4 file."""
@@ -96,7 +96,7 @@ def get_genes_coverage_completeness(
                 chromosome=gene.chromosome,
                 start=gene.start,
                 end=gene.stop,
-                mean_coverage=intervals_mean_coverage(
+                mean_coverage=get_intervals_mean_coverage(
                     d4_file, intervals=[(gene.chromosome, gene.start, gene.stop)]
                 )[0],
                 completeness=evaluate_intervals_completeness(
@@ -136,7 +136,7 @@ def get_transcripts_coverage_completeness(
 
         if gene_transcripts:
             mean_gene_cov: float = mean(
-                intervals_mean_coverage(d4_file=d4_file, intervals=intervals)
+                get_intervals_mean_coverage(d4_file=d4_file, intervals=intervals)
             )
 
         transcripts_cov.append(

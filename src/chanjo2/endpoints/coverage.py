@@ -15,7 +15,7 @@ from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import parse_bed
 from chanjo2.meta.handle_d4 import (
     intervals_coverage,
-    intervals_mean_coverage,
+    get_intervals_mean_coverage,
     set_d4_file,
     set_interval,
     get_genes_coverage_completeness,
@@ -56,7 +56,9 @@ def d4_interval_coverage(
         start=start,
         end=end,
         interval=interval,
-        mean_coverage=intervals_mean_coverage(d4_file=d4_file, intervals=[interval])[0],
+        mean_coverage=get_intervals_mean_coverage(
+            d4_file=d4_file, intervals=[interval]
+        )[0],
     )
 
 
