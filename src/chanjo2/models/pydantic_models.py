@@ -6,7 +6,10 @@ from typing import Any, List, Optional, Tuple
 import validators
 from pydantic import BaseModel, validator, Field, root_validator
 
-from chanjo2.constants import WRONG_COVERAGE_FILE_MSG
+from chanjo2.constants import (
+    WRONG_COVERAGE_FILE_MSG,
+    MULTIPLE_GENE_LISTS_NOT_SUPPORTED_MSG,
+)
 
 
 class Builds(str, Enum):
@@ -148,7 +151,7 @@ class SampleGeneIntervalQuery(BaseModel):
     hgnc_gene_symbols: Optional[List[str]]
     sample_name: str
 
-    @root_validator
+    @root_validator(pre=True)
     def check_genes_lists(cls, values):
         nr_provided_gene_lists = 0
         for gene_list in [
@@ -158,8 +161,5 @@ class SampleGeneIntervalQuery(BaseModel):
         ]:
             if gene_list:
                 nr_provided_gene_lists += 1
-        if nr_provided_gene_lists != 1:
-            raise ValueError(
-                "Please provide either Ensembl gene IDs, HGNC gene IDS or HGNC gene symbols "
-            )
+        assert nr_provided_gene_lists == 1, MULTIPLE_GENE_LISTS_NOT_SUPPORTED_MSG
         return values
