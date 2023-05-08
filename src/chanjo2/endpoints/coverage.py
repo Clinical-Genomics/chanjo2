@@ -1,6 +1,7 @@
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 from fastapi import APIRouter, HTTPException, File, status, Depends
+from fastapi.responses import JSONResponse
 from pyd4 import D4File
 from sqlmodel import Session
 
@@ -89,13 +90,10 @@ def d4_intervals_coverage(coverage_file_path: str, bed_file: bytes = File(...)):
     return intervals_coverage(d4_file=d4_file, intervals=intervals)
 
 
-@router.post("/coverage/sample/genes_coverage", response_model=List[CoverageInterval])
-async def sample_genes_coverage(
-    query: SampleGeneQuery, db: Session = Depends(get_session)
-):
-    """Returns coverage over a list of genes (entire gene) for a given sample in the database."""
-
-    sample: SQLSample = get_sample(db=db, sample_name=query.sample_name)
+def get_sample_coverage_file(
+    db: Session, sample_name: str
+) -> Union[D4File, JSONResponse]:
+    sample: SQLSample = get_sample(db=db, sample_name=sample_name)
     if sample is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -106,8 +104,19 @@ async def sample_genes_coverage(
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=WRONG_COVERAGE_FILE_MSG,
+            detail=SAMPLE_NOT_FOUND,
         )
+
+    return d4_file
+
+
+@router.post("/coverage/sample/genes_coverage", response_model=List[CoverageInterval])
+async def sample_genes_coverage(
+    query: SampleGeneQuery, db: Session = Depends(get_session)
+):
+    """Returns coverage over a list of genes (entire gene) for a given sample in the database."""
+
+    d4_file: D4File = get_sample_coverage_file(db=db, sample_name=query.sample_name)
 
     genes: List[SQLGene] = get_genes(
         db=db,
@@ -133,19 +142,7 @@ async def sample_transcripts_coverage(
 ):
     """Returns coverage over a list of genes (transcripts intervals only) for a given sample in the database."""
 
-    sample: SQLSample = get_sample(db=db, sample_name=query.sample_name)
-    if sample is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=SAMPLE_NOT_FOUND,
-        )
-    try:
-        d4_file: D4File = set_d4_file(coverage_file_path=sample.coverage_file_path)
-    except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=WRONG_COVERAGE_FILE_MSG,
-        )
+    d4_file: D4File = get_sample_coverage_file(db=db, sample_name=query.sample_name)
 
     genes: List[SQLGene] = get_genes(
         db=db,
@@ -171,19 +168,7 @@ async def sample_exons_coverage(
 ):
     """Returns coverage over a list of genes (exons intervals only) for a given sample in the database."""
 
-    sample: SQLSample = get_sample(db=db, sample_name=query.sample_name)
-    if sample is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=SAMPLE_NOT_FOUND,
-        )
-    try:
-        d4_file: D4File = set_d4_file(coverage_file_path=sample.coverage_file_path)
-    except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=WRONG_COVERAGE_FILE_MSG,
-        )
+    d4_file: D4File = get_sample_coverage_file(db=db, sample_name=query.sample_name)
 
     genes: List[SQLGene] = get_genes(
         db=db,
