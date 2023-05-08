@@ -22,8 +22,9 @@
 - Demo genes, transcripts and exons loaded on demo instance startup
 - Return coverage over a list of genes for a sample in the database
 - Return coverage and coverage completeness (custom thresholds) over a list of genes for a sample in the database
-- Return coverage over a list of genes (transcripts only) for a sample in the database
-- Return coverage completeness over a list of gene transcripts for a sample in the database
+- Return transcripts coverage and coverage completeness (custom thresholds) over a list of genes for a sample in the
+  database
+- Return exons coverage and coverage completeness (custom thresholds) over a list of genes for a sample in the database
 
 ### Fixed
 
