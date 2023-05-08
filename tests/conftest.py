@@ -59,6 +59,7 @@ class Endpoints(str, Enum):
     INTERVALS_FILE_COVERAGE = "/coverage/d4/interval_file/"
     SAMPLE_GENES_COVERAGE = "/coverage/sample/genes_coverage"
     SAMPLE_TRANSCRIPTS_COVERAGE = "/coverage/sample/transcripts_coverage"
+    SAMPLE_EXONS_COVERAGE = "/coverage/sample/exons_coverage"
 
 
 @pytest.fixture
