@@ -139,7 +139,7 @@ class CoverageInterval(BaseModel):
     hgnc_id: Optional[int]
     hgnc_symbol: Optional[str]
     interval_id: Optional[int]
-    mean_coverage: float
+    mean_coverage: List[Tuple] = Field(default_factory=list)
     start: Optional[int]
 
 
@@ -149,7 +149,7 @@ class SampleGeneIntervalQuery(BaseModel):
     ensembl_gene_ids: Optional[List[str]]
     hgnc_gene_ids: Optional[List[int]]
     hgnc_gene_symbols: Optional[List[str]]
-    sample_name: str
+    samples: List[str]
 
     @root_validator(pre=True)
     def check_genes_lists(cls, values):
