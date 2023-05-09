@@ -24,7 +24,6 @@ from chanjo2.meta.handle_d4 import (
 )
 from chanjo2.models.pydantic_models import (
     CoverageInterval,
-    SampleGeneQuery,
     SampleGeneIntervalQuery,
 )
 from chanjo2.models.sql_models import Exon as SQLExon
@@ -112,7 +111,7 @@ def get_sample_coverage_file(
 
 @router.post("/coverage/sample/genes_coverage", response_model=List[CoverageInterval])
 async def sample_genes_coverage(
-    query: SampleGeneQuery, db: Session = Depends(get_session)
+    query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
 ):
     """Returns coverage over a list of genes (entire gene) for a given sample in the database."""
 
@@ -121,9 +120,9 @@ async def sample_genes_coverage(
     genes: List[SQLGene] = get_genes(
         db=db,
         build=query.build,
-        ensembl_ids=query.ensembl_ids,
-        hgnc_ids=query.hgnc_ids,
-        hgnc_symbols=query.hgnc_symbols,
+        ensembl_ids=query.ensembl_gene_ids,
+        hgnc_ids=query.hgnc_gene_ids,
+        hgnc_symbols=query.hgnc_gene_symbols,
         limit=None,
     )
 
@@ -148,8 +147,8 @@ async def sample_transcripts_coverage(
         db=db,
         build=query.build,
         ensembl_ids=query.ensembl_gene_ids,
-        hgnc_ids=query.hgnc_ids,
-        hgnc_symbols=query.hgnc_symbols,
+        hgnc_ids=query.hgnc_gene_ids,
+        hgnc_symbols=query.hgnc_gene_symbols,
         limit=None,
     )
 
@@ -174,8 +173,8 @@ async def sample_exons_coverage(
         db=db,
         build=query.build,
         ensembl_ids=query.ensembl_gene_ids,
-        hgnc_ids=query.hgnc_ids,
-        hgnc_symbols=query.hgnc_symbols,
+        hgnc_ids=query.hgnc_gene_ids,
+        hgnc_symbols=query.hgnc_gene_symbols,
         limit=None,
     )
 

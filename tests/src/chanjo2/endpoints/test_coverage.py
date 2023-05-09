@@ -5,7 +5,11 @@ import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
 
-from chanjo2.constants import WRONG_COVERAGE_FILE_MSG, WRONG_BED_FILE_MSG
+from chanjo2.constants import (
+    WRONG_COVERAGE_FILE_MSG,
+    WRONG_BED_FILE_MSG,
+    MULTIPLE_GENE_LISTS_NOT_SUPPORTED_MSG,
+)
 from chanjo2.demo import gene_panel_file, gene_panel_path
 from chanjo2.models.pydantic_models import (
     CoverageInterval,
@@ -165,6 +169,33 @@ def test_d4_intervals_coverage(
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
+def test_sample_coverage_multiple_genes_lists(
+    build: str,
+    demo_client: TestClient,
+    endpoints: Type,
+    genomic_ids_per_build: Dict[str, List],
+):
+    """Test the validation of the parameters passed to the sample coverage endpoints when multiple gene lists are passed."""
+
+    # GIVEN a sample gene coverage query containing multiple gene lists (hgnc_gene_symbols and hgnc_gene_ids)
+    sample_query: Dict[str, str] = {
+        "sample_name": DEMO_SAMPLE["name"],
+        "build": build,
+        "hgnc_gene_symbols": genomic_ids_per_build[build]["hgnc_symbols"],
+        "hgnc_gene_ids": genomic_ids_per_build[build]["hgnc_ids"],
+    }
+
+    # THEN the response should be return error
+    response = demo_client.post(endpoints.SAMPLE_GENES_COVERAGE, json=sample_query)
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    # AND a meaningful message
+    result = response.json()
+
+    assert result["detail"][0]["msg"] == MULTIPLE_GENE_LISTS_NOT_SUPPORTED_MSG
+
+
+@pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_sample_gene_coverage_hgnc_symbols(
     build: str,
     demo_client: TestClient,
@@ -177,7 +208,7 @@ def test_sample_gene_coverage_hgnc_symbols(
     sample_query: Dict[str, str] = {
         "sample_name": DEMO_SAMPLE["name"],
         "build": build,
-        "hgnc_symbols": genomic_ids_per_build[build]["hgnc_symbols"],
+        "hgnc_gene_symbols": genomic_ids_per_build[build]["hgnc_symbols"],
         "completeness_thresholds": COVERAGE_COMPLETENESS_THRESHOLDS,
     }
 
@@ -204,7 +235,7 @@ def test_sample_gene_coverage_hgnc_ids(
     sample_query: Dict[str, str] = {
         "sample_name": DEMO_SAMPLE["name"],
         "build": build,
-        "hgnc_ids": genomic_ids_per_build[build]["hgnc_ids"],
+        "hgnc_gene_ids": genomic_ids_per_build[build]["hgnc_ids"],
         "completeness_thresholds": COVERAGE_COMPLETENESS_THRESHOLDS,
     }
 
@@ -231,7 +262,7 @@ def test_sample_gene_coverage_ensembl_ids(
     sample_query: Dict[str, str] = {
         "sample_name": DEMO_SAMPLE["name"],
         "build": build,
-        "ensembl_ids": genomic_ids_per_build[build]["ensembl_gene_ids"],
+        "ensembl_gene_ids": genomic_ids_per_build[build]["ensembl_gene_ids"],
         "completeness_thresholds": COVERAGE_COMPLETENESS_THRESHOLDS,
     }
 
@@ -258,7 +289,7 @@ def test_sample_transcripts_coverage_hgnc_symbols(
     sample_query: Dict[str, str] = {
         "sample_name": DEMO_SAMPLE["name"],
         "build": build,
-        "hgnc_symbols": genomic_ids_per_build[build]["hgnc_symbols"],
+        "hgnc_gene_symbols": genomic_ids_per_build[build]["hgnc_symbols"],
         "completeness_thresholds": COVERAGE_COMPLETENESS_THRESHOLDS,
     }
 
@@ -287,7 +318,7 @@ def test_sample_transcripts_coverage_hgnc_ids(
     sample_query: Dict[str, str] = {
         "sample_name": DEMO_SAMPLE["name"],
         "build": build,
-        "hgnc_ids": genomic_ids_per_build[build]["hgnc_ids"],
+        "hgnc_gene_ids": genomic_ids_per_build[build]["hgnc_ids"],
         "completeness_thresholds": COVERAGE_COMPLETENESS_THRESHOLDS,
     }
 
@@ -345,7 +376,7 @@ def test_sample_exons_coverage_hgnc_symbols(
     sample_query: Dict[str, str] = {
         "sample_name": DEMO_SAMPLE["name"],
         "build": build,
-        "hgnc_symbols": genomic_ids_per_build[build]["hgnc_symbols"],
+        "hgnc_gene_symbols": genomic_ids_per_build[build]["hgnc_symbols"],
         "completeness_thresholds": COVERAGE_COMPLETENESS_THRESHOLDS,
     }
 
@@ -372,7 +403,7 @@ def test_sample_exons_coverage_hgnc_ids(
     sample_query: Dict[str, str] = {
         "sample_name": DEMO_SAMPLE["name"],
         "build": build,
-        "hgnc_ids": genomic_ids_per_build[build]["hgnc_ids"],
+        "hgnc_gene_ids": genomic_ids_per_build[build]["hgnc_ids"],
         "completeness_thresholds": COVERAGE_COMPLETENESS_THRESHOLDS,
     }
 

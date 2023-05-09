@@ -4,9 +4,12 @@ from pathlib import Path
 from typing import Any, List, Optional, Tuple
 
 import validators
-from pydantic import BaseModel, validator, Field
+from pydantic import BaseModel, validator, Field, root_validator
 
-from chanjo2.constants import WRONG_COVERAGE_FILE_MSG
+from chanjo2.constants import (
+    WRONG_COVERAGE_FILE_MSG,
+    MULTIPLE_GENE_LISTS_NOT_SUPPORTED_MSG,
+)
 
 
 class Builds(str, Enum):
@@ -140,19 +143,24 @@ class CoverageInterval(BaseModel):
     start: Optional[int]
 
 
-class SampleGeneQuery(BaseModel):
-    build: Builds
-    completeness_thresholds: Optional[List[int]]
-    ensembl_ids: Optional[List[str]]
-    hgnc_ids: Optional[List[int]]
-    hgnc_symbols: Optional[List[str]]
-    sample_name: str
-
-
 class SampleGeneIntervalQuery(BaseModel):
     build: Builds
     completeness_thresholds: Optional[List[int]]
     ensembl_gene_ids: Optional[List[str]]
-    hgnc_ids: Optional[List[int]]
-    hgnc_symbols: Optional[List[str]]
+    hgnc_gene_ids: Optional[List[int]]
+    hgnc_gene_symbols: Optional[List[str]]
     sample_name: str
+
+    @root_validator(pre=True)
+    def check_genes_lists(cls, values):
+        nr_provided_gene_lists: int = 0
+        for gene_list in [
+            values.get("ensembl_gene_ids"),
+            values.get("hgnc_gene_ids"),
+            values.get("hgnc_gene_symbols"),
+        ]:
+            if gene_list:
+                nr_provided_gene_lists += 1
+        if nr_provided_gene_lists != 1:
+            raise ValueError(MULTIPLE_GENE_LISTS_NOT_SUPPORTED_MSG)
+        return values
