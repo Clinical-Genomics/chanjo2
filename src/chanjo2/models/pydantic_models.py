@@ -153,7 +153,7 @@ class SampleGeneIntervalQuery(BaseModel):
 
     @root_validator(pre=True)
     def check_genes_lists(cls, values):
-        nr_provided_gene_lists = 0
+        nr_provided_gene_lists: int = 0
         for gene_list in [
             values.get("ensembl_gene_ids"),
             values.get("hgnc_gene_ids"),
