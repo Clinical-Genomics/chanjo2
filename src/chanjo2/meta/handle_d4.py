@@ -144,7 +144,7 @@ def get_genes_coverage_completeness(
 
 def get_gene_interval_coverage_completeness(
     db: Session,
-    d4_file: D4File,
+    samples_d4_files: List[Tuple[str, D4File]],
     genes: List[SQLGene],
     interval_type: Union[SQLTranscript, SQLExon],
     completeness_threholds: List[Optional[int]],
@@ -165,12 +165,32 @@ def get_gene_interval_coverage_completeness(
         intervals: List[Tuple[str, int, int]] = get_intervals_coords_list(
             intervals=sql_intervals
         )
-        mean_gene_cov: float = 0
+
+        samples_mean_coverage: List[Tuple[str, float]] = []
+        samples_cov_completeness: List[Tuple[str, Decimal]] = []
 
         if sql_intervals:
-            mean_gene_cov: float = mean(
-                get_intervals_mean_coverage(d4_file=d4_file, intervals=intervals)
-            )
+            for sample, d4_file in samples_d4_files:
+                samples_mean_coverage.append(
+                    (
+                        sample,
+                        mean(
+                            get_intervals_mean_coverage(
+                                d4_file=d4_file, intervals=intervals
+                            )
+                        ),
+                    )
+                )
+                samples_cov_completeness.append(
+                    (
+                        sample,
+                        get_intervals_completeness(
+                            d4_file=d4_file,
+                            intervals=intervals,
+                            completeness_threholds=completeness_threholds,
+                        ),
+                    )
+                )
 
         transcripts_cov.append(
             CoverageInterval(
@@ -180,12 +200,8 @@ def get_gene_interval_coverage_completeness(
                 chromosome=gene.chromosome,
                 start=gene.start,
                 end=gene.stop,
-                mean_coverage=mean_gene_cov,
-                completeness=get_intervals_completeness(
-                    d4_file=d4_file,
-                    intervals=intervals,
-                    completeness_threholds=completeness_threholds,
-                ),
+                mean_coverage=samples_cov_completeness,
+                completeness=[],
             )
         )
     return transcripts_cov
