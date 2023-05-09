@@ -111,7 +111,9 @@ def get_genes_coverage_completeness(
             samples_mean_coverage.append(
                 (
                     sample,
-                    get_intervals_mean_coverage(d4_file=d4_file, intervals=gene_coords),
+                    get_intervals_mean_coverage(d4_file=d4_file, intervals=gene_coords)[
+                        0
+                    ],
                 )
             )
             samples_cov_completeness.append(
