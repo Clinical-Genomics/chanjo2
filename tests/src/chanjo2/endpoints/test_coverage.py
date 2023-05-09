@@ -175,7 +175,7 @@ def test_sample_coverage_multiple_genes_lists(
     endpoints: Type,
     genomic_ids_per_build: Dict[str, List],
 ):
-    """Test the validation of the parameters passed to the sample coverage endpoints when multiple gene lists are passed"""
+    """Test the validation of the parameters passed to the sample coverage endpoints when multiple gene lists are passed."""
 
     # GIVEN a sample gene coverage query containing multiple gene lists (hgnc_gene_symbols and hgnc_gene_ids)
     sample_query: Dict[str, str] = {
