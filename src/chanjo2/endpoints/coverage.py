@@ -56,14 +56,18 @@ def d4_interval_coverage(
             detail=WRONG_COVERAGE_FILE_MSG,
         )
 
+    LOG.warning(d4_file)
     return CoverageInterval(
         chromosome=chromosome,
         start=start,
         end=end,
         interval=interval,
-        mean_coverage=get_intervals_mean_coverage(
-            d4_file=d4_file, intervals=[interval]
-        )[0],
+        mean_coverage=[
+            (
+                "D4File",
+                get_intervals_mean_coverage(d4_file=d4_file, intervals=[interval])[0],
+            )
+        ],
     )
 
 

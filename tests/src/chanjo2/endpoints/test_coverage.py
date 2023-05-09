@@ -56,7 +56,7 @@ def test_d4_interval_coverage(
     # THEN the mean coverage over the interval should be returned
     result = response.json()
     coverage_data = CoverageInterval(**result)
-    assert coverage_data.mean_coverage > 0
+    assert coverage_data.mean_coverage
 
     # THEN the queried interval should also be present
     assert coverage_data.chromosome
@@ -83,7 +83,7 @@ def test_d4_interval_coverage_single_chromosome(
     # AND the mean coverage over the entire chromosome should be present in the result
     result = response.json()
     coverage_data = CoverageInterval(**result)
-    assert coverage_data.mean_coverage > 0
+    assert coverage_data.mean_coverage
     # together with the queried interval
     assert coverage_data.chromosome
     assert coverage_data.start is None

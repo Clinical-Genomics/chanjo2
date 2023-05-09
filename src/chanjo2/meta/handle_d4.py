@@ -53,7 +53,7 @@ def intervals_coverage(
                 chromosome=interval[0],
                 start=interval[1],
                 end=interval[2],
-                mean_coverage=d4_file.mean(interval),
+                mean_coverage=[("D4File", d4_file.mean(interval))],
             )
         )
     return intervals_cov
