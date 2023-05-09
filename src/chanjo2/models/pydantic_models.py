@@ -161,5 +161,6 @@ class SampleGeneIntervalQuery(BaseModel):
         ]:
             if gene_list:
                 nr_provided_gene_lists += 1
-        assert nr_provided_gene_lists == 1, MULTIPLE_GENE_LISTS_NOT_SUPPORTED_MSG
+        if nr_provided_gene_lists != 1:
+            raise ValueError(MULTIPLE_GENE_LISTS_NOT_SUPPORTED_MSG)
         return values
