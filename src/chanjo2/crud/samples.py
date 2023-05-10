@@ -1,4 +1,3 @@
-import logging
 from typing import List, Optional
 
 from sqlalchemy.orm import Session, query
@@ -7,8 +6,6 @@ from chanjo2.crud.cases import filter_cases_by_name
 from chanjo2.models.pydantic_models import SampleCreate
 from chanjo2.models.sql_models import Case as SQLCase
 from chanjo2.models.sql_models import Sample as SQLSample
-
-LOG = logging.getLogger("uvicorn.access")
 
 
 def _filter_samples_by_name(
