@@ -1,3 +1,4 @@
+import logging
 from decimal import Decimal
 from statistics import mean
 from typing import List, Optional, Tuple, Union
@@ -11,6 +12,8 @@ from chanjo2.models.pydantic_models import CoverageInterval
 from chanjo2.models.sql_models import Exon as SQLExon
 from chanjo2.models.sql_models import Gene as SQLGene
 from chanjo2.models.sql_models import Transcript as SQLTranscript
+
+LOG = logging.getLogger("uvicorn.access")
 
 
 def set_interval(
@@ -162,6 +165,7 @@ def get_gene_interval_coverage_completeness(
             ensembl_gene_ids=[gene.ensembl_id],
             limit=None,
         )
+
         intervals: List[Tuple[str, int, int]] = get_intervals_coords_list(
             intervals=sql_intervals
         )
@@ -169,7 +173,7 @@ def get_gene_interval_coverage_completeness(
         samples_mean_coverage: List[Tuple[str, float]] = []
         samples_cov_completeness: List[Tuple[str, Decimal]] = []
 
-        if sql_intervals:
+        if intervals:
             for sample, d4_file in samples_d4_files:
                 samples_mean_coverage.append(
                     (
@@ -200,8 +204,8 @@ def get_gene_interval_coverage_completeness(
                 chromosome=gene.chromosome,
                 start=gene.start,
                 end=gene.stop,
-                mean_coverage=samples_cov_completeness,
-                completeness=[],
+                mean_coverage=samples_mean_coverage,
+                completeness=samples_cov_completeness,
             )
         )
     return transcripts_cov
