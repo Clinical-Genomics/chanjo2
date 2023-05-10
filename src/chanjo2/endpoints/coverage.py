@@ -1,4 +1,3 @@
-import logging
 from typing import List, Optional, Tuple, Union
 
 from fastapi import APIRouter, HTTPException, File, status, Depends
@@ -31,8 +30,6 @@ from chanjo2.models.sql_models import Exon as SQLExon
 from chanjo2.models.sql_models import Gene as SQLGene
 from chanjo2.models.sql_models import Transcript as SQLTranscript
 
-LOG = logging.getLogger("uvicorn.access")
-
 router = APIRouter()
 
 
@@ -56,7 +53,6 @@ def d4_interval_coverage(
             detail=WRONG_COVERAGE_FILE_MSG,
         )
 
-    LOG.warning(d4_file)
     return CoverageInterval(
         chromosome=chromosome,
         start=start,
@@ -115,8 +111,7 @@ def get_samples_coverage_file(
                 coverage_file_path=sqlsample.coverage_file_path
             )
             samples_d4_files.append((sqlsample.name, d4_file))
-        except Exception as ex:
-            LOG.warning(ex)
+        except Exception:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=WRONG_COVERAGE_FILE_MSG,
