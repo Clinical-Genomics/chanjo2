@@ -98,7 +98,7 @@ def get_samples_coverage_file(
     """Return a list of sample names with relative D4 coverage files."""
 
     samples_d4_files: List[Tuple[str, D4File]] = []
-    sqlsamples: List[SQLSample] = get_samples_by_name(db=db, sample_names=samples)
+    sql_samples: List[SQLSample] = get_samples_by_name(db=db, sample_names=samples)
 
     if len(sqlsamples) < len(samples):
         raise HTTPException(
