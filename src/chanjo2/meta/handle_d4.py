@@ -20,7 +20,7 @@ def set_interval(
     return (chrom, start, end) if start and end else chrom
 
 
-def set_d4_file(coverage_file_path: str) -> D4File:
+def get_d4_file(coverage_file_path: str) -> D4File:
     """Create a D4 file from a file path/URL."""
     return D4File(coverage_file_path)
 

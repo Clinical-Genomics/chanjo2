@@ -17,7 +17,7 @@ from chanjo2.meta.handle_bed import parse_bed
 from chanjo2.meta.handle_d4 import (
     intervals_coverage,
     get_intervals_mean_coverage,
-    set_d4_file,
+    get_d4_file,
     set_interval,
     get_genes_coverage_completeness,
     get_gene_interval_coverage_completeness,
@@ -46,7 +46,7 @@ def d4_interval_coverage(
         chrom=chromosome, start=start, end=end
     )
     try:
-        d4_file: D4File = set_d4_file(coverage_file_path)
+        d4_file: D4File = get_d4_file(coverage_file_path)
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -72,7 +72,7 @@ def d4_intervals_coverage(coverage_file_path: str, bed_file: bytes = File(...)):
     """Return coverage on the given intervals for a D4 resource located on the disk or on a remote server."""
 
     try:
-        d4_file: D4File = set_d4_file(coverage_file_path=coverage_file_path)
+        d4_file: D4File = get_d4_file(coverage_file_path=coverage_file_path)
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -100,12 +100,12 @@ def get_samples_coverage_file(
     samples_d4_files: List[Tuple[str, D4File]] = []
     sql_samples: List[SQLSample] = get_samples_by_name(db=db, sample_names=samples)
 
-    if len(sqlsamples) < len(samples):
+    if len(sql_samples) < len(samples):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=SAMPLE_NOT_FOUND,
         )
-    for sqlsample in sqlsamples:
+    for sqlsample in sql_samples:
         try:
             d4_file: D4File = get_d4_file(
                 coverage_file_path=sqlsample.coverage_file_path
