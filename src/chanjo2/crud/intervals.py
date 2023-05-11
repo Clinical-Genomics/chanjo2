@@ -108,6 +108,9 @@ def get_genes(
 ) -> List[SQLGene]:
     """Return genes according to specified fields."""
     genes: query.Query = db.query(SQLGene)
+    genes: query.Query = _filter_intervals_by_build(
+        intervals=genes, interval_type=SQLGene, build=build
+    )
     if ensembl_ids:
         genes: query.Query = _filter_intervals_by_ensembl_ids(
             intervals=genes, interval_type=SQLGene, ensembl_ids=ensembl_ids
@@ -120,9 +123,7 @@ def get_genes(
         genes: query.Query = _filter_intervals_by_hgnc_symbols(
             intervals=genes, interval_type=SQLGene, hgnc_symbols=hgnc_symbols
         )
-    genes: query.Query = _filter_intervals_by_build(
-        intervals=genes, interval_type=SQLGene, build=build
-    )
+
     if limit:
         return genes.limit(limit).all()
     return genes.all()
