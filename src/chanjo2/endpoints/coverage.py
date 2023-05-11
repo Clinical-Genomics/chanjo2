@@ -107,7 +107,7 @@ def get_samples_coverage_file(
         )
     for sqlsample in sqlsamples:
         try:
-            d4_file: D4File = set_d4_file(
+            d4_file: D4File = get_d4_file(
                 coverage_file_path=sqlsample.coverage_file_path
             )
             samples_d4_files.append((sqlsample.name, d4_file))
