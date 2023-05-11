@@ -195,6 +195,10 @@ def get_gene_intervals(
     if hgnc_ids or hgnc_symbols:
         ensembl_gene_ids: List[str] = [gene.ensembl_id for gene in genes]
 
+    intervals: query.Query = _filter_intervals_by_build(
+        intervals=intervals, interval_type=interval_type, build=build
+    )
+
     if ensembl_ids:
         intervals: query.Query = _filter_intervals_by_ensembl_ids(
             intervals=intervals, interval_type=interval_type, ensembl_ids=ensembl_ids
@@ -205,10 +209,6 @@ def get_gene_intervals(
             interval_type=interval_type,
             ensembl_gene_ids=ensembl_gene_ids,
         )
-
-    intervals: query.Query = _filter_intervals_by_build(
-        intervals=intervals, interval_type=interval_type, build=build
-    )
 
     if limit:
         return intervals.limit(limit).all()
