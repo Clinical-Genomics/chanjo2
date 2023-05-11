@@ -60,3 +60,4 @@
 - Simpler code to load genes and transcripts into the database
 - Updated version of several GitHub actions
 - Validate sample coverage queries so that only one gene list format can be provided
+- Speed up queries by optimizing Genes, Transcripts and Exons table indexes

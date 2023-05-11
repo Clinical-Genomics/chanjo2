@@ -1,8 +1,9 @@
-from chanjo2.dbutil import Base
-from chanjo2.models.pydantic_models import Builds
-from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, String
+from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, String, Index
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+
+from chanjo2.dbutil import Base
+from chanjo2.models.pydantic_models import Builds
 
 
 class Case(Base):
@@ -51,11 +52,16 @@ class Gene(Base):
     chromosome = Column(String(6), nullable=False)
     start = Column(Integer, nullable=False)
     stop = Column(Integer, nullable=False)
-    ensembl_id = Column(String(24), nullable=False, index=True)
-    hgnc_id = Column(Integer, nullable=True, index=True)
-    hgnc_symbol = Column(String(64), nullable=True, index=True)
+    ensembl_id = Column(String(24), nullable=False)
+    hgnc_id = Column(Integer, nullable=True)
+    hgnc_symbol = Column(String(64), nullable=True)
     build = Column(
         Enum(Builds, values_callable=lambda x: Builds.get_enum_values()), index=True
+    )
+    __table_args__ = (
+        Index("geneidx_ens_id_build", "ensembl_id", "build"),
+        Index("geneidx_hgnc_id_build", "hgnc_id", "build"),
+        Index("geneidx_hgnc_symbol_build", "hgnc_symbol", "build"),
     )
 
 
@@ -68,15 +74,16 @@ class Transcript(Base):
     start = Column(Integer, nullable=False)
     stop = Column(Integer, nullable=False)
     ensembl_id = Column(String(24), nullable=False, index=True)
-    refseq_mrna = Column(String(24), nullable=True, index=True)
-    refseq_mrna_pred = Column(String(24), nullable=True, index=False)
-    refseq_ncrna = Column(String(24), nullable=True, index=False)
+    refseq_mrna = Column(String(24), nullable=True)
+    refseq_mrna_pred = Column(String(24), nullable=True)
+    refseq_ncrna = Column(String(24), nullable=True)
     refseq_mane_select = Column(String(24), nullable=True, index=True)
     refseq_mane_plus_clinical = Column(String(24), nullable=True, index=True)
-    ensembl_gene_id = Column(String(24), nullable=False, index=True)
+    ensembl_gene_id = Column(String(24), nullable=False)
     build = Column(
         Enum(Builds, values_callable=lambda x: Builds.get_enum_values()), index=True
     )
+    __table_args__ = (Index("txidx_ens_gene_build", "ensembl_gene_id", "build"),)
 
 
 class Exon(Base):
@@ -88,7 +95,8 @@ class Exon(Base):
     start = Column(Integer, nullable=False)
     stop = Column(Integer, nullable=False)
     ensembl_id = Column(String(24), nullable=False, index=False)
-    ensembl_gene_id = Column(String(24), nullable=False, index=True)
+    ensembl_gene_id = Column(String(24), nullable=False)
     build = Column(
         Enum(Builds, values_callable=lambda x: Builds.get_enum_values()), index=True
     )
+    __table_args__ = (Index("exonidx_ens_gene_build", "ensembl_gene_id", "build"),)
