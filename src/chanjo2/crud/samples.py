@@ -29,7 +29,7 @@ def get_samples(db: Session, limit: int = 100) -> List[SQLSample]:
     return db.query(SQLSample).limit(limit).all()
 
 
-def get_samples_by_name(db: Session, sample_names: List) -> List[SQLSample]:
+def get_samples_by_name(db: Session, sample_names: List[str]) -> List[SQLSample]:
     """Filter samples by a list of names."""
     query = db.query(SQLSample)
     return _filter_samples_by_name(samples=query, sample_names=sample_names).all()
