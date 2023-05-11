@@ -1,5 +1,5 @@
 import logging
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Dict, Tuple
 
 from sqlalchemy import delete
 from sqlalchemy.orm import Session, query
@@ -180,36 +180,24 @@ def get_gene_intervals(
     ensembl_gene_ids: Optional[List[str]],
     limit: Optional[int],
     interval_type: Union[SQLTranscript, SQLExon],
-) -> List[SQLTranscript]:
-    """Return transcripts according to specified fields."""
+) -> Dict[str, List[Tuple[str, int, int]]]:
+    """Retrieve the coordinates for transcripts or exons from a list of genes."""
 
-    intervals: query.Query = db.query(interval_type)
-    genes = db.query(SQLGene)
-    if hgnc_ids:
-        genes: query.Query = _filter_intervals_by_hgnc_ids(
-            intervals=genes, interval_type=SQLGene, hgnc_ids=hgnc_ids
-        ).all()
-    elif hgnc_symbols:
-        genes: query.Query = _filter_intervals_by_hgnc_symbols(
-            intervals=genes, interval_type=SQLGene, hgnc_symbols=hgnc_symbols
-        ).all()
-    if hgnc_ids or hgnc_symbols:
-        ensembl_gene_ids: List[str] = [gene.ensembl_id for gene in genes]
-
+    intervals: query.Query = db.query(interval_type).join(SQLGene)
     if ensembl_ids:
-        intervals: query.Query = _filter_intervals_by_ensembl_ids(
-            intervals=intervals, interval_type=interval_type, ensembl_ids=ensembl_ids
-        )
+        intervals = intervals.filter(interval_type.ensembl_id.in_(ensembl_ids))
     elif ensembl_gene_ids:
-        intervals: query.Query = _filter_intervals_by_ensembl_gene_ids(
-            intervals=intervals,
-            interval_type=interval_type,
-            ensembl_gene_ids=ensembl_gene_ids,
+        intervals = intervals.filter(
+            interval_type.ensembl_gene_id.in_(ensembl_gene_ids)
         )
+    elif hgnc_ids:
+        intervals = intervals.filter(SQLGene.ensembl_id.in_(hgnc_ids))
+    elif hgnc_symbols:
+        intervals = intervals.filter(SQLGene.hgnc_symbol.in_(hgnc_symbols))
+    elif hgnc_ids:
+        intervals = intervals.filter(SQLGene.hgnc_id.in_(hgnc_ids))
 
-    intervals: query.Query = _filter_intervals_by_build(
-        intervals=intervals, interval_type=interval_type, build=build
-    )
+    intervals = intervals.filter(interval_type.build == build)
     if limit:
         return intervals.limit(limit).all()
 
