@@ -59,7 +59,7 @@ class Gene(Base):
         Enum(Builds, values_callable=lambda x: Builds.get_enum_values()), index=True
     )
     __table_args__ = (
-        Index("geneidx_build_ensemble_id", "build", "ensembl_id"),
+        Index("geneidx_build_ensembl_id", "build", "ensembl_id"),
         Index(
             "geneidx_build_hgnc_id",
             "build",
@@ -91,7 +91,7 @@ class Transcript(Base):
     build = Column(
         Enum(Builds, values_callable=lambda x: Builds.get_enum_values()), index=True
     )
-    __table_args__ = (Index("txidx_build_ensemble_gene", "build", "ensembl_gene_id"),)
+    __table_args__ = (Index("txidx_build_ensembl_gene", "build", "ensembl_gene_id"),)
 
 
 class Exon(Base):
@@ -107,4 +107,4 @@ class Exon(Base):
     build = Column(
         Enum(Builds, values_callable=lambda x: Builds.get_enum_values()), index=True
     )
-    __table_args__ = (Index("exonidx_build_ensemble_gene", "build", "ensembl_gene_id"),)
+    __table_args__ = (Index("exonidx_build_ensembl_gene", "build", "ensembl_gene_id"),)
