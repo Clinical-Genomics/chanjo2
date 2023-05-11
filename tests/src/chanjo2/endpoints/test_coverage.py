@@ -56,7 +56,7 @@ def test_d4_interval_coverage(
     # THEN the mean coverage over the interval should be returned
     result = response.json()
     coverage_data = CoverageInterval(**result)
-    assert coverage_data.mean_coverage > 0
+    assert coverage_data.mean_coverage
 
     # THEN the queried interval should also be present
     assert coverage_data.chromosome
@@ -83,7 +83,7 @@ def test_d4_interval_coverage_single_chromosome(
     # AND the mean coverage over the entire chromosome should be present in the result
     result = response.json()
     coverage_data = CoverageInterval(**result)
-    assert coverage_data.mean_coverage > 0
+    assert coverage_data.mean_coverage
     # together with the queried interval
     assert coverage_data.chromosome
     assert coverage_data.start is None
@@ -179,7 +179,7 @@ def test_sample_coverage_multiple_genes_lists(
 
     # GIVEN a sample gene coverage query containing multiple gene lists (hgnc_gene_symbols and hgnc_gene_ids)
     sample_query: Dict[str, str] = {
-        "sample_name": DEMO_SAMPLE["name"],
+        "samples": [DEMO_SAMPLE["name"]],
         "build": build,
         "hgnc_gene_symbols": genomic_ids_per_build[build]["hgnc_symbols"],
         "hgnc_gene_ids": genomic_ids_per_build[build]["hgnc_ids"],
@@ -206,7 +206,7 @@ def test_sample_gene_coverage_hgnc_symbols(
 
     # GIVEN a sample gene coverage query containing HGNC gene symbols
     sample_query: Dict[str, str] = {
-        "sample_name": DEMO_SAMPLE["name"],
+        "samples": [DEMO_SAMPLE["name"]],
         "build": build,
         "hgnc_gene_symbols": genomic_ids_per_build[build]["hgnc_symbols"],
         "completeness_thresholds": COVERAGE_COMPLETENESS_THRESHOLDS,
@@ -233,7 +233,7 @@ def test_sample_gene_coverage_hgnc_ids(
 
     # GIVING a sample gene coverage query containing HGNC IDs
     sample_query: Dict[str, str] = {
-        "sample_name": DEMO_SAMPLE["name"],
+        "samples": [DEMO_SAMPLE["name"]],
         "build": build,
         "hgnc_gene_ids": genomic_ids_per_build[build]["hgnc_ids"],
         "completeness_thresholds": COVERAGE_COMPLETENESS_THRESHOLDS,
@@ -260,7 +260,7 @@ def test_sample_gene_coverage_ensembl_ids(
 
     # GIVING a sample gene coverage query containing Ensembl IDs
     sample_query: Dict[str, str] = {
-        "sample_name": DEMO_SAMPLE["name"],
+        "samples": [DEMO_SAMPLE["name"]],
         "build": build,
         "ensembl_gene_ids": genomic_ids_per_build[build]["ensembl_gene_ids"],
         "completeness_thresholds": COVERAGE_COMPLETENESS_THRESHOLDS,
@@ -287,7 +287,7 @@ def test_sample_transcripts_coverage_hgnc_symbols(
 
     # GIVING a sample transcript coverage query containing HGNC gene symbols
     sample_query: Dict[str, str] = {
-        "sample_name": DEMO_SAMPLE["name"],
+        "samples": [DEMO_SAMPLE["name"]],
         "build": build,
         "hgnc_gene_symbols": genomic_ids_per_build[build]["hgnc_symbols"],
         "completeness_thresholds": COVERAGE_COMPLETENESS_THRESHOLDS,
@@ -316,7 +316,7 @@ def test_sample_transcripts_coverage_hgnc_ids(
 
     # GIVING a sample transcript coverage query containing HGNC IDs
     sample_query: Dict[str, str] = {
-        "sample_name": DEMO_SAMPLE["name"],
+        "samples": [DEMO_SAMPLE["name"]],
         "build": build,
         "hgnc_gene_ids": genomic_ids_per_build[build]["hgnc_ids"],
         "completeness_thresholds": COVERAGE_COMPLETENESS_THRESHOLDS,
@@ -345,7 +345,7 @@ def test_sample_transcripts_coverage_ensembl_ids(
 
     # GIVING a sample transcript coverage query containing Ensembl IDs
     sample_query: Dict[str, str] = {
-        "sample_name": DEMO_SAMPLE["name"],
+        "samples": [DEMO_SAMPLE["name"]],
         "build": build,
         "ensembl_gene_ids": genomic_ids_per_build[build]["ensembl_gene_ids"],
         "completeness_thresholds": COVERAGE_COMPLETENESS_THRESHOLDS,
@@ -374,7 +374,7 @@ def test_sample_exons_coverage_hgnc_symbols(
 
     # GIVING a sample transcript coverage query containing HGNC gene symbols
     sample_query: Dict[str, str] = {
-        "sample_name": DEMO_SAMPLE["name"],
+        "samples": [DEMO_SAMPLE["name"]],
         "build": build,
         "hgnc_gene_symbols": genomic_ids_per_build[build]["hgnc_symbols"],
         "completeness_thresholds": COVERAGE_COMPLETENESS_THRESHOLDS,
@@ -401,7 +401,7 @@ def test_sample_exons_coverage_hgnc_ids(
 
     # GIVING a sample transcript coverage query containing HGNC IDs
     sample_query: Dict[str, str] = {
-        "sample_name": DEMO_SAMPLE["name"],
+        "samples": [DEMO_SAMPLE["name"]],
         "build": build,
         "hgnc_gene_ids": genomic_ids_per_build[build]["hgnc_ids"],
         "completeness_thresholds": COVERAGE_COMPLETENESS_THRESHOLDS,
@@ -428,7 +428,7 @@ def test_sample_exons_coverage_ensembl_ids(
 
     # GIVING a sample transcript coverage query containing Ensembl IDs
     sample_query: Dict[str, str] = {
-        "sample_name": DEMO_SAMPLE["name"],
+        "samples": [DEMO_SAMPLE["name"]],
         "build": build,
         "ensembl_gene_ids": genomic_ids_per_build[build]["ensembl_gene_ids"],
         "completeness_thresholds": COVERAGE_COMPLETENESS_THRESHOLDS,
