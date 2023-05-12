@@ -78,7 +78,7 @@ def get_intervals_completeness(
     for threshold in completeness_threholds:
         nr_complete_bases: int64 = 0
         for per_base_depth_region in per_base_depth:
-            nr_complete_bases += (per_base_depth_region > threshold).sum()
+            nr_complete_bases += (per_base_depth_region >= threshold).sum()
 
         completeness_values.append(
             (
