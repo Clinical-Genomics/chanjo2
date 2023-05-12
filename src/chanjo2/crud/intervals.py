@@ -124,7 +124,7 @@ def get_gene_intervals(
     limit: Optional[int],
     interval_type: Union[SQLTranscript, SQLExon],
 ) -> Dict[str, List[Tuple[str, int, int]]]:
-    """Retrieve the coordinates for transcripts or exons from a list of genes."""
+    """Retrieve transcripts or exons from a list of genes."""
 
     intervals: query.Query = db.query(interval_type).join(SQLGene)
     if ensembl_ids:
