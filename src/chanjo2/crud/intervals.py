@@ -130,7 +130,7 @@ def get_gene_intervals(
     if ensembl_ids:
         intervals: query.Query = intervals.filter(interval_type.ensembl_id.in_(ensembl_ids))
     elif ensembl_gene_ids:
-        intervals = intervals.filter(
+        intervals: : query.Query = intervals.filter(
             interval_type.ensembl_gene_id.in_(ensembl_gene_ids)
         )
     elif hgnc_ids:
