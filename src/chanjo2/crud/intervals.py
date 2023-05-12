@@ -80,7 +80,7 @@ def get_genes(
     elif hgnc_symbols:
         genes: query.Query = genes.filter(SQLGene.hgnc_symbol.in_(hgnc_symbols))
 
-    genes = _filter_intervals_by_build(
+    genes: query.Query = _filter_intervals_by_build(
         intervals=genes, interval_type=SQLGene, build=build
     )
     if limit:
