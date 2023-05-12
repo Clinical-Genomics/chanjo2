@@ -1,8 +1,8 @@
+import logging
 from decimal import Decimal
 from statistics import mean
 from typing import List, Optional, Tuple, Union
 
-from numpy import ndarray, int64
 from pyd4 import D4File
 from sqlmodel import Session
 
@@ -11,6 +11,8 @@ from chanjo2.models.pydantic_models import CoverageInterval
 from chanjo2.models.sql_models import Exon as SQLExon
 from chanjo2.models.sql_models import Gene as SQLGene
 from chanjo2.models.sql_models import Transcript as SQLTranscript
+
+LOG = logging.getLogger("uvicorn.access")
 
 
 def set_interval(
@@ -64,27 +66,36 @@ def get_intervals_completeness(
     intervals: List[Tuple[str, int, int]],
     completeness_threholds: Optional[List[int]],
 ) -> List[Tuple[int, Decimal]]:
-    """Use NumPy to calculate the coverage completeness over a list of threshold values for a chromosomal region."""
+    """Compute coverage completeness over threshold values for a list of intervals."""
 
     if completeness_threholds is None:
         return []
 
+    total_region_length: int = 0
+    nr_complete_bases_by_threshold: List[int] = [
+        0 for threshold in completeness_threholds
+    ]
+
+    for interval in intervals:
+        chrom: str = interval[0]
+        start: int = interval[1]
+        stop: int = interval[2]
+
+        total_region_length += stop - start
+
+        for coord_coverage in d4_file.enumerate_values(chrom, start, stop):
+            for index, threshold in enumerate(completeness_threholds):
+                if coord_coverage[2][0] >= threshold:
+                    nr_complete_bases_by_threshold[index] += 1
+
     completeness_values: List[Tuple[int, Decimal]] = []
-    total_region_length: int = sum(
-        [interval[2] - interval[1] for interval in intervals]
-    )
-    per_base_depth: ndarray = d4_file.load_to_np(intervals)
 
-    for threshold in completeness_threholds:
-        nr_complete_bases: int64 = 0
-        for per_base_depth_region in per_base_depth:
-            nr_complete_bases += (per_base_depth_region > threshold).sum()
-
+    for index, threshold in enumerate(completeness_threholds):
         completeness_values.append(
             (
                 threshold,
-                Decimal(nr_complete_bases.item() / total_region_length)
-                if nr_complete_bases
+                Decimal(nr_complete_bases_by_threshold[index] / total_region_length)
+                if nr_complete_bases_by_threshold[index]
                 else 0,
             )
         )
@@ -116,7 +127,9 @@ def get_genes_coverage_completeness(
                     ],
                 )
             )
+
             samples_cov_completeness.append(
+                sample,
                 (
                     sample,
                     get_intervals_completeness(
@@ -124,7 +137,7 @@ def get_genes_coverage_completeness(
                         intervals=gene_coords,
                         completeness_threholds=completeness_threholds,
                     ),
-                )
+                ),
             )
 
         genes_cov.append(
@@ -150,7 +163,7 @@ def get_gene_interval_coverage_completeness(
     completeness_threholds: List[Optional[int]],
 ) -> List[CoverageInterval]:
     """Return coverage of transcripts for a list of genes."""
-    transcripts_cov: List[CoverageInterval] = []
+    intervals_cov: List[CoverageInterval] = []
     for gene in genes:
         sql_intervals: List[Union[SQLTranscript, SQLExon]] = get_gene_intervals(
             db=db,
@@ -182,6 +195,7 @@ def get_gene_interval_coverage_completeness(
                         ),
                     )
                 )
+
                 samples_cov_completeness.append(
                     (
                         sample,
@@ -193,7 +207,7 @@ def get_gene_interval_coverage_completeness(
                     )
                 )
 
-        transcripts_cov.append(
+        intervals_cov.append(
             CoverageInterval(
                 ensembl_gene_id=gene.ensembl_id,
                 hgnc_id=gene.hgnc_id,
@@ -205,4 +219,4 @@ def get_gene_interval_coverage_completeness(
                 completeness=samples_cov_completeness,
             )
         )
-    return transcripts_cov
+    return intervals_cov
