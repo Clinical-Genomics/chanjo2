@@ -136,7 +136,7 @@ def get_gene_intervals(
     elif hgnc_ids:
         intervals: query.Query = intervals.filter(SQLGene.hgnc_id.in_(hgnc_ids))
     elif hgnc_symbols:
-        intervals = intervals.filter(SQLGene.hgnc_symbol.in_(hgnc_symbols))
+        intervals: query.Query = intervals.filter(SQLGene.hgnc_symbol.in_(hgnc_symbols))
 
     intervals = intervals.filter(interval_type.build == build)
 
