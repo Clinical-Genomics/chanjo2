@@ -74,7 +74,7 @@ def get_genes(
     genes: query.Query = db.query(SQLGene)
 
     if ensembl_ids:
-        genes = genes.filter(SQLGene.ensembl_id.in_(ensembl_ids))
+        genes: query.Query = genes.filter(SQLGene.ensembl_id.in_(ensembl_ids))
     elif hgnc_ids:
         genes = genes.filter(SQLGene.hgnc_id.in_(hgnc_ids))
     elif hgnc_symbols:
