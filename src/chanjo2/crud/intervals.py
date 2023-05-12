@@ -1,5 +1,5 @@
 import logging
-from typing import List, Optional, Union, Dict, Tuple
+from typing import List, Optional, Union
 
 from sqlalchemy import delete
 from sqlalchemy.orm import Session, query
@@ -123,7 +123,7 @@ def get_gene_intervals(
     ensembl_gene_ids: Optional[List[str]],
     limit: Optional[int],
     interval_type: Union[SQLTranscript, SQLExon],
-) -> Dict[str, List[Tuple[str, int, int]]]:
+) -> List[Union[SQLTranscript, SQLExon]]:
     """Retrieve transcripts or exons from a list of genes."""
 
     intervals: query.Query = db.query(interval_type).join(SQLGene)
