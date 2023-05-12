@@ -78,7 +78,7 @@ def get_genes(
     elif hgnc_ids:
         genes = genes.filter(SQLGene.hgnc_id.in_(hgnc_ids))
     elif hgnc_symbols:
-        genes = genes.filter(SQLGene.hgnc_symbol.in_(hgnc_symbols))
+        genes: query.Query = genes.filter(SQLGene.hgnc_symbol.in_(hgnc_symbols))
 
     genes = _filter_intervals_by_build(
         intervals=genes, interval_type=SQLGene, build=build
