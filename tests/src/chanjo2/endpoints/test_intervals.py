@@ -245,7 +245,7 @@ def test_transcripts_by_ensembl_ids(
     }
     response: Response = demo_client.post(endpoints.TRANSCRIPTS, json=data)
 
-    # THEN transcript documents should be returned
+    # THEN transcript objects should be returned
     assert response.status_code == status.HTTP_200_OK
     transcripts = response.json()
     assert Transcript(**transcripts[0])
@@ -268,7 +268,7 @@ def test_transcripts_by_ensembl_gene_ids(
     }
     response: Response = demo_client.post(endpoints.TRANSCRIPTS, json=data)
 
-    # THEN transcript documents should be returned
+    # THEN transcript objects should be returned
     assert response.status_code == status.HTTP_200_OK
     transcripts = response.json()
     assert Transcript(**transcripts[0])
@@ -291,7 +291,7 @@ def test_transcripts_by_hgnc_ids(
     }
     response: Response = demo_client.post(endpoints.TRANSCRIPTS, json=data)
 
-    # THEN transcript documents should be returned
+    # THEN transcript objects should be returned
     assert response.status_code == status.HTTP_200_OK
     transcripts = response.json()
     assert Transcript(**transcripts[0])
@@ -314,7 +314,7 @@ def test_transcripts_by_hgnc_symbols(
     }
     response: Response = demo_client.post(endpoints.TRANSCRIPTS, json=data)
 
-    # THEN transcript documents should be returned
+    # THEN transcript objects should be returned
     assert response.status_code == status.HTTP_200_OK
     transcripts = response.json()
     assert Transcript(**transcripts[0])
@@ -387,7 +387,7 @@ def test_exons_no_filters(
     }
     response: Response = demo_client.post(endpoints.EXONS, json=data)
 
-    # THEN exon documents should be returned
+    # THEN exon objects should be returned
     assert response.status_code == status.HTTP_200_OK
     exons = response.json()
     assert Exon(**exons[0])
@@ -410,7 +410,7 @@ def test_exons_by_ensembl_ids(
     }
     response: Response = demo_client.post(endpoints.EXONS, json=data)
 
-    # THEN exon documents should be returned
+    # THEN exon objects should be returned
     assert response.status_code == status.HTTP_200_OK
     exons = response.json()
     assert Exon(**exons[0])
@@ -433,7 +433,7 @@ def test_exons_by_ensembl_gene_ids(
     }
     response: Response = demo_client.post(endpoints.EXONS, json=data)
 
-    # THEN exons documents should be returned
+    # THEN exons objects should be returned
     assert response.status_code == status.HTTP_200_OK
     exons = response.json()
     assert Exon(**exons[0])
@@ -456,7 +456,7 @@ def test_exons_by_hgnc_ids(
     }
     response: Response = demo_client.post(endpoints.EXONS, json=data)
 
-    # THEN exon documents should be returned
+    # THEN exon objects should be returned
     assert response.status_code == status.HTTP_200_OK
     exons = response.json()
     assert Exon(**exons[0])
@@ -479,7 +479,7 @@ def test_exons_by_hgnc_symbols(
     }
     response: Response = demo_client.post(endpoints.EXONS, json=data)
 
-    # THEN transcript documents should be returned
+    # THEN exon objects should be returned
     assert response.status_code == status.HTTP_200_OK
     exons = response.json()
     assert Exon(**exons[0])

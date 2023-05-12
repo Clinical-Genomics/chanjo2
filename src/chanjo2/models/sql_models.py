@@ -59,9 +59,9 @@ class Gene(Base):
         Enum(Builds, values_callable=lambda x: Builds.get_enum_values()), index=True
     )
     __table_args__ = (
-        Index("geneidx_ensembl_id_build", "ensembl_id", "build"),
-        Index("geneidx_hgnc_id_build", "hgnc_id", "build"),
-        Index("geneidx_hgnc_symbol_build", "hgnc_symbol", "build"),
+        Index("gene_idx_ensembl_id_build", "ensembl_id", "build"),
+        Index("gene_idx_hgnc_id_build", "hgnc_id", "build"),
+        Index("gene_idx_hgnc_symbol_build", "hgnc_symbol", "build"),
     )
 
 
