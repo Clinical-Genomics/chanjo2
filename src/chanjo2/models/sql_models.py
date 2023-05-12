@@ -111,4 +111,4 @@ class Exon(Base):
         primaryjoin="Exon.ensembl_gene_id==Gene.ensembl_id",
     )
 
-    __table_args__ = (Index("exonidx_ensembl_gene:_build", "ensembl_gene_id", "build"),)
+    __table_args__ = (Index("exon_idx_ensembl_gene:_build", "ensembl_gene_id", "build"),)
