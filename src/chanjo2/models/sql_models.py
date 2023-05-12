@@ -89,7 +89,9 @@ class Transcript(Base):
         primaryjoin="Transcript.ensembl_gene_id==Gene.ensembl_id",
     )
 
-    __table_args__ = (Index("transcript_idx_ensembl_gene_build", "ensembl_gene_id", "build"),)
+    __table_args__ = (
+        Index("transcript_idx_ensembl_gene_build", "ensembl_gene_id", "build"),
+    )
 
 
 class Exon(Base):
@@ -111,4 +113,6 @@ class Exon(Base):
         primaryjoin="Exon.ensembl_gene_id==Gene.ensembl_id",
     )
 
-    __table_args__ = (Index("exon_idx_ensembl_gene:_build", "ensembl_gene_id", "build"),)
+    __table_args__ = (
+        Index("exon_idx_ensembl_gene:_build", "ensembl_gene_id", "build"),
+    )
