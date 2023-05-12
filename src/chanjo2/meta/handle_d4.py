@@ -150,7 +150,7 @@ def get_gene_interval_coverage_completeness(
     completeness_threholds: List[Optional[int]],
 ) -> List[CoverageInterval]:
     """Return coverage of transcripts for a list of genes."""
-    transcripts_cov: List[CoverageInterval] = []
+    intervals_cov: List[CoverageInterval] = []
     for gene in genes:
         sql_intervals: List[Union[SQLTranscript, SQLExon]] = get_gene_intervals(
             db=db,
@@ -193,7 +193,7 @@ def get_gene_interval_coverage_completeness(
                     )
                 )
 
-        transcripts_cov.append(
+        intervals_cov.append(
             CoverageInterval(
                 ensembl_gene_id=gene.ensembl_id,
                 hgnc_id=gene.hgnc_id,
@@ -205,4 +205,4 @@ def get_gene_interval_coverage_completeness(
                 completeness=samples_cov_completeness,
             )
         )
-    return transcripts_cov
+    return intervals_cov
