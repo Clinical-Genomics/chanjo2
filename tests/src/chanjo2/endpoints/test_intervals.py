@@ -222,7 +222,7 @@ def test_transcripts_no_filters(
     }
     response: Response = demo_client.post(endpoints.TRANSCRIPTS, json=data)
 
-    # THEN transcript documents should be returned
+    # THEN transcript objects should be returned
     assert response.status_code == status.HTTP_200_OK
     transcripts = response.json()
     assert Transcript(**transcripts[0])
