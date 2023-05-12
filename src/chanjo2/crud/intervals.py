@@ -194,10 +194,9 @@ def get_gene_intervals(
         intervals = intervals.filter(SQLGene.ensembl_id.in_(hgnc_ids))
     elif hgnc_symbols:
         intervals = intervals.filter(SQLGene.hgnc_symbol.in_(hgnc_symbols))
-    elif hgnc_ids:
-        intervals = intervals.filter(SQLGene.hgnc_id.in_(hgnc_ids))
 
-    intervals = intervals.filter(interval_type.build == build)
+    intervals: query.Query = intervals.filter(interval_type.build == build)
+
     if limit:
         return intervals.limit(limit).all()
 
