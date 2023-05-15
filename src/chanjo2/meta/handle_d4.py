@@ -1,3 +1,4 @@
+import logging
 from decimal import Decimal
 from statistics import mean
 from typing import List, Optional, Tuple, Union
@@ -10,6 +11,8 @@ from chanjo2.models.pydantic_models import CoverageInterval
 from chanjo2.models.sql_models import Exon as SQLExon
 from chanjo2.models.sql_models import Gene as SQLGene
 from chanjo2.models.sql_models import Transcript as SQLTranscript
+
+LOG = logging.getLogger("uvicorn.access")
 
 
 def set_interval(
@@ -78,9 +81,13 @@ def get_intervals_completeness(
 
         total_region_length += stop - start
 
-        for coord_coverage in d4_file.enumerate_values(chrom, start, stop):
+        for _, _, d4_tracks_base_coverage in d4_file.enumerate_values(
+            chrom, start, stop
+        ):  # _ and _ -> interval chromosome and start position
             for index, threshold in enumerate(completeness_threholds):
-                if coord_coverage[2][0] >= threshold:
+                if (
+                    d4_tracks_base_coverage[0] >= threshold
+                ):  # d4_tracks_base_coverage[0] is the coverage depth for the first track in the d4 file (float)
                     nr_complete_bases_by_threshold[index] += 1
 
     completeness_values: List[Tuple[int, Decimal]] = []
