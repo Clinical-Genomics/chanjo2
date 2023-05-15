@@ -181,14 +181,6 @@ def test_load_transcripts(
         response.json()["detail"]
         == f"{nr_transcripts} transcripts loaded into the database"
     )
-    # WHEN sending a request to the "transcripts" endpoint
-    response: Response = client.post(f"{endpoints.TRANSCRIPTS}", json={"build": build})
-    assert response.status_code == status.HTTP_200_OK
-    result = response.json()
-    # THEN the expected number of transcripts should be returned
-    assert len(result) == nr_transcripts
-    # AND the transcript should have the right format
-    assert Transcript(**result[0])
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -215,6 +207,28 @@ def test_transcripts_multiple_filters(
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
+def test_transcripts_no_filters(
+    build: str,
+    demo_client: TestClient,
+    endpoints: Type,
+    genomic_ids_per_build: Dict[str, List],
+):
+    """Test the endpoint that returns database transcripts without any filter."""
+
+    # GIVEN a populated demo database
+    # WHEN sending a request to the "transcripts" endpoint
+    data = {
+        "build": build,
+    }
+    response: Response = demo_client.post(endpoints.TRANSCRIPTS, json=data)
+
+    # THEN transcript objects should be returned
+    assert response.status_code == status.HTTP_200_OK
+    transcripts = response.json()
+    assert Transcript(**transcripts[0])
+
+
+@pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_transcripts_by_ensembl_ids(
     build: str,
     demo_client: TestClient,
@@ -231,10 +245,10 @@ def test_transcripts_by_ensembl_ids(
     }
     response: Response = demo_client.post(endpoints.TRANSCRIPTS, json=data)
 
-    # THEN transcript documents should be returned
+    # THEN transcript objects should be returned
     assert response.status_code == status.HTTP_200_OK
-    result = response.json()
-    assert Transcript(**result[0])
+    transcripts = response.json()
+    assert Transcript(**transcripts[0])
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -254,10 +268,10 @@ def test_transcripts_by_ensembl_gene_ids(
     }
     response: Response = demo_client.post(endpoints.TRANSCRIPTS, json=data)
 
-    # THEN transcript documents should be returned
+    # THEN transcript objects should be returned
     assert response.status_code == status.HTTP_200_OK
-    result = response.json()
-    assert Transcript(**result[0])
+    transcripts = response.json()
+    assert Transcript(**transcripts[0])
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -277,10 +291,10 @@ def test_transcripts_by_hgnc_ids(
     }
     response: Response = demo_client.post(endpoints.TRANSCRIPTS, json=data)
 
-    # THEN transcript documents should be returned
+    # THEN transcript objects should be returned
     assert response.status_code == status.HTTP_200_OK
-    result = response.json()
-    assert Transcript(**result[0])
+    transcripts = response.json()
+    assert Transcript(**transcripts[0])
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -300,10 +314,10 @@ def test_transcripts_by_hgnc_symbols(
     }
     response: Response = demo_client.post(endpoints.TRANSCRIPTS, json=data)
 
-    # THEN transcript documents should be returned
+    # THEN transcript objects should be returned
     assert response.status_code == status.HTTP_200_OK
-    result = response.json()
-    assert Transcript(**result[0])
+    transcripts = response.json()
+    assert Transcript(**transcripts[0])
 
 
 @pytest.mark.parametrize("build, path", BUILD_EXONS_RESOURCE)
@@ -334,15 +348,6 @@ def test_load_exons(
     # THEN all exons should be loaded
     assert response.json()["detail"] == f"{nr_exons} exons loaded into the database"
 
-    # WHEN sending a request to the "exons" endpoint
-    response: Response = client.post(endpoints.EXONS, json={"build": build})
-    assert response.status_code == status.HTTP_200_OK
-    result = response.json()
-    # THEN the expected number of exons should be returned
-    assert len(result) == nr_exons
-    # AND the exons should have the right format
-    assert Exon(**result[0])
-
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_exons_multiple_filters(
@@ -353,7 +358,7 @@ def test_exons_multiple_filters(
 ):
     """Test filtering exon intervals providing more than one filter."""
 
-    # GIVEN a query to "exons" enspoint with genome build and more than one ID:
+    # GIVEN a query to "exons" endpoint with genome build and more than one ID:
     data = {
         "build": build,
         "ensembl_ids": genomic_ids_per_build[build]["ensembl_exons_ids"],
@@ -365,6 +370,27 @@ def test_exons_multiple_filters(
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     result = response.json()
     assert result["detail"] == MULTIPLE_PARAMS_NOT_SUPPORTED_MSG
+
+
+@pytest.mark.parametrize("build", Builds.get_enum_values())
+def test_exons_no_filters(
+    build: str,
+    demo_client: TestClient,
+    endpoints: Type,
+    genomic_ids_per_build: Dict[str, List],
+):
+    """Test the endpoint that returns exons without any filter."""
+    # GIVEN a populated demo database
+    # WHEN sending a request to the "exons" endpoint without any filter
+    data = {
+        "build": build,
+    }
+    response: Response = demo_client.post(endpoints.EXONS, json=data)
+
+    # THEN exon objects should be returned
+    assert response.status_code == status.HTTP_200_OK
+    exons = response.json()
+    assert Exon(**exons[0])
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -384,10 +410,10 @@ def test_exons_by_ensembl_ids(
     }
     response: Response = demo_client.post(endpoints.EXONS, json=data)
 
-    # THEN exon documents should be returned
+    # THEN exon objects should be returned
     assert response.status_code == status.HTTP_200_OK
-    result = response.json()
-    assert Exon(**result[0])
+    exons = response.json()
+    assert Exon(**exons[0])
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -407,10 +433,10 @@ def test_exons_by_ensembl_gene_ids(
     }
     response: Response = demo_client.post(endpoints.EXONS, json=data)
 
-    # THEN exons documents should be returned
+    # THEN exons objects should be returned
     assert response.status_code == status.HTTP_200_OK
-    result = response.json()
-    assert Exon(**result[0])
+    exons = response.json()
+    assert Exon(**exons[0])
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -430,10 +456,10 @@ def test_exons_by_hgnc_ids(
     }
     response: Response = demo_client.post(endpoints.EXONS, json=data)
 
-    # THEN exon documents should be returned
+    # THEN exon objects should be returned
     assert response.status_code == status.HTTP_200_OK
-    result = response.json()
-    assert Exon(**result[0])
+    exons = response.json()
+    assert Exon(**exons[0])
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -453,7 +479,7 @@ def test_exons_by_hgnc_symbols(
     }
     response: Response = demo_client.post(endpoints.EXONS, json=data)
 
-    # THEN transcript documents should be returned
+    # THEN exon objects should be returned
     assert response.status_code == status.HTTP_200_OK
-    result = response.json()
-    assert Exon(**result[0])
+    exons = response.json()
+    assert Exon(**exons[0])
