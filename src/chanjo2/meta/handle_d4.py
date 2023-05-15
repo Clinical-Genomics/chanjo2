@@ -2,7 +2,6 @@ from decimal import Decimal
 from statistics import mean
 from typing import List, Optional, Tuple, Union
 
-from numpy import ndarray, int64
 from pyd4 import D4File
 from sqlmodel import Session
 
@@ -64,27 +63,38 @@ def get_intervals_completeness(
     intervals: List[Tuple[str, int, int]],
     completeness_threholds: Optional[List[int]],
 ) -> List[Tuple[int, Decimal]]:
-    """Use NumPy to calculate the coverage completeness over a list of threshold values for a chromosomal region."""
+    """Compute coverage completeness over threshold values for a list of intervals."""
 
     if completeness_threholds is None:
         return []
 
+    total_region_length: int = 0
+    nr_complete_bases_by_threshold: List[int] = [0 for _ in completeness_threholds]
+
+    for interval in intervals:
+        chrom: str = interval[0]
+        start: int = interval[1]
+        stop: int = interval[2]
+
+        total_region_length += stop - start
+
+        for _, _, d4_tracks_base_coverage in d4_file.enumerate_values(
+            chrom, start, stop
+        ):  # _ and _ -> interval chromosome and start position
+            for index, threshold in enumerate(completeness_threholds):
+                if (
+                    d4_tracks_base_coverage[0] >= threshold
+                ):  # d4_tracks_base_coverage[0] is the coverage depth for the first track in the d4 file (float)
+                    nr_complete_bases_by_threshold[index] += 1
+
     completeness_values: List[Tuple[int, Decimal]] = []
-    total_region_length: int = sum(
-        [interval[2] - interval[1] for interval in intervals]
-    )
-    per_base_depth: ndarray = d4_file.load_to_np(intervals)
 
-    for threshold in completeness_threholds:
-        nr_complete_bases: int64 = 0
-        for per_base_depth_region in per_base_depth:
-            nr_complete_bases += (per_base_depth_region > threshold).sum()
-
+    for index, threshold in enumerate(completeness_threholds):
         completeness_values.append(
             (
                 threshold,
-                Decimal(nr_complete_bases.item() / total_region_length)
-                if nr_complete_bases
+                Decimal(nr_complete_bases_by_threshold[index] / total_region_length)
+                if nr_complete_bases_by_threshold[index]
                 else 0,
             )
         )
@@ -116,13 +126,17 @@ def get_genes_coverage_completeness(
                     ],
                 )
             )
+
             samples_cov_completeness.append(
                 (
                     sample,
-                    get_intervals_completeness(
-                        d4_file=d4_file,
-                        intervals=gene_coords,
-                        completeness_threholds=completeness_threholds,
+                    (
+                        sample,
+                        get_intervals_completeness(
+                            d4_file=d4_file,
+                            intervals=gene_coords,
+                            completeness_threholds=completeness_threholds,
+                        ),
                     ),
                 )
             )
@@ -182,6 +196,7 @@ def get_gene_interval_coverage_completeness(
                         ),
                     )
                 )
+
                 samples_cov_completeness.append(
                     (
                         sample,
