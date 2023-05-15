@@ -72,9 +72,7 @@ def get_intervals_completeness(
         return []
 
     total_region_length: int = 0
-    nr_complete_bases_by_threshold: List[int] = [
-        0 for threshold in completeness_threholds
-    ]
+    nr_complete_bases_by_threshold: List[int] = [0 for _ in completeness_threholds]
 
     for interval in intervals:
         chrom: str = interval[0]
