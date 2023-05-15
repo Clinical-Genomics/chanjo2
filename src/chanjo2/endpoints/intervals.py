@@ -1,5 +1,9 @@
 from typing import List, Union
 
+from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi.responses import JSONResponse
+from sqlmodel import Session
+
 from chanjo2.constants import (
     MULTIPLE_PARAMS_NOT_SUPPORTED_MSG,
 )
@@ -20,9 +24,6 @@ from chanjo2.models.pydantic_models import (
 )
 from chanjo2.models.sql_models import Exon as SQLExon
 from chanjo2.models.sql_models import Transcript as SQLTranscript
-from fastapi import APIRouter, Depends, HTTPException, Response, status
-from fastapi.responses import JSONResponse
-from sqlmodel import Session
 
 router = APIRouter()
 
@@ -165,6 +166,7 @@ async def exons(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=MULTIPLE_PARAMS_NOT_SUPPORTED_MSG,
         )
+
     return get_gene_intervals(
         db=session,
         build=query.build,
