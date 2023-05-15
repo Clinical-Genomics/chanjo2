@@ -124,15 +124,17 @@ def get_genes_coverage_completeness(
             )
 
             samples_cov_completeness.append(
-                sample,
                 (
                     sample,
-                    get_intervals_completeness(
-                        d4_file=d4_file,
-                        intervals=gene_coords,
-                        completeness_threholds=completeness_threholds,
+                    (
+                        sample,
+                        get_intervals_completeness(
+                            d4_file=d4_file,
+                            intervals=gene_coords,
+                            completeness_threholds=completeness_threholds,
+                        ),
                     ),
-                ),
+                )
             )
 
         genes_cov.append(
