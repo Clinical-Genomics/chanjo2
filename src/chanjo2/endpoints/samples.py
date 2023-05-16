@@ -57,4 +57,4 @@ def read_sample(sample_name: str, db: Session = Depends(get_session)):
 @router.delete("/samples/delete/{sample_name}", response_model=str)
 def delete_db_sample(sample_name: str, db: Session = Depends(get_session)):
     """Delete a sample with the provided name."""
-    return f"Removing sample {sample_name}. Affected rows: {remove_sample(db=db, sample_name=sample_name)}"
+    return f"Removing sample {sample_name}. Affected rows: {delete_sample(db=db, sample_name=sample_name)}"
