@@ -8,7 +8,7 @@ from chanjo2.crud.samples import (
     get_case_samples,
     get_sample,
     get_samples,
-    remove_sample,
+    delete_sample,
 )
 from chanjo2.dbutil import get_session
 from chanjo2.models.pydantic_models import Sample, SampleCreate
