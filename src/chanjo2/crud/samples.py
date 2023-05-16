@@ -1,6 +1,8 @@
 from typing import List, Optional
 
+from sqlalchemy import delete
 from sqlalchemy.orm import Session, query
+from sqlalchemy.sql.expression import Delete
 
 from chanjo2.crud.cases import filter_cases_by_name
 from chanjo2.models.pydantic_models import SampleCreate
@@ -74,3 +76,11 @@ def create_sample_in_case(db: Session, sample: SampleCreate) -> Optional[SQLSamp
     db.commit()
     db.refresh(db_sample)
     return db_sample
+
+
+def delete_sample(db: Session, sample_name: str) -> int:
+    """Delete sample with the supplied name."""
+    delete_stmt: Delete = delete(SQLSample).where(SQLSample.name == sample_name)
+    result = db.execute(delete_stmt)
+    db.commit()
+    return result.rowcount
