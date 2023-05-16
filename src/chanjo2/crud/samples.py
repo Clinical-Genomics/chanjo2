@@ -2,6 +2,7 @@ from typing import List, Optional
 
 from sqlalchemy import delete
 from sqlalchemy.orm import Session, query
+from sqlalchemy.sql.expression import Delete
 
 from chanjo2.crud.cases import filter_cases_by_name
 from chanjo2.models.pydantic_models import SampleCreate
