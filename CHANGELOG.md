@@ -24,6 +24,7 @@
 - Return coverage and coverage completeness (custom thresholds) over a list of genes for database samples
 - Return transcripts coverage and coverage completeness (custom thresholds) over a list of genes for database samples
 - Return exons coverage and coverage completeness (custom thresholds) over a list of genes for database samples
+- Remove a sample from the database by providing its name
 
 ### Fixed
 
