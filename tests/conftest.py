@@ -47,6 +47,7 @@ class Endpoints(str, Enum):
 
     CASES = "/cases/"
     SAMPLES = "/samples/"
+    SAMPLES_DELETE = "/samples/delete/"
     INTERVAL = "/intervals/interval/"
     INTERVALS = "/intervals/"
     LOAD_GENES = "/intervals/load/genes/"
