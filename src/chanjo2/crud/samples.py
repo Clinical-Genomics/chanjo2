@@ -77,7 +77,7 @@ def create_sample_in_case(db: Session, sample: SampleCreate) -> Optional[SQLSamp
     return db_sample
 
 
-def remove_sample(db: Session, sample_name: str) -> int:
+def delete_sample(db: Session, sample_name: str) -> int:
     """Delete sample with the supplied name."""
     delete_stmt = delete(SQLSample).where(SQLSample.name == sample_name)
     result = db.execute(delete_stmt)
