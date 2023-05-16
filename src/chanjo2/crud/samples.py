@@ -1,5 +1,6 @@
 from typing import List, Optional
 
+from sqlalchemy import delete
 from sqlalchemy.orm import Session, query
 
 from chanjo2.crud.cases import filter_cases_by_name
@@ -74,3 +75,11 @@ def create_sample_in_case(db: Session, sample: SampleCreate) -> Optional[SQLSamp
     db.commit()
     db.refresh(db_sample)
     return db_sample
+
+
+def remove_sample(db: Session, sample_name: str) -> int:
+    """Remove a sample with a given name."""
+    delete_stmt = delete(SQLSample).where(SQLSample.name == sample_name)
+    result = db.execute(delete_stmt)
+    db.commit()
+    return result.rowcount
