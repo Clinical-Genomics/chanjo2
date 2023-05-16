@@ -1,11 +1,12 @@
 from pathlib import PosixPath
 from typing import Dict, Type
 
-from chanjo2.models.pydantic_models import WRONG_COVERAGE_FILE_MSG, Sample
-from chanjo2.populate_demo import DEMO_CASE, DEMO_SAMPLE
 from fastapi import status
 from fastapi.testclient import TestClient
 from pytest_mock.plugin import MockerFixture
+
+from chanjo2.models.pydantic_models import WRONG_COVERAGE_FILE_MSG, Sample
+from chanjo2.populate_demo import DEMO_CASE, DEMO_SAMPLE
 
 
 def test_create_sample_for_case_no_local_coverage_file(
@@ -175,3 +176,16 @@ def test_read_sample(
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
     assert Sample(**result)
+
+
+def test_remove_sample(demo_client: TestClient, endpoints: Type):
+    """Test the endpoint that allows removing a sample using its name."""
+
+    # GIVEN a populated demo database
+    # GIVEN a request to delete a demo sample
+    url = f"{endpoints.SAMPLES_DELETE}{DEMO_SAMPLE['name']}"
+    response = demo_client.delete(url)
+    # THEN the response should return success
+    assert response.status_code == status.HTTP_200_OK
+    result = response.json()
+    assert result == f"Removing sample {DEMO_SAMPLE['name']}. Affected rows: 1"

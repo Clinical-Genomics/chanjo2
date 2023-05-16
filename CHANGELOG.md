@@ -21,6 +21,7 @@
 - Filter genes, transcripts and exons by Ensemble id, HGNC id, HGNC symbol
 - Demo genes, transcripts and exons loaded on demo instance startup
 - Return coverage over a list of genes for a sample in the database
+- Remove a sample from the database by providing its name
 - Return coverage and coverage completeness (custom thresholds) over a list of genes for a case or a list of samples
 - Return transcripts coverage and coverage completeness (custom thresholds) over a list of genes for a case or a list of
   samples
