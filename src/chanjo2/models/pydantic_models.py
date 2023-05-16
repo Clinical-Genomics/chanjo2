@@ -9,6 +9,7 @@ from pydantic import BaseModel, validator, Field, root_validator
 from chanjo2.constants import (
     WRONG_COVERAGE_FILE_MSG,
     MULTIPLE_GENE_LISTS_NOT_SUPPORTED_MSG,
+    AMBIGUOUS_SAMPLES_INPUT,
 )
 
 

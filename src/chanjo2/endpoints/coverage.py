@@ -11,7 +11,7 @@ from chanjo2.constants import (
     SAMPLE_NOT_FOUND,
 )
 from chanjo2.crud.intervals import get_genes
-from chanjo2.crud.samples import get_samples_by_name
+from chanjo2.crud.samples import get_samples_by_name, get_case_samples
 from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import parse_bed
 from chanjo2.meta.handle_d4 import (
