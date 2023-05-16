@@ -9,7 +9,6 @@ from pydantic import BaseModel, validator, Field, root_validator
 from chanjo2.constants import (
     WRONG_COVERAGE_FILE_MSG,
     MULTIPLE_GENE_LISTS_NOT_SUPPORTED_MSG,
-    AMBIGUOUS_SAMPLES_INPUT,
 )
 
 
@@ -165,13 +164,4 @@ class SampleGeneIntervalQuery(BaseModel):
                 nr_provided_gene_lists += 1
         if nr_provided_gene_lists != 1:
             raise ValueError(MULTIPLE_GENE_LISTS_NOT_SUPPORTED_MSG)
-        return values
-
-    @root_validator(pre=True)
-    def check_sample_input(cls, values):
-        case = values.get("case", "") != ""
-        samples = bool(values.get("samples", []))
-        if case == samples:
-            raise ValueError(AMBIGUOUS_SAMPLES_INPUT)
-
         return values

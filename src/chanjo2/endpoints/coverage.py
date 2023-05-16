@@ -11,7 +11,7 @@ from chanjo2.constants import (
     SAMPLE_NOT_FOUND,
 )
 from chanjo2.crud.intervals import get_genes
-from chanjo2.crud.samples import get_samples_by_name, get_case_samples
+from chanjo2.crud.samples import get_samples_by_name
 from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import parse_bed
 from chanjo2.meta.handle_d4 import (
@@ -93,18 +93,14 @@ def d4_intervals_coverage(coverage_file_path: str, bed_file: bytes = File(...)):
 
 
 def get_samples_coverage_file(
-    db: Session, samples: Optional[List[str]], case: Optional[str]
+    db: Session, samples: List[str]
 ) -> Union[List[Tuple[str, D4File]], JSONResponse]:
     """Return a list of sample names with relative D4 coverage files."""
 
     samples_d4_files: List[Tuple[str, D4File]] = []
-    sql_samples: List[SQLSample] = (
-        get_samples_by_name(db=db, sample_names=samples)
-        if samples
-        else get_case_samples(db=db, case_name=case)
-    )
+    sql_samples: List[SQLSample] = get_samples_by_name(db=db, sample_names=samples)
 
-    if samples and len(sql_samples) < len(samples) or not sql_samples:
+    if len(sql_samples) < len(samples):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=SAMPLE_NOT_FOUND,
@@ -131,7 +127,7 @@ async def samples_genes_coverage(
     """Returns coverage over a list of genes (entire gene) for a given sample in the database."""
 
     samples_d4_files: Tuple[str, D4File] = get_samples_coverage_file(
-        db=db, samples=query.samples, case=query.case
+        db=db, samples=query.samples
     )
 
     genes: List[SQLGene] = get_genes(
@@ -159,7 +155,7 @@ async def samples_transcripts_coverage(
     """Returns coverage over a list of genes (transcripts intervals only) for a given sample in the database."""
 
     samples_d4_files: Tuple[str, D4File] = get_samples_coverage_file(
-        db=db, samples=query.samples, case=query.case
+        db=db, samples=query.samples
     )
 
     genes: List[SQLGene] = get_genes(
@@ -187,7 +183,7 @@ async def samples_exons_coverage(
     """Returns coverage over a list of genes (exons intervals only) for a given sample in the database."""
 
     samples_d4_files: Tuple[str, D4File] = get_samples_coverage_file(
-        db=db, samples=query.samples, case=query.case
+        db=db, samples=query.samples
     )
 
     genes: List[SQLGene] = get_genes(
