@@ -1,15 +1,17 @@
 from typing import List
 
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlmodel import Session
+
 from chanjo2.crud.samples import (
     create_sample_in_case,
     get_case_samples,
     get_sample,
     get_samples,
+    delete_sample,
 )
 from chanjo2.dbutil import get_session
 from chanjo2.models.pydantic_models import Sample, SampleCreate
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlmodel import Session
 
 router = APIRouter()
 
@@ -50,3 +52,9 @@ def read_sample(sample_name: str, db: Session = Depends(get_session)):
             status_code=status.HTTP_404_NOT_FOUND, detail="Sample not found"
         )
     return db_sample
+
+
+@router.delete("/samples/delete/{sample_name}", response_model=str)
+def delete_db_sample(sample_name: str, db: Session = Depends(get_session)):
+    """Delete a sample with the provided name."""
+    return f"Removing sample {sample_name}. Affected rows: {delete_sample(db=db, sample_name=sample_name)}"
