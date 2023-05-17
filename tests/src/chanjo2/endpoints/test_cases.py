@@ -1,9 +1,10 @@
 from typing import Dict, Type
 
-from chanjo2.models.pydantic_models import Case
-from chanjo2.populate_demo import DEMO_CASE
 from fastapi import status
 from fastapi.testclient import TestClient
+
+from chanjo2.models.pydantic_models import Case
+from chanjo2.populate_demo import DEMO_CASE
 
 
 def test_create_case(client: TestClient, raw_case: Dict[str, str], endpoints: Type):
@@ -53,4 +54,37 @@ def test_read_case(
     result = response.json()
 
     # AND the case object should be returned as result
-    assert Case(**result)
+    assert Case(**result).name == DEMO_CASE["name"]
+
+
+def test_remove_case(
+    client: TestClient,
+    raw_case: Dict[str, str],
+    raw_sample: Dict[str, str],
+    coverage_path,
+    endpoints: Type,
+):
+    """Test the endpoint that allows removing a case using its name."""
+
+    # GIVEN a database with a case containing a sample
+    client.post(endpoints.CASES, json=raw_case).json()
+    raw_sample["coverage_file_path"] = str(coverage_path)
+    client.post(endpoints.SAMPLES, json=raw_sample)
+
+    case = client.get(f"{endpoints.CASES}{raw_case['name']}").json()
+    assert case["samples"]
+
+    # GIVEN a request to delete the case
+    url = f"{endpoints.CASES_DELETE}{raw_case['name']}"
+    response = client.delete(url)
+    # THEN the response should return success
+    assert response.status_code == status.HTTP_200_OK
+    result = response.json()
+    assert result == f"Removing case {raw_case['name']}. Affected rows: 1"
+
+    # AND BOTH case and sample should be deleted
+    result = client.get(f"{endpoints.CASES}{raw_case['name']}").json()
+    assert result["detail"] == "Case not found"
+
+    result = client.get(f"{endpoints.SAMPLES}{raw_sample['name']}").json()
+    assert result["detail"] == "Sample not found"

@@ -15,7 +15,7 @@ class Case(Base):
     name = Column(String(64), nullable=False, unique=True, index=True)
     display_name = Column(String(64), nullable=True, unique=False)
 
-    samples = relationship("Sample", back_populates="case")
+    samples = relationship("Sample", cascade="all,delete", backref="case")
 
 
 class Sample(Base):
@@ -26,11 +26,11 @@ class Sample(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(64), nullable=False, unique=True, index=True)
     display_name = Column(String(64), nullable=True, unique=False)
-    case_id = Column(Integer, ForeignKey("cases.id"), nullable=False)
+    case_id = Column(
+        Integer, ForeignKey("cases.id", ondelete="CASCADE"), nullable=False
+    )
     coverage_file_path = Column(String(512), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-
-    case = relationship("Case", back_populates="samples")
 
 
 class Interval(Base):

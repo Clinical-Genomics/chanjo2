@@ -1,8 +1,9 @@
 from typing import List
 
+from sqlalchemy.orm import Session, query
+
 from chanjo2.models.pydantic_models import Case, CaseCreate
 from chanjo2.models.sql_models import Case as SQLCase
-from sqlalchemy.orm import Session, query
 
 
 def filter_cases_by_name(cases: query.Query, case_name: str) -> SQLCase:
@@ -31,3 +32,15 @@ def create_db_case(db: Session, case: CaseCreate) -> SQLCase:
     db.commit()
     db.refresh(db_case)
     return db_case
+
+
+def count_cases(db: Session) -> int:
+    return db.query(SQLCase).count()
+
+
+def delete_case(db: Session, case_name: str) -> int:
+    """Delete a case with the supplied name."""
+    nr_cases_before_deletion = count_cases(db=db)
+    db.delete(get_case(db=db, case_name=case_name))
+    db.commit()
+    return nr_cases_before_deletion - count_cases(db=db)
