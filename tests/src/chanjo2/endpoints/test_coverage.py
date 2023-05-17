@@ -1,3 +1,4 @@
+import copy
 from pathlib import PosixPath
 from typing import Type, Dict, List
 
@@ -9,15 +10,25 @@ from chanjo2.constants import (
     WRONG_COVERAGE_FILE_MSG,
     WRONG_BED_FILE_MSG,
     MULTIPLE_GENE_LISTS_NOT_SUPPORTED_MSG,
+    AMBIGUOUS_SAMPLES_INPUT,
 )
 from chanjo2.demo import gene_panel_file, gene_panel_path
 from chanjo2.models.pydantic_models import (
     CoverageInterval,
     Builds,
 )
-from chanjo2.populate_demo import DEMO_SAMPLE
+from chanjo2.populate_demo import DEMO_SAMPLE, DEMO_CASE
 
 COVERAGE_COMPLETENESS_THRESHOLDS: List[int] = [10, 20, 30]
+
+BASE_COVERAGE_QUERY: Dict[str, str] = {
+    "completeness_thresholds": COVERAGE_COMPLETENESS_THRESHOLDS,
+}
+SAMPLE_COVERAGE_QUERY: Dict[str, str] = copy.deepcopy(BASE_COVERAGE_QUERY)
+SAMPLE_COVERAGE_QUERY["samples"] = [DEMO_SAMPLE["name"]]
+
+CASE_COVERAGE_QUERY: Dict[str, str] = copy.deepcopy(BASE_COVERAGE_QUERY)
+CASE_COVERAGE_QUERY["case"] = DEMO_CASE["name"]
 
 
 def test_d4_interval_coverage_d4_not_found(
@@ -169,7 +180,31 @@ def test_d4_intervals_coverage(
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
-def test_sample_coverage_multiple_genes_lists(
+def test_gene_coverage_case_and_samples(
+    build: str,
+    demo_client: TestClient,
+    endpoints: Type,
+    genomic_ids_per_build: Dict[str, List],
+):
+    """Make sure the gene coverage endpoint returns error when providing BOTH case name and sample list."""
+
+    # GIVEN a gene coverage query containing BOTH case name AND sample list
+    case_query: Dict[str, str] = copy.deepcopy(CASE_COVERAGE_QUERY)
+    case_query["samples"] = [DEMO_SAMPLE["name"]]
+    case_query["build"] = build
+    case_query["ensembl_gene_ids"] = genomic_ids_per_build[build]["ensembl_gene_ids"]
+
+    # THEN the response should return error
+    response = demo_client.post(endpoints.SAMPLE_GENES_COVERAGE, json=case_query)
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    # WITH a meaningful message
+    result = response.json()
+    assert result["detail"][0]["msg"] == AMBIGUOUS_SAMPLES_INPUT
+
+
+@pytest.mark.parametrize("build", Builds.get_enum_values())
+def test_samples_coverage_multiple_genes_lists(
     build: str,
     demo_client: TestClient,
     endpoints: Type,
@@ -178,12 +213,10 @@ def test_sample_coverage_multiple_genes_lists(
     """Test the validation of the parameters passed to the sample coverage endpoints when multiple gene lists are passed."""
 
     # GIVEN a sample gene coverage query containing multiple gene lists (hgnc_gene_symbols and hgnc_gene_ids)
-    sample_query: Dict[str, str] = {
-        "samples": [DEMO_SAMPLE["name"]],
-        "build": build,
-        "hgnc_gene_symbols": genomic_ids_per_build[build]["hgnc_symbols"],
-        "hgnc_gene_ids": genomic_ids_per_build[build]["hgnc_ids"],
-    }
+    sample_query: Dict[str, str] = copy.deepcopy(SAMPLE_COVERAGE_QUERY)
+    sample_query["build"] = build
+    sample_query["hgnc_gene_symbols"] = genomic_ids_per_build[build]["hgnc_symbols"]
+    sample_query["hgnc_gene_ids"] = genomic_ids_per_build[build]["hgnc_ids"]
 
     # THEN the response should be return error
     response = demo_client.post(endpoints.SAMPLE_GENES_COVERAGE, json=sample_query)
@@ -196,7 +229,7 @@ def test_sample_coverage_multiple_genes_lists(
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
-def test_sample_gene_coverage_hgnc_symbols(
+def test_samples_gene_coverage_hgnc_symbols(
     build: str,
     demo_client: TestClient,
     endpoints: Type,
@@ -205,12 +238,9 @@ def test_sample_gene_coverage_hgnc_symbols(
     """Test the function that returns the coverage over multiple genes of a sample when a list of HGNC symbols is provided."""
 
     # GIVEN a sample gene coverage query containing HGNC gene symbols
-    sample_query: Dict[str, str] = {
-        "samples": [DEMO_SAMPLE["name"]],
-        "build": build,
-        "hgnc_gene_symbols": genomic_ids_per_build[build]["hgnc_symbols"],
-        "completeness_thresholds": COVERAGE_COMPLETENESS_THRESHOLDS,
-    }
+    sample_query: Dict[str, str] = copy.deepcopy(SAMPLE_COVERAGE_QUERY)
+    sample_query["build"] = build
+    sample_query["hgnc_gene_symbols"] = genomic_ids_per_build[build]["hgnc_symbols"]
 
     # THEN the response should be successful
     response = demo_client.post(endpoints.SAMPLE_GENES_COVERAGE, json=sample_query)
@@ -223,7 +253,7 @@ def test_sample_gene_coverage_hgnc_symbols(
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
-def test_sample_gene_coverage_hgnc_ids(
+def test_samples_gene_coverage_hgnc_ids(
     build: str,
     demo_client: TestClient,
     endpoints: Type,
@@ -231,13 +261,10 @@ def test_sample_gene_coverage_hgnc_ids(
 ):
     """Test the function that returns the coverage over multiple genes of a sampl when a list of HGNC IDs is providede."""
 
-    # GIVING a sample gene coverage query containing HGNC IDs
-    sample_query: Dict[str, str] = {
-        "samples": [DEMO_SAMPLE["name"]],
-        "build": build,
-        "hgnc_gene_ids": genomic_ids_per_build[build]["hgnc_ids"],
-        "completeness_thresholds": COVERAGE_COMPLETENESS_THRESHOLDS,
-    }
+    # GIVEN a sample gene coverage query containing HGNC IDs
+    sample_query: Dict[str, str] = copy.deepcopy(SAMPLE_COVERAGE_QUERY)
+    sample_query["build"] = build
+    sample_query["hgnc_gene_ids"] = genomic_ids_per_build[build]["hgnc_ids"]
 
     # THEN the response should be successful
     response = demo_client.post(endpoints.SAMPLE_GENES_COVERAGE, json=sample_query)
@@ -250,7 +277,7 @@ def test_sample_gene_coverage_hgnc_ids(
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
-def test_sample_gene_coverage_ensembl_ids(
+def test_samples_gene_coverage_ensembl_ids(
     build: str,
     demo_client: TestClient,
     endpoints: Type,
@@ -258,13 +285,10 @@ def test_sample_gene_coverage_ensembl_ids(
 ):
     """Test the function that returns the coverage over multiple genes of a sample when a list of Enseml IDs is provided."""
 
-    # GIVING a sample gene coverage query containing Ensembl IDs
-    sample_query: Dict[str, str] = {
-        "samples": [DEMO_SAMPLE["name"]],
-        "build": build,
-        "ensembl_gene_ids": genomic_ids_per_build[build]["ensembl_gene_ids"],
-        "completeness_thresholds": COVERAGE_COMPLETENESS_THRESHOLDS,
-    }
+    # GIVEN a sample gene coverage query containing Ensembl IDs
+    sample_query: Dict[str, str] = copy.deepcopy(SAMPLE_COVERAGE_QUERY)
+    sample_query["build"] = build
+    sample_query["ensembl_gene_ids"] = genomic_ids_per_build[build]["ensembl_gene_ids"]
 
     # THEN the response should be successful
     response = demo_client.post(endpoints.SAMPLE_GENES_COVERAGE, json=sample_query)
@@ -277,7 +301,7 @@ def test_sample_gene_coverage_ensembl_ids(
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
-def test_sample_transcripts_coverage_hgnc_symbols(
+def test_samples_transcripts_coverage_hgnc_symbols(
     build: str,
     demo_client: TestClient,
     endpoints: Type,
@@ -285,13 +309,10 @@ def test_sample_transcripts_coverage_hgnc_symbols(
 ):
     """Test the function that returns the coverage over transcripts of multiple genes of a sample when a list of HGNC symbols is provided."""
 
-    # GIVING a sample transcript coverage query containing HGNC gene symbols
-    sample_query: Dict[str, str] = {
-        "samples": [DEMO_SAMPLE["name"]],
-        "build": build,
-        "hgnc_gene_symbols": genomic_ids_per_build[build]["hgnc_symbols"],
-        "completeness_thresholds": COVERAGE_COMPLETENESS_THRESHOLDS,
-    }
+    # GIVEN a sample transcript coverage query containing HGNC gene symbols
+    sample_query: Dict[str, str] = copy.deepcopy(SAMPLE_COVERAGE_QUERY)
+    sample_query["build"] = build
+    sample_query["hgnc_gene_symbols"] = genomic_ids_per_build[build]["hgnc_symbols"]
 
     # THEN the response should be successful
     response = demo_client.post(
@@ -306,7 +327,7 @@ def test_sample_transcripts_coverage_hgnc_symbols(
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
-def test_sample_transcripts_coverage_hgnc_ids(
+def test_samples_transcripts_coverage_hgnc_ids(
     build: str,
     demo_client: TestClient,
     endpoints: Type,
@@ -314,13 +335,10 @@ def test_sample_transcripts_coverage_hgnc_ids(
 ):
     """Test the function that returns the coverage over transcripts of multiple genes of a sampl when a list of HGNC IDs is providede."""
 
-    # GIVING a sample transcript coverage query containing HGNC IDs
-    sample_query: Dict[str, str] = {
-        "samples": [DEMO_SAMPLE["name"]],
-        "build": build,
-        "hgnc_gene_ids": genomic_ids_per_build[build]["hgnc_ids"],
-        "completeness_thresholds": COVERAGE_COMPLETENESS_THRESHOLDS,
-    }
+    # GIVEN a sample transcript coverage query containing HGNC IDs
+    sample_query: Dict[str, str] = copy.deepcopy(SAMPLE_COVERAGE_QUERY)
+    sample_query["build"] = build
+    sample_query["hgnc_gene_ids"] = genomic_ids_per_build[build]["hgnc_ids"]
 
     # THEN the response should be successful
     response = demo_client.post(
@@ -335,7 +353,7 @@ def test_sample_transcripts_coverage_hgnc_ids(
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
-def test_sample_transcripts_coverage_ensembl_ids(
+def test_samples_transcripts_coverage_ensembl_ids(
     build: str,
     demo_client: TestClient,
     endpoints: Type,
@@ -343,13 +361,10 @@ def test_sample_transcripts_coverage_ensembl_ids(
 ):
     """Test the function that returns the coverage over transcripts of multiple genes of a sample when a list of Enseml IDs is provided."""
 
-    # GIVING a sample transcript coverage query containing Ensembl IDs
-    sample_query: Dict[str, str] = {
-        "samples": [DEMO_SAMPLE["name"]],
-        "build": build,
-        "ensembl_gene_ids": genomic_ids_per_build[build]["ensembl_gene_ids"],
-        "completeness_thresholds": COVERAGE_COMPLETENESS_THRESHOLDS,
-    }
+    # GIVEN a sample transcript coverage query containing Ensembl IDs
+    sample_query: Dict[str, str] = copy.deepcopy(SAMPLE_COVERAGE_QUERY)
+    sample_query["build"] = build
+    sample_query["ensembl_gene_ids"] = genomic_ids_per_build[build]["ensembl_gene_ids"]
 
     # THEN the response should be successful
     response = demo_client.post(
@@ -364,7 +379,7 @@ def test_sample_transcripts_coverage_ensembl_ids(
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
-def test_sample_exons_coverage_hgnc_symbols(
+def test_samples_exons_coverage_hgnc_symbols(
     build: str,
     demo_client: TestClient,
     endpoints: Type,
@@ -372,13 +387,10 @@ def test_sample_exons_coverage_hgnc_symbols(
 ):
     """Test the function that returns the coverage over exons of multiple genes of a sample when a list of HGNC symbols is provided."""
 
-    # GIVING a sample transcript coverage query containing HGNC gene symbols
-    sample_query: Dict[str, str] = {
-        "samples": [DEMO_SAMPLE["name"]],
-        "build": build,
-        "hgnc_gene_symbols": genomic_ids_per_build[build]["hgnc_symbols"],
-        "completeness_thresholds": COVERAGE_COMPLETENESS_THRESHOLDS,
-    }
+    # GIVEN a sample transcript coverage query containing HGNC gene symbols
+    sample_query: Dict[str, str] = copy.deepcopy(SAMPLE_COVERAGE_QUERY)
+    sample_query["build"] = build
+    sample_query["hgnc_gene_symbols"] = genomic_ids_per_build[build]["hgnc_symbols"]
 
     # THEN the response should be successful
     response = demo_client.post(endpoints.SAMPLE_EXONS_COVERAGE, json=sample_query)
@@ -391,7 +403,7 @@ def test_sample_exons_coverage_hgnc_symbols(
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
-def test_sample_exons_coverage_hgnc_ids(
+def test_samples_exons_coverage_hgnc_ids(
     build: str,
     demo_client: TestClient,
     endpoints: Type,
@@ -399,13 +411,10 @@ def test_sample_exons_coverage_hgnc_ids(
 ):
     """Test the function that returns the coverage over exons of multiple genes of a sampl when a list of HGNC IDs is providede."""
 
-    # GIVING a sample transcript coverage query containing HGNC IDs
-    sample_query: Dict[str, str] = {
-        "samples": [DEMO_SAMPLE["name"]],
-        "build": build,
-        "hgnc_gene_ids": genomic_ids_per_build[build]["hgnc_ids"],
-        "completeness_thresholds": COVERAGE_COMPLETENESS_THRESHOLDS,
-    }
+    # GIVEN a sample transcript coverage query containing HGNC IDs
+    sample_query: Dict[str, str] = copy.deepcopy(SAMPLE_COVERAGE_QUERY)
+    sample_query["build"] = build
+    sample_query["hgnc_gene_ids"] = genomic_ids_per_build[build]["hgnc_ids"]
 
     # THEN the response should be successful
     response = demo_client.post(endpoints.SAMPLE_EXONS_COVERAGE, json=sample_query)
@@ -418,7 +427,7 @@ def test_sample_exons_coverage_hgnc_ids(
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
-def test_sample_exons_coverage_ensembl_ids(
+def test_samples_exons_coverage_ensembl_ids(
     build: str,
     demo_client: TestClient,
     endpoints: Type,
@@ -426,16 +435,79 @@ def test_sample_exons_coverage_ensembl_ids(
 ):
     """Test the function that returns the coverage over exons of multiple genes of a sample when a list of Enseml IDs is provided."""
 
-    # GIVING a sample transcript coverage query containing Ensembl IDs
-    sample_query: Dict[str, str] = {
-        "samples": [DEMO_SAMPLE["name"]],
-        "build": build,
-        "ensembl_gene_ids": genomic_ids_per_build[build]["ensembl_gene_ids"],
-        "completeness_thresholds": COVERAGE_COMPLETENESS_THRESHOLDS,
-    }
+    # GIVEN a sample transcript coverage query containing Ensembl IDs
+    sample_query: Dict[str, str] = copy.deepcopy(SAMPLE_COVERAGE_QUERY)
+    sample_query["build"] = build
+    sample_query["ensembl_gene_ids"] = genomic_ids_per_build[build]["ensembl_gene_ids"]
 
     # THEN the response should be successful
     response = demo_client.post(endpoints.SAMPLE_EXONS_COVERAGE, json=sample_query)
+    assert response.status_code == status.HTTP_200_OK
+
+    # AND return coverage intervals data
+    coverage_intervals: List = response.json()
+    for interval in coverage_intervals:
+        assert CoverageInterval(**interval)
+
+
+@pytest.mark.parametrize("build", Builds.get_enum_values())
+def test_case_genes_coverage(
+    build: str,
+    demo_client: TestClient,
+    endpoints: Type,
+    genomic_ids_per_build: Dict[str, List],
+):
+    # GIVEN a case gene coverage query containing Ensembl gene IDs
+    case_query: Dict[str, str] = copy.deepcopy(CASE_COVERAGE_QUERY)
+    case_query["build"] = build
+    case_query["ensembl_gene_ids"] = genomic_ids_per_build[build]["ensembl_gene_ids"]
+
+    # THEN the response should be successful
+    response = demo_client.post(endpoints.SAMPLE_GENES_COVERAGE, json=case_query)
+    assert response.status_code == status.HTTP_200_OK
+
+    # AND return coverage intervals data
+    coverage_intervals: List = response.json()
+    for interval in coverage_intervals:
+        assert CoverageInterval(**interval)
+
+
+@pytest.mark.parametrize("build", Builds.get_enum_values())
+def test_case_transcripts_coverage(
+    build: str,
+    demo_client: TestClient,
+    endpoints: Type,
+    genomic_ids_per_build: Dict[str, List],
+):
+    # GIVEN a case transcripts coverage query containing Ensembl gene IDs
+    case_query: Dict[str, str] = copy.deepcopy(CASE_COVERAGE_QUERY)
+    case_query["build"] = build
+    case_query["ensembl_gene_ids"] = genomic_ids_per_build[build]["ensembl_gene_ids"]
+
+    # THEN the response should be successful
+    response = demo_client.post(endpoints.SAMPLE_TRANSCRIPTS_COVERAGE, json=case_query)
+    assert response.status_code == status.HTTP_200_OK
+
+    # AND return coverage intervals data
+    coverage_intervals: List = response.json()
+    for interval in coverage_intervals:
+        assert CoverageInterval(**interval)
+
+
+@pytest.mark.parametrize("build", Builds.get_enum_values())
+def test_case_exons_coverage(
+    build: str,
+    demo_client: TestClient,
+    endpoints: Type,
+    genomic_ids_per_build: Dict[str, List],
+):
+    # GIVEN a case exons coverage query containing Ensembl gene IDs
+    case_query: Dict[str, str] = copy.deepcopy(CASE_COVERAGE_QUERY)
+    case_query["build"] = build
+    case_query["ensembl_gene_ids"] = genomic_ids_per_build[build]["ensembl_gene_ids"]
+
+    # THEN the response should be successful
+    response = demo_client.post(endpoints.SAMPLE_EXONS_COVERAGE, json=case_query)
     assert response.status_code == status.HTTP_200_OK
 
     # AND return coverage intervals data
