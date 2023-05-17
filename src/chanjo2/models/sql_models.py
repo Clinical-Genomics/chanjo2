@@ -32,8 +32,6 @@ class Sample(Base):
     coverage_file_path = Column(String(512), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
-    # case = relationship('Case', backref=backref('samples', passive_deletes=True))
-
 
 class Interval(Base):
     """Used to define a single genomic interval."""
