@@ -27,6 +27,7 @@
   samples
 - Return exons coverage and coverage completeness (custom thresholds) over a list of genes for a case or a list of
   samples
+- Remove a sample and all associated samples from the database by providing its name
 
 ### Fixed
 
