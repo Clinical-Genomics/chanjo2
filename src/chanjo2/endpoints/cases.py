@@ -1,10 +1,11 @@
 from typing import List
 
-from chanjo2.crud.cases import create_db_case, get_case, get_cases
-from chanjo2.dbutil import get_session
-from chanjo2.models.pydantic_models import Case, CaseCreate
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session
+
+from chanjo2.crud.cases import create_db_case, get_case, get_cases, delete_case
+from chanjo2.dbutil import get_session
+from chanjo2.models.pydantic_models import Case, CaseCreate
 
 router = APIRouter()
 
@@ -35,3 +36,9 @@ def read_case(case_name: str, db: Session = Depends(get_session)):
             status_code=status.HTTP_404_NOT_FOUND, detail="Case not found"
         )
     return db_case
+
+
+@router.delete("/cases/delete/{case_name}", response_model=str)
+def delete_db_case(case_name: str, db: Session = Depends(get_session)):
+    """Delete a case with the provided name."""
+    return f"Removing case {case_name}. Affected rows: {delete_case(db=db, case_name=case_name)}"

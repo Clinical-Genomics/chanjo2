@@ -1,9 +1,10 @@
 from typing import Dict, Type
 
-from chanjo2.models.pydantic_models import Case
-from chanjo2.populate_demo import DEMO_CASE
 from fastapi import status
 from fastapi.testclient import TestClient
+
+from chanjo2.models.pydantic_models import Case
+from chanjo2.populate_demo import DEMO_CASE
 
 
 def test_create_case(client: TestClient, raw_case: Dict[str, str], endpoints: Type):
@@ -53,4 +54,17 @@ def test_read_case(
     result = response.json()
 
     # AND the case object should be returned as result
-    assert Case(**result)
+    assert Case(**result).name == DEMO_CASE["name"]
+
+
+def test_remove_case(demo_client: TestClient, endpoints: Type):
+    """Test the endpoint that allows removing a case using its name."""
+
+    # GIVEN a populated demo database
+    # GIVEN a request to delete a demo case
+    url = f"{endpoints.CASES_DELETE}{DEMO_CASE['name']}"
+    response = demo_client.delete(url)
+    # THEN the response should return success
+    assert response.status_code == status.HTTP_200_OK
+    result = response.json()
+    assert result == f"Removing case {DEMO_CASE['name']}. Affected rows: 1"

@@ -46,6 +46,7 @@ class Endpoints(str, Enum):
     """Contains all the app endpoints used in testing."""
 
     CASES = "/cases/"
+    CASES_DELETE = "/cases/delete/"
     SAMPLES = "/samples/"
     SAMPLES_DELETE = "/samples/delete/"
     INTERVAL = "/intervals/interval/"
