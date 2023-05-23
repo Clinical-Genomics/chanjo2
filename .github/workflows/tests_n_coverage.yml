@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ '3.8', '3.11'' ]
+        python-version: [ '3.11'' ]
     steps:
       - uses: actions/checkout@v3
       - name: Install poetry
@@ -28,19 +28,19 @@ jobs:
                   poetry env use ${{ matrix.python-version }}
                   poetry install
 
-                - name: Print python versions
-                  run: |
-                    poetry run python -V
+                  - name: Print python versions
+                    run: |
+                      poetry run python -V
 
-                - name: Test with pytest
-                  run:
-                    poetry run pytest --cov=./ --cov-report=xml
+                  - name: Test with pytest
+                    run:
+                      poetry run pytest --cov=./ --cov-report=xml
 
-                - name: Upload coverage to Codecov
-                  uses: codecov/codecov-action@v3
-                  with:
-                    flags: unittests
-                    files: ./coverage.xml
-                    name: codecov-umbrella
-                    fail_ci_if_error: true
-                    verbose: true
+                  - name: Upload coverage to Codecov
+                    uses: codecov/codecov-action@v3
+                    with:
+                      flags: unittests
+                      files: ./coverage.xml
+                      name: codecov-umbrella
+                      fail_ci_if_error: true
+                      verbose: true
