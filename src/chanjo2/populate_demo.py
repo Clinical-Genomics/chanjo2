@@ -10,6 +10,8 @@ from schug.demo import (
 )
 from sqlalchemy.orm import sessionmaker
 
+from chanjo2.constants import BUILD_37, BUILD_38
+>>>>>>> 277ea7cfd0fa2e86b0f7b063999aa68b8703a109
 from chanjo2.crud.cases import create_db_case
 from chanjo2.crud.samples import create_sample_in_case
 from chanjo2.dbutil import get_session
@@ -32,16 +34,16 @@ DEMO_SAMPLE: Dict[str, str] = {
     "coverage_file_path": d4_demo_path,
 }
 BUILD_GENES_RESOURCE: List[Tuple[Builds, str]] = [
-    (Builds.build_37, GENES_37_FILE_PATH),
-    (Builds.build_38, GENES_38_FILE_PATH),
+    (BUILD_37, GENES_37_FILE_PATH),
+    (BUILD_38, GENES_38_FILE_PATH),
 ]
 BUILD_TRANSCRIPTS_RESOURCE: List[Tuple[Builds, str]] = [
-    (Builds.build_37, TRANSCRIPTS_37_FILE_PATH),
-    (Builds.build_38, TRANSCRIPTS_38_FILE_PATH),
+    (BUILD_37, TRANSCRIPTS_37_FILE_PATH),
+    (BUILD_38, TRANSCRIPTS_38_FILE_PATH),
 ]
 BUILD_EXONS_RESOURCE: List[Tuple[Builds, str]] = [
-    (Builds.build_37, EXONS_37_FILE_PATH),
-    (Builds.build_38, EXONS_38_FILE_PATH),
+    (BUILD_37, EXONS_37_FILE_PATH),
+    (BUILD_38, EXONS_38_FILE_PATH),
 ]
 
 
