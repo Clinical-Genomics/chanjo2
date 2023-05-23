@@ -5,7 +5,6 @@ from fastapi import status
 from fastapi.testclient import TestClient
 from pytest_mock.plugin import MockerFixture
 
-BUILD_37 = "GRCh37"
 from chanjo2.constants import MULTIPLE_PARAMS_NOT_SUPPORTED_MSG
 from chanjo2.models.pydantic_models import (
     Builds,
