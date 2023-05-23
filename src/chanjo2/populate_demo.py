@@ -11,7 +11,6 @@ from schug.demo import (
 from sqlalchemy.orm import sessionmaker
 
 from chanjo2.constants import BUILD_37, BUILD_38
->>>>>>> 277ea7cfd0fa2e86b0f7b063999aa68b8703a109
 from chanjo2.crud.cases import create_db_case
 from chanjo2.crud.samples import create_sample_in_case
 from chanjo2.dbutil import get_session
