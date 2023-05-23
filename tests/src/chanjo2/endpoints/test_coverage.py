@@ -12,7 +12,7 @@ from chanjo2.constants import (
     MULTIPLE_GENE_LISTS_NOT_SUPPORTED_MSG,
     AMBIGUOUS_SAMPLES_INPUT,
 )
-from chanjo2.demo import gene_panel_file, gene_panel_path
+from chanjo2.demo import gene_panel_path, GENE_PANEL_FILE
 from chanjo2.models.pydantic_models import (
     CoverageInterval,
     Builds,
@@ -109,7 +109,7 @@ def test_d4_intervals_coverage_d4_not_found(
 
     # GIVEN a valid BED file containing genomic intervals
     files = [
-        ("bed_file", (gene_panel_file, open(gene_panel_path, "rb"))),
+        ("bed_file", (GENE_PANEL_FILE, open(gene_panel_path, "rb"))),
     ]
 
     # WHEN using a query for genomic intervals with a D4 not present on disk
@@ -164,7 +164,7 @@ def test_d4_intervals_coverage(
 
     # GIVEN a valid BED file containing genomic intervals
     files = [
-        ("bed_file", (gene_panel_file, open(gene_panel_path, "rb"))),
+        ("bed_file", (GENE_PANEL_FILE, open(gene_panel_path, "rb"))),
     ]
 
     # THEN a request to the endpoint should return HTTP 200
