@@ -54,7 +54,7 @@ or http://localhost:8000/docs
 
 ## Installing the application on a local Conda environment
 
-Given a conda environment containing python 3.11 and [poetry](https://github.com/python-poetry/poetry), clone the
+Given a conda environment containing python >=3.7 and [poetry](https://github.com/python-poetry/poetry), clone the
 repository from Github with the following command:
 
 ```
