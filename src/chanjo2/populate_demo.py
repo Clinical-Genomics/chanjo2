@@ -1,15 +1,5 @@
 from typing import Dict, List, Tuple, Iterator
 
-from chanjo2.crud.cases import create_db_case
-from chanjo2.crud.samples import create_sample_in_case
-from chanjo2.dbutil import get_session
-from chanjo2.demo import d4_demo_path
-from chanjo2.meta.handle_load_intervals import (
-    update_genes,
-    update_transcripts,
-    update_exons,
-)
-from chanjo2.models.pydantic_models import CaseCreate, SampleCreate, Builds
 from schug.demo import (
     EXONS_37_FILE_PATH,
     EXONS_38_FILE_PATH,
@@ -20,12 +10,24 @@ from schug.demo import (
 )
 from sqlalchemy.orm import sessionmaker
 
+from chanjo2.crud.cases import create_db_case
+from chanjo2.crud.samples import create_sample_in_case
+from chanjo2.dbutil import get_session
+from chanjo2.demo import d4_demo_path
+from chanjo2.meta.handle_load_intervals import (
+    update_genes,
+    update_transcripts,
+    update_exons,
+)
+from chanjo2.models.pydantic_models import CaseCreate, SampleCreate, Builds
+
 db: sessionmaker = next(get_session())
 
 DEMO_CASE: Dict[str, str] = {"name": "internal_id", "display_name": "643594"}
 DEMO_SAMPLE: Dict[str, str] = {
     "name": "ADM1059A2",
     "display_name": "NA12882",
+    "track_name": "ADM1059A2",
     "case_name": DEMO_CASE["name"],
     "coverage_file_path": d4_demo_path,
 }

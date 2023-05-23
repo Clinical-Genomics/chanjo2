@@ -19,6 +19,7 @@ CASE_NAME = "123"
 CASE_DISPLAY_NAME = "case_123"
 SAMPLE_NAME = "abc"
 SAMPLE_DISPLAY_NAME = "sample_abc"
+SAMPLE_TRACK_NAME = SAMPLE_NAME
 COVERAGE_FILE = "a_file.d4"
 BED_FILE = "a_file.bed"
 REMOTE_COVERAGE_FILE = "https://a_remote_host/a_file.d4"
@@ -142,6 +143,7 @@ def raw_sample(raw_case) -> Dict[str, str]:
         "name": SAMPLE_NAME,
         "display_name": SAMPLE_DISPLAY_NAME,
         "case_name": raw_case["name"],
+        "track_name": SAMPLE_TRACK_NAME,
     }
 
 

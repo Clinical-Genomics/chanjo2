@@ -42,6 +42,7 @@ class CaseCreate(CaseBase):
 class SampleBase(BaseModel):
     coverage_file_path: str
     display_name: str
+    track_name: str
     name: str
 
     @validator("coverage_file_path", pre=True)
