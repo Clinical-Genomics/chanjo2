@@ -5,6 +5,7 @@ from fastapi import status
 from fastapi.testclient import TestClient
 from pytest_mock.plugin import MockerFixture
 
+BUILD_37 = "GRCh37"
 from chanjo2.constants import MULTIPLE_PARAMS_NOT_SUPPORTED_MSG
 from chanjo2.models.pydantic_models import (
     Builds,
@@ -44,6 +45,7 @@ def test_load_genes(
 
     # WHEN sending a request to the load_genes with genome build
     response: Response = client.post(f"{endpoints.LOAD_GENES}{build}")
+
     # THEN it should return success
     assert response.status_code == status.HTTP_200_OK
 
