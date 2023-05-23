@@ -2,7 +2,7 @@
 name = "chanjo2"
 version = "0.1.0"
 description = "Next generation coverage analysis"
-authors = ["moonso <mans.magnusson@scilifelab.se>"]
+authors = ["northwestwitch <chiara.rasi@scilifelab.se>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
