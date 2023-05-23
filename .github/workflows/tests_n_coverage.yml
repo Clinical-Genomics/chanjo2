@@ -1,46 +1,31 @@
-name: tests & coverage
+name: Publish to PyPI
 
-on: [ pull_request ]
+on:
+  release:
+    types:
+      - created
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [ '3.11'' ]
+  build-n-publish:
+    name: Build and publish Python distribution to PyPI
+    runs-on: ubuntu-18.04
     steps:
-      - uses: actions/checkout@v3
-      - name: Install poetry
-        run: |
-          curl -O -sSL https://install.python-poetry.org/install-poetry.py
-          python install-poetry.py -y
-          echo "PATH=${HOME}/.poetry/bin:${PATH}" >> $GITHUB_ENV
-          rm install-poetry.py
+      - name: Check out git repository
+        uses: actions/checkout@v3
 
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python 3.9
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
-          cache: 'poetry'
+          python-version: 3.9
 
-            - name: Install dependencies
-                run: |
-                  poetry env use ${{ matrix.python-version }}
-                  poetry install
+      - name: Install poetry
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: "1.1.12"
 
-                  - name: Print python versions
-                    run: |
-                      poetry run python -V
-
-                  - name: Test with pytest
-                    run:
-                      poetry run pytest --cov=./ --cov-report=xml
-
-                  - name: Upload coverage to Codecov
-                    uses: codecov/codecov-action@v3
-                    with:
-                      flags: unittests
-                      files: ./coverage.xml
-                      name: codecov-umbrella
-                      fail_ci_if_error: true
-                      verbose: true
+      - name: Build and publish to PYPI
+        run: |
+          poetry publish --build
+        env:
+          GITHUB: 1
+          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.POETRY_PYPI_TOKEN_PYPI }}
