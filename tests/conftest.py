@@ -1,4 +1,3 @@
-from enum import Enum
 from pathlib import PosixPath
 from typing import Dict, List, Tuple
 
@@ -42,7 +41,7 @@ engine = create_engine(TEST_DB, connect_args=DEMO_CONNECT_ARGS)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-class Endpoints(str, Enum):
+class Endpoints(str):
     """Contains all the app endpoints used in testing."""
 
     CASES = "/cases/"
