@@ -66,3 +66,4 @@
 - Speed up queries by optimizing Genes, Transcripts and Exons tables and indexes
 - Custom algorithm to speed up coverage completeness thresholds calculation
 - Replaced deprecated `pkg_resources` lib with `importlib_resources` lib
+- Modified Python version in Dockerfile from 3.8 to 3.11

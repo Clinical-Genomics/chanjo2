@@ -1,4 +1,4 @@
-FROM clinicalgenomics/python3.8-venv-pyd4:1.0
+FROM clinicalgenomics/python3.11-venv-pyd4:1.0
 
 LABEL about.home="https://github.com/Clinical-Genomics/chanjo2"
 LABEL about.license="MIT License (MIT)"
