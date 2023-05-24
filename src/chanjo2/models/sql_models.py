@@ -6,14 +6,16 @@ from chanjo2.dbutil import Base
 from chanjo2.models.pydantic_models import Builds
 
 CaseSample = Table(
-    "ItemDetail",
+    "case_sample",
     Base.metadata,
-    Column("case_Id", Integer, ForeignKey("cases.id"), primary_key=True),
-    Column("sample_Id", Integer, ForeignKey("samples.id"), primary_key=True),
+    Column("case_id", Integer, ForeignKey("cases.id"), primary_key=True),
+    Column("sample_id", Integer, ForeignKey("samples.id"), primary_key=True),
 )
 
 
 class Case(Base):
+    """Used to define a case containing samples."""
+
     __tablename__ = "cases"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(64), nullable=False, unique=True, index=True)
@@ -22,6 +24,8 @@ class Case(Base):
 
 
 class Sample(Base):
+    """Used to define a single sample belonging to a Case."""
+
     __tablename__ = "samples"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(64), nullable=False, unique=True, index=True)

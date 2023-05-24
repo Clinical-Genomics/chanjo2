@@ -1,9 +1,12 @@
+import logging
 from typing import List
 
 from sqlalchemy.orm import Session, query
 
 from chanjo2.models.pydantic_models import Case, CaseCreate
 from chanjo2.models.sql_models import Case as SQLCase
+
+LOG = logging.getLogger("uvicorn.access")
 
 
 def filter_cases_by_name(cases: query.Query, case_name: str) -> SQLCase:
@@ -13,12 +16,12 @@ def filter_cases_by_name(cases: query.Query, case_name: str) -> SQLCase:
 
 def get_cases(db: Session, limit: int = 100) -> List[SQLCase]:
     """Return all cases."""
+    LOG.warning(db.query(SQLCase).limit(limit).all())
     return db.query(SQLCase).limit(limit).all()
 
 
 def get_case(db: Session, case_name: str) -> Case:
     """Return a specific case by providing its name."""
-
     pipeline = {"filter_cases": filter_cases_by_name}
     query = db.query(SQLCase)
 
