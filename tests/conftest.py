@@ -141,8 +141,8 @@ def raw_sample(raw_case) -> Dict[str, str]:
     return {
         "name": SAMPLE_NAME,
         "display_name": SAMPLE_DISPLAY_NAME,
-        "case_name": raw_case["name"],
         "track_name": SAMPLE_TRACK_NAME,
+        "case_name": raw_case["name"],
     }
 
 

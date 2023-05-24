@@ -1,6 +1,8 @@
 import logging
 from typing import List
 
+from sqlalchemy import delete
+from sqlalchemy.engine.cursor import CursorResult
 from sqlalchemy.orm import Session, query
 
 from chanjo2.models.pydantic_models import Case, CaseCreate
@@ -16,7 +18,6 @@ def filter_cases_by_name(cases: query.Query, case_name: str) -> SQLCase:
 
 def get_cases(db: Session, limit: int = 100) -> List[SQLCase]:
     """Return all cases."""
-    LOG.warning(db.query(SQLCase).limit(limit).all())
     return db.query(SQLCase).limit(limit).all()
 
 
@@ -43,7 +44,6 @@ def count_cases(db: Session) -> int:
 
 def delete_case(db: Session, case_name: str) -> int:
     """Delete a case with the supplied name."""
-    nr_cases_before_deletion = count_cases(db=db)
-    db.delete(get_case(db=db, case_name=case_name))
-    db.commit()
-    return nr_cases_before_deletion - count_cases(db=db)
+    delete_stmt: Delete = delete(SQLCase).where(SQLCase.name == case_name)
+    result: CursorResult = db.execute(delete_stmt)
+    return result.rowcount

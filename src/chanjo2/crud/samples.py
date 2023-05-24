@@ -15,16 +15,16 @@ LOG = logging.getLogger("uvicorn.access")
 
 
 def _filter_samples_by_name(
-    samples: query.Query,
-    sample_names: List[str],
+        samples: query.Query,
+        sample_names: List[str],
 ) -> query.Query:
     """Filter samples by sample name."""
     return samples.filter(SQLSample.name.in_(sample_names))
 
 
 def _filter_samples_by_case(
-    samples: query.Query,
-    case_name: str,
+        samples: query.Query,
+        case_name: str,
 ) -> List[SQLSample]:
     """Filter samples by case name."""
     return samples.filter(SQLCase.name == case_name).all()
@@ -72,6 +72,7 @@ def create_sample_in_case(db: Session, sample: SampleCreate) -> Optional[SQLSamp
     # Insert new sample
     db_sample = SQLSample(
         name=sample.name,
+        display_name=sample.display_name,
         track_name=sample.track_name,
         coverage_file_path=sample.coverage_file_path,
     )
