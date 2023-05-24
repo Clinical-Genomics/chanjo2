@@ -68,3 +68,4 @@
 - Replaced deprecated `pkg_resources` lib with `importlib_resources` lib
 - Modified Python version in Dockerfile from 3.8 to 3.11
 - Introduced a "track_name" key in sample database objects to be used in multitrack D4 files analysis
+- One sample can belong to more than one case

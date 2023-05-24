@@ -54,7 +54,7 @@ class SampleBase(BaseModel):
 
 
 class SampleCreate(SampleBase):
-    case_name: str
+    pass
 
 
 class Sample(SampleBase):
