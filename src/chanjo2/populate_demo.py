@@ -29,6 +29,7 @@ DEMO_SAMPLE: Dict[str, str] = {
     "name": "ADM1059A2",
     "display_name": "NA12882",
     "track_name": "ADM1059A2",
+    "case_name": DEMO_CASE["name"],
     "coverage_file_path": d4_demo_path,
 }
 BUILD_GENES_RESOURCE: List[Tuple[Builds, str]] = [

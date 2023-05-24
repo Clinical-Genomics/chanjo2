@@ -68,9 +68,7 @@ def create_sample_in_case(db: Session, sample: SampleCreate) -> Optional[SQLSamp
     # Insert new sample
     db_sample = SQLSample(
         name=sample.name,
-        display_name=sample.display_name,
         track_name=sample.track_name,
-        case_id=case_obj.id,
         coverage_file_path=sample.coverage_file_path,
     )
     db.add(db_sample)
