@@ -42,8 +42,18 @@ def count_cases(db: Session) -> int:
 
 
 def delete_entry(db: Session, table: Union[SQLCase, SQLSample], id: int) -> int:
-    """Deletes an entry from the database"""
+    """Deletes a Sample or Case entry from the database"""
     delete_stmt: Delete = delete(table).where(table.id == id)
+    result: CursorResult = db.execute(delete_stmt)
+    db.commit()
+    return result.rowcount
+
+
+def delete_case_sample_ref(db: Session, case_id: int, sample_id: int) -> int:
+    """Delete the association of a Sample to a Case in the CaseSample table."""
+    delete_stmt: Delete = delete(CaseSample).where(
+        CaseSample.c.case_id == case_id, CaseSample.c.sample_id == sample_id
+    )
     result: CursorResult = db.execute(delete_stmt)
     db.commit()
     return result.rowcount
@@ -58,8 +68,12 @@ def delete_case(db: Session, case_name: str) -> int:
         nr_linked_cases: int = (
             db.query(CaseSample).where(CaseSample.c.sample_id == db_sample.id).count()
         )
+
         if nr_linked_cases == 1:  # Sample linked only to this case
             delete_entry(db=db, table=SQLSample, id=db_sample.id)
+
+        # Remove case-sample association in CaseSample table:
+        delete_case_sample_ref(db=db, case_id=db_case.id, sample_id=db_sample.id)
 
     # Delete case
     return delete_entry(db=db, table=SQLCase, id=db_case.id)
