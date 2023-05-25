@@ -1,6 +1,7 @@
 from typing import List, Optional
 
 from sqlalchemy import delete
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, query
 from sqlalchemy.sql.expression import Delete
 
@@ -56,27 +57,32 @@ def create_sample_in_case(db: Session, sample: SampleCreate) -> Optional[SQLSamp
     query = db.query(SQLCase)
     db_case: SQLCase = pipeline["filter_cases_by_name"](query, sample.case_name)
     if not db_case:
-        return
+        return f"Could not find a case with name: {sample.case_name}"
 
-    # Insert new sample
-    db_sample = SQLSample(
-        name=sample.name,
-        display_name=sample.display_name,
-        track_name=sample.track_name,
-        coverage_file_path=sample.coverage_file_path,
-    )
-    db.add(db_sample)
-    db.commit()
-    db.refresh(db_sample)
+    # Check if sample already exists
+    db_sample: SQLSample = get_sample(db=db, sample_name=sample.name)
+    if db_sample is None:  # Create it
+        db_sample = SQLSample(
+            name=sample.name,
+            display_name=sample.display_name,
+            track_name=sample.track_name,
+            coverage_file_path=sample.coverage_file_path,
+        )
+        db.add(db_sample)
+        db.commit()
+        db.refresh(db_sample)
 
     # Connect sample to existing case
-    statement: Insert = CaseSample.insert().values(
-        case_id=db_case.id, sample_id=db_sample.id
-    )
-    db.execute(statement)
-    db.commit()
-    db.refresh(db_case)
-    return db_sample
+    try:
+        statement: Insert = CaseSample.insert().values(
+            case_id=db_case.id, sample_id=db_sample.id
+        )
+        db.execute(statement)
+        db.commit()
+        db.refresh(db_case)
+        return db_sample
+    except IntegrityError:
+        return "Sample already connected to given case."
 
 
 def delete_sample(db: Session, sample_name: str) -> int:
