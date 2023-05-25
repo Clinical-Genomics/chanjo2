@@ -22,14 +22,6 @@ def _filter_samples_by_name(
     return samples.filter(SQLSample.name.in_(sample_names))
 
 
-def _filter_samples_by_case(
-    samples: query.Query,
-    case_name: str,
-) -> List[SQLSample]:
-    """Filter samples by case name."""
-    return samples.filter(SQLCase.name == case_name).all()
-
-
 def get_samples(db: Session, limit: int = 100) -> List[SQLSample]:
     """Return all samples."""
     return db.query(SQLSample).limit(limit).all()
@@ -44,10 +36,11 @@ def get_samples_by_name(db: Session, sample_names: List[str]) -> List[SQLSample]
 def get_case_samples(db: Session, case_name: str) -> List[SQLSample]:
     """Return all samples for a given case name."""
 
-    pipeline = {"filter_samples_by_case": _filter_samples_by_case}
-    query = db.query(SQLSample).join(SQLCase)
-
-    return pipeline["filter_samples_by_case"](query, case_name)
+    db_case: SQLCase = db.query(SQLCase).where(SQLCase.name == case_name).first()
+    if db_case:
+        LOG.warning(db_case)
+        return db_case.samples
+    return []
 
 
 def get_sample(db: Session, sample_name: str) -> SQLSample:
