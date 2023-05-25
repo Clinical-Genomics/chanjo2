@@ -15,16 +15,16 @@ LOG = logging.getLogger("uvicorn.access")
 
 
 def _filter_samples_by_name(
-        samples: query.Query,
-        sample_names: List[str],
+    samples: query.Query,
+    sample_names: List[str],
 ) -> query.Query:
     """Filter samples by sample name."""
     return samples.filter(SQLSample.name.in_(sample_names))
 
 
 def _filter_samples_by_case(
-        samples: query.Query,
-        case_name: str,
+    samples: query.Query,
+    case_name: str,
 ) -> List[SQLSample]:
     """Filter samples by case name."""
     return samples.filter(SQLCase.name == case_name).all()
