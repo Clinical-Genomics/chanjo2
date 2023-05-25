@@ -42,7 +42,7 @@ def count_cases(db: Session) -> int:
 
 
 def delete_entry(db: Session, table: Union[SQLCase, SQLSample], id: int) -> int:
-    """Deletes a Sample or Case entry from the database"""
+    """Deletes a Sample or Case entry from the database."""
     delete_stmt: Delete = delete(table).where(table.id == id)
     result: CursorResult = db.execute(delete_stmt)
     db.commit()
