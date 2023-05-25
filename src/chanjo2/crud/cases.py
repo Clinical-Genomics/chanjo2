@@ -1,4 +1,3 @@
-import logging
 from typing import List, Union
 
 from sqlalchemy import delete
@@ -9,8 +8,6 @@ from chanjo2.models.pydantic_models import Case, CaseCreate
 from chanjo2.models.sql_models import Case as SQLCase
 from chanjo2.models.sql_models import CaseSample
 from chanjo2.models.sql_models import Sample as SQLSample
-
-LOG = logging.getLogger("uvicorn.access")
 
 
 def filter_cases_by_name(cases: query.Query, case_name: str) -> SQLCase:
@@ -58,7 +55,6 @@ def delete_case(db: Session, case_name: str) -> int:
 
     # Delete samples linked uniquely to this case
     for db_sample in db_case.samples:
-        LOG.warning(type(db_sample))
         nr_linked_cases: int = (
             db.query(CaseSample).where(CaseSample.c.sample_id == db_sample.id).count()
         )

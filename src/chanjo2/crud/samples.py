@@ -1,4 +1,3 @@
-import logging
 from typing import List, Optional
 
 from sqlalchemy import delete
@@ -10,8 +9,6 @@ from chanjo2.models.pydantic_models import SampleCreate
 from chanjo2.models.sql_models import Case as SQLCase
 from chanjo2.models.sql_models import CaseSample
 from chanjo2.models.sql_models import Sample as SQLSample
-
-LOG = logging.getLogger("uvicorn.access")
 
 
 def _filter_samples_by_name(
@@ -38,7 +35,6 @@ def get_case_samples(db: Session, case_name: str) -> List[SQLSample]:
 
     db_case: SQLCase = db.query(SQLCase).where(SQLCase.name == case_name).first()
     if db_case:
-        LOG.warning(db_case)
         return db_case.samples
     return []
 
