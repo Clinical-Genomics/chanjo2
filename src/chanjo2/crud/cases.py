@@ -68,12 +68,11 @@ def delete_case(db: Session, case_name: str) -> int:
         nr_linked_cases: int = (
             db.query(CaseSample).where(CaseSample.c.sample_id == db_sample.id).count()
         )
+        # Remove case-sample association in CaseSample table:
+        delete_case_sample_ref(db=db, case_id=db_case.id, sample_id=db_sample.id)
 
         if nr_linked_cases == 1:  # Sample linked only to this case
             delete_entry(db=db, table=SQLSample, id=db_sample.id)
-
-        # Remove case-sample association in CaseSample table:
-        delete_case_sample_ref(db=db, case_id=db_case.id, sample_id=db_sample.id)
 
     # Delete case
     return delete_entry(db=db, table=SQLCase, id=db_case.id)
