@@ -1,3 +1,4 @@
+import logging
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -12,6 +13,8 @@ from chanjo2.crud.samples import (
 )
 from chanjo2.dbutil import get_session
 from chanjo2.models.pydantic_models import Sample, SampleCreate
+
+LOG = logging.getLogger("uvicorn.access")
 
 router = APIRouter()
 

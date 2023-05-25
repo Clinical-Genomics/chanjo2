@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import List, Union
 
 from sqlalchemy import delete
 from sqlalchemy.engine.cursor import CursorResult
@@ -7,6 +7,8 @@ from sqlalchemy.orm import Session, query
 
 from chanjo2.models.pydantic_models import Case, CaseCreate
 from chanjo2.models.sql_models import Case as SQLCase
+from chanjo2.models.sql_models import CaseSample
+from chanjo2.models.sql_models import Sample as SQLSample
 
 LOG = logging.getLogger("uvicorn.access")
 
@@ -42,8 +44,26 @@ def count_cases(db: Session) -> int:
     return db.query(SQLCase).count()
 
 
+def delete_entry(db: Session, table: Union[SQLCase, SQLSample], id: int) -> int:
+    """Deletes an entry from the database"""
+    delete_stmt: Delete = delete(table).where(table.id == id)
+    result: CursorResult = db.execute(delete_stmt)
+    db.commit()
+    return result.rowcount
+
+
 def delete_case(db: Session, case_name: str) -> int:
     """Delete a case with the supplied name."""
-    delete_stmt: Delete = delete(SQLCase).where(SQLCase.name == case_name)
-    result: CursorResult = db.execute(delete_stmt)
-    return result.rowcount
+    db_case: SQLCase = db.query(SQLCase).where(SQLCase.name == case_name).first()
+
+    # Delete samples linked uniquely to this case
+    for db_sample in db_case.samples:
+        LOG.warning(type(db_sample))
+        nr_linked_cases: int = (
+            db.query(CaseSample).where(CaseSample.c.sample_id == db_sample.id).count()
+        )
+        if nr_linked_cases == 1:  # Sample linked only to this case
+            delete_entry(db=db, table=SQLSample, id=db_sample.id)
+
+    # Delete case
+    return delete_entry(db=db, table=SQLCase, id=db_case.id)
