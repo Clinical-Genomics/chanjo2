@@ -26,8 +26,8 @@ def test_create_case(client: TestClient, raw_case: Dict[str, str], endpoints: Ty
 
 
 def test_read_cases(
-        demo_client: TestClient,
-        endpoints: Type,
+    demo_client: TestClient,
+    endpoints: Type,
 ):
     """Test the endpoint returning all cases found in the database."""
 
@@ -41,8 +41,8 @@ def test_read_cases(
 
 
 def test_read_case(
-        demo_client: TestClient,
-        endpoints: Type,
+    demo_client: TestClient,
+    endpoints: Type,
 ):
     """Test the endpoint that returns a specific case."""
 
@@ -59,27 +59,27 @@ def test_read_case(
 
 
 def test_remove_case_with_sampke(
-        client: TestClient,
-        raw_case: Dict[str, str],
-        raw_sample: Dict[str, str],
-        coverage_path,
-        endpoints: Type,
+    client: TestClient,
+    raw_case: Dict[str, str],
+    raw_sample: Dict[str, str],
+    coverage_path,
+    endpoints: Type,
 ):
     """Test the endpoint that allows removing a case with a sample uniquely associated to this case using case name."""
 
     # GIVEN a database with a case
     client.post(endpoints.CASES, json=raw_case).json()
     assert (
-            client.get(f"{endpoints.CASES}{raw_case['name']}").json()["name"]
-            == raw_case["name"]
+        client.get(f"{endpoints.CASES}{raw_case['name']}").json()["name"]
+        == raw_case["name"]
     )
 
     # AND a sample belonging to this case
     raw_sample["coverage_file_path"] = str(coverage_path)
     client.post(endpoints.SAMPLES, json=raw_sample)
     assert (
-            client.get(f"{endpoints.SAMPLES}{raw_sample['name']}").json()["name"]
-            == raw_sample["name"]
+        client.get(f"{endpoints.SAMPLES}{raw_sample['name']}").json()["name"]
+        == raw_sample["name"]
     )
 
     # GIVEN a request to delete the case
@@ -99,11 +99,11 @@ def test_remove_case_with_sampke(
 
 
 def test_remove_case_shared_sample(
-        client: TestClient,
-        raw_case: Dict[str, str],
-        raw_sample: Dict[str, str],
-        coverage_path,
-        endpoints: Type,
+    client: TestClient,
+    raw_case: Dict[str, str],
+    raw_sample: Dict[str, str],
+    coverage_path,
+    endpoints: Type,
 ):
     """Test the endpoint that allows removing a case using its name when it shares a sample with other cases."""
 
@@ -114,8 +114,8 @@ def test_remove_case_shared_sample(
     for case in [raw_case, raw_case2]:
         client.post(endpoints.CASES, json=case).json()
         assert (
-                client.get(f"{endpoints.CASES}{case['name']}").json()["name"]
-                == case["name"]
+            client.get(f"{endpoints.CASES}{case['name']}").json()["name"]
+            == case["name"]
         )
 
         # AND ONE sample associated with both
@@ -123,8 +123,8 @@ def test_remove_case_shared_sample(
         raw_sample["coverage_file_path"] = str(coverage_path)
         client.post(endpoints.SAMPLES, json=raw_sample)
         assert (
-                client.get(f"{endpoints.SAMPLES}{raw_sample['name']}").json()["name"]
-                == raw_sample["name"]
+            client.get(f"{endpoints.SAMPLES}{raw_sample['name']}").json()["name"]
+            == raw_sample["name"]
         )
 
     # THEN removing case 2
