@@ -1,3 +1,4 @@
+import copy
 from typing import Dict, Type
 
 from fastapi import status
@@ -57,14 +58,14 @@ def test_read_case(
     assert Case(**result).name == DEMO_CASE["name"]
 
 
-def test_remove_case(
+def test_remove_case_unique_sample(
     client: TestClient,
     raw_case: Dict[str, str],
     raw_sample: Dict[str, str],
     coverage_path,
     endpoints: Type,
 ):
-    """Test the endpoint that allows removing a case using its name."""
+    """Test the endpoint that allows removing a case and one associated sample using its name."""
 
     # GIVEN a database with a case
     client.post(endpoints.CASES, json=raw_case).json()
@@ -95,3 +96,49 @@ def test_remove_case(
 
     result = client.get(f"{endpoints.SAMPLES}{raw_sample['name']}").json()
     assert result["detail"] == "Sample not found"
+
+
+def test_remove_case_shared_sample(
+    client: TestClient,
+    raw_case: Dict[str, str],
+    raw_sample: Dict[str, str],
+    coverage_path,
+    endpoints: Type,
+):
+    """Test the endpoint that allows removing a case using its name."""
+
+    # GIVEN a database with 2 cases
+    raw_case2: dict = copy.deepcopy(raw_case)
+    CASE_2_NAME = "456"
+    raw_case2["name"] = CASE_2_NAME
+    for case in [raw_case, raw_case2]:
+        client.post(endpoints.CASES, json=case).json()
+        assert (
+            client.get(f"{endpoints.CASES}{case['name']}").json()["name"]
+            == case["name"]
+        )
+
+        # AND ONE sample associated with both
+        raw_sample["case_name"] = case["name"]
+        raw_sample["coverage_file_path"] = str(coverage_path)
+        client.post(endpoints.SAMPLES, json=raw_sample)
+        assert (
+            client.get(f"{endpoints.SAMPLES}{raw_sample['name']}").json()["name"]
+            == raw_sample["name"]
+        )
+    """
+    # GIVEN a request to delete the case
+    url = f"{endpoints.CASES_DELETE}{raw_case['name']}"
+    response = client.delete(url)
+    # THEN the response should return success
+    assert response.status_code == status.HTTP_200_OK
+    result = response.json()
+    assert result == f"Removing case {raw_case['name']}. Affected rows: 1"
+
+    # AND BOTH case and sample should be deleted
+    result = client.get(f"{endpoints.CASES}{raw_case['name']}").json()
+    assert result["detail"] == "Case not found"
+
+    result = client.get(f"{endpoints.SAMPLES}{raw_sample['name']}").json()
+    assert result["detail"] == "Sample not found"
+    """
