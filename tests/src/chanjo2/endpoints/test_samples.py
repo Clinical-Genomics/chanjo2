@@ -5,6 +5,7 @@ from fastapi import status
 from fastapi.testclient import TestClient
 from pytest_mock.plugin import MockerFixture
 
+from chanjo2.models.pydantic_models import Case
 from chanjo2.models.pydantic_models import WRONG_COVERAGE_FILE_MSG, Sample
 from chanjo2.populate_demo import DEMO_CASE, DEMO_SAMPLE
 
@@ -182,10 +183,20 @@ def test_remove_sample(demo_client: TestClient, endpoints: Type):
     """Test the endpoint that allows removing a sample using its name."""
 
     # GIVEN a populated demo database
-    # GIVEN a request to delete a demo sample
+    # WITH a case containing a sample
+    response = demo_client.get(f"{endpoints.CASES}{DEMO_CASE['name']}")
+    result = response.json()
+    assert Case(**result).samples
+
+    # GIVEN a request to delete the  sample
     url = f"{endpoints.SAMPLES_DELETE}{DEMO_SAMPLE['name']}"
     response = demo_client.delete(url)
     # THEN the response should return success
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
     assert result == f"Removing sample {DEMO_SAMPLE['name']}. Affected rows: 1"
+
+    # THEN the case will have no associated samples
+    response = demo_client.get(f"{endpoints.CASES}{DEMO_CASE['name']}")
+    result = response.json()
+    assert not Case(**result).samples

@@ -127,10 +127,10 @@ def test_remove_case_shared_sample(
             == raw_sample["name"]
         )
 
-    # THEN removing case 1
-    url: str = f"{endpoints.CASES_DELETE}{raw_case['name']}"
+    # THEN removing case 2
+    url: str = f"{endpoints.CASES_DELETE}{CASE_2_NAME}"
     client.delete(url)
-    result = client.get(f"{endpoints.CASES}{raw_case['name']}").json()
+    result = client.get(f"{endpoints.CASES}{CASE_2_NAME}").json()
     assert result["detail"] == "Case not found"
 
     # SHOULD NOT remove shared sample
