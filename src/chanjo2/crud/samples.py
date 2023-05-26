@@ -31,7 +31,7 @@ def get_samples_by_name(db: Session, sample_names: List[str]) -> List[SQLSample]
     return _filter_samples_by_name(samples=query, sample_names=sample_names).all()
 
 
-def get_case_samples(db: Session, case_name: str) -> List[SQLSample]:
+def get_case_samples(db: Session, case_name: str) -> List:
     """Return all samples for a given case name."""
 
     db_case: SQLCase = db.query(SQLCase).where(SQLCase.name == case_name).first()
