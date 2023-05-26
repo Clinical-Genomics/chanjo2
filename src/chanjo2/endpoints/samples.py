@@ -22,13 +22,12 @@ def create_sample_for_case(
     db: Session = Depends(get_session),
 ):
     """Add a sample to a case in the database."""
-    db_sample = create_sample_in_case(db=db, sample=sample)
-    if db_sample is None:
+    result: Union[SQLSample, str] = create_sample_in_case(db=db, sample=sample)
+    if isinstance(result, str):
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=f"Could not find a case with name: {sample.case_name}",
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=result
         )
-    return db_sample
+    return result
 
 
 @router.get("/samples/", response_model=List[Sample])
