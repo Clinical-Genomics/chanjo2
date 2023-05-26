@@ -105,7 +105,7 @@ def test_remove_case_shared_sample(
     coverage_path,
     endpoints: Type,
 ):
-    """Test the endpoint that allows removing a case using its name when it shares sample with other cases."""
+    """Test the endpoint that allows removing a case using its name when it shares a sample with other cases."""
 
     # GIVEN a database with 2 cases
     raw_case2: dict = copy.deepcopy(raw_case)
