@@ -4,7 +4,7 @@ from typing import Dict, Type
 from fastapi import status
 from fastapi.testclient import TestClient
 
-from chanjo2.models.pydantic_models import Case
+from chanjo2.models.pydantic_models import Case, Sample
 from chanjo2.populate_demo import DEMO_CASE
 
 
@@ -105,7 +105,7 @@ def test_remove_case_shared_sample(
     coverage_path,
     endpoints: Type,
 ):
-    """Test the endpoint that allows removing a case using its name."""
+    """Test the endpoint that allows removing a case using its name when it shares sample with other cases."""
 
     # GIVEN a database with 2 cases
     raw_case2: dict = copy.deepcopy(raw_case)
@@ -126,19 +126,13 @@ def test_remove_case_shared_sample(
             client.get(f"{endpoints.SAMPLES}{raw_sample['name']}").json()["name"]
             == raw_sample["name"]
         )
-    """
-    # GIVEN a request to delete the case
-    url = f"{endpoints.CASES_DELETE}{raw_case['name']}"
-    response = client.delete(url)
-    # THEN the response should return success
-    assert response.status_code == status.HTTP_200_OK
-    result = response.json()
-    assert result == f"Removing case {raw_case['name']}. Affected rows: 1"
 
-    # AND BOTH case and sample should be deleted
+    # THEN removing case 1
+    url: str = f"{endpoints.CASES_DELETE}{raw_case['name']}"
+    client.delete(url)
     result = client.get(f"{endpoints.CASES}{raw_case['name']}").json()
     assert result["detail"] == "Case not found"
 
+    # SHOULD NOT remove shared sample
     result = client.get(f"{endpoints.SAMPLES}{raw_sample['name']}").json()
-    assert result["detail"] == "Sample not found"
-    """
+    assert Sample(**result)
