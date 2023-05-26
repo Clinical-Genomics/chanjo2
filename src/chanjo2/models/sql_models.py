@@ -20,7 +20,7 @@ class Case(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(64), nullable=False, unique=True, index=True)
     display_name = Column(String(64), nullable=True, unique=False)
-    samples = relationship("Sample", secondary=CaseSample, backref="Case")
+    samples = relationship("Sample", secondary=CaseSample, back_populates="cases")
 
 
 class Sample(Base):
@@ -33,7 +33,7 @@ class Sample(Base):
     track_name = Column(String(64), nullable=True, unique=False)
     coverage_file_path = Column(String(512), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    cases = relationship("Case", secondary=CaseSample, backref="Sample")
+    cases = relationship("Case", secondary=CaseSample, back_populates="samples")
 
 
 class Interval(Base):
