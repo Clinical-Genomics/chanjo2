@@ -1,4 +1,19 @@
 site_name: Chanjo2
 site_url: http://chanjo2.scilifelab.se
+repo_url: https://github.com/Clinical-Genomics/chanjo2/
 
 theme: readthedocs
+
+nav:
+    - Index: "index.md"
+    - Deployment:
+      - Deployment using Docker: "deployment/docker-deployment.md"
+      - Installation on a virtual environment: "deployment/installation.md"
+    - Usage:
+        - Loading genes, transcripts and exons in the database: "usage/data-loading.md"
+        - Interval queries: "usage/interval-queries.md"
+        - Creating Cases and samples: "usage/loading-samples.md"
+        - Coverage:
+            - Simple coverage queries: "usage/quick-coverage.md"
+            - Coverage and coverage completeness queries on sample data: "usage/sample-coverage.md"
+
