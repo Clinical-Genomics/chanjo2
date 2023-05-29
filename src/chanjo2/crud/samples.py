@@ -1,12 +1,14 @@
 from typing import List, Optional
 
 from sqlalchemy import delete
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, query
 from sqlalchemy.sql.expression import Delete
 
 from chanjo2.crud.cases import filter_cases_by_name
 from chanjo2.models.pydantic_models import SampleCreate
 from chanjo2.models.sql_models import Case as SQLCase
+from chanjo2.models.sql_models import CaseSample
 from chanjo2.models.sql_models import Sample as SQLSample
 
 
@@ -16,14 +18,6 @@ def _filter_samples_by_name(
 ) -> query.Query:
     """Filter samples by sample name."""
     return samples.filter(SQLSample.name.in_(sample_names))
-
-
-def _filter_samples_by_case(
-    samples: query.Query,
-    case_name: str,
-) -> List[SQLSample]:
-    """Filter samples by case name."""
-    return samples.filter(SQLCase.name == case_name).all()
 
 
 def get_samples(db: Session, limit: int = 100) -> List[SQLSample]:
@@ -37,13 +31,13 @@ def get_samples_by_name(db: Session, sample_names: List[str]) -> List[SQLSample]
     return _filter_samples_by_name(samples=query, sample_names=sample_names).all()
 
 
-def get_case_samples(db: Session, case_name: str) -> List[SQLSample]:
+def get_case_samples(db: Session, case_name: str) -> List:
     """Return all samples for a given case name."""
 
-    pipeline = {"filter_samples_by_case": _filter_samples_by_case}
-    query = db.query(SQLSample).join(SQLCase)
-
-    return pipeline["filter_samples_by_case"](query, case_name)
+    db_case: SQLCase = db.query(SQLCase).where(SQLCase.name == case_name).first()
+    if db_case:
+        return db_case.samples
+    return []
 
 
 def get_sample(db: Session, sample_name: str) -> SQLSample:
@@ -61,22 +55,34 @@ def create_sample_in_case(db: Session, sample: SampleCreate) -> Optional[SQLSamp
     # Check if case exists first
     pipeline = {"filter_cases_by_name": filter_cases_by_name}
     query = db.query(SQLCase)
-    case_obj = pipeline["filter_cases_by_name"](query, sample.case_name)
-    if not case_obj:
-        return
+    db_case: SQLCase = pipeline["filter_cases_by_name"](query, sample.case_name)
+    if not db_case:
+        return f"Could not find a case with name: {sample.case_name}"
 
-    # Insert new sample
-    db_sample = SQLSample(
-        name=sample.name,
-        display_name=sample.display_name,
-        track_name=sample.track_name,
-        case_id=case_obj.id,
-        coverage_file_path=sample.coverage_file_path,
-    )
-    db.add(db_sample)
-    db.commit()
-    db.refresh(db_sample)
-    return db_sample
+    # Check if sample already exists
+    db_sample: SQLSample = get_sample(db=db, sample_name=sample.name)
+    if db_sample is None:  # Create it
+        db_sample = SQLSample(
+            name=sample.name,
+            display_name=sample.display_name,
+            track_name=sample.track_name,
+            coverage_file_path=sample.coverage_file_path,
+        )
+        db.add(db_sample)
+        db.commit()
+        db.refresh(db_sample)
+
+    # Connect sample to existing case
+    try:
+        statement: Insert = CaseSample.insert().values(
+            case_id=db_case.id, sample_id=db_sample.id
+        )
+        db.execute(statement)
+        db.commit()
+        db.refresh(db_case)
+        return db_sample
+    except IntegrityError:
+        return "Sample already connected to given case."
 
 
 def delete_sample(db: Session, sample_name: str) -> int:

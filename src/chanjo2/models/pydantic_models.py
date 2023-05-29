@@ -58,7 +58,6 @@ class SampleCreate(SampleBase):
 
 
 class Sample(SampleBase):
-    case_id: int
     created_at: datetime
     id: int
 
@@ -68,7 +67,7 @@ class Sample(SampleBase):
 
 class Case(CaseBase):
     id: int
-    samples: List[Sample] = []
+    samples: List = []
 
     class Config:
         orm_mode = True

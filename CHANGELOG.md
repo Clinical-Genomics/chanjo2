@@ -40,6 +40,7 @@
 - Format of Build field in genes, transcripts and exons tables
 - Increased size of allowed HGNC symbols in the MySQL gene model
 - Remove old exons and transcripts data when updating genes
+- Test warnings regarding Case-Sample database relationship
 
 ### Changed
 
@@ -70,3 +71,4 @@
 - Replaced deprecated `pkg_resources` lib with `importlib_resources` lib
 - Modified Python version in Dockerfile from 3.8 to 3.11
 - Introduced a "track_name" key in sample database objects to be used in multitrack D4 files analysis
+- One sample can belong to more than one case
