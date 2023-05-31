@@ -108,7 +108,7 @@ def test_remove_case_shared_sample(
     """Test the endpoint that allows removing a case using its name when it shares a sample with other cases."""
 
     # GIVEN a database with 2 cases
-    raw_case2: dict = copy.deepcopy(raw_case)
+    raw_case_2: dict = copy.deepcopy(raw_case)
     CASE_2_NAME = "456"
     raw_case2["name"] = CASE_2_NAME
     for case in [raw_case, raw_case2]:
