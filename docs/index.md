@@ -12,7 +12,7 @@ The tool is flexible and can be used in different ways. The simplest use case wo
 
 Chanjo2 image contains [d4tools][d4tools-tool] and can be used to directly retrieve statistics over d4 files.
 
-* Executing d4tools:
+### Executing d4tools
 ``` bash 
 docker run --entrypoint d4tools --rm  clinicalgenomics/chanjo2-stage:latest
 ```
