@@ -17,7 +17,7 @@ Chanjo2 image contains [d4tools][d4tools-tool] and can be used to directly retri
 docker run --entrypoint d4tools --rm  clinicalgenomics/chanjo2-stage:latest
 ```
 
-* Coalculating coverage on specific genomic intervals of a d4 file using d4tools
+### Calculating coverage on specific genomic intervals of a d4 file using d4tools
 
 ``` shell
 docker run --entrypoint d4tools --rm  -v <path-to-local-d4-files-folder>:/home/worker/infiles clinicalgenomics/chanjo2-stage:latest view /home/worker/infiles/<d4file.d4> 1:1234560-1234580 X:1234560-1234580
