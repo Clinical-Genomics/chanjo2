@@ -1,1 +1,1 @@
-## Installing Chanjo2 on a virtual environment
+## Installing Chanjo2 in a virtual environment
