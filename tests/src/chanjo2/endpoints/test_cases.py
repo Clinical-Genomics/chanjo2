@@ -110,8 +110,8 @@ def test_remove_case_shared_sample(
     # GIVEN a database with 2 cases
     raw_case_2: dict = copy.deepcopy(raw_case)
     CASE_2_NAME = "456"
-    raw_case2["name"] = CASE_2_NAME
-    for case in [raw_case, raw_case2]:
+    raw_case_2["name"] = CASE_2_NAME
+    for case in [raw_case, raw_case_2]:
         client.post(endpoints.CASES, json=case).json()
         assert (
             client.get(f"{endpoints.CASES}{case['name']}").json()["name"]
