@@ -1,9 +1,10 @@
+import copy
 from typing import Dict, Type
 
 from fastapi import status
 from fastapi.testclient import TestClient
 
-from chanjo2.models.pydantic_models import Case
+from chanjo2.models.pydantic_models import Case, Sample
 from chanjo2.populate_demo import DEMO_CASE
 
 
@@ -57,14 +58,14 @@ def test_read_case(
     assert Case(**result).name == DEMO_CASE["name"]
 
 
-def test_remove_case(
+def test_remove_case_with_sampke(
     client: TestClient,
     raw_case: Dict[str, str],
     raw_sample: Dict[str, str],
     coverage_path,
     endpoints: Type,
 ):
-    """Test the endpoint that allows removing a case using its name."""
+    """Test the endpoint that allows removing a case with a sample uniquely associated to this case using case name."""
 
     # GIVEN a database with a case
     client.post(endpoints.CASES, json=raw_case).json()
@@ -95,3 +96,43 @@ def test_remove_case(
 
     result = client.get(f"{endpoints.SAMPLES}{raw_sample['name']}").json()
     assert result["detail"] == "Sample not found"
+
+
+def test_remove_case_shared_sample(
+    client: TestClient,
+    raw_case: Dict[str, str],
+    raw_sample: Dict[str, str],
+    coverage_path,
+    endpoints: Type,
+):
+    """Test the endpoint that allows removing a case using its name when it shares a sample with other cases."""
+
+    # GIVEN a database with 2 cases
+    raw_case_2: dict = copy.deepcopy(raw_case)
+    CASE_2_NAME = "456"
+    raw_case_2["name"] = CASE_2_NAME
+    for case in [raw_case, raw_case_2]:
+        client.post(endpoints.CASES, json=case).json()
+        assert (
+            client.get(f"{endpoints.CASES}{case['name']}").json()["name"]
+            == case["name"]
+        )
+
+        # AND ONE sample associated with both
+        raw_sample["case_name"] = case["name"]
+        raw_sample["coverage_file_path"] = str(coverage_path)
+        client.post(endpoints.SAMPLES, json=raw_sample)
+        assert (
+            client.get(f"{endpoints.SAMPLES}{raw_sample['name']}").json()["name"]
+            == raw_sample["name"]
+        )
+
+    # THEN removing case 2
+    url: str = f"{endpoints.CASES_DELETE}{CASE_2_NAME}"
+    client.delete(url)
+    result = client.get(f"{endpoints.CASES}{CASE_2_NAME}").json()
+    assert result["detail"] == "Case not found"
+
+    # SHOULD NOT remove shared sample
+    result = client.get(f"{endpoints.SAMPLES}{raw_sample['name']}").json()
+    assert Sample(**result)
