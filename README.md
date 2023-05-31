@@ -22,7 +22,7 @@ docker-compose up
 The endpoints of the app will be now reachable from ant web browser: http://0.0.0.0:8000/docs or http://localhost:8000/docs
 
 
-## Lauching the app connected to a MySQL database
+## Launching the app connected to a MySQL database
 
 An example of this setup is provided in the `docker-compose-mysql.yml` file.
 Here we connect the app to a MySQL (MariaDB) and provide the connection settings to use it.
