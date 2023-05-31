@@ -19,7 +19,7 @@ docker run --entrypoint d4tools --rm  clinicalgenomics/chanjo2-stage:latest
 
 * Coalculating coverage on specific genomic intervals of a d4 file using d4tools
 
-``` bash 
+``` shell
 docker run --entrypoint d4tools --rm  -v <path-to-local-d4-files-folder>:/home/worker/infiles clinicalgenomics/chanjo2-stage:latest view /home/worker/infiles/<d4file.d4> 1:1234560-1234580 X:1234560-1234580
 ```
 
