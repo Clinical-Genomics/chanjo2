@@ -58,7 +58,7 @@ A sample describes a sequencing analysis and has the following structure
     "id": 1  # Unique database ID for the sample
 }
 ```
-* Please note that chanjo2 is not yet supporting multitrack d4 coverage files, so the track name value is only used to store this value until the functionality is in place.
+* Please note that Chanjo2 is not yet supporting multi-track d4 coverage files, so the track name value is only used to store this value until the functionality is in place.
 
 
 ### Creating a new sample
