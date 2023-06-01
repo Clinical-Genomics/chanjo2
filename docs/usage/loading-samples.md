@@ -1,6 +1,6 @@
 ## Loading cases and samples into the database
 
-When used in connection with a database, chanjo2 can be used to store information relative to collections of samples (cases).
+When used in connection with a database, Chanjo2 can be used to store information relative to collections of samples (cases).
 
 Cases might include one or more related samples (different individuals of a trio, tumor and normal pairs ect) and samples can be assigned to multiple cases.
 
