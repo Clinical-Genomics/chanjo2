@@ -41,6 +41,7 @@
 - Increased size of allowed HGNC symbols in the MySQL gene model
 - Remove old exons and transcripts data when updating genes
 - Test warnings regarding Case-Sample database relationship
+- Error when removing a case that is not found in the database
 
 ### Changed
 
