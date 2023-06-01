@@ -17,7 +17,7 @@ Cases might include one or more related samples (different individuals of a trio
 
 ### Creating a new case
 
-The only 2 parameters that should be provided when creating a case are `display_name` and `name`.
+The only two parameters that should be provided when creating a case are `display_name` and `name`.
 
 With a running instance of Chanjo2, a new case can be saved into the database by sending a <strong>POST</strong> request to the `/cases/` endpoint:
 
