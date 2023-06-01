@@ -63,7 +63,7 @@ A sample describes a sequencing analysis and has the following structure
 
 ### Creating a new sample
 
-A new sample can be created by sending a  <strong>POST</strong> request with the relative json information to the `/samples/` endpoint:
+A new sample can be created by sending a <strong>POST</strong> request with the relative json information to the `/samples/` endpoint:
 
 ``` shell
 curl -X 'POST' \
