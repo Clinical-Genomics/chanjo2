@@ -16,7 +16,7 @@ docker run -d --rm  -p 8000:8000 --expose 8000 clinicalgenomics/chanjo2-stage:la
 The endpoints of the app will be now reachable from any web browser: http://0.0.0.0:8000/docs or http://localhost:8000/docs
 
 
-## Launching the app connected to a MySQL database via docker-compose
+### Launching the app connected to a MySQL database via docker-compose
 
 An example of this setup is provided in the `docker-compose-mysql.yml` file.
 Here we connect the app to a MySQL (MariaDB) and provide the connection settings to use it.
