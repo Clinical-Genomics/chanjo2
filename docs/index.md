@@ -30,7 +30,7 @@ Please note that the d4 file containing the <strong>coverage data can be also st
 docker run --entrypoint d4tools --rm  clinicalgenomics/chanjo2-stage:latest view <url-to-remote-d4-file.d4> 1:1234560-1234580 X:1234560-1234580
 ```
 
-The coverage computation on a file hostel on a remote server, anyhow,  will be consistently slower than when hosting the file on a local folder. 
+The coverage computation on a file hosted on a remote server, will be consistently slower than when hosting the file on a local server. 
 
 ## Chanjo2 as a REST server
 
