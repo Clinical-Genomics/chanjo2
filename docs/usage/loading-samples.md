@@ -128,10 +128,3 @@ A successful response will return:
 ``` shell
 "Removing case internal_id. Affected rows: 1"
 ```
-
-
-
-
-
-
-
