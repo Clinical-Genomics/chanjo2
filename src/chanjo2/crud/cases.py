@@ -64,6 +64,9 @@ def delete_case(db: Session, case_name: str) -> int:
     db_case: SQLCase = db.query(SQLCase).where(SQLCase.name == case_name).first()
 
     # Delete samples linked uniquely to this case
+    if db_case is None:
+        return 0
+
     for db_sample in db_case.samples:
         nr_linked_cases: int = (
             db.query(CaseSample).where(CaseSample.c.sample_id == db_sample.id).count()
