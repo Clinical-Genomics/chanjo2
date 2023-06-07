@@ -1,1 +1,0 @@
-## Loading genetic intervals: genes, transcripts and exons into the database
