@@ -13,7 +13,5 @@ nav:
         - Loading genes, transcripts and exons in the database: "usage/data-loading.md"
         - Interval queries: "usage/interval-queries.md"
         - Creating Cases and samples: "usage/loading-samples.md"
-        - Coverage:
-            - Simple coverage queries: "usage/quick-coverage.md"
-            - Coverage and coverage completeness queries on sample data: "usage/sample-coverage.md"
+        - Coverage and coverage completeness queries: "usage/sample-coverage.md"
 

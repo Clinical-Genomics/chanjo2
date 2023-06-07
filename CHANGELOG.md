@@ -31,6 +31,7 @@
 - Created the basic structure of the howto using mkdocs
 - Created a GitHub action for publishing the documentation on the GitHub pages
 - Documentation on how to load cases and samples into the database
+- Documentation on how to query the server for coverage stats
 
 ### Fixed
 
