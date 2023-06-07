@@ -97,7 +97,7 @@ curl -X 'POST' \
 }'
 ```
 
-Whenever ensembl_ids, hgnc_ids, hgnc_symbols parameter is not provided, these endpoints will a list of 100 default genes, transcripts or exons. To increase the number of returned entries you can specify a custom value for the query `limit` parameter.
+Whenever ensembl_ids, hgnc_ids, hgnc_symbols parameter is not provided, these endpoints will return a list of 100 default genes, transcripts or exons. To increase the number of returned entries you can specify a custom value for the query `limit` parameter.
 
 
 
