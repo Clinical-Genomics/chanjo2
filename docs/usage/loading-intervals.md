@@ -5,7 +5,7 @@ For instance, gene coordinates should be enough for whole genome sequencing (WGS
 
 Genes, transcripts and exons are retrieved from the [Ensembl Biomart][ensembl-biomart] using the [Schug][shug] library and loaded into the database in three distinct tables.
 
-<strong>Genes should be loaded into the database before transcripts and exons intervals.</strong> Depending on the hardware in use and the html connection speed, the process of loading these intervals might take some time. For this reason requests sent to these endpoints are asynchronous, so that they don't time out while processing the information.
+<strong>Genes should be loaded into the database before transcripts and exons intervals.</strong> Depending on the hardware in use and the HTML connection speed, the process of loading these intervals might take some time. For this reason requests sent to these endpoints are asynchronous, so that they don't time out while processing the information.
 
 
 ### Loading/updating database genes
