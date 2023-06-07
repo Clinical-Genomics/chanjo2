@@ -11,7 +11,6 @@ nav:
       - Installation on a virtual environment: "deployment/installation.md"
     - Usage:
         - Loading and displaying genes, transcripts and exons: "usage/loading-intervals.md"
-        - Interval queries: "usage/interval-queries.md"
         - Cases and samples: "usage/loading-samples.md"
         - Coverage:
             - Simple coverage queries: "usage/quick-coverage.md"
