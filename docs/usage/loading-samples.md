@@ -17,7 +17,7 @@ Cases might include one or more related samples (different individuals of a trio
 
 ### Displaying available cases
 
-Cases available in the database can be displayed by sending a <strong>GET</strong> request using the `/cases/` ensdpoint. The endpoint accepts a limit parameter, corresponding to the maximum number of cases to return:
+Cases available in the database can be displayed by sending a <strong>GET</strong> request using the `/cases/` endpoint. The endpoint accepts a limit parameter, corresponding to the maximum number of cases to return:
 
 ``` shell
 curl -X 'GET' \
