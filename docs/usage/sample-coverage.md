@@ -24,7 +24,7 @@ curl -X 'GET' \
   -H 'accept: application/json'
 ```
 
-This query wll return a response like this, where the mean coverage over the single interval is present in the first element of the mean_coverage value:
+This query wll return a response, where the mean coverage over the single interval is present in the first element of the mean_coverage value:
 
 ``` shell
 {
