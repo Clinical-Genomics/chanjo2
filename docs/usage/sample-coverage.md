@@ -1,6 +1,6 @@
 ## Coverage queries on d4 files or data contained in the database
 
-Chanjo2 can be used to quickly access average coverage depth statistics for an interval of a list of genomic intervals on a custom d4 coverage file.
+Chanjo2 can be used to quickly access average coverage depth statistics for an interval from a list of genomic intervals on a custom d4 coverage file.
 Otherwise Samples stored in the database contain the location or d4 files on disk or on a remote server. For this reason it is possible to retrieve coverage statistics relative to one or more samples by specifying their name (or case name).
 
 ### Direct coverage query over a single genomic interval
