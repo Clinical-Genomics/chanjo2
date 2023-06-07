@@ -1,4 +1,4 @@
-## Loading cases and samples into the database
+## Cases and samples
 
 When used in connection with a database, Chanjo2 can be used to store information relative to collections of samples (cases).
 
