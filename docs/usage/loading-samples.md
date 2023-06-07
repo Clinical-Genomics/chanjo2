@@ -15,6 +15,28 @@ Cases might include one or more related samples (different individuals of a trio
   }
 ```
 
+### Displaying available cases
+
+Cases available in the database can be displayed by sending a <strong>GET</strong> request using the `/cases/` ensdpoint. The endpoint accepts a limit parameter, corresponding to the maximum number of cases to return:
+
+``` shell
+curl -X 'GET' \
+  'http://localhost:8000/cases/?limit=100' \
+  -H 'accept: application/json'
+```
+
+### Displaying a specific case
+
+To display the info relative to one specific case, send a <strong>GET</strong> request to the server, `/cases/(<case-name>` endpoint, containing the case `name`:
+
+
+``` shell
+curl -X 'GET' \
+  'http://localhost:8000/cases/intenval_id' \
+  -H 'accept: application/json'
+```
+
+
 ### Creating a new case
 
 The only two parameters that should be provided when creating a case are `display_name` and `name`.
@@ -60,6 +82,36 @@ A sample describes a sequencing analysis and has the following structure
 ```
 * Please note that Chanjo2 is not yet supporting multi-track d4 coverage files, so the track name value is only used to store this value until the functionality is in place.
 
+### Displaying available samples
+
+Cases available in the database can be displayed by sending a <strong>GET</strong> request using the `/samples/` ensdpoint. The endpoint accepts a limit parameter, corresponding to the maximum number of cases to return:
+
+``` shell
+curl -X 'GET' \
+  'http://localhost:8000/samples/?limit=100' \
+  -H 'accept: application/json'
+```
+
+### Displaying a specific sample
+
+To display the info relative to one specific sample, send a <strong>GET</strong> request to the server, `/sample/(<sample-name>` endpoint, containing the sample `name`:
+
+
+``` shell
+curl -X 'GET' \
+  'http://localhost:8000/samples/intenval_id' \
+  -H 'accept: application/json'
+```
+
+### Displaying all samples for a case
+
+In order to retrieve a list of all samples associated to a case, send a GET reqtest to the `/<case-name>/samples` endpoint. Example:
+
+``` shell
+curl -X 'GET' \
+  'http://localhost:8000/internal_id/samples/' \
+  -H 'accept: application/json'
+```
 
 ### Creating a new sample
 
