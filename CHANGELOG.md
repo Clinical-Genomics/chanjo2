@@ -32,7 +32,7 @@
 - Created a GitHub action for publishing the documentation on the GitHub pages
 - Documentation on how to load cases and samples into the database
 - Documentation on how to query the server for coverage stats
-- Documentation on hw to load genes, transcripts and exons into the database
+- Documentation on how to load genes, transcripts and exons into the database
 
 ### Fixed
 
