@@ -1,6 +1,6 @@
 ## Loading genetic intervals: genes, transcripts and exons into the database
 
-Genes, transcripts and exons should be loaded and updated at regular intervals of time. Depending on the type of sequencing data analysed med chanjo2, <strong>loading of transcripts and exons might not be required.</strong>
+Genes, transcripts and exons should be loaded and updated at regular intervals of time. Depending on the type of sequencing data analysed using chanjo2, <strong>loading of transcripts and exons might not be required.</strong>
 For instance, gene coordinates should be enough for whole genome sequencing (WGS) experiments, while transcripts and exons data are necessary to return statistics from transcripts and exons-based experiments.
 
 Genes, transcripts and exons are retrieved from the [Ensembl Biomart][ensembl-biomart] using the [Schug][shug] library and loaded into the database in three distinct tables.
