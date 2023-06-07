@@ -20,7 +20,7 @@ curl -X 'POST' \
   -d ''
 ```
 
-Please note that the process of <strong>loading genes into the database will erase eventual transcripts ane exons with the same genome build</strong> that are already present in the database. This ensures that transcripts and exons intervals will be up-to-date with the latest definitions of the genes loaded into the database.
+Please note that the process of <strong>loading genes into the database will erase eventual transcripts and exons with the same genome build</strong> that are already present in the database. This ensures that transcripts and exons intervals will be up-to-date with the latest definitions of the genes loaded into the database.
 
 ### Loading/updating transcripts 
 
