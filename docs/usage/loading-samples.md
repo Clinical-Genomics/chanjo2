@@ -84,7 +84,7 @@ A sample describes a sequencing analysis and has the following structure
 
 ### Displaying available samples
 
-Cases available in the database can be displayed by sending a <strong>GET</strong> request using the `/samples/` ensdpoint. The endpoint accepts a limit parameter, corresponding to the maximum number of cases to return:
+Cases available in the database can be displayed by sending a <strong>GET</strong> request using the `/samples/` endpoint. The endpoint accepts a limit parameter, corresponding to the maximum number of cases to return:
 
 ``` shell
 curl -X 'GET' \
