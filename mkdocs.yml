@@ -12,6 +12,4 @@ nav:
     - Usage:
         - Loading and displaying genes, transcripts and exons: "usage/loading-intervals.md"
         - Cases and samples: "usage/loading-samples.md"
-        - Loading genes, transcripts and exons in the database: "usage/data-loading.md"
-        - Creating Cases and samples: "usage/loading-samples.md"
         - Coverage and coverage completeness queries: "usage/sample-coverage.md"
