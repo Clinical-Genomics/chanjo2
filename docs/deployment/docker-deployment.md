@@ -44,9 +44,24 @@ The endpoints of the app will be now reachable from any web browser: http://0.0.
 
 ### Production settings and .env file
 
-Keep in mind that  Chanjo2 collects the variables necessary for connecting to the database from a default [.env file](https://github.com/Clinical-Genomics/chanjo2/blob/main/.env). 
-If you run a dockerized version of Chanjo2 you'd need to create a volume to replace the default .env file with a custom environment file containing the correct settings to connect to a local MySQL database. 
+Keep in mind that Chanjo2 reads the variables necessary for connecting to the database from a default [.env file](https://github.com/Clinical-Genomics/chanjo2/blob/main/.env). 
+If you run a dockerized version of Chanjo2 and want to connect to a real database, you'll need to replace the default .env file with a custom environment file containing the correct settings to connect to your MySQL database. 
 The last line present on the .env file (`DEMO=Y`) should be removed or commented out.
+
+Given a local database running on localhost and port 3306, a custom .env file like this:
+
+```
+MYSQL_ROOT_PASSWORD=RootPassword
+MYSQL_DATABASE_NAME=chanjo2_test
+MYSQL_HOST_NAME=host.docker.internal
+MYSQL_PORT=3306
+```
+
+Should suffice to override the parameters present in the default .env file of Chanjo2:
+
+``` shell
+docker run -d --rm -v $(pwd)/.env:/home/worker/app/.env  -p 8000:8000 --expose 8000 clinicalgenomics/chanjo2-stage:latest
+```
 
 [docker-hub-chanjo2]: https://hub.docker.com/repository/docker/clinicalgenomics/chanjo2-stage/general
 [dockerfile-link]: https://github.com/Clinical-Genomics/chanjo2/blob/main/Dockerfile
