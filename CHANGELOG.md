@@ -78,4 +78,3 @@
 - Introduced a "track_name" key in sample database objects to be used in multitrack D4 files analysis
 - One sample can belong to more than one case
 - Practical howto in README file and moved deployment instructions to the docs
-- Format of mean_coverage and completeness returned by coverage endpoints

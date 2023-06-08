@@ -52,7 +52,7 @@ def intervals_coverage(
                 chromosome=interval[0],
                 start=interval[1],
                 end=interval[2],
-                mean_coverage={"D4File": d4_file.mean(interval)},
+                mean_coverage=[("D4File", d4_file.mean(interval))],
             )
         )
     return intervals_cov
@@ -115,17 +115,30 @@ def get_genes_coverage_completeness(
             (gene.chromosome, gene.start, gene.stop)
         ]
 
-        samples_mean_coverage: dict = {}
-        samples_cov_completeness: dict = {}
+        samples_mean_coverage: List[Tuple[str, float]] = []
+        samples_cov_completeness: List[Tuple[str, Decimal]] = []
 
         for sample, d4_file in samples_d4_files:
-            samples_mean_coverage[sample] = get_intervals_mean_coverage(
-                d4_file=d4_file, intervals=gene_coords
-            )[0]
-            samples_cov_completeness[sample] = get_intervals_completeness(
-                d4_file=d4_file,
-                intervals=gene_coords,
-                completeness_threholds=completeness_threholds,
+            samples_mean_coverage.append(
+                (
+                    sample,
+                    get_intervals_mean_coverage(d4_file=d4_file, intervals=gene_coords)[
+                        0
+                    ],
+                )
+            )
+            samples_cov_completeness.append(
+                (
+                    sample,
+                    (
+                        sample,
+                        get_intervals_completeness(
+                            d4_file=d4_file,
+                            intervals=gene_coords,
+                            completeness_threholds=completeness_threholds,
+                        ),
+                    ),
+                )
             )
 
         genes_cov.append(
@@ -168,19 +181,31 @@ def get_gene_interval_coverage_completeness(
             intervals=sql_intervals
         )
 
-        samples_mean_coverage: dict = {}
-        samples_cov_completeness: dict = {}
+        samples_mean_coverage: List[Tuple[str, float]] = []
+        samples_cov_completeness: List[Tuple[str, Decimal]] = []
 
         if intervals:
             for sample, d4_file in samples_d4_files:
-                samples_mean_coverage[sample] = mean(
-                    get_intervals_mean_coverage(d4_file=d4_file, intervals=intervals)
+                samples_mean_coverage.append(
+                    (
+                        sample,
+                        mean(
+                            get_intervals_mean_coverage(
+                                d4_file=d4_file, intervals=intervals
+                            )
+                        ),
+                    )
                 )
 
-                samples_cov_completeness[sample] = get_intervals_completeness(
-                    d4_file=d4_file,
-                    intervals=intervals,
-                    completeness_threholds=completeness_threholds,
+                samples_cov_completeness.append(
+                    (
+                        sample,
+                        get_intervals_completeness(
+                            d4_file=d4_file,
+                            intervals=intervals,
+                            completeness_threholds=completeness_threholds,
+                        ),
+                    )
                 )
 
         intervals_cov.append(
