@@ -44,7 +44,7 @@ The endpoints of the app will be now reachable from any web browser: http://0.0.
 
 ### Production settings and .env file
 
-Keep in mind that the Chanjo2 collects the variables necessary for connecting to the database from a default [.env file](https://github.com/Clinical-Genomics/chanjo2/blob/main/.env). 
+Keep in mind that  Chanjo2 collects the variables necessary for connecting to the database from a default [.env file](https://github.com/Clinical-Genomics/chanjo2/blob/main/.env). 
 If you run a dockerized version of Chanjo2 you'd need to create a volume to replace the default .env file with a custom environment file containing the correct settings to connect to a local MySQL database. 
 The last line present on the .env file (`DEMO=Y`) should be removed or commented out.
 
