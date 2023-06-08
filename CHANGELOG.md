@@ -45,7 +45,7 @@
 - Remove old exons and transcripts data when updating genes
 - Test warnings regarding Case-Sample database relationship
 - Error when removing a case that is not found in the database
-- Format of coverage completeness returned in responses
+- Format of mean coverage and coverage completeness returned in responses
 
 ### Changed
 
