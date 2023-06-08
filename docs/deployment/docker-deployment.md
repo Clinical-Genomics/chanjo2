@@ -21,7 +21,7 @@ The endpoints of the app will be now reachable from any web browser: http://0.0.
 An example of this setup is provided in the `docker-compose-mysql.yml` file.
 Here we connect the app to a MySQL (MariaDB) and provide the connection settings to use it.
 
-Note that a file containing enviromnent variables is required to run this setup. The `template.env` file offers an example of the required variables and can be customised according to your local settings.
+Note that a file containing environmnent variables is required to run this setup. The `template.env` file offers an example of the required variables and can be customised according to your local settings.
 
 To check the configuration (env variables passed to the docker-compose file) run:
 
@@ -42,6 +42,11 @@ docker-compose -f docker-compose-mysql.yml --env-file template.env up
 The endpoints of the app will be now reachable from any web browser: http://0.0.0.0:8000/docs or http://localhost:8000/docs
 
 
+### Production settings and .env file
+
+Keep in mind that the Chanjo2 collects the variables necessary for connecting to the database from a default [.env file](https://github.com/Clinical-Genomics/chanjo2/blob/main/.env). 
+If you run a dockerized version of Chanjo2 you'd need to create a volume to replace the default .env file with a custom environment file containing the correct settings to connect to a local MySQL database. 
+The last line present on the .env file (`DEMO=Y`) should be removed or commented out.
 
 [docker-hub-chanjo2]: https://hub.docker.com/repository/docker/clinicalgenomics/chanjo2-stage/general
 [dockerfile-link]: https://github.com/Clinical-Genomics/chanjo2/blob/main/Dockerfile

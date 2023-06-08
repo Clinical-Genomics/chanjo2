@@ -33,6 +33,7 @@
 - Documentation on how to load cases and samples into the database
 - Documentation on how to query the server for coverage stats
 - Documentation on how to load genes, transcripts and exons into the database
+- Improve documentation on how to customise the .env file to use a production database
 
 ### Fixed
 
