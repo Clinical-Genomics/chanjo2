@@ -18,7 +18,7 @@ single d4 files or samples stored in the database with associated d4 files.
 A demo REST server connected with a temporary SQLite database can be launched using Docker:
 
 ``` shell
-docker run -d --rm  -p 8000:8000 --expose 8000 clinicalgenomics/chanjo2-stage:latest
+docker run -d --rm  -p 8000:8000 --expose 8000 clinicalgenomics/chanjo2:latest
 ```
 
 The endpoints of the app will be now reachable and described from any web browser: http://0.0.0.0:8000/docs or http://localhost:8000/docs

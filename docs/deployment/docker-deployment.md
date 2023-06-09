@@ -10,7 +10,7 @@ The file named `Dockerfile` is a generic Docker file to run the application. Whe
 To start the demo via docker, run:
 
 ```
-docker run -d --rm  -p 8000:8000 --expose 8000 clinicalgenomics/chanjo2-stage:latest
+docker run -d --rm  -p 8000:8000 --expose 8000 clinicalgenomics/chanjo2:latest
 ```
 
 The endpoints of the app will be now reachable from any web browser: http://0.0.0.0:8000/docs or http://localhost:8000/docs
@@ -60,8 +60,8 @@ MYSQL_PORT=3306
 Should suffice to override the parameters present in the default .env file of Chanjo2:
 
 ``` shell
-docker run -d --rm -v $(pwd)/.env:/home/worker/app/.env  -p 8000:8000 --expose 8000 clinicalgenomics/chanjo2-stage:latest
+docker run -d --rm -v $(pwd)/.env:/home/worker/app/.env  -p 8000:8000 --expose 8000 clinicalgenomics/chanjo2:latest
 ```
 
-[docker-hub-chanjo2]: https://hub.docker.com/repository/docker/clinicalgenomics/chanjo2-stage/general
+[docker-hub-chanjo2]: https://hub.docker.com/repository/docker/clinicalgenomics/chanjo2/general
 [dockerfile-link]: https://github.com/Clinical-Genomics/chanjo2/blob/main/Dockerfile
