@@ -63,5 +63,5 @@ Should suffice to override the parameters present in the default .env file of Ch
 docker run -d --rm -v $(pwd)/.env:/home/worker/app/.env  -p 8000:8000 --expose 8000 clinicalgenomics/chanjo2:latest
 ```
 
-[docker-hub-chanjo2]: https://hub.docker.com/r/clinicalgenomics/chanjo2
+[docker-hub-chanjo2]: https://hub.docker.com/repository/docker/clinicalgenomics/chanjo2/general
 [dockerfile-link]: https://github.com/Clinical-Genomics/chanjo2/blob/main/Dockerfile
