@@ -1,8 +1,10 @@
 [tool.poetry]
 name = "chanjo2"
-version = "0.1.0"
+version = "1.0.0"
 description = "Next generation coverage analysis"
 authors = ["moonso <mans.magnusson@scilifelab.se>"]
+
+[tool.poetry_bumpversion.file."src/chanjo2/__init__.py"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
