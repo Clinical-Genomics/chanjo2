@@ -46,6 +46,7 @@
 - Remove old exons and transcripts data when updating genes
 - Test warnings regarding Case-Sample database relationship
 - Error when removing a case that is not found in the database
+- Updated and faster GitHub actions
 
 ### Changed
 
