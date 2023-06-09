@@ -1,7 +1,7 @@
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, List, Optional, Tuple
+from typing import Any, List, Optional, Dict
 
 import validators
 from pydantic import BaseModel, validator, Field, root_validator
@@ -134,13 +134,13 @@ class Exon(IntervalBase):
 
 class CoverageInterval(BaseModel):
     chromosome: str
-    completeness: List[Tuple] = Field(default_factory=list)
+    completeness: Dict = Field(default_factory=dict)
     ensembl_gene_id: Optional[str]
     end: Optional[int]
     hgnc_id: Optional[int]
     hgnc_symbol: Optional[str]
     interval_id: Optional[int]
-    mean_coverage: List[Tuple] = Field(default_factory=list)
+    mean_coverage: Dict = Field(default_factory=dict)
     start: Optional[int]
 
 

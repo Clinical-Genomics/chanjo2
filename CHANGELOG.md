@@ -46,6 +46,7 @@
 - Test warnings regarding Case-Sample database relationship
 - Error when removing a case that is not found in the database
 - Updated and faster GitHub actions
+- Format of mean coverage and coverage completeness returned in responses
 
 ### Changed
 
