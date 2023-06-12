@@ -1,3 +1,9 @@
+## [unreleased]
+
+### Fixed
+
+- docker_build_on_release GitHub action
+
 ## [1.0.0]
 
 ### Added
