@@ -98,7 +98,6 @@ def get_intervals_completeness(
                 else 0,
             )
         )
-
     return completeness_values
 
 

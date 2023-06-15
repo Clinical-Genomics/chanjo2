@@ -150,9 +150,9 @@ class FileCoverageBaseQuery(BaseModel):
 
 
 class FileCoverageQuery(FileCoverageBaseQuery):
+    start: Optional[int]
+    end: Optional[int]
     completeness_thresholds: Optional[List[int]]
-    start: Optional[int] = None
-    end: Optional[int] = None
 
 
 class SampleGeneIntervalQuery(BaseModel):

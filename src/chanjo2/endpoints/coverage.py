@@ -21,6 +21,7 @@ from chanjo2.meta.handle_d4 import (
     set_interval,
     get_genes_coverage_completeness,
     get_gene_interval_coverage_completeness,
+    get_intervals_completeness,
 )
 from chanjo2.models.pydantic_models import (
     CoverageInterval,
@@ -60,6 +61,11 @@ def d4_interval_coverage(query: FileCoverageQuery):
                 get_intervals_mean_coverage(d4_file=d4_file, intervals=[interval])[0],
             )
         ],
+        completeness=get_intervals_completeness(
+            d4_file=d4_file,
+            intervals=[interval],
+            completeness_threholds=query.completeness_thresholds,
+        ),
     )
 
 

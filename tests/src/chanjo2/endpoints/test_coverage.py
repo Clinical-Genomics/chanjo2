@@ -59,6 +59,7 @@ def test_d4_interval_coverage(
 
     # WHEN using a query for the coverage over a genomic interval in a local D4 file
     interval_query["coverage_file_path"] = real_coverage_path
+    interval_query["completeness_thresholds"] = COVERAGE_COMPLETENESS_THRESHOLDS
 
     # THEN a request to the read_single_interval should be successful
     response = client.post(endpoints.INTERVAL_COVERAGE, json=interval_query)
@@ -73,6 +74,11 @@ def test_d4_interval_coverage(
     assert coverage_data.chromosome
     assert coverage_data.start
     assert coverage_data.end
+    # THEN mean coverage value should be returned
+    assert coverage_data.mean_coverage["D4File"] > 0
+    # THEN coverage completeness should be returned for each of the provided thresholds
+    for cov_threshold in COVERAGE_COMPLETENESS_THRESHOLDS:
+        assert coverage_data.completeness[str(cov_threshold)] > 0
 
 
 def test_d4_interval_coverage_single_chromosome(
