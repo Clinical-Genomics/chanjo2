@@ -25,6 +25,7 @@ from chanjo2.meta.handle_d4 import (
 from chanjo2.models.pydantic_models import (
     CoverageInterval,
     SampleGeneIntervalQuery,
+    FileCoverageQuery,
 )
 from chanjo2.models.sql_models import Exon as SQLExon
 from chanjo2.models.sql_models import Gene as SQLGene
@@ -33,20 +34,15 @@ from chanjo2.models.sql_models import Transcript as SQLTranscript
 router = APIRouter()
 
 
-@router.get("/coverage/d4/interval/", response_model=CoverageInterval)
-def d4_interval_coverage(
-    coverage_file_path: str,
-    chromosome: str,
-    start: Optional[int] = None,
-    end: Optional[int] = None,
-):
+@router.post("/coverage/d4/interval/", response_model=CoverageInterval)
+def d4_interval_coverage(query: FileCoverageQuery):
     """Return coverage on the given interval for a D4 resource located on the disk or on a remote server."""
 
     interval: Tuple[str, Optional[int], Optional[int]] = set_interval(
-        chrom=chromosome, start=start, end=end
+        chrom=query.chromosome, start=query.start, end=query.end
     )
     try:
-        d4_file: D4File = get_d4_file(coverage_file_path)
+        d4_file: D4File = get_d4_file(query.coverage_file_path)
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -54,9 +50,9 @@ def d4_interval_coverage(
         )
 
     return CoverageInterval(
-        chromosome=chromosome,
-        start=start,
-        end=end,
+        chromosome=query.chromosome,
+        start=query.start,
+        end=query.end,
         interval=interval,
         mean_coverage=[
             (

@@ -144,6 +144,17 @@ class CoverageInterval(BaseModel):
     start: Optional[int]
 
 
+class FileCoverageBaseQuery(BaseModel):
+    coverage_file_path: str
+    chromosome: str
+
+
+class FileCoverageQuery(FileCoverageBaseQuery):
+    completeness_thresholds: Optional[List[int]]
+    start: Optional[int] = None
+    end: Optional[int] = None
+
+
 class SampleGeneIntervalQuery(BaseModel):
     build: Builds
     completeness_thresholds: Optional[List[int]]

@@ -1,13 +1,13 @@
+## [unreleased]
+### Added
+- `d4_interval_coverage` modified to accept POST requests with new `completeness_thresholds` parameter
+
 ## [1.0.1]
-
 ### Fixed
-
 - docker_build_on_release GitHub action
 
 ## [1.0.0]
-
 ### Added
-
 - Instructions on how to install and run the app on a Conda environment
 - Test for heartbeat endpoint
 - Automated tests GitHub workflow
@@ -42,7 +42,6 @@
 - Improve documentation on how to customise the .env file to use a production database
 
 ### Fixed
-
 - Bugs preventing the gunicorn app to launch
 - Code to compose DB url to work when app is invoked from docker-compose
 - Dockerfile building error due to missing d4tools lib
@@ -56,7 +55,6 @@
 - Format of mean coverage and coverage completeness returned in responses
 
 ### Changed
-
 - Renamed root endpoint to heartbeat
 - Use a multi-stage build in Dockerfile to reduce its size
 - SQLite database launched instead of MySQL as the default demo database
