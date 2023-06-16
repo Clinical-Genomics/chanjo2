@@ -37,12 +37,14 @@ def get_intervals_coords_list(
 def get_intervals_mean_coverage(
     d4_file: D4File, intervals: List[Tuple[str, int, int]]
 ) -> List[float]:
-    """Return the mean value over a list of intervals of a D4 file."""
+    """Return the mean value over a list of intervals of a d4 file."""
     return d4_file.mean(intervals)
 
 
 def intervals_coverage(
-    d4_file: D4File, intervals: List[Tuple[str, int, int]]
+    d4_file: D4File,
+    intervals: List[Tuple[str, int, int]],
+    completeness_threholds: Optional[List[int]],
 ) -> List[CoverageInterval]:
     """Return coverage over a list of intervals."""
     intervals_cov: List[CoverageInterval] = []
@@ -53,6 +55,11 @@ def intervals_coverage(
                 start=interval[1],
                 end=interval[2],
                 mean_coverage={"D4File": d4_file.mean(interval)},
+                completeness=get_intervals_completeness(
+                    d4_file=d4_file,
+                    intervals=[interval],
+                    completeness_threholds=completeness_threholds,
+                ),
             )
         )
     return intervals_cov

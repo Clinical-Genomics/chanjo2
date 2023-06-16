@@ -185,17 +185,6 @@ def coverage_path(tmp_path) -> PosixPath:
     return tmp_coverage_file
 
 
-@pytest.fixture(name="bed_path_malformed")
-def bed_path_malformed(tmp_path) -> PosixPath:
-    """Return malformed BED file."""
-
-    tmp_bed_file: PosixPath = tmp_path / BED_FILE
-    tmp_bed_file.touch()
-    tmp_bed_file.write_text(CONTENT)
-
-    return tmp_bed_file
-
-
 @pytest.fixture(name="real_coverage_path")
 def real_coverage_path() -> str:
     """Returns the string path to a demo D4 file present on disk."""
