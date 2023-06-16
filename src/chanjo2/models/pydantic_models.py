@@ -156,7 +156,6 @@ class FileCoverageQuery(FileCoverageBaseQuery):
 
 
 class FileCoverageIntervalsFileQuery(FileCoverageBaseQuery):
-    completeness_thresholds: Optional[List[int]]
     intervals_bed_path: str
     completeness_thresholds: Optional[List[int]]
 
