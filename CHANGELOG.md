@@ -1,6 +1,6 @@
 ## [unreleased]
 ### Added
-- `d4_interval_coverage`modified to accept POST requests with new `completeness_thresholds` parameter
+- `/coverage/d4/interval/` modified to accept POST requests with new `completeness_thresholds` parameter
 
 ## [1.0.1]
 ### Fixed
