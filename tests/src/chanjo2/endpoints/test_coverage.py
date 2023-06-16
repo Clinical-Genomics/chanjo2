@@ -165,16 +165,26 @@ def test_d4_intervals_coverage(
     d4_query = {
         "coverage_file_path": real_coverage_path,
         "intervals_bed_path": gene_panel_path,
+        "completeness_thresholds": COVERAGE_COMPLETENESS_THRESHOLDS,
     }
 
     # THEN a request to the endpoint should return HTTP 200
     response = client.post(endpoints.INTERVALS_FILE_COVERAGE, json=d4_query)
     assert response.status_code == status.HTTP_200_OK
 
-    # AND return coverage intervals data
+    # AND return stats over the intervals
     coverage_intervals: List = response.json()
     for interval in coverage_intervals:
-        assert CoverageInterval(**interval)
+        coverage_data = CoverageInterval(**interval)
+        # Including mean coverage
+        assert coverage_data.mean_coverage["D4File"] > 0
+        # Interval coordinates
+        assert coverage_data.chromosome
+        assert coverage_data.start
+        assert coverage_data.end
+        # And coverage completeness for each of the specified thresholds
+        for cov_threshold in COVERAGE_COMPLETENESS_THRESHOLDS:
+            assert coverage_data.completeness[str(cov_threshold)] > 0
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())

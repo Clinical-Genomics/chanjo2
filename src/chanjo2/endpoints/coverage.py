@@ -94,7 +94,11 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
             detail=WRONG_BED_FILE_MSG,
         )
 
-    return intervals_coverage(d4_file=d4_file, intervals=intervals)
+    return intervals_coverage(
+        d4_file=d4_file,
+        intervals=intervals,
+        completeness_threholds=query.completeness_thresholds,
+    )
 
 
 def get_samples_coverage_file(
