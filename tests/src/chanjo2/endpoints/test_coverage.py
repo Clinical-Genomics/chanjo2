@@ -41,7 +41,7 @@ def test_d4_interval_coverage_d4_not_found(
     interval_query["coverage_file_path"] = mock_coverage_file
 
     # THEN a request to the read_single_interval should return 404 error
-    response = client.get(endpoints.INTERVAL_COVERAGE, params=interval_query)
+    response = client.post(endpoints.INTERVAL_COVERAGE, json=interval_query)
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
     # THEN show a meaningful message
@@ -59,9 +59,10 @@ def test_d4_interval_coverage(
 
     # WHEN using a query for the coverage over a genomic interval in a local D4 file
     interval_query["coverage_file_path"] = real_coverage_path
+    interval_query["completeness_thresholds"] = COVERAGE_COMPLETENESS_THRESHOLDS
 
     # THEN a request to the read_single_interval should be successful
-    response = client.get(endpoints.INTERVAL_COVERAGE, params=interval_query)
+    response = client.post(endpoints.INTERVAL_COVERAGE, json=interval_query)
     assert response.status_code == status.HTTP_200_OK
 
     # THEN the mean coverage over the interval should be returned
@@ -73,6 +74,11 @@ def test_d4_interval_coverage(
     assert coverage_data.chromosome
     assert coverage_data.start
     assert coverage_data.end
+    # THEN mean coverage value should be returned
+    assert coverage_data.mean_coverage["D4File"] > 0
+    # THEN coverage completeness should be returned for each of the provided thresholds
+    for cov_threshold in COVERAGE_COMPLETENESS_THRESHOLDS:
+        assert coverage_data.completeness[str(cov_threshold)] > 0
 
 
 def test_d4_interval_coverage_single_chromosome(
@@ -88,7 +94,7 @@ def test_d4_interval_coverage_single_chromosome(
     interval_query["coverage_file_path"] = real_coverage_path
 
     # THEN a request to the read_single_intervalshould be successful
-    response = client.get(endpoints.INTERVAL_COVERAGE, params=interval_query)
+    response = client.post(endpoints.INTERVAL_COVERAGE, json=interval_query)
     assert response.status_code == status.HTTP_200_OK
 
     # AND the mean coverage over the entire chromosome should be present in the result
