@@ -1,5 +1,6 @@
 ## [unreleased]
 ### Added
+- Created a woke-language-check GitHub action
 - `/coverage/d4/interval/` modified to accept POST requests with new `completeness_thresholds` parameter
 
 ## [1.0.1]
@@ -40,7 +41,6 @@
 - Documentation on how to query the server for coverage stats
 - Documentation on how to load genes, transcripts and exons into the database
 - Improve documentation on how to customise the .env file to use a production database
-
 ### Fixed
 - Bugs preventing the gunicorn app to launch
 - Code to compose DB url to work when app is invoked from docker-compose
@@ -53,7 +53,6 @@
 - Error when removing a case that is not found in the database
 - Updated and faster GitHub actions
 - Format of mean coverage and coverage completeness returned in responses
-
 ### Changed
 - Renamed root endpoint to heartbeat
 - Use a multi-stage build in Dockerfile to reduce its size
