@@ -83,7 +83,7 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
         )
 
     try:
-        with open(query.intervals_bed_path, "rb") as f:
+        with open(query.intervals_bed_path, "rb") as bed_file:
             bed_content = f.read()
             intervals: List[Tuple[str, Optional[int], Optional[int]]] = parse_bed(
                 bed_file=bed_content
