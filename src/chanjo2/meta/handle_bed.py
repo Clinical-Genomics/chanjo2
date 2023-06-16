@@ -1,10 +1,10 @@
 from typing import List, Tuple
 
 
-def parse_bed(bed_file: bytes) -> List[Tuple[str, int, int]]:
+def parse_bed(bed_file_content: bytes) -> List[Tuple[str, int, int]]:
     """Parses a bed file containing genomic coordinates."""
     intervals: List[Tuple[str, int, int]] = []
-    for line_byte in bed_file.rsplit(b"\n"):
+    for line_byte in bed_file_content.rsplit(b"\n"):
         if len(line_byte) > 0 and not line_byte.startswith(b"#"):
             intervals.append(bed_line_to_region(bytes_line=line_byte))
     return intervals
