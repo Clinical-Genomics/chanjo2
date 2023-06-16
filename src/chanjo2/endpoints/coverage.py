@@ -86,7 +86,7 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
         with open(query.intervals_bed_path, "rb") as bed_file:
             bed_file_content = f.read()
             intervals: List[Tuple[str, Optional[int], Optional[int]]] = parse_bed(
-                bed_file=bed_content
+                bed_file_content=bed_file_content
             )
     except Exception:
         raise HTTPException(
