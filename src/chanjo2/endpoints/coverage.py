@@ -1,6 +1,6 @@
 from typing import List, Optional, Tuple, Union
 
-from fastapi import APIRouter, HTTPException, File, status, Depends
+from fastapi import APIRouter, HTTPException, status, Depends
 from fastapi.responses import JSONResponse
 from pyd4 import D4File
 from sqlmodel import Session
@@ -27,6 +27,7 @@ from chanjo2.models.pydantic_models import (
     CoverageInterval,
     SampleGeneIntervalQuery,
     FileCoverageQuery,
+    FileCoverageIntervalsFileQuery,
 )
 from chanjo2.models.sql_models import Exon as SQLExon
 from chanjo2.models.sql_models import Gene as SQLGene
@@ -70,11 +71,11 @@ def d4_interval_coverage(query: FileCoverageQuery):
 
 
 @router.post("/coverage/d4/interval_file/", response_model=List[CoverageInterval])
-def d4_intervals_coverage(coverage_file_path: str, bed_file: bytes = File(...)):
+def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
     """Return coverage on the given intervals for a D4 resource located on the disk or on a remote server."""
 
     try:
-        d4_file: D4File = get_d4_file(coverage_file_path=coverage_file_path)
+        d4_file: D4File = get_d4_file(coverage_file_path=query.coverage_file_path)
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -82,9 +83,11 @@ def d4_intervals_coverage(coverage_file_path: str, bed_file: bytes = File(...)):
         )
 
     try:
-        intervals: List[Tuple[str, Optional[int], Optional[int]]] = parse_bed(
-            bed_file=bed_file
-        )
+        with open(query.intervals_bed_path, "rb") as f:
+            bed_content = f.read()
+            intervals: List[Tuple[str, Optional[int], Optional[int]]] = parse_bed(
+                bed_file=bed_content
+            )
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
