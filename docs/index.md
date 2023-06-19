@@ -8,9 +8,9 @@ single d4 files or samples stored in the database with associated d4 files.
 
 The tool is flexible and can be used in different ways. The simplest use case would be calculating sequencing coverage over one or more intervals for a d4 file stored locally or remotely on the internet.
 
-## Chanjo2 image as a proxy to d4tools to compute coverage stats over genomic intervals of a d4 file
+## Chanjo2 image as a proxy to d4tools to compute coverage and coverage completeness stats over genomic intervals of a d4 file
 
-Chanjo2 image contains [d4tools][d4tools-tool] and can be used to directly retrieve statistics over d4 files.
+Chanjo2 image contains [d4tools][d4tools-tool] and can be used to retrieve statistics over d4 files.
 
 ### Executing d4tools
 
@@ -21,13 +21,13 @@ docker run --entrypoint d4tools --rm  clinicalgenomics/chanjo2:latest
 ### Calculating coverage on specific genomic intervals of a d4 file using d4tools
 
 ``` shell
-docker run --entrypoint d4tools --rm  -v <path-to-local-d4-files-folder>:/home/worker/infiles clinicalgenomics/chanjo2:latest view /home/worker/infiles/<d4file.d4> 1:1234560-1234580 X:1234560-1234580
+docker run --entrypoint d4tools --platform linux/x86_64 --rm  -v <path-to-local-d4-files-folder>:/home/worker/infiles clinicalgenomics/chanjo2:latest view /home/worker/infiles/<d4file.d4> 1:1234560-1234580 X:1234560-1234580
 ```
 
 Please note that the d4 file containing the <strong>coverage data can be also stored on a remote server</strong>. In this case the command above could be replaced by this one:
 
 ``` shell
-docker run --entrypoint d4tools --rm clinicalgenomics/chanjo2:latest view <url-to-remote-d4-file.d4> 1:1234560-1234580 X:1234560-1234580
+docker run --entrypoint d4tools --platform linux/x86_64 --rm clinicalgenomics/chanjo2:latest view <url-to-remote-d4-file.d4> 1:1234560-1234580 X:1234560-1234580
 ```
 
 The coverage computation on a file hosted on a remote server, will be consistently slower than when hosting the file on a local server. 

@@ -3,140 +3,168 @@
 Chanjo2 can be used to quickly access average coverage depth statistics for an interval from a list of genomic intervals on a custom d4 coverage file.
 Additionally, samples stored in the database contain the location of d4 files on disk or on a remote server. For this reason, it is possible to retrieve coverage statistics relative to one or more samples by specifying their name (or the case name).
 
+### Coverage completeness
+
+When querying the server for sample coverage statistics, it is also possible to specify a custom list of numbers (example 30, 20, 10) representing the coverage thresholds that should be used to calculate the <strong>coverage completeness</strong> for each genomic interval. 
+This number describes the percentage of bases (as a decimal number) meeting the user-defined coverage threshold for each genomic interval.
+
 ### Direct coverage query over a single genomic interval
 
-Coverage over a genomic interval can be computed by sending a `GET` request to the `/coverage/d4/interval/` endpoint.
+Coverage and coverage completeness over a genomic interval can be computed by sending a `POST` request to the `/coverage/d4/interval/` endpoint.
 
-The parameters accepted by this query are:
+The entrypoint accepts a json query with the following parameters:
 
-- <strong>coverage_file_path</strong> (required). Path to a d4 file that is stored on the local drive or on a remote server (slower computation)
-- <strong>chromosome</strong> (required). Genomic interval chromosome
-- <strong>start</strong>. Genomic interval start position 
-- <strong>stop</strong> Genomic interval end position 
+- <strong>coverage_file_path</strong> # (required). Path to a d4 file that is stored on the local drive or on a remote server (slower computation)
+- <strong>chromosome</strong> # (required). Genomic interval chromosome
+- <strong>completeness_thresholds</strong> # Threshold values for computing coverage completeness. Example [50, 30, 10]
+- <strong>start</strong> # Genomic interval start position 
+- <strong>stop</strong> # Genomic interval end position 
 
 Note that start and stop coordinates are not required and whenever they are omitted coverage statistics will be computer over the entire chromosome.
 
 Query example:
 
 ``` shell
-curl -X 'GET' \
-  'http://localhost:8000/coverage/d4/interval/?coverage_file_path=https%3A%2F%2Fd4-format-testing.s3.us-west-1.amazonaws.com%2Fhg002.d4&chromosome=7&start=124822386&end=124929983' \
-  -H 'accept: application/json'
+curl -X 'POST' \
+  'http://localhost:8000/coverage/d4/interval/' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "coverage_file_path": "https://d4-format-testing.s3.us-west-1.amazonaws.com/hg002.d4",
+  "chromosome": "7",
+  "start": 124822386,
+  "end": 124929983,
+  "completeness_thresholds": [
+    30,20,10
+  ]
+}'
 ```
 
-This query wll return a response, where the mean coverage over the single interval is present in the first element of the mean_coverage value:
+This query wll return a response, where the mean coverage over the single interval is present under the mean_coverage key. 
+Coverage completeness values will be additionally returned if the query sent to the server contains values for the completeness_thresholds key. 
+A response from the server to the query above will return for instance a mean interval coverage of 27.2 and coverage completeness of 99.6%, 85% and 33.4% using threshold values of respectively 10, 20 and 30.
 
 ``` shell
 {
   "chromosome": "7",
-  "completeness": [],
+  "completeness": {
+    "10": 0.9961708969580936,
+    "20": 0.8502467540916568,
+    "30": 0.3346933464687677
+  },
   "ensembl_gene_id": null,
   "end": 124929983,
   "hgnc_id": null,
   "hgnc_symbol": null,
   "interval_id": null,
-  "mean_coverage": [
-    [
-      "D4File",
-      27.19804455514559
-    ]
-  ],
+  "mean_coverage": {
+    "D4File": 27.19804455514559
+  },
   "start": 124822386
 }
 ```
 
 ### Direct coverage query over the intervals present in a bed file
 
-Mean coverage can be also calculated for a list of intervals. The intervals list should be provided as bed-formatted file in a `POST` request.
+Mean coverage can be also calculated for a list of intervals using the `/coverage/d4/interval_file` endpoint. The intervals list should be provided as the path to a bed-formatted file.
+
+The entrypoint accepts a json query with the following parameters:
+
+- <strong>coverage_file_path</strong> # (required). Path to a d4 file that is stored on the local drive or on a remote server (slower computation)
+- <strong>intervals_bed_path</strong> # (required). Path to a .bed file present on the local drive.
+- <strong>completeness_thresholds</strong> # Threshold values for computing coverage completeness. Example [50, 30, 10]
 
 If we were to use the [demo bed file](https://github.com/Clinical-Genomics/chanjo2/blob/main/src/chanjo2/demo/109_green.bed) provided in this repository, the query would look like this:
 
 ``` shell
 curl -X 'POST' \
-  'http://localhost:8000/coverage/d4/interval_file/?coverage_file_path=https%3A%2F%2Fd4-format-testing.s3.us-west-1.amazonaws.com%2Fhg002.d4' \
+  'http://localhost:8000/coverage/d4/interval_file/' \
   -H 'accept: application/json' \
-  -H 'Content-Type: multipart/form-data' \
-  -F 'bed_file=<path-to-109_green.bed>'
+  -H 'Content-Type: application/json' \
+  -d '{
+  "coverage_file_path": "https://d4-format-testing.s3.us-west-1.amazonaws.com/hg002.d4",
+  "intervals_bed_path": "<path-to-109_green.bed>",
+  "completeness_thresholds": [
+    10,20,30
+  ]
+}'
 ```
 
 And it would return the following result:
 
 ``` shell
 [
+  [
   {
     "chromosome": "1",
-    "completeness": [],
+    "completeness": {
+      "10": 0.9969807048167193,
+      "20": 0.6901920083030617,
+      "30": 0.07694485068641789
+    },
     "ensembl_gene_id": null,
     "end": 11866977,
     "hgnc_id": null,
     "hgnc_symbol": null,
     "interval_id": null,
-    "mean_coverage": [
-      [
-        "D4File",
-        22.17115629570222
-      ]
-    ],
+    "mean_coverage": {
+      "D4File": 22.17115629570222
+    },
     "start": 11845780
   },
   {
     "chromosome": "5",
-    "completeness": [],
+    "completeness": {
+      "10": 0.998226395409494,
+      "20": 0.8374195792036168,
+      "30": 0.2350547730829421
+    },
     "ensembl_gene_id": null,
     "end": 79950802,
     "hgnc_id": null,
     "hgnc_symbol": null,
     "interval_id": null,
-    "mean_coverage": [
-      [
-        "D4File",
-        83.1338549817423
-      ]
-    ],
+    "mean_coverage": {
+      "D4File": 83.1338549817423
+    },
     "start": 79922047
   },
   {
     "chromosome": "11",
-    "completeness": [],
+    "completeness": {
+      "10": 1,
+      "20": 0.7778436897523358,
+      "30": 0.03129170992139997
+    },
     "ensembl_gene_id": null,
     "end": 71907345,
     "hgnc_id": null,
     "hgnc_symbol": null,
     "interval_id": null,
-    "mean_coverage": [
-      [
-        "D4File",
-        252.63072816253893
-      ]
-    ],
+    "mean_coverage": {
+      "D4File": 252.63072816253893
+    },
     "start": 71900602
   },
   {
     "chromosome": "17",
-    "completeness": [],
+    "completeness": {
+      "10": 0.9944240879400987,
+      "20": 0.7026445754341246,
+      "30": 0.08531145451648876
+    },
     "ensembl_gene_id": null,
     "end": 26734215,
     "hgnc_id": null,
     "hgnc_symbol": null,
     "interval_id": null,
-    "mean_coverage": [
-      [
-        "D4File",
-        141.35853114545165
-      ]
-    ],
+    "mean_coverage": {
+      "D4File": 141.35853114545165
+    },
     "start": 26721661
   }
 ]
 ```
-
-Please note that <strong>direct coverage queries are not yet supporting the computation of coverage completeness</strong> over a custom list of coverage thresholds.
-
-
-### Coverage completeness
-
-When querying the server for sample coverage statistics, it is also possible to specify a custom list of numbers (example 30, 20, 10) representing the coverage thresholds that should be used to calculate the <strong>coverage completeness</strong> for each genomic interval. 
-This number describes the percentage of bases (as a decimal number) meeting the user-defined coverage threshold for each genomic interval.
 
 ### Case and samples coverage queries
 
