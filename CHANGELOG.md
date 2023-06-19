@@ -1,4 +1,4 @@
-## [unreleased]
+## [1.1.0]
 ### Added
 - Created a woke-language-check GitHub action
 - `/coverage/d4/interval/` and `/coverage/d4/interval_file/` modified to accept POST requests with new `completeness_thresholds` parameter
