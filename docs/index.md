@@ -8,9 +8,9 @@ single d4 files or samples stored in the database with associated d4 files.
 
 The tool is flexible and can be used in different ways. The simplest use case would be calculating sequencing coverage over one or more intervals for a d4 file stored locally or remotely on the internet.
 
-## Chanjo2 image as a proxy to d4tools to compute coverage and coverage completeness stats over genomic intervals of a d4 file
+## Chanjo2 image as a proxy to d4tools to compute coverage stats over genomic intervals of a d4 file
 
-Chanjo2 image contains [d4tools][d4tools-tool] and can be used to retrieve statistics over d4 files.
+Chanjo2 image contains [d4tools][d4tools-tool] and can be used to directly retrieve statistics over d4 files.
 
 ### Executing d4tools
 
