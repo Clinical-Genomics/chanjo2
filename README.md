@@ -58,7 +58,7 @@ This will return a json response describing the demo case and its associated sam
 ]
 ```
 
-The available demo sample contains a d4 coverage file with a limited amount of genes in genome build GRCh37, those present in PanelApp gene panel 109 (Cerebral folate deficiency): .
+The available demo sample contains a d4 coverage file with a limited amount of genes in genome build GRCh37, those present in [PanelApp gene panel 109 (Cerebral folate deficiency)][panelapp-109]: .
 
 #### Loading genes to the database
 

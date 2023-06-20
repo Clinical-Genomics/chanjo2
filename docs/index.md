@@ -21,13 +21,13 @@ docker run --entrypoint d4tools --rm  clinicalgenomics/chanjo2:latest
 ### Calculating coverage on specific genomic intervals of a d4 file using d4tools
 
 ``` shell
-docker run --entrypoint d4tools --rm  -v <path-to-local-d4-files-folder>:/home/worker/infiles clinicalgenomics/chanjo2:latest view /home/worker/infiles/<d4file.d4> 1:1234560-1234580 X:1234560-1234580
+docker run --entrypoint d4tools --platform linux/x86_64 --rm  -v <path-to-local-d4-files-folder>:/home/worker/infiles clinicalgenomics/chanjo2:latest view /home/worker/infiles/<d4file.d4> 1:1234560-1234580 X:1234560-1234580
 ```
 
 Please note that the d4 file containing the <strong>coverage data can be also stored on a remote server</strong>. In this case the command above could be replaced by this one:
 
 ``` shell
-docker run --entrypoint d4tools --rm clinicalgenomics/chanjo2:latest view <url-to-remote-d4-file.d4> 1:1234560-1234580 X:1234560-1234580
+docker run --entrypoint d4tools --platform linux/x86_64 --rm clinicalgenomics/chanjo2:latest view <url-to-remote-d4-file.d4> 1:1234560-1234580 X:1234560-1234580
 ```
 
 The coverage computation on a file hosted on a remote server, will be consistently slower than when hosting the file on a local server. 
