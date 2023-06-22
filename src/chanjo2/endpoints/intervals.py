@@ -48,7 +48,7 @@ async def load_genes(
             nr_loaded_genes: int = await update_genes(
                 build=build, lines=gene_lines, session=session
             )
-        elif build:
+        else:
             nr_loaded_genes: int = await update_genes(build=build, session=session)
         return JSONResponse(
             content={"detail": f"{nr_loaded_genes} genes loaded into the database"}
