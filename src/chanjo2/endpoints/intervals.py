@@ -36,7 +36,7 @@ def count_nr_filters(filters: List[str]) -> int:
 
 @router.post("/intervals/load/genes/{build}")
 async def load_genes(
-    build: Optional[Builds],
+    build: Builds,
     file_path: Optional[str] = None,
     session: Session = Depends(get_session),
 ) -> Union[Response, HTTPException]:
