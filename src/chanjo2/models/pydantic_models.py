@@ -9,8 +9,7 @@ from pydantic import BaseModel, validator, Field, root_validator
 from chanjo2.constants import (
     WRONG_COVERAGE_FILE_MSG,
     MULTIPLE_GENE_LISTS_NOT_SUPPORTED_MSG,
-    AMBIGUOUS_SAMPLES_INPUT
-    MULTIPLE_GENOMIC_INTERVAL_PARAMS_NOT_SUPPORTED
+    AMBIGUOUS_SAMPLES_INPUT,
 )
 
 
@@ -22,17 +21,6 @@ class Builds(str, Enum):
     def get_enum_values() -> List[str]:
         """Returns the values of the available genome builds."""
         return [member.value for member in Builds]
-
-
-class LoadGenomicIntervalParams():
-    build: Builds | None = None
-    resource_path: str | None = None
-
-    @root_validator
-    def validate(cls, values):
-        if len([val for val in values.values() if val is not None]) != 1:
-            raise ValueError(MULTIPLE_GENOMIC_INTERVAL_PARAMS_NOT_SUPPORTED)
-        return values
 
 
 class IntervalType(str, Enum):

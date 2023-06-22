@@ -6,6 +6,7 @@ from fastapi.testclient import TestClient
 from pytest_mock.plugin import MockerFixture
 
 from chanjo2.constants import MULTIPLE_PARAMS_NOT_SUPPORTED_MSG
+from chanjo2.meta.handle_bed import resource_lines
 from chanjo2.models.pydantic_models import (
     Builds,
     Exon,
@@ -17,7 +18,6 @@ from chanjo2.populate_demo import (
     BUILD_TRANSCRIPTS_RESOURCE,
     BUILD_EXONS_RESOURCE,
 )
-from chanjo2.populate_demo import resource_lines
 
 MOCKED_FILE_PARSER = "chanjo2.meta.handle_load_intervals.read_resource_lines"
 

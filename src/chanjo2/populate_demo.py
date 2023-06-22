@@ -15,6 +15,7 @@ from chanjo2.crud.cases import create_db_case
 from chanjo2.crud.samples import create_sample_in_case
 from chanjo2.dbutil import get_session
 from chanjo2.demo import d4_demo_path
+from chanjo2.meta.handle_bed import resource_lines
 from chanjo2.meta.handle_load_intervals import (
     update_genes,
     update_transcripts,
@@ -44,13 +45,6 @@ BUILD_EXONS_RESOURCE: List[Tuple[Builds, str]] = [
     (BUILD_37, EXONS_37_FILE_PATH),
     (BUILD_38, EXONS_38_FILE_PATH),
 ]
-
-
-def resource_lines(file_path: str) -> Iterator[str]:
-    resource = open(file_path, "r", encoding="utf-8")
-    lines: List = resource.readlines()
-    lines: List = [line.rstrip("\n") for line in lines]
-    return iter(lines)
 
 
 async def load_demo_data() -> None:

@@ -1,4 +1,4 @@
-from typing import List, Union, Optional
+from typing import List, Union, Optional, Iterator
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from fastapi.responses import JSONResponse
@@ -9,6 +9,7 @@ from chanjo2.constants import (
 )
 from chanjo2.crud.intervals import get_genes, get_gene_intervals
 from chanjo2.dbutil import get_session
+from chanjo2.meta.handle_bed import resource_lines
 from chanjo2.meta.handle_load_intervals import (
     update_exons,
     update_genes,
@@ -35,16 +36,20 @@ def count_nr_filters(filters: List[str]) -> int:
 
 @router.post("/intervals/load/genes/{build}")
 async def load_genes(
-        build: Optional[Builds], file_path: Optional[str], session: Session = Depends(get_session)
+    build: Optional[Builds],
+    file_path: Optional[str] = None,
+    session: Session = Depends(get_session),
 ) -> Union[Response, HTTPException]:
     """Load genes in the given genome build."""
 
-    if
     try:
         if file_path:
-            nr_loaded_genes: int = await update_genes(build=build, session=session, file_path=file_path)
+            gene_lines: Iterator[str] = resource_lines(file_path=file_path)
+            nr_loaded_genes: int = await update_genes(
+                build=build, lines=gene_lines, session=session
+            )
         elif build:
-            nr_loaded_genes: int = await update_genes(build=build, session=session, file_path=file_path)
+            nr_loaded_genes: int = await update_genes(build=build, session=session)
         return JSONResponse(
             content={"detail": f"{nr_loaded_genes} genes loaded into the database"}
         )
@@ -58,7 +63,7 @@ async def load_genes(
 
 @router.post("/intervals/genes")
 async def genes(
-        query: GeneQuery, session: Session = Depends(get_session)
+    query: GeneQuery, session: Session = Depends(get_session)
 ) -> List[Gene]:
     """Return genes according to query parameters."""
     nr_filters = count_nr_filters(
@@ -82,7 +87,7 @@ async def genes(
 
 @router.post("/intervals/load/transcripts/{build}")
 async def load_transcripts(
-        build: Builds, session: Session = Depends(get_session)
+    build: Builds, session: Session = Depends(get_session)
 ) -> Union[Response, HTTPException]:
     """Load transcripts in the given genome build."""
 
@@ -105,7 +110,7 @@ async def load_transcripts(
 
 @router.post("/intervals/transcripts")
 async def transcripts(
-        query: GeneIntervalQuery, session: Session = Depends(get_session)
+    query: GeneIntervalQuery, session: Session = Depends(get_session)
 ) -> List[Transcript]:
     """Return transcripts according to query parameters."""
     nr_filters = count_nr_filters(
@@ -135,7 +140,7 @@ async def transcripts(
 
 @router.post("/intervals/load/exons/{build}")
 async def load_exons(
-        build: Builds, session: Session = Depends(get_session)
+    build: Builds, session: Session = Depends(get_session)
 ) -> Union[Response, HTTPException]:
     """Load exons in the given genome build."""
 
@@ -154,7 +159,7 @@ async def load_exons(
 
 @router.post("/intervals/exons")
 async def exons(
-        query: GeneIntervalQuery, session: Session = Depends(get_session)
+    query: GeneIntervalQuery, session: Session = Depends(get_session)
 ) -> List[Exon]:
     """Return exons in the given genome build."""
     nr_filters = count_nr_filters(
