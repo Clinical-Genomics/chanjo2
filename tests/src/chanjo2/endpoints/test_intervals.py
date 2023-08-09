@@ -86,6 +86,7 @@ def test_load_genes_from_file(
     response: Response = client.post(endpoints.GENES, json={"build": build})
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
+    
     # THEN the expected number of genes should be returned
     assert len(result) == nr_genes
 
