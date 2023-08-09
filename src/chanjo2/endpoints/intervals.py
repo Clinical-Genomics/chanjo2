@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Union, Optional, Iterator
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from fastapi.responses import JSONResponse
@@ -9,6 +9,7 @@ from chanjo2.constants import (
 )
 from chanjo2.crud.intervals import get_genes, get_gene_intervals
 from chanjo2.dbutil import get_session
+from chanjo2.meta.handle_bed import resource_lines
 from chanjo2.meta.handle_load_intervals import (
     update_exons,
     update_genes,
@@ -35,12 +36,20 @@ def count_nr_filters(filters: List[str]) -> int:
 
 @router.post("/intervals/load/genes/{build}")
 async def load_genes(
-    build: Builds, session: Session = Depends(get_session)
+    build: Builds,
+    file_path: Optional[str] = None,
+    session: Session = Depends(get_session),
 ) -> Union[Response, HTTPException]:
     """Load genes in the given genome build."""
 
     try:
-        nr_loaded_genes: int = await update_genes(build=build, session=session)
+        if file_path:
+            gene_lines: Iterator[str] = resource_lines(file_path=file_path)
+            nr_loaded_genes: int = await update_genes(
+                build=build, lines=gene_lines, session=session
+            )
+        else:
+            nr_loaded_genes: int = await update_genes(build=build, session=session)
         return JSONResponse(
             content={"detail": f"{nr_loaded_genes} genes loaded into the database"}
         )

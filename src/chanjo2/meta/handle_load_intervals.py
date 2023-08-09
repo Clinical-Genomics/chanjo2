@@ -2,6 +2,10 @@ import logging
 from typing import Iterator, List, Union, Optional
 
 import requests
+from schug.load.biomart import EnsemblBiomartClient
+from schug.models.common import Build as SchugBuild
+from sqlmodel import Session
+
 from chanjo2.constants import (
     ENSEMBL_RESOURCE_CLIENT,
     EXONS_FILE_HEADER,
@@ -25,9 +29,6 @@ from chanjo2.models.pydantic_models import (
 from chanjo2.models.sql_models import Exon as SQLExon
 from chanjo2.models.sql_models import Gene as SQLGene
 from chanjo2.models.sql_models import Transcript as SQLTranscript
-from schug.load.biomart import EnsemblBiomartClient
-from schug.models.common import Build as SchugBuild
-from sqlmodel import Session
 
 LOG = logging.getLogger("uvicorn.access")
 MAX_NR_OF_RECORDS = 10_000
@@ -65,6 +66,7 @@ async def update_genes(
         )
 
     header = next(lines).split("\t")
+
     if header != GENES_FILE_HEADER[build]:
         raise ValueError(
             f"Ensembl genes file has an unexpected format:{header}. Expected format: {GENES_FILE_HEADER[build]}"

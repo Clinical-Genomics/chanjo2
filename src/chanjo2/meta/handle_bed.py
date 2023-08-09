@@ -1,4 +1,11 @@
-from typing import List, Tuple
+from typing import List, Tuple, Iterator
+
+
+def resource_lines(file_path: str) -> Iterator[str]:
+    resource = open(file_path, "r", encoding="utf-8")
+    lines: List = resource.readlines()
+    lines: List = [line.rstrip("\n") for line in lines]
+    return iter(lines)
 
 
 def parse_bed(bed_file_content: bytes) -> List[Tuple[str, int, int]]:

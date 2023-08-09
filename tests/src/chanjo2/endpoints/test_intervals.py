@@ -6,6 +6,7 @@ from fastapi.testclient import TestClient
 from pytest_mock.plugin import MockerFixture
 
 from chanjo2.constants import MULTIPLE_PARAMS_NOT_SUPPORTED_MSG
+from chanjo2.meta.handle_bed import resource_lines
 from chanjo2.models.pydantic_models import (
     Builds,
     Exon,
@@ -17,7 +18,6 @@ from chanjo2.populate_demo import (
     BUILD_TRANSCRIPTS_RESOURCE,
     BUILD_EXONS_RESOURCE,
 )
-from chanjo2.populate_demo import resource_lines
 
 MOCKED_FILE_PARSER = "chanjo2.meta.handle_load_intervals.read_resource_lines"
 
@@ -58,6 +58,39 @@ def test_load_genes(
     # THEN the expected number of genes should be returned
     assert len(result) == nr_genes
     # AND the gene should have the right format
+    assert Gene(**result[0])
+
+
+@pytest.mark.parametrize("build, path", BUILD_GENES_RESOURCE)
+def test_load_genes_from_file(
+    build: str,
+    path: str,
+    client: TestClient,
+    endpoints: Type,
+):
+    """Test the endpoint that adds genes to the database in a given genome build parsing them from a local file."""
+
+    # GIVEN a number of genes contained in the demo file
+    nr_genes: int = len(list(resource_lines(path))) - 1
+
+    # WHEN sending a request to the load_genes with genome build and path to the file containing the gene definitoons
+    response: Response = client.post(f"{endpoints.LOAD_GENES}{build}?file_path={path}")
+
+    # THEN it should return success
+    assert response.status_code == status.HTTP_200_OK
+
+    # THEN all the genes should be loaded
+    assert response.json()["detail"] == f"{nr_genes} genes loaded into the database"
+
+    # WHEN sending a request to the "genes" endpoint
+    response: Response = client.post(endpoints.GENES, json={"build": build})
+    assert response.status_code == status.HTTP_200_OK
+    result = response.json()
+
+    # THEN the expected number of genes should be returned
+    assert len(result) == nr_genes
+
+    # THEN the gene should have the right format
     assert Gene(**result[0])
 
 
