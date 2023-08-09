@@ -88,7 +88,8 @@ def test_load_genes_from_file(
     result = response.json()
     # THEN the expected number of genes should be returned
     assert len(result) == nr_genes
-    # AND the gene should have the right format
+
+    # THEN the gene should have the right format
     assert Gene(**result[0])
 
 
