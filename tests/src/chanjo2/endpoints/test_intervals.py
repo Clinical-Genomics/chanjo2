@@ -223,9 +223,8 @@ def test_load_transcripts_from_file(
     path: str,
     client: TestClient,
     endpoints: Type,
-    mocker: MockerFixture,
 ):
-    """Test the endpoint that adds genes to the database in a given genome build."""
+    """Test the endpoint that adds genes to the database from a bed file in a given genome build."""
 
     # GIVEN a number of transcripts contained in the demo file
     nr_transcripts: int = len(list(resource_lines(path))) - 1
