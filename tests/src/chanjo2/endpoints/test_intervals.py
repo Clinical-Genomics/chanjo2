@@ -383,6 +383,28 @@ def test_load_exons(
     assert response.json()["detail"] == f"{nr_exons} exons loaded into the database"
 
 
+@pytest.mark.parametrize("build, path", BUILD_EXONS_RESOURCE)
+def test_load_exons_from_file(
+    build: str,
+    path: str,
+    client: TestClient,
+    endpoints: Type,
+    mocker: MockerFixture,
+):
+    """Test the endpoint that adds exons to the database from bed file in a given genome build."""
+
+    # GIVEN a number of exons contained in the demo file
+    nr_exons: int = len(list(resource_lines(path))) - 1
+
+    # WHEN sending a request to the load_exons endpoint with genome build ans path to the exons definitions
+    response: Response = client.post(f"{endpoints.LOAD_EXONS}{build}?file_path={path}")
+
+    # THEN it should return success
+    assert response.status_code == status.HTTP_200_OK
+    # THEN all exons should be loaded
+    assert response.json()["detail"] == f"{nr_exons} exons loaded into the database"
+
+
 @pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_exons_multiple_filters(
     build: str,

@@ -1,3 +1,7 @@
+## [unreleased]
+### Added
+- Load genes, transcripts and exons from pre-downloaded files
+
 ## [1.1.0]
 ### Added
 - Created a woke-language-check GitHub action
