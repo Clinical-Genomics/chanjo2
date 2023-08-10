@@ -217,6 +217,32 @@ def test_load_transcripts(
     )
 
 
+@pytest.mark.parametrize("build, path", BUILD_TRANSCRIPTS_RESOURCE)
+def test_load_transcripts_from_file(
+    build: str,
+    path: str,
+    client: TestClient,
+    endpoints: Type,
+    mocker: MockerFixture,
+):
+    """Test the endpoint that adds genes to the database in a given genome build."""
+
+    # GIVEN a number of transcripts contained in the demo file
+    nr_transcripts: int = len(list(resource_lines(path))) - 1
+
+    # WHEN sending a request to the load_genes with genome build and path to the file containing the transcripts definitoons
+    response: Response = client.post(
+        f"{endpoints.LOAD_TRANSCRIPTS}{build}?file_path={path}"
+    )
+    # THEN it should return success
+    assert response.status_code == status.HTTP_200_OK
+    # THEN all transcripts should be loaded
+    assert (
+        response.json()["detail"]
+        == f"{nr_transcripts} transcripts loaded into the database"
+    )
+
+
 @pytest.mark.parametrize("build", Builds.get_enum_values())
 def test_transcripts_multiple_filters(
     build: str,
