@@ -229,7 +229,7 @@ def test_load_transcripts_from_file(
     # GIVEN a number of transcripts contained in the demo file
     nr_transcripts: int = len(list(resource_lines(path))) - 1
 
-    # WHEN sending a request to the load_genes with genome build and path to the file containing the transcripts definitoons
+    # WHEN sending a request to the load_transcripts with genome build and path to the file containing the transcripts definitoons
     response: Response = client.post(
         f"{endpoints.LOAD_TRANSCRIPTS}{build}?file_path={path}"
     )
