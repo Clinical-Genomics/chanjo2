@@ -389,7 +389,6 @@ def test_load_exons_from_file(
     path: str,
     client: TestClient,
     endpoints: Type,
-    mocker: MockerFixture,
 ):
     """Test the endpoint that adds exons to the database from bed file in a given genome build."""
 
