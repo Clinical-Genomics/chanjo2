@@ -1,3 +1,7 @@
+## [unreleased]
+### Added
+- Load genes and transcripts using pre-downloaded bed files
+
 ## [1.1.0]
 ### Added
 - Created a woke-language-check GitHub action
