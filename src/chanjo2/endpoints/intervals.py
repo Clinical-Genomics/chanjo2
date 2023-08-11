@@ -87,14 +87,22 @@ async def genes(
 
 @router.post("/intervals/load/transcripts/{build}")
 async def load_transcripts(
-    build: Builds, session: Session = Depends(get_session)
+    build: Builds,
+    file_path: Optional[str] = None,
+    session: Session = Depends(get_session),
 ) -> Union[Response, HTTPException]:
     """Load transcripts in the given genome build."""
 
     try:
-        nr_loaded_transcripts: int = await update_transcripts(
-            build=build, session=session
-        )
+        if file_path:
+            transcripts_lines: Iterator[str] = resource_lines(file_path=file_path)
+            nr_loaded_transcripts: int = await update_transcripts(
+                build=build, lines=transcripts_lines, session=session
+            )
+        else:
+            nr_loaded_transcripts: int = await update_transcripts(
+                build=build, session=session
+            )
         return JSONResponse(
             content={
                 "detail": f"{nr_loaded_transcripts} transcripts loaded into the database"
