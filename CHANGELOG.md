@@ -1,6 +1,6 @@
 ## [unreleased]
 ### Added
-- Load genes and transcripts using pre-downloaded bed files
+- Load genes, transcripts and exons from pre-downloaded files
 
 ## [1.1.0]
 ### Added
