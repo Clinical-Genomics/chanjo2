@@ -395,7 +395,7 @@ def test_load_exons_from_file(
     # GIVEN a number of exons contained in the demo file
     nr_exons: int = len(list(resource_lines(path))) - 1
 
-    # WHEN sending a request to the load_exons endpoint with genome build ans path to the exons definitions
+    # WHEN sending a request to the load_exons endpoint with genome build and path to the exons definitions
     response: Response = client.post(f"{endpoints.LOAD_EXONS}{build}?file_path={path}")
 
     # THEN it should return success
