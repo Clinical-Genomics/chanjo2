@@ -1,6 +1,7 @@
 ## [unreleased]
 ### Added
 - Load genes, transcripts and exons from pre-downloaded files
+- Coverage report module and `report` endpoint
 ### Fixed
 - Bump certifi from 2022.12.7 to 2023.7.22
 

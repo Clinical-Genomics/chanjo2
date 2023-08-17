@@ -2,12 +2,14 @@ import logging
 import os
 
 import uvicorn
+from fastapi import FastAPI, status
+from fastapi.staticfiles import StaticFiles
+
 from chanjo2 import __version__
 from chanjo2.dbutil import engine
 from chanjo2.endpoints import cases, intervals, samples, coverage
 from chanjo2.models.sql_models import Base
 from chanjo2.populate_demo import load_demo_data
-from fastapi import FastAPI, status
 
 LOG = logging.getLogger("uvicorn.access")
 
@@ -17,6 +19,13 @@ def create_db_and_tables():
 
 
 app = FastAPI()
+
+
+def configure_static(app):
+    script_dir: str = os.path.dirname(__file__)
+    static_abs_file_path: str = os.path.join(script_dir, "static/")
+    app.mount("/static", StaticFiles(directory=static_abs_file_path), name="static")
+
 
 app.include_router(
     intervals.router,
@@ -56,6 +65,8 @@ async def on_startup():
 
     # Create database tables
     create_db_and_tables()
+
+    configure_static(app)
 
     if os.getenv("DEMO") or not os.getenv("MYSQL_DATABASE_NAME"):
         LOG.warning("Running a demo instance of Chanjo2")
