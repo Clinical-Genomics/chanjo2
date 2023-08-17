@@ -7,7 +7,7 @@ from fastapi.staticfiles import StaticFiles
 
 from chanjo2 import __version__
 from chanjo2.dbutil import engine
-from chanjo2.endpoints import cases, intervals, samples, coverage
+from chanjo2.endpoints import cases, intervals, samples, coverage, report
 from chanjo2.models.sql_models import Base
 from chanjo2.populate_demo import load_demo_data
 
@@ -22,8 +22,9 @@ app = FastAPI()
 
 
 def configure_static(app):
-    script_dir: str = os.path.dirname(__file__)
-    static_abs_file_path: str = os.path.join(script_dir, "static/")
+    """Configure static folder."""
+    exec_dir: str = os.path.dirname(__file__)
+    static_abs_file_path: str = os.path.join(exec_dir, "static/")
     app.mount("/static", StaticFiles(directory=static_abs_file_path), name="static")
 
 
@@ -48,6 +49,12 @@ app.include_router(
 app.include_router(
     samples.router,
     tags=["samples"],
+    responses={status.HTTP_404_NOT_FOUND: {"description": "Not found"}},
+)
+
+app.include_router(
+    report.router,
+    tags=["report"],
     responses={status.HTTP_404_NOT_FOUND: {"description": "Not found"}},
 )
 
