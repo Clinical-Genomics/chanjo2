@@ -17,8 +17,8 @@ from chanjo2.models.sql_models import Sample as SQLSample
 
 
 def _filter_samples_by_name(
-        samples: query.Query,
-        sample_names: List[str],
+    samples: query.Query,
+    sample_names: List[str],
 ) -> query.Query:
     """Filter samples by sample name."""
     return samples.filter(SQLSample.name.in_(sample_names))
@@ -55,7 +55,7 @@ def get_sample(db: Session, sample_name: str) -> SQLSample:
 
 
 def get_samples_coverage_file(
-        db: Session, samples: Optional[List[str]], case: Optional[str]
+    db: Session, samples: Optional[List[str]], case: Optional[str]
 ) -> Union[List[Tuple[str, D4File]]]:
     """Return a list of sample names with relative D4 coverage files."""
 

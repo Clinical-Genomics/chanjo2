@@ -101,7 +101,7 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
 
 @router.post("/coverage/samples/genes_coverage", response_model=List[CoverageInterval])
 async def samples_genes_coverage(
-        query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
+    query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
 ):
     """Returns coverage over a list of genes (entire gene) for a given sample in the database."""
 
@@ -129,7 +129,7 @@ async def samples_genes_coverage(
     "/coverage/samples/transcripts_coverage", response_model=List[CoverageInterval]
 )
 async def samples_transcripts_coverage(
-        query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
+    query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
 ):
     """Returns coverage over a list of genes (transcripts intervals only) for a given sample in the database."""
 
@@ -157,7 +157,7 @@ async def samples_transcripts_coverage(
 
 @router.post("/coverage/samples/exons_coverage", response_model=List[CoverageInterval])
 async def samples_exons_coverage(
-        query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
+    query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
 ):
     """Returns coverage over a list of genes (exons intervals only) for a given sample in the database."""
 
