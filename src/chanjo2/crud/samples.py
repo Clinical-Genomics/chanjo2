@@ -1,11 +1,15 @@
-from typing import List, Optional
+from typing import List, Optional, Union, Tuple
 
+from fastapi import HTTPException, status
+from pyd4 import D4File
 from sqlalchemy import delete
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, query
 from sqlalchemy.sql.expression import Delete
 
+from chanjo2.constants import SAMPLE_NOT_FOUND, WRONG_COVERAGE_FILE_MSG
 from chanjo2.crud.cases import filter_cases_by_name
+from chanjo2.meta.handle_d4 import get_d4_file
 from chanjo2.models.pydantic_models import SampleCreate
 from chanjo2.models.sql_models import Case as SQLCase
 from chanjo2.models.sql_models import CaseSample
@@ -48,6 +52,38 @@ def get_sample(db: Session, sample_name: str) -> SQLSample:
     return pipeline["filter_samples_by_name"](
         samples=query, sample_names=[sample_name]
     ).first()
+
+
+def get_samples_coverage_file(
+    db: Session, samples: Optional[List[str]], case: Optional[str]
+) -> Union[List[Tuple[str, D4File]]]:
+    """Return a list of sample names with relative D4 coverage files."""
+
+    samples_d4_files: List[Tuple[str, D4File]] = []
+    sql_samples: List[SQLSample] = (
+        get_samples_by_name(db=db, sample_names=samples)
+        if samples
+        else get_case_samples(db=db, case_name=case)
+    )
+
+    if samples and len(sql_samples) < len(samples) or not sql_samples:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=SAMPLE_NOT_FOUND,
+        )
+    for sqlsample in sql_samples:
+        try:
+            d4_file: D4File = get_d4_file(
+                coverage_file_path=sqlsample.coverage_file_path
+            )
+            samples_d4_files.append((sqlsample.name, d4_file))
+        except Exception:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=WRONG_COVERAGE_FILE_MSG,
+            )
+
+    return samples_d4_files
 
 
 def create_sample_in_case(db: Session, sample: SampleCreate) -> Optional[SQLSample]:
