@@ -1,6 +1,8 @@
 ## [unreleased]
 ### Added
 - Load genes, transcripts and exons from pre-downloaded files
+### Fixed
+- Bump certifi from 2022.12.7 to 2023.7.22
 
 ## [1.1.0]
 ### Added
