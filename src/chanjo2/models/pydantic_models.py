@@ -191,3 +191,7 @@ class SampleGeneIntervalQuery(BaseModel):
             raise ValueError(AMBIGUOUS_SAMPLES_INPUT)
 
         return values
+
+
+class ReportQuery(SampleGeneIntervalQuery):
+    interval_type: IntervalType

@@ -102,7 +102,7 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
 
 
 def get_samples_coverage_file(
-    db: Session, samples: Optional[List[str]], case: Optional[str]
+        db: Session, samples: Optional[List[str]], case: Optional[str]
 ) -> Union[List[Tuple[str, D4File]], JSONResponse]:
     """Return a list of sample names with relative D4 coverage files."""
 
@@ -135,9 +135,9 @@ def get_samples_coverage_file(
 
 @router.post("/coverage/samples/genes_coverage", response_model=List[CoverageInterval])
 async def samples_genes_coverage(
-    query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
+        query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
 ):
-    """Returns coverage over a list of genes (entire gene) for a given sample in the database."""
+    """Returns coverage over a list of genes (entire gene) for a given list of samples in the database."""
 
     samples_d4_files: Tuple[str, D4File] = get_samples_coverage_file(
         db=db, samples=query.samples, case=query.case
@@ -163,9 +163,9 @@ async def samples_genes_coverage(
     "/coverage/samples/transcripts_coverage", response_model=List[CoverageInterval]
 )
 async def samples_transcripts_coverage(
-    query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
+        query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
 ):
-    """Returns coverage over a list of genes (transcripts intervals only) for a given sample in the database."""
+    """Returns coverage over a list of genes (transcripts intervals only) for a given list of samples in the database."""
 
     samples_d4_files: Tuple[str, D4File] = get_samples_coverage_file(
         db=db, samples=query.samples, case=query.case
@@ -191,9 +191,9 @@ async def samples_transcripts_coverage(
 
 @router.post("/coverage/samples/exons_coverage", response_model=List[CoverageInterval])
 async def samples_exons_coverage(
-    query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
+        query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
 ):
-    """Returns coverage over a list of genes (exons intervals only) for a given sample in the database."""
+    """Returns coverage over a list of genes (exons intervals only) for a given list of samples in the database."""
 
     samples_d4_files: Tuple[str, D4File] = get_samples_coverage_file(
         db=db, samples=query.samples, case=query.case
