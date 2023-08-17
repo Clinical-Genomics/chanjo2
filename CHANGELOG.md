@@ -1,6 +1,8 @@
 ## [unreleased]
 ### Added
 - Load genes, transcripts and exons from pre-downloaded files
+### Changed
+- Moved helper function from endpoints coverage to crud samples
 ### Fixed
 - Bump certifi from 2022.12.7 to 2023.7.22
 

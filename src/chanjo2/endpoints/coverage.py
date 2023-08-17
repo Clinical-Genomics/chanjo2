@@ -1,17 +1,15 @@
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Tuple
 
 from fastapi import APIRouter, HTTPException, status, Depends
-from fastapi.responses import JSONResponse
 from pyd4 import D4File
 from sqlmodel import Session
 
 from chanjo2.constants import (
     WRONG_BED_FILE_MSG,
     WRONG_COVERAGE_FILE_MSG,
-    SAMPLE_NOT_FOUND,
 )
 from chanjo2.crud.intervals import get_genes
-from chanjo2.crud.samples import get_samples_by_name, get_case_samples
+from chanjo2.crud.samples import get_samples_coverage_file
 from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import parse_bed
 from chanjo2.meta.handle_d4 import (
@@ -101,41 +99,9 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
     )
 
 
-def get_samples_coverage_file(
-    db: Session, samples: Optional[List[str]], case: Optional[str]
-) -> Union[List[Tuple[str, D4File]], JSONResponse]:
-    """Return a list of sample names with relative D4 coverage files."""
-
-    samples_d4_files: List[Tuple[str, D4File]] = []
-    sql_samples: List[SQLSample] = (
-        get_samples_by_name(db=db, sample_names=samples)
-        if samples
-        else get_case_samples(db=db, case_name=case)
-    )
-
-    if samples and len(sql_samples) < len(samples) or not sql_samples:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=SAMPLE_NOT_FOUND,
-        )
-    for sqlsample in sql_samples:
-        try:
-            d4_file: D4File = get_d4_file(
-                coverage_file_path=sqlsample.coverage_file_path
-            )
-            samples_d4_files.append((sqlsample.name, d4_file))
-        except Exception:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=WRONG_COVERAGE_FILE_MSG,
-            )
-
-    return samples_d4_files
-
-
 @router.post("/coverage/samples/genes_coverage", response_model=List[CoverageInterval])
 async def samples_genes_coverage(
-    query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
+        query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
 ):
     """Returns coverage over a list of genes (entire gene) for a given sample in the database."""
 
@@ -163,7 +129,7 @@ async def samples_genes_coverage(
     "/coverage/samples/transcripts_coverage", response_model=List[CoverageInterval]
 )
 async def samples_transcripts_coverage(
-    query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
+        query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
 ):
     """Returns coverage over a list of genes (transcripts intervals only) for a given sample in the database."""
 
@@ -191,7 +157,7 @@ async def samples_transcripts_coverage(
 
 @router.post("/coverage/samples/exons_coverage", response_model=List[CoverageInterval])
 async def samples_exons_coverage(
-    query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
+        query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
 ):
     """Returns coverage over a list of genes (exons intervals only) for a given sample in the database."""
 
