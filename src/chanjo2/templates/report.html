@@ -15,7 +15,7 @@
 				type="image/x-icon">
 
 	{% block css %}
-		<!-- Latest compiled and minified CSS -->
+		<!-- Oldish compiled and minified CSS -->
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 
 		<!-- Optional theme -->
@@ -107,10 +107,43 @@
 				</div>
 			</div>
 		</div>
+
+		<!-- Quality report -->
+		<h2>{{ ('Quality report') }}: {{ ('clinical sequencing') }}</h2>
+		{% if extras.panel_name %}
+			<p>{{ ('Based on gene panel') }}: <strong>{{ extras.panel_name }}</strong></p>
+		{% endif %}
+
+		<div class="table-responsive">
+		  <table class="table table-bordered table-hover">
+			<thead>
+			  <tr>
+				<th rowspan="2">{{ ('Sample') }}</th>
+				<th rowspan="2">{{ ('Group') }}</th>
+				<!--<th rowspan="2">{{ ('Analyzed at') }}</th>-->
+				<th rowspan="2">
+				  <!--{{ ('Sex') }}-->
+				  {{ ('Sex according to sequence data') }}
+				</th>
+				<th colspan="2" class="center-align">
+				  {{ ('Average coverage') }} [x]
+				</th>
+			  </tr>
+			  <tr>
+				<th class="th-secondary">{{ ('Chromosome') }} X</th>
+				<th class="th-secondary">{{ ('Chromosome') }} Y</th>
+			  </tr>
+			</thead>
+			<tbody>
+			</tbody>
+		  </table>
+    	</div>
+		<!--End of  Quality report -->
 	</div>
 
+
 	{% block js_btm %}
-		<!-- Latest compiled and minified JavaScript -->
+		<!-- Oldish compiled and minified JavaScript -->
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 	{% endblock %}
 </body>
