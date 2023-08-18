@@ -1,7 +1,7 @@
 ## [unreleased]
 ### Added
 - Load genes, transcripts and exons from pre-downloaded files
-- Coverage report module and `report` endpoint
+- Coverage report endpoint in new `report` module
 ### Changed
 - Moved helper function from endpoints coverage to crud samples
 ### Fixed
