@@ -7,6 +7,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlmodel import Session
 
+from chanjo2.constants import DEMO_COVERAGE_QUERY_DATA
 from chanjo2.crud.intervals import get_genes
 from chanjo2.crud.samples import get_samples_coverage_file
 from chanjo2.dbutil import Base as SQLModelBase
@@ -27,34 +28,18 @@ INTERVAL_TYPE_DB_TYPE: Dict[str, SQLModelBase] = {
 }
 
 LOG = logging.getLogger("uvicorn.access")
-
 APP_ROOT: str = path.abspath(path.join(path.dirname(__file__), ".."))
-
 templates = Jinja2Templates(directory=path.join(APP_ROOT, "templates"))
-
 router = APIRouter()
-
-DEMO_COVERAGE_QUERY_DATA = {
-    "build": "GRCh37",
-    "completeness_thresholds": [100, 50, 30, 20, 10],
-    "hgnc_gene_symbols": ["ATAD3B", "PRDM16", "TMEM51"],
-    "case": "internal_id",
-    "samples": [],
-    "interval_type": "genes",
-    "ensembl_gene_ids": [],
-    "hgnc_gene_ids": [],
-    "hgnc_gene_symbols": ["HMGA1P6", "RNY3P4", "ANKRD20A19P"],
-}
-DEMO_COVERAGE_QUERY = ReportQuery(**DEMO_COVERAGE_QUERY_DATA)
 
 
 @router.get("/report/demo", response_class=HTMLResponse)
-async def report(
+async def demo_report(
         request: Request, db: Session = Depends(get_session)
 ):
     """Return a coverage report over a list of genes for a list of samples."""
 
-    query = DEMO_COVERAGE_QUERY
+    query = ReportQuery(**DEMO_COVERAGE_QUERY_DATA)
     samples_d4_files: Tuple[str, D4File] = get_samples_coverage_file(
         db=db, samples=query.samples, case=query.case
     )
