@@ -16,6 +16,7 @@ from chanjo2.meta.handle_d4 import (
     get_genes_coverage_completeness,
     get_gene_interval_coverage_completeness,
 )
+from chanjo2.meta.handle_report_contents import get_ordered_levels
 from chanjo2.models.pydantic_models import ReportQuery, CoverageInterval
 from chanjo2.models.sql_models import Exon as SQLExon
 from chanjo2.models.sql_models import Gene as SQLGene
@@ -69,7 +70,11 @@ async def demo_report(request: Request, db: Session = Depends(get_session)):
             interval_type=SQLTranscript,
             completeness_threholds=query.completeness_thresholds,
         )
-
+    data = {
+        "levels": get_ordered_levels(threshold_levels=query.completeness_thresholds)
+        "extras":
+    }
+    LOG.warning(data)
     return templates.TemplateResponse(
-        "report.html", {"request": request, "data": cov_compl_data}
+        "report.html", {"request": request, "levels": data["levels", "extras": ]}
     )
