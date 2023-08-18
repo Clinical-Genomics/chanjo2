@@ -195,3 +195,5 @@ class SampleGeneIntervalQuery(BaseModel):
 
 class ReportQuery(SampleGeneIntervalQuery):
     interval_type: IntervalType
+    panel_name: Optional[str] = "Custom panel"
+    default_level: int = 10

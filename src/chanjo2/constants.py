@@ -109,6 +109,7 @@ DEMO_COVERAGE_QUERY_DATA = {
     "case": "internal_id",
     "samples": [],
     "interval_type": "genes",
+    "gene_panel": "Test Panel",
     "ensembl_gene_ids": [],
     "hgnc_gene_ids": [],
     "hgnc_gene_symbols": ["HMGA1P6", "RNY3P4", "ANKRD20A19P"],

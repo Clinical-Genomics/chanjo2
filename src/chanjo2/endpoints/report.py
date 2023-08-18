@@ -71,10 +71,13 @@ async def demo_report(request: Request, db: Session = Depends(get_session)):
             completeness_threholds=query.completeness_thresholds,
         )
     data = {
-        "levels": get_ordered_levels(threshold_levels=query.completeness_thresholds)
-        "extras":
+        "levels": get_ordered_levels(threshold_levels=query.completeness_thresholds),
+        "extras": {
+            "panel_name": query.panel_name,
+            "default_level": query.default_level
+        }
     }
     LOG.warning(data)
     return templates.TemplateResponse(
-        "report.html", {"request": request, "levels": data["levels", "extras": ]}
+        "report.html", {"request": request, "levels": data["levels"], "extras": data["extras"]}
     )

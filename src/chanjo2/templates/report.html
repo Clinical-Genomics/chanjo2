@@ -9,7 +9,28 @@
 	<meta name="author" content="Chiara Rasi">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+	<!-- place 'favicon.ico' + 'apple-touch-icon.png' in the root directory -->
+	<link rel="Shortcut Icon"
+				href="#"
+				type="image/x-icon">
+
+	{% block css %}
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="https://bootswatch.com/simplex/bootstrap.min.css">
+
+		<!-- Customizations -->
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', path='main.css') }}">
+	{% endblock %}
+
+	{% block css_style %}{% endblock %}
+
+	{% block js_top %}
+		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	{% endblock %}
 
 </head>
 <body>
@@ -17,7 +38,7 @@
 			<div class="container">
 					<div class="navbar-header">
 						<span class="navbar-brand">
-							Chanjo Report
+							Chanjo2 Report
 						</span>
 					</div>
 			</div>
@@ -88,10 +109,9 @@
 		</div>
 	</div>
 
-	<!-- Latest compiled and minified JavaScript -->
-	<script src="https://code.jquery.com/jquery-3.7.0.slim.min.js" integrity="sha256-tG5mcZUtJsZvyKAxYLVXrmjKBVLd6VpVccqz/r4ypFE=" crossorigin="anonymous"></script>
-
-	<!-- Latest compiled and minified Bootstrap -->
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+	{% block js_btm %}
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+	{% endblock %}
 </body>
 </html>
