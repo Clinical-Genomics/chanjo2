@@ -34,13 +34,27 @@ templates = Jinja2Templates(directory=path.join(APP_ROOT, "templates"))
 
 router = APIRouter()
 
+DEMO_COVERAGE_QUERY_DATA = {
+    "build": "GRCh37",
+    "completeness_thresholds": [100, 50, 30, 20, 10],
+    "hgnc_gene_symbols": ["ATAD3B", "PRDM16", "TMEM51"],
+    "case": "internal_id",
+    "samples": [],
+    "interval_type": "genes",
+    "ensembl_gene_ids": [],
+    "hgnc_gene_ids": [],
+    "hgnc_gene_symbols": ["HMGA1P6", "RNY3P4", "ANKRD20A19P"],
+}
+DEMO_COVERAGE_QUERY = ReportQuery(**DEMO_COVERAGE_QUERY_DATA)
 
-@router.post("/report/", response_class=HTMLResponse)
+
+@router.get("/report/demo", response_class=HTMLResponse)
 async def report(
-        request: Request, query: ReportQuery, db: Session = Depends(get_session)
+        request: Request, db: Session = Depends(get_session)
 ):
     """Return a coverage report over a list of genes for a list of samples."""
 
+    query = DEMO_COVERAGE_QUERY
     samples_d4_files: Tuple[str, D4File] = get_samples_coverage_file(
         db=db, samples=query.samples, case=query.case
     )
@@ -63,7 +77,9 @@ async def report(
             completeness_threholds=query.completeness_thresholds,
         )
     else:
-        cov_compl_data: List[CoverageInterval] = get_gene_interval_coverage_completeness(
+        cov_compl_data: List[
+            CoverageInterval
+        ] = get_gene_interval_coverage_completeness(
             db=db,
             samples_d4_files=samples_d4_files,
             genes=genes,
@@ -71,4 +87,6 @@ async def report(
             completeness_threholds=query.completeness_thresholds,
         )
 
-    return templates.TemplateResponse("item.html", {"request": request, "data": cov_compl_data})
+    return templates.TemplateResponse(
+        "report.html", {"request": request, "data": cov_compl_data}
+    )

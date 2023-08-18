@@ -1,0 +1,31 @@
+/* Main report styles */
+@charset "utf-8";
+
+/* PDF restrictions */
+@page {
+  size: A4;
+  margin: 1cm;
+}
+
+@media print {
+  body {
+    font-size: 90%;
+  }
+
+  .table>tbody>tr>td,
+  .table>thead>tr>th {
+  	padding: 5px;
+  }
+
+  .page-break {
+    page-break-after: always;
+  }
+
+  .menu-bar {
+    display: none;
+  }
+
+  .content {
+    padding: 0;
+  }
+}
