@@ -101,7 +101,3 @@ EXONS_FILE_HEADER: Dict[str, List[str]] = {
         "Exon rank in transcript",
     ],
 }
-
-PREDICTED_MALE = "male"
-PREDICTED_FEMALE = "female"
-PREDICTED_UNKNOWN = "unknown"

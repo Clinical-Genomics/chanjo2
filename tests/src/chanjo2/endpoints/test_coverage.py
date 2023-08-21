@@ -10,13 +10,9 @@ from chanjo2.constants import (
     WRONG_BED_FILE_MSG,
     MULTIPLE_GENE_LISTS_NOT_SUPPORTED_MSG,
     AMBIGUOUS_SAMPLES_INPUT,
-    PREDICTED_FEMALE,
 )
 from chanjo2.demo import gene_panel_path
-from chanjo2.models.pydantic_models import (
-    CoverageInterval,
-    Builds,
-)
+from chanjo2.models.pydantic_models import CoverageInterval, Builds, Sex
 from chanjo2.populate_demo import DEMO_SAMPLE, DEMO_CASE
 
 COVERAGE_COMPLETENESS_THRESHOLDS: List[int] = [10, 20, 30]
@@ -209,7 +205,7 @@ def test_samples_sex_info(
     assert isinstance(sex_info["y_coverage"], float)
 
     # AND a predicted sex as a string
-    assert sex_info["predicted_sex"] == PREDICTED_FEMALE
+    assert sex_info["predicted_sex"] == Sex.FEMALE
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())

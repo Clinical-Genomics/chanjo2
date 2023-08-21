@@ -5,9 +5,8 @@ from typing import List, Optional, Tuple, Union, Dict
 from pyd4 import D4File
 from sqlmodel import Session
 
-from chanjo2.constants import PREDICTED_MALE, PREDICTED_FEMALE, PREDICTED_UNKNOWN
 from chanjo2.crud.intervals import get_gene_intervals
-from chanjo2.models.pydantic_models import CoverageInterval
+from chanjo2.models.pydantic_models import CoverageInterval, Sex
 from chanjo2.models.sql_models import Exon as SQLExon
 from chanjo2.models.sql_models import Gene as SQLGene
 from chanjo2.models.sql_models import Transcript as SQLTranscript
@@ -207,17 +206,17 @@ def get_gene_interval_coverage_completeness(
 def predict_sex(x_cov: float, y_cov: float) -> str:
     """Return predict sex based on sex chromosomes coverage - this code is taken from the old chanjo."""
     if y_cov == 0:
-        return PREDICTED_FEMALE
+        return Sex.FEMALE
     else:
         ratio: float = x_cov / y_cov
         if x_cov == 0 or (ratio > 12 and ratio < 100):
-            return PREDICTED_UNKNOWN
+            return Sex.UNKNOWN
         elif ratio <= 12:
             # this is the entire prediction, it's usually very obvious
-            return PREDICTED_MALE
+            return Sex.MALE
         else:
             # the few reads mapping to the Y chromosomes are artifacts
-            return PREDICTED_FEMALE
+            return Sex.FEMALE
 
 
 def get_samples_sex_metrics(d4_file: D4File) -> Dict:
