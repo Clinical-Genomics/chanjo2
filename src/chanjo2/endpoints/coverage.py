@@ -101,7 +101,7 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
 
 
 @router.get("/coverage/samples/predicted_sex", response_model=Dict)
-async def samples_sex_info(coverage_file_path: str):
+async def get_samples_predicted_sex(coverage_file_path: str):
     try:
         d4_file: D4File = get_d4_file(coverage_file_path=coverage_file_path)
     except Exception:
