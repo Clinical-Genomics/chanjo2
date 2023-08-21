@@ -205,7 +205,7 @@ def get_gene_interval_coverage_completeness(
 
 
 def predict_sex(x_cov: float, y_cov: float) -> str:
-    """Predict sex based on sex chromosomes coverage - this code is taken from the old chanjo."""
+    """Return predict sex based on sex chromosomes coverage - this code is taken from the old chanjo."""
     if y_cov == 0:
         return PREDICTED_FEMALE
     else:
