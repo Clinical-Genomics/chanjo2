@@ -1,10 +1,11 @@
 from decimal import Decimal
 from statistics import mean
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union, Dict
 
 from pyd4 import D4File
 from sqlmodel import Session
 
+from chanjo2.constants import PREDICTED_MALE, PREDICTED_FEMALE, PREDICTED_UNKNOWN
 from chanjo2.crud.intervals import get_gene_intervals
 from chanjo2.models.pydantic_models import CoverageInterval
 from chanjo2.models.sql_models import Exon as SQLExon
@@ -201,3 +202,34 @@ def get_gene_interval_coverage_completeness(
             )
         )
     return intervals_cov
+
+
+def predict_sex(x_cov: float, y_cov: float) -> str:
+    """Predict sex based on sex chromosomes coverage - this code is taken from the old chanjo."""
+    if y_cov == 0:
+        return PREDICTED_FEMALE
+    else:
+        ratio = x_cov / y_cov
+        if x_cov == 0 or (ratio > 12 and ratio < 100):
+            return PREDICTED_UNKNOWN
+        elif ratio <= 12:
+            # this is the entire prediction, it's usually very obvious
+            return PREDICTED_MALE
+        else:
+            # the few reads mapping to the Y chromosomes are artifacts
+            return PREDICTED_FEMALE
+
+
+def get_samples_sex_info(d4_file: D4File) -> Dict:
+    """Compute coverage over sex chromosomes and predicted sex."""
+
+    sex_chroms_coverage: List[float] = get_intervals_mean_coverage(
+        d4_file=d4_file, intervals=[("X"), ("Y")]
+    )
+    return {
+        "x_coverage": round(sex_chroms_coverage[0], 1),
+        "y_coverage": round(sex_chroms_coverage[1], 1),
+        "predicted_sex": predict_sex(
+            x_cov=sex_chroms_coverage[0], y_cov=sex_chroms_coverage[1]
+        ),
+    }
