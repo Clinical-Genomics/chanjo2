@@ -10,6 +10,7 @@
 ### Added
 - Created a woke-language-check GitHub action
 - `/coverage/d4/interval/` and `/coverage/d4/interval_file/` modified to accept POST requests with new `completeness_thresholds` parameter
+- A new endpoint `/coverage/samples/predicted_sex` that returns mean coverage over X and Y and predicted sex of the sample
 ### Changed
 - Modified documentation pages to reflect changes in the `/coverage/d4/interval/` and `/coverage/d4/interval_file/` endpoints
 

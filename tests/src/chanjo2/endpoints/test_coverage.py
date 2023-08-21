@@ -12,10 +12,7 @@ from chanjo2.constants import (
     AMBIGUOUS_SAMPLES_INPUT,
 )
 from chanjo2.demo import gene_panel_path
-from chanjo2.models.pydantic_models import (
-    CoverageInterval,
-    Builds,
-)
+from chanjo2.models.pydantic_models import CoverageInterval, Builds, Sex
 from chanjo2.populate_demo import DEMO_SAMPLE, DEMO_CASE
 
 COVERAGE_COMPLETENESS_THRESHOLDS: List[int] = [10, 20, 30]
@@ -185,6 +182,30 @@ def test_d4_intervals_coverage(
         # And coverage completeness for each of the specified thresholds
         for cov_threshold in COVERAGE_COMPLETENESS_THRESHOLDS:
             assert coverage_data.completeness[str(cov_threshold)] > 0
+
+
+def test_get_samples_predicted_sex(
+    real_coverage_path: str,
+    client: TestClient,
+    endpoints: Type,
+):
+    """Test the function that returns coverage over sex chromosomes as well as predicted sex."""
+
+    # GIVEN a query to the predicted_sex endpoint with the path to a d4 file
+    response = client.get(
+        f"{endpoints.GET_SAMPLES_PREDICTED_SEX}?coverage_file_path={real_coverage_path}"
+    )
+
+    # THEN the request should be successful
+    assert response.status_code == status.HTTP_200_OK
+    sex_info = response.json()
+
+    # WITH mean coverage over the sex chromosomes
+    assert isinstance(sex_info["x_coverage"], float)
+    assert isinstance(sex_info["y_coverage"], float)
+
+    # AND a predicted sex as a string
+    assert sex_info["predicted_sex"] == Sex.FEMALE
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
