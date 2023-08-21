@@ -220,7 +220,7 @@ def predict_sex(x_cov: float, y_cov: float) -> str:
             return PREDICTED_FEMALE
 
 
-def get_samples_sex_info(d4_file: D4File) -> Dict:
+def get_samples_sex_metrics(d4_file: D4File) -> Dict:
     """Compute coverage over sex chromosomes and predicted sex."""
 
     sex_chroms_coverage: List[float] = get_intervals_mean_coverage(
