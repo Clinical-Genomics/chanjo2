@@ -209,7 +209,7 @@ def predict_sex(x_cov: float, y_cov: float) -> str:
     if y_cov == 0:
         return PREDICTED_FEMALE
     else:
-        ratio = x_cov / y_cov
+        ratio: float = x_cov / y_cov
         if x_cov == 0 or (ratio > 12 and ratio < 100):
             return PREDICTED_UNKNOWN
         elif ratio <= 12:
