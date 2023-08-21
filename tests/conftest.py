@@ -59,7 +59,7 @@ class Endpoints(str):
     EXONS = "/intervals/exons"
     INTERVAL_COVERAGE = "/coverage/d4/interval/"
     INTERVALS_FILE_COVERAGE = "/coverage/d4/interval_file/"
-    SAMPLE_SEX_INFO = "/coverage/samples/predicted_sex"
+    GET_SAMPLES_PREDICTED_SEX = "/coverage/samples/predicted_sex"
     SAMPLE_GENES_COVERAGE = "/coverage/samples/genes_coverage"
     SAMPLE_TRANSCRIPTS_COVERAGE = "/coverage/samples/transcripts_coverage"
     SAMPLE_EXONS_COVERAGE = "/coverage/samples/exons_coverage"

@@ -184,7 +184,7 @@ def test_d4_intervals_coverage(
             assert coverage_data.completeness[str(cov_threshold)] > 0
 
 
-def test_samples_sex_info(
+def test_get_samples_predicted_sex(
     real_coverage_path: str,
     client: TestClient,
     endpoints: Type,
@@ -193,7 +193,7 @@ def test_samples_sex_info(
 
     # GIVEN a query to the predicted_sex endpoint with the path to a d4 file
     response = client.get(
-        f"{endpoints.SAMPLE_SEX_INFO}?coverage_file_path={real_coverage_path}"
+        f"{endpoints.GET_SAMPLES_PREDICTED_SEX}?coverage_file_path={real_coverage_path}"
     )
 
     # THEN the request should be successful
