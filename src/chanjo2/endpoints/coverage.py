@@ -20,7 +20,7 @@ from chanjo2.meta.handle_d4 import (
     get_genes_coverage_completeness,
     get_gene_interval_coverage_completeness,
     get_intervals_completeness,
-    get_samples_sex_info,
+    get_samples_sex_metrics,
 )
 from chanjo2.models.pydantic_models import (
     CoverageInterval,
@@ -109,7 +109,7 @@ async def get_samples_predicted_sex(coverage_file_path: str):
             status_code=status.HTTP_404_NOT_FOUND,
             detail=WRONG_COVERAGE_FILE_MSG,
         )
-    return get_samples_sex_info(d4_file=d4_file)
+    return get_samples_sex_metrics(d4_file=d4_file)
 
 
 @router.post("/coverage/samples/genes_coverage", response_model=List[CoverageInterval])
