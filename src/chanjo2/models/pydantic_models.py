@@ -199,7 +199,16 @@ class SampleGeneIntervalQuery(BaseModel):
         return values
 
 
-class ReportQuery(SampleGeneIntervalQuery):
+class ReportQuery(BaseModel):
+    build: Builds
+    completeness_thresholds: Optional[List[int]]
+    ensembl_gene_ids: Optional[List[str]]
+    hgnc_gene_ids: Optional[List[int]]
+    hgnc_gene_symbols: Optional[List[str]]
+    
     interval_type: IntervalType
     panel_name: Optional[str] = "Custom panel"
     default_level: int = 10
+
+    samples: Optional[List[str]]
+    case: Optional[str]

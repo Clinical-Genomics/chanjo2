@@ -34,11 +34,16 @@ templates = Jinja2Templates(directory=path.join(APP_ROOT, "templates"))
 router = APIRouter()
 
 
+def set_report_data(query: ReportQuery) -> Dict:
+    """Fetch the information that will be displayed in the coverage report."""
+
+
 @router.get("/report/demo", response_class=HTMLResponse)
 async def demo_report(request: Request, db: Session = Depends(get_session)):
     """Return a coverage report over a list of genes for a list of samples."""
 
     query = ReportQuery(**DEMO_COVERAGE_QUERY_DATA)
+
     samples_d4_files: Tuple[str, D4File] = get_samples_coverage_file(
         db=db, samples=query.samples, case=query.case
     )
@@ -75,6 +80,7 @@ async def demo_report(request: Request, db: Session = Depends(get_session)):
         "extras": {
             "panel_name": query.panel_name,
             "default_level": query.default_level,
+
         },
     }
     LOG.warning(data)
