@@ -66,17 +66,18 @@
 {% macro sex_rows_block() %}
 <div class="table-responsive">
   <table class="table table-bordered table-hover">
+    <caption>Sex metrics from sequencing data</caption>
 	<thead>
 	  <tr>
-		<th rowspan="2">Sample</th>
-		<th rowspan="2">Group</th>
-		<th rowspan="2">Analyzed at</th>
-		<th rowspan="2">Sex according to sequence data</th>
-		<th colspan="2" class="center-align">Average coverage [x]</th>
+		<th rowspan="2" id="sample">Sample</th>
+		<th rowspan="2" id="group">Group</th>
+		<th rowspan="2" id="analusis_date">Analyzed at</th>
+		<th rowspan="2" id="predicted sex">Sex according to sequence data</th>
+		<th colspan="2" class="center-align" id="avg_coverage">Average coverage [x]</th>
 	  </tr>
 	  <tr>
-		<th class="th-secondary">Chromosome X</th>
-		<th class="th-secondary">Chromosome Y</th>
+		<th class="th-secondary" id="cov_x">Chromosome X</th>
+		<th class="th-secondary" id="cov_y">Chromosome Y</th>
 	  </tr>
 	</thead>
 	<tbody>
