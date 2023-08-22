@@ -1,13 +1,17 @@
-from datetime import datetime
+from typing import Dict
 
 from importlib_resources import files
 
-from chanjo2.models.pydantic_models import Sex
+from chanjo2.constants import BUILD_37
 
 BASE_PATH: str = "chanjo2.demo"
 
 GENE_PANEL_FILE: str = "109_green.bed"
 D4_DEMO_FILE: str = "panelapp_109_example.d4"
+
+# Paths
+gene_panel_path = str(files(BASE_PATH).joinpath(GENE_PANEL_FILE))
+d4_demo_path = str(files(BASE_PATH).joinpath(D4_DEMO_FILE))
 
 DEMO_CASE: Dict[str, str] = {"name": "internal_id", "display_name": "643594"}
 
@@ -19,10 +23,6 @@ DEMO_SAMPLE: Dict[str, str] = {
     "coverage_file_path": d4_demo_path,
 }
 
-# Paths
-gene_panel_path = str(files(BASE_PATH).joinpath(GENE_PANEL_FILE))
-d4_demo_path = str(files(BASE_PATH).joinpath(D4_DEMO_FILE))
-
 # Data for generating a demo coverage report
 DEMO_COVERAGE_QUERY_DATA = {
     "build": BUILD_37,
@@ -31,8 +31,7 @@ DEMO_COVERAGE_QUERY_DATA = {
             "name": DEMO_SAMPLE["name"],
             "case_name": DEMO_CASE["name"],
             "coverage_file_path": d4_demo_path,
-            "analysis_date": datetime.now(),
-            "sex": Sex.MALE,
+            "analysis_date": "2023-04-23T10:20:30.400+02:30",
         }
     ],
     "gene_panel": "A test Panel 1.0",

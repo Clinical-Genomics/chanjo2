@@ -1,3 +1,37 @@
+{% macro sex_rows_block() %}
+	<div class="table-responsive">
+	  <table class="table table-bordered table-hover">
+		<thead>
+		  <tr>
+			<th rowspan="2">Sample</th>
+			<th rowspan="2">Group</th>
+			<th rowspan="2">Analyzed at</th>
+			<th rowspan="2">Sex according to sequence data</th>
+			<th colspan="2" class="center-align">Average coverage [x]</th>
+		  </tr>
+		  <tr>
+			<th class="th-secondary">Chromosome X</th>
+			<th class="th-secondary">Chromosome Y</th>
+		  </tr>
+		</thead>
+		<tbody>
+			{% for sample in sex_rows %}
+			<tr>
+			  <td>{{ sample.sample }}</td>
+			  <td>{{ sample.case }}</td>
+			  <td>{{ sample.analysis_date.date() }}</td>
+			  <td>{{sample.predicted_sex}}</td>
+			  <td class="text-right">{{ sample.x_coverage }}</td>
+			  <td class="text-right">{{ sample.y_coverage }}</td>
+			</tr>
+		  {% endfor %}
+		</tbody>
+	  </table>
+	</div>
+{% endmacro %}
+
+
+
 <!DOCTYPE html>
 <head>
 	<meta charset="utf-8">
@@ -108,37 +142,18 @@
 			</div>
 		</div>
 
+		{% block main %}
+
 		<!-- Quality report -->
 		<h2>{{ ('Quality report') }}: {{ ('clinical sequencing') }}</h2>
 		{% if extras.panel_name %}
 			<p>{{ ('Based on gene panel') }}: <strong>{{ extras.panel_name }}</strong></p>
 		{% endif %}
 
-		<div class="table-responsive">
-		  <table class="table table-bordered table-hover">
-			<thead>
-			  <tr>
-				<th rowspan="2">{{ ('Sample') }}</th>
-				<th rowspan="2">{{ ('Group') }}</th>
-				<!--<th rowspan="2">{{ ('Analyzed at') }}</th>-->
-				<th rowspan="2">
-				  <!--{{ ('Sex') }}-->
-				  {{ ('Sex according to sequence data') }}
-				</th>
-				<th colspan="2" class="center-align">
-				  {{ ('Average coverage') }} [x]
-				</th>
-			  </tr>
-			  <tr>
-				<th class="th-secondary">{{ ('Chromosome') }} X</th>
-				<th class="th-secondary">{{ ('Chromosome') }} Y</th>
-			  </tr>
-			</thead>
-			<tbody>
-			</tbody>
-		  </table>
-    	</div>
-		<!--End of  Quality report -->
+		{{ sex_rows_block() }}
+		<!--End of Quality report -->
+
+		{% endblock %}
 	</div>
 
 
@@ -148,3 +163,9 @@
 	{% endblock %}
 </body>
 </html>
+
+
+
+
+{% macro explanation_block() %}
+{% endmacro %}

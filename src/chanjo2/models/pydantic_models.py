@@ -1,5 +1,4 @@
 from datetime import datetime
-from datetime import time
 from enum import Enum
 from pathlib import Path
 from typing import Any, List, Optional, Dict
@@ -204,8 +203,7 @@ class ReportQuerySample(BaseModel):
     name: str
     case_name: Optional[str]
     coverage_file_path: Optional[str]
-    analysis_date: Optional[time]
-    sex: Optional[Sex]
+    analysis_date: Optional[datetime] = datetime.now()
 
 
 class ReportQuery(BaseModel):

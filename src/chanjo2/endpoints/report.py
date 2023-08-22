@@ -1,32 +1,16 @@
 import logging
 from os import path
-from typing import Dict, List
+from typing import Dict
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Request, Depends
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlmodel import Session
 
-from chanjo2.crud.intervals import get_genes
-from chanjo2.crud.samples import get_samples_coverage_file
-from chanjo2.dbutil import Base as SQLModelBase
 from chanjo2.dbutil import get_session
 from chanjo2.demo import DEMO_COVERAGE_QUERY_DATA
-from chanjo2.meta.handle_d4 import (
-    get_genes_coverage_completeness,
-    get_gene_interval_coverage_completeness,
-)
-from chanjo2.meta.handle_report_contents import get_ordered_levels
-from chanjo2.models.pydantic_models import ReportQuery, CoverageInterval
-from chanjo2.models.sql_models import Exon as SQLExon
-from chanjo2.models.sql_models import Gene as SQLGene
-from chanjo2.models.sql_models import Transcript as SQLTranscript
-
-INTERVAL_TYPE_DB_TYPE: Dict[str, SQLModelBase] = {
-    "genes": SQLGene,
-    "transcripts": SQLTranscript,
-    "exons": SQLExon,
-}
+from chanjo2.meta.handle_report_contents import set_report_data
+from chanjo2.models.pydantic_models import ReportQuery
 
 LOG = logging.getLogger("uvicorn.access")
 APP_ROOT: str = path.abspath(path.join(path.dirname(__file__), ".."))
@@ -34,56 +18,19 @@ templates = Jinja2Templates(directory=path.join(APP_ROOT, "templates"))
 router = APIRouter()
 
 
-def set_report_data(query: ReportQuery) -> Dict:
-    """Fetch the information that will be displayed in the coverage report."""
-
-
 @router.get("/report/demo", response_class=HTMLResponse)
 async def demo_report(request: Request, db: Session = Depends(get_session)):
     """Return a coverage report over a list of genes for a list of samples."""
 
     query = ReportQuery(**DEMO_COVERAGE_QUERY_DATA)
+    data: Dict = set_report_data(query=query, session=db)
 
-    samples_d4_files: Tuple[str, D4File] = get_samples_coverage_file(
-        db=db, samples=query.samples, case=query.case
-    )
-
-    genes: List[SQLGene] = get_genes(
-        db=db,
-        build=query.build,
-        ensembl_ids=query.ensembl_gene_ids,
-        hgnc_ids=query.hgnc_gene_ids,
-        hgnc_symbols=query.hgnc_gene_symbols,
-        limit=None,
-    )
-
-    interval_type = INTERVAL_TYPE_DB_TYPE[query.interval_type]
-
-    if interval_type == SQLGene:
-        cov_compl_data: List[CoverageInterval] = get_genes_coverage_completeness(
-            samples_d4_files=samples_d4_files,
-            genes=genes,
-            completeness_threholds=query.completeness_thresholds,
-        )
-    else:
-        cov_compl_data: List[
-            CoverageInterval
-        ] = get_gene_interval_coverage_completeness(
-            db=db,
-            samples_d4_files=samples_d4_files,
-            genes=genes,
-            interval_type=SQLTranscript,
-            completeness_threholds=query.completeness_thresholds,
-        )
-    data = {
-        "levels": get_ordered_levels(threshold_levels=query.completeness_thresholds),
-        "extras": {
-            "panel_name": query.panel_name,
-            "default_level": query.default_level,
-        },
-    }
-    LOG.warning(data)
     return templates.TemplateResponse(
         "report.html",
-        {"request": request, "levels": data["levels"], "extras": data["extras"]},
+        {
+            "request": request,
+            "levels": data["levels"],
+            "extras": data["extras"],
+            "sex_rows": data["sex_rows"],
+        },
     )

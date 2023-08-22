@@ -230,5 +230,5 @@ def get_samples_sex_metrics(d4_file: D4File) -> Dict:
         "y_coverage": round(sex_chroms_coverage[1], 1),
         "predicted_sex": predict_sex(
             x_cov=sex_chroms_coverage[0], y_cov=sex_chroms_coverage[1]
-        ),
+        ).value,
     }
