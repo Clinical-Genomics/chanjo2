@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple, Iterator
+from typing import List, Tuple, Iterator
 
 from schug.demo import (
     EXONS_37_FILE_PATH,
@@ -14,7 +14,7 @@ from chanjo2.constants import BUILD_37, BUILD_38
 from chanjo2.crud.cases import create_db_case
 from chanjo2.crud.samples import create_sample_in_case
 from chanjo2.dbutil import get_session
-from chanjo2.demo import d4_demo_path
+from chanjo2.demo import DEMO_SAMPLE, DEMO_CASE
 from chanjo2.meta.handle_bed import resource_lines
 from chanjo2.meta.handle_load_intervals import (
     update_genes,
@@ -25,14 +25,6 @@ from chanjo2.models.pydantic_models import CaseCreate, SampleCreate, Builds
 
 db: sessionmaker = next(get_session())
 
-DEMO_CASE: Dict[str, str] = {"name": "internal_id", "display_name": "643594"}
-DEMO_SAMPLE: Dict[str, str] = {
-    "name": "ADM1059A2",
-    "display_name": "NA12882",
-    "track_name": "ADM1059A2",
-    "case_name": DEMO_CASE["name"],
-    "coverage_file_path": d4_demo_path,
-}
 BUILD_GENES_RESOURCE: List[Tuple[Builds, str]] = [
     (BUILD_37, GENES_37_FILE_PATH),
     (BUILD_38, GENES_38_FILE_PATH),

@@ -80,7 +80,6 @@ async def demo_report(request: Request, db: Session = Depends(get_session)):
         "extras": {
             "panel_name": query.panel_name,
             "default_level": query.default_level,
-
         },
     }
     LOG.warning(data)
