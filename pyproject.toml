@@ -22,7 +22,6 @@ schug = "^1.2"
 pyd4 = "^0.3.6.2"
 python-dotenv = "^1.0.0"
 mkdocs = "^1.4.3"
-jinja2 = "^3.0.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
