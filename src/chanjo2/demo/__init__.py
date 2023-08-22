@@ -23,6 +23,8 @@ DEMO_SAMPLE: Dict[str, str] = {
     "coverage_file_path": d4_demo_path,
 }
 
+HTTP_SERVER_D4_file = "https://d4-format-testing.s3.us-west-1.amazonaws.com/hg002.d4"
+
 # Data for generating a demo coverage report
 DEMO_COVERAGE_QUERY_DATA = {
     "build": BUILD_37,
@@ -30,7 +32,7 @@ DEMO_COVERAGE_QUERY_DATA = {
         {
             "name": DEMO_SAMPLE["name"],
             "case_name": DEMO_CASE["name"],
-            "coverage_file_path": d4_demo_path,
+            "coverage_file_path": HTTP_SERVER_D4_file,
             "analysis_date": "2023-04-23T10:20:30.400+02:30",
         }
     ],
