@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Dict
 
 from fastapi import APIRouter, HTTPException, status, Depends
 from pyd4 import D4File
@@ -20,6 +20,7 @@ from chanjo2.meta.handle_d4 import (
     get_genes_coverage_completeness,
     get_gene_interval_coverage_completeness,
     get_intervals_completeness,
+    get_samples_sex_metrics,
 )
 from chanjo2.models.pydantic_models import (
     CoverageInterval,
@@ -97,6 +98,18 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
         intervals=intervals,
         completeness_threholds=query.completeness_thresholds,
     )
+
+
+@router.get("/coverage/samples/predicted_sex", response_model=Dict)
+async def get_samples_predicted_sex(coverage_file_path: str):
+    try:
+        d4_file: D4File = get_d4_file(coverage_file_path=coverage_file_path)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=WRONG_COVERAGE_FILE_MSG,
+        )
+    return get_samples_sex_metrics(d4_file=d4_file)
 
 
 @router.post("/coverage/samples/genes_coverage", response_model=List[CoverageInterval])

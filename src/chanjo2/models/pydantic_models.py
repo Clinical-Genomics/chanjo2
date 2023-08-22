@@ -30,6 +30,12 @@ class IntervalType(str, Enum):
     CUSTOM = "custom_intervals"
 
 
+class Sex(str, Enum):
+    FEMALE = "female"
+    MALE = "male"
+    UNKNOWN = "unknown"
+
+
 class CaseBase(BaseModel):
     display_name: Optional[str] = None
     name: str
