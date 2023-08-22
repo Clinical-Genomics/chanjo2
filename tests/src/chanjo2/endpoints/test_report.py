@@ -1,6 +1,7 @@
 from typing import Type
 from unittest.mock import patch
 
+from fastapi import status
 from fastapi.testclient import TestClient
 from requests.models import Response
 
@@ -18,7 +19,7 @@ def test_demo_report(client: TestClient, endpoints: Type):
     response: Response = client.get(endpoints.REPORT_DEMO)
 
     # Then the request should be successful
-    assert response.status == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_200_OK
 
     # And return an HTML page
     assert response.template.name == "report.html"
