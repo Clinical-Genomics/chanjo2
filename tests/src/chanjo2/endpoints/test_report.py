@@ -8,7 +8,9 @@ from chanjo2.demo import d4_demo_path
 from chanjo2.endpoints.report import DEMO_COVERAGE_QUERY_DATA
 
 
-@patch.dict(DEMO_COVERAGE_QUERY_DATA["samples"][0], {'coverage_file_path': d4_demo_path})
+@patch.dict(
+    DEMO_COVERAGE_QUERY_DATA["samples"][0], {"coverage_file_path": d4_demo_path}
+)
 def test_demo_report(client: TestClient, endpoints: Type):
     """Test the endpoint that creates the coverage report for the demo sample."""
 
@@ -19,4 +21,4 @@ def test_demo_report(client: TestClient, endpoints: Type):
     assert response.status == status.HTTP_200_OK
 
     # And return an HTML page
-    assert response.template.name == 'report.html'
+    assert response.template.name == "report.html"
