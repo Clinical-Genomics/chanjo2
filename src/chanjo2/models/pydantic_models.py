@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import time
 from enum import Enum
 from pathlib import Path
 from typing import Any, List, Optional, Dict
@@ -199,16 +200,22 @@ class SampleGeneIntervalQuery(BaseModel):
         return values
 
 
+class ReportQuerySample(BaseModel):
+    name: str
+    case_name: Optional[str]
+    coverage_file_path: Optional[str]
+    analysis_date: Optional[time]
+    sex: Optional[Sex]
+
+
 class ReportQuery(BaseModel):
     build: Builds
-    completeness_thresholds: Optional[List[int]]
+    completeness_thresholds: Optional[List[int]] = [10, 15, 20, 50, 100]
     ensembl_gene_ids: Optional[List[str]]
     hgnc_gene_ids: Optional[List[int]]
     hgnc_gene_symbols: Optional[List[str]]
-    
     interval_type: IntervalType
     panel_name: Optional[str] = "Custom panel"
     default_level: int = 10
 
-    samples: Optional[List[str]]
-    case: Optional[str]
+    samples: List[ReportQuerySample]

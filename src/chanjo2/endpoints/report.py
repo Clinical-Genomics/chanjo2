@@ -7,11 +7,11 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlmodel import Session
 
-from chanjo2.constants import DEMO_COVERAGE_QUERY_DATA
 from chanjo2.crud.intervals import get_genes
 from chanjo2.crud.samples import get_samples_coverage_file
 from chanjo2.dbutil import Base as SQLModelBase
 from chanjo2.dbutil import get_session
+from chanjo2.demo import DEMO_COVERAGE_QUERY_DATA
 from chanjo2.meta.handle_d4 import (
     get_genes_coverage_completeness,
     get_gene_interval_coverage_completeness,

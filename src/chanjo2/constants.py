@@ -101,16 +101,3 @@ EXONS_FILE_HEADER: Dict[str, List[str]] = {
         "Exon rank in transcript",
     ],
 }
-
-DEMO_COVERAGE_QUERY_DATA = {
-    "build": BUILD_37,
-    "completeness_thresholds": [100, 50, 30, 20, 10],
-    "hgnc_gene_symbols": ["ATAD3B", "PRDM16", "TMEM51"],
-    "case": "internal_id",
-    "samples": [],
-    "interval_type": "genes",
-    "gene_panel": "Test Panel",
-    "ensembl_gene_ids": [],
-    "hgnc_gene_ids": [],
-    "hgnc_gene_symbols": ["HMGA1P6", "RNY3P4", "ANKRD20A19P"],
-}
