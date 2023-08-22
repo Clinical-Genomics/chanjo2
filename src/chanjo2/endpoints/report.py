@@ -12,9 +12,14 @@ from chanjo2.demo import DEMO_COVERAGE_QUERY_DATA
 from chanjo2.meta.handle_report_contents import set_report_data
 from chanjo2.models.pydantic_models import ReportQuery
 
+
+def get_templates_path() -> str:
+    APP_ROOT: str = path.abspath(path.join(path.dirname(__file__), ".."))
+    return path.join(APP_ROOT, "templates")
+
+
 LOG = logging.getLogger("uvicorn.access")
-APP_ROOT: str = path.abspath(path.join(path.dirname(__file__), ".."))
-templates = Jinja2Templates(directory=path.join(APP_ROOT, "templates"))
+templates = Jinja2Templates(directory=get_templates_path())
 router = APIRouter()
 
 
