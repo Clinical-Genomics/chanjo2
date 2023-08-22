@@ -18,6 +18,6 @@ def test_predict_sex_female():
 
 def test_predict_sex_unknown():
     """Test the function that computes sex from coverage when it is not possible to establish the sex."""
-    # GIVEN a coverage of chromosome Y almost null
-    # THEN the predicted sex should be female
+    # GIVEN a coverage of chromosome X equal to 0
+    # THEN the predicted sex should be unknown
     assert predict_sex(x_cov=0, y_cov=6.605) == Sex.UNKNOWN
