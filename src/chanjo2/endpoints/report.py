@@ -34,6 +34,7 @@ async def demo_report(request: Request, db: Session = Depends(get_session)):
         "report.html",
         {
             "request": request,
+            "levels": data["levels"],
             "extras": data["extras"],
             "sex_rows": data["sex_rows"],
         },
