@@ -206,17 +206,17 @@ def get_gene_interval_coverage_completeness(
 def predict_sex(x_cov: float, y_cov: float) -> str:
     """Return predict sex based on sex chromosomes coverage - this code is taken from the old chanjo."""
     if y_cov == 0:
-        return Sex.FEMALE
+        return Sex.FEMALE.value
     else:
         ratio: float = x_cov / y_cov
         if x_cov == 0 or (ratio > 12 and ratio < 100):
-            return Sex.UNKNOWN
+            return Sex.UNKNOWN.value
         elif ratio <= 12:
             # this is the entire prediction, it's usually very obvious
-            return Sex.MALE
+            return Sex.MALE.value
         else:
             # the few reads mapping to the Y chromosomes are artifacts
-            return Sex.FEMALE
+            return Sex.FEMALE.value
 
 
 def get_samples_sex_metrics(d4_file: D4File) -> Dict:
