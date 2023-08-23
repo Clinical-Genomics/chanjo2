@@ -12,6 +12,13 @@ from chanjo2.models.sql_models import Base
 from chanjo2.populate_demo import load_demo_data
 
 LOG = logging.getLogger("uvicorn.access")
+APP_ROUTER_TAGS = [
+    (intervals.router, "intervals"),
+    (coverage.router, "coverage"),
+    (cases.router, "cases"),
+    (samples.router, "samples"),
+    (report.router, "report"),
+]
 
 
 def create_db_and_tables():
@@ -28,35 +35,13 @@ def configure_static(app):
     app.mount("/static", StaticFiles(directory=static_abs_file_path), name="static")
 
 
-app.include_router(
-    intervals.router,
-    tags=["intervals"],
-    responses={status.HTTP_404_NOT_FOUND: {"description": "Not found"}},
-)
-
-app.include_router(
-    coverage.router,
-    tags=["coverage"],
-    responses={status.HTTP_404_NOT_FOUND: {"description": "Not found"}},
-)
-
-app.include_router(
-    cases.router,
-    tags=["cases"],
-    responses={status.HTTP_404_NOT_FOUND: {"description": "Not found"}},
-)
-
-app.include_router(
-    samples.router,
-    tags=["samples"],
-    responses={status.HTTP_404_NOT_FOUND: {"description": "Not found"}},
-)
-
-app.include_router(
-    report.router,
-    tags=["report"],
-    responses={status.HTTP_404_NOT_FOUND: {"description": "Not found"}},
-)
+# include app router tags
+for router, tag in APP_ROUTER_TAGS:
+    app.include_router(
+        router,
+        tags=[tag],
+        responses={status.HTTP_404_NOT_FOUND: {"description": "Not found"}},
+    )
 
 
 @app.on_event("startup")
