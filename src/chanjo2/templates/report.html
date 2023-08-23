@@ -1,0 +1,173 @@
+{% macro report_filters() %}
+<div class="panel-group hidden-print" id="filter-accordion">
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h4 class="panel-title">
+				<a role="button" data-toggle="collapse" data-parent="#accordion" href="#view-filters">Customize</a>
+			</h4>
+		</div>
+
+		<div id="view-filters" class="panel-collapse collapse">
+			<div class="panel-body">
+				<form method="POST" action="#">
+				  <div class="{% if hidden %}navbar-form{% endif %}">
+					<div class="form-group">
+					  <div class="row" {% if hidden %}hidden{% endif %}>
+						<div class="col-xs-6">
+						  <label class="control-label">Completeness cutoff</label>
+						  <select class="form-control" name="level">
+							{% for level, _ in levels.items() %}
+							  <option value="{{ level }}" {% if level == extras.level %} selected {% endif %}>{{ level }}x</option>
+							{% endfor %}
+						  </select>
+						</div>
+
+					<div class="col-xs-6">
+					  <label class="control-label">Gene panel name to <i>display</i></label>
+					  <input class="form-control" name="panel_name" type="text" placeholder="Skeletal dysplasia 3.2" value="{{ extras.panel_name or '' }}">
+					</div>
+				  </div>
+				</div>
+
+				<div class="form-group">
+				  <div class="row" {% if hidden %}hidden{% endif %}>
+					<div class="col-xs-7">
+					  <label class="control-label">Included genes</label>
+					  <div><input class="form-control" type="text" name="gene_ids" value="{{ extras.gene_ids|join(', ') }}" placeholder="ADK,GIT"></div>
+					</div>
+
+					<div class="col-xs-3">
+					  <label class="control-label">Show genes</label>
+					  <div><input type="checkbox" name="show_genes" {% if extras.show_genes %}checked{% endif %}></div>
+					</div>
+
+					<div class="col-xs-2">
+					  <label class="control-label">&nbsp;</label>
+					  <button class="btn btn-default form-control" type="submit">Update</button>
+					</div>
+				  </div>
+				</div>
+
+				{% for sample_id in sample_ids %}
+				  <input type="text" name="sample_id" value="{{ sample_id }}" hidden>
+				{% endfor %}
+
+				{% if hidden %}
+				  <button class="btn btn-link navbar-btn" type="submit">PDF</button>
+				{% endif %}
+				</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+{% endmacro %}
+
+{% macro sex_rows_block() %}
+<div class="table-responsive">
+  <table class="table table-bordered table-hover">
+    <caption>Sex metrics from sequencing data</caption>
+	<thead>
+	  <tr>
+		<th rowspan="2" id="sample">Sample</th>
+		<th rowspan="2" id="group">Group</th>
+		<th rowspan="2" id="analusis_date">Analyzed at</th>
+		<th rowspan="2" id="predicted sex">Sex according to sequence data</th>
+		<th colspan="2" class="center-align" id="avg_coverage">Average coverage [x]</th>
+	  </tr>
+	  <tr>
+		<th class="th-secondary" id="cov_x">Chromosome X</th>
+		<th class="th-secondary" id="cov_y">Chromosome Y</th>
+	  </tr>
+	</thead>
+	<tbody>
+		{% for sample in sex_rows %}
+		<tr>
+		  <td>{{ sample.sample }}</td>
+		  <td>{{ sample.case }}</td>
+		  <td>{{ sample.analysis_date.date() }}</td>
+		  <td>{{sample.predicted_sex}}</td>
+		  <td class="text-right">{{ sample.x_coverage }}</td>
+		  <td class="text-right">{{ sample.y_coverage }}</td>
+		</tr>
+	  {% endfor %}
+	</tbody>
+  </table>
+</div>
+{% endmacro %}
+
+<!DOCTYPE html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+	<title>Coverage report</title>
+
+	<meta name="description" content="Chanjo2 Report: coverage report generator">
+	<meta name="author" content="Chiara Rasi">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- place 'favicon.ico' + 'apple-touch-icon.png' in the root directory -->
+	<link rel="Shortcut Icon"
+				href="#"
+				type="image/x-icon">
+
+	{% block css %}
+		<!-- Oldish compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="https://bootswatch.com/simplex/bootstrap.min.css">
+
+		<!-- Customizations -->
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', path='main.css') }}">
+	{% endblock %}
+
+	{% block css_style %}{% endblock %}
+
+	{% block js_top %}
+		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js" integrity="sha512-ju6u+4bPX50JQmgU97YOGAXmRMrD9as4LE05PdC3qycsGQmjGlfm041azyB1VfCXpkpt1i9gqXCT6XuxhBJtKg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	{% endblock %}
+
+</head>
+<body>
+	<nav class="navbar navbar-default">
+			<div class="container">
+					<div class="navbar-header">
+						<span class="navbar-brand">
+							Chanjo2 Report
+						</span>
+					</div>
+			</div>
+	</nav>
+
+	<div class="container">
+
+		{{ report_filters() }}
+
+		<!-- Quality report -->
+		<h2>{{ ('Quality report') }}: {{ ('clinical sequencing') }}</h2>
+		{% if extras.panel_name %}
+			<p>{{ ('Based on gene panel') }}: <strong>{{ extras.panel_name }}</strong></p>
+		{% endif %}
+
+		{{ sex_rows_block() }}
+
+		<!--End of Quality report -->
+
+	</div>
+
+
+	{% block js_btm %}
+		<!-- Oldish compiled and minified JavaScript -->
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	{% endblock %}
+</body>
+</html>
+
+
+
+
+{% macro explanation_block() %}
+{% endmacro %}

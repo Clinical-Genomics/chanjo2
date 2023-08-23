@@ -197,3 +197,32 @@ class SampleGeneIntervalQuery(BaseModel):
             raise ValueError(AMBIGUOUS_SAMPLES_INPUT)
 
         return values
+
+
+class ReportQuerySample(BaseModel):
+    name: str
+    case_name: Optional[str]
+    coverage_file_path: Optional[str]
+    analysis_date: Optional[datetime] = datetime.now()
+
+
+class ReportQuery(BaseModel):
+    build: Builds
+    completeness_thresholds: Optional[List[int]] = [10, 15, 20, 50, 100]
+    ensembl_gene_ids: Optional[List[str]]
+    hgnc_gene_ids: Optional[List[int]]
+    hgnc_gene_symbols: Optional[List[str]]
+    interval_type: IntervalType
+    panel_name: Optional[str] = "Custom panel"
+    default_level: int = 10
+
+    samples: List[ReportQuerySample]
+
+
+class SampleSexRow(BaseModel):
+    sample: str
+    case: Optional[str]
+    analysis_date: datetime
+    predicted_sex: str
+    x_coverage: float
+    y_coverage: float

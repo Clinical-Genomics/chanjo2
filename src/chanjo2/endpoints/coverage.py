@@ -116,7 +116,7 @@ async def get_samples_predicted_sex(coverage_file_path: str):
 async def samples_genes_coverage(
     query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
 ):
-    """Returns coverage over a list of genes (entire gene) for a given sample in the database."""
+    """Returns coverage over a list of genes (entire gene) for a given list of samples in the database."""
 
     samples_d4_files: Tuple[str, D4File] = get_samples_coverage_file(
         db=db, samples=query.samples, case=query.case
@@ -144,7 +144,7 @@ async def samples_genes_coverage(
 async def samples_transcripts_coverage(
     query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
 ):
-    """Returns coverage over a list of genes (transcripts intervals only) for a given sample in the database."""
+    """Returns coverage over a list of genes (transcripts intervals only) for a given list of samples in the database."""
 
     samples_d4_files: Tuple[str, D4File] = get_samples_coverage_file(
         db=db, samples=query.samples, case=query.case
@@ -172,7 +172,7 @@ async def samples_transcripts_coverage(
 async def samples_exons_coverage(
     query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
 ):
-    """Returns coverage over a list of genes (exons intervals only) for a given sample in the database."""
+    """Returns coverage over a list of genes (exons intervals only) for a given list of samples in the database."""
 
     samples_d4_files: Tuple[str, D4File] = get_samples_coverage_file(
         db=db, samples=query.samples, case=query.case

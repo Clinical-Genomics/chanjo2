@@ -1,8 +1,10 @@
 ## [unreleased]
 ### Added
 - Load genes, transcripts and exons from pre-downloaded files
+- Demo coverage report endpoint in new `report` module
 ### Changed
 - Moved helper function from endpoints coverage to crud samples
+- Deleted unused `src/chanjo2/meta/handle_query_intervals.py` file
 ### Fixed
 - Bump certifi from 2022.12.7 to 2023.7.22
 
