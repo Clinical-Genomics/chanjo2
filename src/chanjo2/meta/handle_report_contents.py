@@ -30,12 +30,12 @@ def set_report_data(query: ReportQuery, session: Session) -> Dict:
     set_samples_coverage_files(session=session, samples=query.samples)
 
     data: Dicr = {
-        "levels": set_ordered_levels(threshold_levels=query.completeness_thresholds),
+        "levels": get_ordered_levels(threshold_levels=query.completeness_thresholds),
         "extras": {
             "panel_name": query.panel_name,
             "default_level": query.default_level,
         },
-        "sex_rows": get_ordered_levels(query.samples),
+        "sex_rows": set_report_sex_rows(query.samples),
     }
     return data
 
