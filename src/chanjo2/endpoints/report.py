@@ -14,7 +14,7 @@ from chanjo2.models.pydantic_models import ReportQuery
 
 
 def get_templates_path() -> str:
-    """Returns the absolute path to the root folder of this app."""
+    """Returns the absolute path to the templates folder of this app."""
     APP_ROOT: str = path.abspath(path.join(path.dirname(__file__), ".."))
     return path.join(APP_ROOT, "templates")
 
