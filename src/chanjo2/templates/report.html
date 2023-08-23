@@ -96,6 +96,32 @@
 </div>
 {% endmacro %}
 
+{% macro important_metrics() %}
+
+<div class="table-responsive">
+  <table class="table table-bordered table-hover">
+	<thead>
+	  <tr>
+		<th>Sample</th>
+		<th>Average coverage[x]</th>
+		{% for level_int, level_key in levels.items() %}
+		  <th>Completeness {{ level_int }}x [%]</th>
+		{% endfor %}
+	  </tr>
+	</thead>
+	<tbody>
+	  {% for data in metrics_rows %}
+		<tr>
+
+		</tr>
+	  {% endfor %}
+	</tbody>
+  </table>
+</div>
+
+{% endmacro %}
+
+
 <!DOCTYPE html>
 <head>
 	<meta charset="utf-8">
@@ -147,12 +173,16 @@
 		{{ report_filters() }}
 
 		<!-- Quality report -->
-		<h2>{{ ('Quality report') }}: {{ ('clinical sequencing') }}</h2>
+		<h2>Quality report: clinical sequencing</h2>
 		{% if extras.panel_name %}
-			<p>{{ ('Based on gene panel') }}: <strong>{{ extras.panel_name }}</strong></p>
+			<p>Based on gene panel: <strong>{{ extras.panel_name }}</strong></p>
 		{% endif %}
 
 		{{ sex_rows_block() }}
+
+		<h3>Generally important metrics</h3>
+
+		{{ important_metrics() }}
 
 		<!--End of Quality report -->
 
