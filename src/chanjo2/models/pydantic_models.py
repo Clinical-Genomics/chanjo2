@@ -223,6 +223,6 @@ class SampleSexRow(BaseModel):
     sample: str
     case: Optional[str]
     analysis_date: datetime
-    predicted_sex: Sex
+    predicted_sex: str
     x_coverage: float
     y_coverage: float
