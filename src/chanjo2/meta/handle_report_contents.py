@@ -58,7 +58,7 @@ def set_report_sex_rows(samples: List[ReportQuerySample]) -> List[Dict]:
     return sample_sex_rows
 
 
-def set_ordered_levels(threshold_levels: List[int]) -> OrderedDict:
+def get_ordered_levels(threshold_levels: List[int]) -> OrderedDict:
     """Returns the coverage threshold levels as an ordered dictionary."""
     report_levels = OrderedDict()
     for threshold in sorted(threshold_levels, reverse=True):
