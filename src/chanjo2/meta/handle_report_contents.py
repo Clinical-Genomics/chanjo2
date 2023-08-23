@@ -35,7 +35,7 @@ def set_report_data(query: ReportQuery, session: Session) -> Dict:
             "panel_name": query.panel_name,
             "default_level": query.default_level,
         },
-        "sex_rows": set_report_sex_rows(query.samples),
+        "sex_rows": get_report_sex_rows(query.samples),
     }
     return data
 
