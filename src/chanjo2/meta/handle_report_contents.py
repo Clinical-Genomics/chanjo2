@@ -7,7 +7,7 @@ from sqlmodel import Session
 
 from chanjo2.crud.samples import get_sample
 from chanjo2.meta.handle_d4 import get_samples_sex_metrics
-from chanjo2.models.pydantic_models import ReportQuery, ReportQuerySample
+from chanjo2.models.pydantic_models import ReportQuery, ReportQuerySample, SampleSexRow
 from chanjo2.models.sql_models import Sample as SQLSample
 
 LOG = logging.getLogger("uvicorn.access")
@@ -46,14 +46,17 @@ def get_report_sex_rows(samples: List[ReportQuerySample]) -> List[Dict]:
     for sample in samples:
         sample_d4: D4File = D4File(sample.coverage_file_path)
         sample_sex_metrics: Dict = get_samples_sex_metrics(d4_file=sample_d4)
-        sample_sex_row: Dict = {
-            "sample": sample.name,
-            "case": sample.case_name,
-            "analysis_date": sample.analysis_date,
-            "predicted_sex": sample_sex_metrics["predicted_sex"],
-            "x_coverage": sample_sex_metrics["x_coverage"],
-            "y_coverage": sample_sex_metrics["y_coverage"],
-        }
+
+        sample_sex_row: SampleSexRow = SampleSexRow(
+            **{
+                "sample": sample.name,
+                "case": sample.case_name,
+                "analysis_date": sample.analysis_date,
+                "predicted_sex": sample_sex_metrics["predicted_sex"],
+                "x_coverage": sample_sex_metrics["x_coverage"],
+                "y_coverage": sample_sex_metrics["y_coverage"],
+            }
+        )
         sample_sex_rows.append(sample_sex_row)
     return sample_sex_rows
 

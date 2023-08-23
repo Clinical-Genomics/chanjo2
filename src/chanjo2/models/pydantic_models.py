@@ -217,3 +217,12 @@ class ReportQuery(BaseModel):
     default_level: int = 10
 
     samples: List[ReportQuerySample]
+
+
+class SampleSexRow(BaseModel):
+    sample: str
+    case: Optional[str]
+    analysis_date: datetime
+    predicted_sex: Sex
+    x_coverage: float
+    y_coverage: float
