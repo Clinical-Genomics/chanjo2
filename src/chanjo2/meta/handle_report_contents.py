@@ -40,7 +40,7 @@ def set_report_data(query: ReportQuery, session: Session) -> Dict:
     return data
 
 
-def set_report_sex_rows(samples: List[ReportQuerySample]) -> List[Dict]:
+de get_report_sex_rows(samples: List[ReportQuerySample]) -> List[Dict]:
     """Create and return the contents for the sample sex lines in the coverage report."""
     sample_sex_rows: D4FileList = []
     for sample in samples:
