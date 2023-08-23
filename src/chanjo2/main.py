@@ -1,5 +1,6 @@
 import logging
 import os
+from typing import List, Tuple
 
 import uvicorn
 from fastapi import FastAPI, status
@@ -12,7 +13,7 @@ from chanjo2.models.sql_models import Base
 from chanjo2.populate_demo import load_demo_data
 
 LOG = logging.getLogger("uvicorn.access")
-APP_ROUTER_TAGS = [
+APP_ROUTER_TAGS: List[Tuple] = [
     (intervals.router, "intervals"),
     (coverage.router, "coverage"),
     (cases.router, "cases"),
