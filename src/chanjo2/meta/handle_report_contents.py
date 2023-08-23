@@ -25,7 +25,7 @@ def set_samples_coverage_files(session: Session, samples: List[ReportQuerySample
 
 
 def set_report_data(query: ReportQuery, session: Session) -> Dict:
-    """Fetch the information that will be displayed in the coverage report."""
+    """Return the information that will be displayed in the coverage report."""
 
     set_samples_coverage_files(session=session, samples=query.samples)
 
