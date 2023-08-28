@@ -199,6 +199,8 @@ class SampleGeneIntervalQuery(BaseModel):
         return values
 
 
+### Coverage report - related models ###
+
 class ReportQuerySample(BaseModel):
     name: str
     case_name: Optional[str]
@@ -226,3 +228,9 @@ class SampleSexRow(BaseModel):
     predicted_sex: str
     x_coverage: float
     y_coverage: float
+
+
+class SampleCoverageRow(BaseModel):
+    sample: str
+    avg_coverage: float
+    completeness_levels: List
