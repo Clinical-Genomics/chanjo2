@@ -7,11 +7,12 @@ services:
       dockerfile: Dockerfile-db # MariaDB with an init.sql file to initialize the database
     restart: 'always'
     environment:
-      - MYSQL_USER=${DB_USER_NAME}
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - MYSQL_DATABASE_NAME=${MYSQL_DATABASE_NAME}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE_NAME}
+      - MARIADB_RANDOM_ROOT_PASSWORD=T
     healthcheck: # Wait for the service to be ready before accepting incoming connections
-      test: "mysql --user=${DB_USER_NAME} --password=${MYSQL_ROOT_PASSWORD} --execute \"SHOW DATABASES;\""
+      test: "mysql --user=${MYSQL_USER} --password=${MYSQL_PASSWORD} --execute \"SHOW DATABASES;\""
       timeout: 10s
       retries: 20
     volumes:

@@ -5,6 +5,7 @@
 ### Changed
 - Moved helper function from endpoints coverage to crud samples
 - Deleted unused `src/chanjo2/meta/handle_query_intervals.py` file
+- Non-root user and password for database connections
 ### Fixed
 - Bump certifi from 2022.12.7 to 2023.7.22
 
