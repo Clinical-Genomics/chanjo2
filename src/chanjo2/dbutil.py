@@ -7,7 +7,8 @@ from sqlalchemy.pool import StaticPool
 DEMO_DB = "sqlite://"
 DEMO_CONNECT_ARGS = {"check_same_thread": False}
 
-root_password = os.getenv("MYSQL_ROOT_PASSWORD")
+db_user = os.getenv("MYSQL_USER")
+root_password = os.getenv("MYSQL_PASSWORD")
 db_name = os.getenv("MYSQL_DATABASE_NAME")
 host_name = os.getenv("MYSQL_HOST_NAME")
 port_no = os.getenv("MYSQL_PORT")
@@ -28,7 +29,7 @@ else:
     else:
         host = ":".join([host_name, port_no])
 
-    mysql_url = f"mysql://root:{root_password}@{host}/{db_name}"
+    mysql_url = f"mysql://{db_user}:{root_password}@{host}/{db_name}"
     engine = create_engine(mysql_url, echo=True, future=True)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, future=True)
