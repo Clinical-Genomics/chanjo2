@@ -138,10 +138,14 @@ def coverage_completeness_by_sample(
 
     # evaluate mean values from list of stats
     for _, stats in stats_by_sample.items():
-        stats["coverage_values"] = mean(stats["coverage_values"])
+        stats["coverage_values"] = (
+            mean(stats["coverage_values"]) if stats["coverage_values"] else 0
+        )
         for level in levels:
-            stats["complenetess_level_values"][level] = mean(
-                stats["complenetess_level_values"][level]
+            stats["complenetess_level_values"][level] = (
+                mean(stats["complenetess_level_values"][level])
+                if stats["complenetess_level_values"][level]
+                else 0
             )
 
     return stats_by_sample
