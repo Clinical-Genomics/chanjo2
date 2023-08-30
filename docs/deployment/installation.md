@@ -35,7 +35,8 @@ The demo server is connecting to a SQLite database whose temporary tables are de
 In order to connect to a permanent MYSQL database instance, you'd need to customise the settings present on the [`.env`](https://github.com/Clinical-Genomics/chanjo2/blob/main/.env) file:
 
 ```
-MYSQL_ROOT_PASSWORD=RootPassword
+MYSQL_USER=dbUser
+MYSQL_PASSWORD=dbPassword
 MYSQL_DATABASE_NAME=chanjo2_test
 MYSQL_HOST_NAME=localhost
 MYSQL_PORT=3306
