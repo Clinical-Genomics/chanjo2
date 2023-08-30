@@ -32,13 +32,13 @@ DEMO_COVERAGE_QUERY_DATA = {
         {
             "name": DEMO_SAMPLE["name"],
             "case_name": DEMO_CASE["name"],
-            "coverage_file_path": d4_demo_path,
+            "coverage_file_path": HTTP_SERVER_D4_file,
             "analysis_date": "2023-04-23T10:20:30.400+02:30",
         }
     ],
-    "gene_panel": "Panelapp panel 109: Cerebral folate deficiency",
+    "gene_panel": "A test Panel 1.0",
     "interval_type": "genes",
     "ensembl_gene_ids": [],
-    "hgnc_gene_ids": [7436, 2861, 3791, 30521],
-    "hgnc_gene_symbols": [],
+    "hgnc_gene_ids": [],
+    "hgnc_gene_symbols": ["HMGA1P6", "RNY3P4", "ANKRD20A19P"],
 }
