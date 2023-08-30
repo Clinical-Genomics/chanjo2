@@ -100,7 +100,7 @@ def get_ordered_levels(threshold_levels: List[int]) -> OrderedDict:
 
 
 def coverage_completeness_by_sample(samples: List[str], coverage_completeness_intervals: List[CoverageInterval],
-                            levels: List[int]) -> Dict:
+                                    levels: List[int]) -> Dict:
     """Arrange detailed genomic intervals completeness stats by sample."""
 
     samples_raw_completeness: Dict[str, Dict] = {
@@ -121,17 +121,20 @@ def get_report_completeness_rows(
 ) -> List[SampleCoverageRow]:
     """Returns average coverage and coverage completeness by level for each sample in the query."""
 
-    samples_d4_files_tuples: List[Tuple] = [(sample, d4_file) for sample, d4_file in samples_d4_files.items()]
+    samples_d4_files_tuples: List[Tuple[str, D4File]] = [(sample, d4_file) for sample, d4_file in
+                                                         samples_d4_files.items()]
     if interval_type == IntervalType.GENES:
+        LOG.error(f"HERE BITCHES--->genes:{genes}-samples:{samples_d4_files_tuples}")
         coverage_completeness_intervals: List[CoverageInterval] = get_genes_coverage_completeness(
             samples_d4_files=samples_d4_files_tuples, genes=genes, completeness_threholds=levels)
     elif interval_type in [IntervalType.TRANSCRIPTS, IntervalType.EXONS]:
         coverage_completeness_intervals: List[CoverageInterval] = get_gene_interval_coverage_completeness(db=session,
-                                                                                                         samples_d4_files=samples_d4_files_tuples,
-                                                                                                         interval_type=interval_type,
-                                                                                                         completeness_threholds=levels)
+                                                                                                          samples_d4_files=samples_d4_files_tuples,
+                                                                                                          interval_type=interval_type,
+                                                                                                          completeness_threholds=levels)
 
-    appo = coverage_completeness_by_sample(samples = list(samples_d4_files.keys()), coverage_completeness_intervals = coverage_completeness_intervals, levels=levels
+    LOG.warning(coverage_completeness_intervals)
 
+    # appo = coverage_completeness_by_sample(samples = list(samples_d4_files.keys()), coverage_completeness_intervals = coverage_completeness_intervals, levels=levels
 
     return []
