@@ -117,10 +117,12 @@ def coverage_completeness_by_sample(
 ) -> Dict:
     """Arrange detailed genomic intervals completeness stats by sample and coverage level."""
 
+    # Initialize the empty dictionary that will contain the coverage completeness data
     stats_by_sample: Dict[str, Dict] = {}
     for sample in samples:
         stats_by_sample[sample] = _get_sample_stats_row(levels=levels)
 
+    # Loop over the coverage intervals and collect stats
     for interval_metrics in coverage_completeness_intervals:
         for sample in samples:
             stats_by_sample[sample]["coverage_values"].append(
