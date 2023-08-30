@@ -97,7 +97,6 @@
 {% endmacro %}
 
 {% macro important_metrics() %}
-
 <div class="table-responsive">
   <table class="table table-bordered table-hover">
 	<thead>
@@ -110,8 +109,13 @@
 	  </tr>
 	</thead>
 	<tbody>
-	  {% for data in metrics_rows %}
+	  {% for sample, stats in completeness_rows.items() %}
 		<tr>
+			<td>{{sample}}</td>
+			<td>{{stats.coverage_values|round(2)}}</td>
+			{% for level_int, level_key in levels.items() %}
+				<td>{{stats.complenetess_level_values[level_int]|round(2)}}</td>
+			{% endfor %}
 
 		</tr>
 	  {% endfor %}

@@ -1,5 +1,6 @@
 import logging
 from collections import OrderedDict
+from statistics import mean
 from typing import List, Dict
 
 from pyd4 import D4File
@@ -106,18 +107,18 @@ def coverage_completeness_by_sample(
     coverage_completeness_intervals: List[CoverageInterval],
     levels: List[int],
 ) -> Dict:
-    """Arrange detailed genomic intervals completeness stats by sample."""
+    """Arrange detailed genomic intervals completeness stats by sample and coverage level."""
 
-    raw_stats_by_sample: Dict[str, Dict] = {}
+    stats_by_sample: Dict[str, Dict] = {}
     for sample in samples:
-        raw_stats_by_sample[sample] = {
+        stats_by_sample[sample] = {
             "coverage_values": [],
             "complenetess_level_values": {level: [] for level in levels},
         }
 
     for interval_metrics in coverage_completeness_intervals:
         for sample in samples:
-            raw_stats_by_sample[sample]["coverage_values"].append(
+            stats_by_sample[sample]["coverage_values"].append(
                 interval_metrics.mean_coverage[sample]
             )  # retrieve mean coverage for the interval for the sample and append it to the list
 
@@ -126,11 +127,19 @@ def coverage_completeness_by_sample(
                 Tuple[int, decimal]
             ) = interval_metrics.completeness[sample]
             for level, decimal_value in sample_completeness_by_level:
-                raw_stats_by_sample[sample]["complenetess_level_values"][level].append(
+                stats_by_sample[sample]["complenetess_level_values"][level].append(
                     float(decimal_value) * 100
                 )
 
-    return raw_stats_by_sample
+    # evaluate mean values from list of stats
+    for _, stats in stats_by_sample.items():
+        stats["coverage_values"] = mean(stats["coverage_values"])
+        for level in levels:
+            stats["complenetess_level_values"][level] = mean(
+                stats["complenetess_level_values"][level]
+            )
+
+    return stats_by_sample
 
 
 def get_report_completeness_rows(
