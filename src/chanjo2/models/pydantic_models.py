@@ -201,6 +201,7 @@ class SampleGeneIntervalQuery(BaseModel):
 
 ### Coverage report - related models ###
 
+
 class ReportQuerySample(BaseModel):
     name: str
     case_name: Optional[str]
