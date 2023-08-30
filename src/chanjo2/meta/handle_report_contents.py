@@ -102,6 +102,14 @@ def get_ordered_levels(threshold_levels: List[int]) -> OrderedDict:
     return report_levels
 
 
+def _get_sample_stats_row(levels: List[int]) -> Dict:
+    """Return a dictionary that will contain raw stats data for one sample."""
+    return {
+        "coverage_values": [],
+        "complenetess_level_values": {level: [] for level in levels},
+    }
+
+
 def coverage_completeness_by_sample(
     samples: List[str],
     coverage_completeness_intervals: List[CoverageInterval],
@@ -111,10 +119,7 @@ def coverage_completeness_by_sample(
 
     stats_by_sample: Dict[str, Dict] = {}
     for sample in samples:
-        stats_by_sample[sample] = {
-            "coverage_values": [],
-            "complenetess_level_values": {level: [] for level in levels},
-        }
+        stats_by_sample[sample] = _get_sample_stats_row(levels=levels)
 
     for interval_metrics in coverage_completeness_intervals:
         for sample in samples:
@@ -168,6 +173,7 @@ def get_report_completeness_rows(
         ] = get_gene_interval_coverage_completeness(
             db=session,
             samples_d4_files=samples_d4_files_tuples,
+            genes=genes,
             interval_type=interval_type,
             completeness_threholds=levels,
         )

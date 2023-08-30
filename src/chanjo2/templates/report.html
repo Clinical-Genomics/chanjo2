@@ -99,6 +99,7 @@
 {% macro important_metrics() %}
 <div class="table-responsive">
   <table class="table table-bordered table-hover">
+    <caption>Average coverage and coverage completeness data</caption>
 	<thead>
 	  <tr>
 		<th>Sample</th>
@@ -116,7 +117,6 @@
 			{% for level_int, level_key in levels.items() %}
 				<td>{{stats.complenetess_level_values[level_int]|round(2)}}</td>
 			{% endfor %}
-
 		</tr>
 	  {% endfor %}
 	</tbody>
