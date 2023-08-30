@@ -112,10 +112,10 @@
 	<tbody>
 	  {% for sample, stats in completeness_rows.items() %}
 		<tr>
-			<td>{{sample}}</td>
-			<td>{{stats.coverage_values|round(2)}}</td>
+			<td>{{ sample }}</td>
+			<td>{{ stats.mean_coverage|round(2) if stats.mean_coverage is defined }}</td>
 			{% for level_int, level_key in levels.items() %}
-				<td>{{stats.complenetess_level_values[level_int]|round(2)}}</td>
+				<td>{{ stats.complenetess_level_value[level_int]|round(2) if stats.complenetess_level_value[level_int] is defined }}</td>
 			{% endfor %}
 		</tr>
 	  {% endfor %}

@@ -105,8 +105,8 @@ def get_ordered_levels(threshold_levels: List[int]) -> OrderedDict:
 def _get_sample_stats_row(levels: List[int]) -> Dict:
     """Return a dictionary that will contain raw stats data for one sample."""
     return {
-        "coverage_values": [],
-        "complenetess_level_values": {level: [] for level in levels},
+        "mean_coverage": [],
+        "complenetess_level_value": {level: [] for level in levels},
     }
 
 
@@ -125,7 +125,7 @@ def coverage_completeness_by_sample(
     # Loop over the coverage intervals and collect stats
     for interval_metrics in coverage_completeness_intervals:
         for sample in samples:
-            stats_by_sample[sample]["coverage_values"].append(
+            stats_by_sample[sample]["mean_coverage"].append(
                 interval_metrics.mean_coverage[sample]
             )  # retrieve mean coverage for the interval for the sample and append it to the list
 
@@ -134,19 +134,19 @@ def coverage_completeness_by_sample(
                 Tuple[int, decimal]
             ) = interval_metrics.completeness[sample]
             for level, decimal_value in sample_completeness_by_level:
-                stats_by_sample[sample]["complenetess_level_values"][level].append(
+                stats_by_sample[sample]["complenetess_level_value"][level].append(
                     float(decimal_value) * 100
                 )
 
     # evaluate mean values from list of stats
     for _, stats in stats_by_sample.items():
-        stats["coverage_values"] = (
-            mean(stats["coverage_values"]) if stats["coverage_values"] else 0
+        stats["mean_coverage"] = (
+            mean(stats["mean_coverage"]) if stats["mean_coverage"] else 0
         )
         for level in levels:
-            stats["complenetess_level_values"][level] = (
-                mean(stats["complenetess_level_values"][level])
-                if stats["complenetess_level_values"][level]
+            stats["complenetess_level_value"][level] = (
+                mean(stats["complenetess_level_value"][level])
+                if stats["complenetess_level_value"][level]
                 else 0
             )
 
