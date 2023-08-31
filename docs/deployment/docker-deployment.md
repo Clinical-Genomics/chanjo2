@@ -51,7 +51,8 @@ The last line present on the .env file (`DEMO=Y`) should be removed or commented
 Given a local database running on localhost and port 3306, a custom .env file like this:
 
 ```
-MYSQL_ROOT_PASSWORD=RootPassword
+MYSQL_USER=dbUser
+MYSQL_PASSWORD=dbPassword
 MYSQL_DATABASE_NAME=chanjo2_test
 MYSQL_HOST_NAME=host.docker.internal
 MYSQL_PORT=3306
