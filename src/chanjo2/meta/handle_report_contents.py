@@ -121,7 +121,6 @@ def coverage_completeness_by_sample(
     for sample in samples:
         stats_by_sample[sample] = _get_sample_stats_row(levels=levels)
 
-    # Loop over the coverage intervals and collect stats
     for interval_metrics in coverage_completeness_intervals:
         for sample in samples:
             stats_by_sample[sample]["mean_coverage"].append(
