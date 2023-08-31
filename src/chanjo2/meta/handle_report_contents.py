@@ -167,7 +167,7 @@ def get_report_completeness_rows(
         samples_d4_files=samples_d4_files_tuples,
         genes=genes,
         interval_type=interval_type,
-        completeness_threholds=levels,
+        completeness_thresholds=levels,
     )
 
     return coverage_completeness_by_sample(
