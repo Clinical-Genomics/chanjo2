@@ -72,7 +72,7 @@ def get_intervals_completeness(
 ) -> List[Tuple[int, Decimal]]:
     """Compute coverage completeness over threshold values for a list of intervals."""
 
-    if completeness_thresholds is None:
+    if not completeness_thresholds:
         return []
 
     total_region_length: int = 0
