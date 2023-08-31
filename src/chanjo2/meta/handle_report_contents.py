@@ -71,7 +71,7 @@ def get_report_data(query: ReportQuery, session: Session) -> Dict:
 
 
 def get_report_sex_rows(
-        samples: List[ReportQuerySample], samples_d4_files: Dict[str, D4File]
+    samples: List[ReportQuerySample], samples_d4_files: Dict[str, D4File]
 ) -> List[Dict]:
     """Create and return the contents for the sample sex lines in the coverage report."""
     sample_sex_rows: D4FileList = []
@@ -110,9 +110,9 @@ def _get_sample_stats_row(levels: List[int]) -> Dict:
 
 
 def coverage_completeness_by_sample(
-        samples: List[str],
-        coverage_completeness_intervals: List[CoverageInterval],
-        levels: List[int],
+    samples: List[str],
+    coverage_completeness_intervals: List[CoverageInterval],
+    levels: List[int],
 ) -> Dict:
     """Arrange detailed genomic intervals completeness stats by sample and coverage level."""
 
@@ -151,11 +151,11 @@ def coverage_completeness_by_sample(
 
 
 def get_report_completeness_rows(
-        levels: List[int],
-        genes: List[SQLGene],
-        interval_type: IntervalType,
-        samples_d4_files: Dict[str, D4File],
-        session: Session,
+    levels: List[int],
+    genes: List[SQLGene],
+    interval_type: IntervalType,
+    samples_d4_files: Dict[str, D4File],
+    session: Session,
 ) -> List[SampleCoverageRow]:
     """Returns average coverage and coverage completeness by level for each sample in the query."""
 
