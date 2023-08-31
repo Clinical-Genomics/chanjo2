@@ -9,7 +9,6 @@ from sqlmodel import Session
 from chanjo2.crud.intervals import get_genes
 from chanjo2.crud.samples import get_sample
 from chanjo2.meta.handle_d4 import (
-    get_genes_coverage_completeness,
     get_gene_interval_coverage_completeness,
 )
 from chanjo2.meta.handle_d4 import get_samples_sex_metrics
@@ -72,7 +71,7 @@ def get_report_data(query: ReportQuery, session: Session) -> Dict:
 
 
 def get_report_sex_rows(
-    samples: List[ReportQuerySample], samples_d4_files: Dict[str, D4File]
+        samples: List[ReportQuerySample], samples_d4_files: Dict[str, D4File]
 ) -> List[Dict]:
     """Create and return the contents for the sample sex lines in the coverage report."""
     sample_sex_rows: D4FileList = []
@@ -111,9 +110,9 @@ def _get_sample_stats_row(levels: List[int]) -> Dict:
 
 
 def coverage_completeness_by_sample(
-    samples: List[str],
-    coverage_completeness_intervals: List[CoverageInterval],
-    levels: List[int],
+        samples: List[str],
+        coverage_completeness_intervals: List[CoverageInterval],
+        levels: List[int],
 ) -> Dict:
     """Arrange detailed genomic intervals completeness stats by sample and coverage level."""
 
@@ -154,35 +153,24 @@ def coverage_completeness_by_sample(
 
 
 def get_report_completeness_rows(
-    levels: List[int],
-    genes: List[SQLGene],
-    interval_type: IntervalType,
-    samples_d4_files: Dict[str, D4File],
-    session: Session,
+        levels: List[int],
+        genes: List[SQLGene],
+        interval_type: IntervalType,
+        samples_d4_files: Dict[str, D4File],
+        session: Session,
 ) -> List[SampleCoverageRow]:
     """Returns average coverage and coverage completeness by level for each sample in the query."""
 
     samples_d4_files_tuples: List[Tuple[str, D4File]] = [
         (sample, d4_file) for sample, d4_file in samples_d4_files.items()
     ]
-    if interval_type == IntervalType.GENES:
-        coverage_completeness_intervals: List[
-            CoverageInterval
-        ] = get_genes_coverage_completeness(
-            samples_d4_files=samples_d4_files_tuples,
-            genes=genes,
-            completeness_threholds=levels,
-        )
-    elif interval_type in [IntervalType.TRANSCRIPTS, IntervalType.EXONS]:
-        coverage_completeness_intervals: List[
-            CoverageInterval
-        ] = get_gene_interval_coverage_completeness(
-            db=session,
-            samples_d4_files=samples_d4_files_tuples,
-            genes=genes,
-            interval_type=interval_type,
-            completeness_threholds=levels,
-        )
+    coverage_completeness_intervals = get_gene_interval_coverage_completeness(
+        db=session,
+        samples_d4_files=samples_d4_files_tuples,
+        genes=genes,
+        interval_type=interval_type,
+        completeness_threholds=levels,
+    )
 
     return coverage_completeness_by_sample(
         samples=list(samples_d4_files.keys()),
