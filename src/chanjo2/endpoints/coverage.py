@@ -63,7 +63,7 @@ def d4_interval_coverage(query: FileCoverageQuery):
         completeness=get_intervals_completeness(
             d4_file=d4_file,
             intervals=[interval],
-            completeness_threholds=query.completeness_thresholds,
+            completeness_thresholds=query.completeness_thresholds,
         ),
     )
 
@@ -95,7 +95,7 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
     return intervals_coverage(
         d4_file=d4_file,
         intervals=intervals,
-        completeness_threholds=query.completeness_thresholds,
+        completeness_thresholds=query.completeness_thresholds,
     )
 
 
@@ -135,7 +135,7 @@ async def samples_genes_coverage(
         samples_d4_files=samples_d4_files,
         genes=genes,
         interval_type=SQLGene,
-        completeness_threholds=query.completeness_thresholds,
+        completeness_thresholds=query.completeness_thresholds,
     )
 
 
@@ -165,7 +165,7 @@ async def samples_transcripts_coverage(
         samples_d4_files=samples_d4_files,
         genes=genes,
         interval_type=SQLTranscript,
-        completeness_threholds=query.completeness_thresholds,
+        completeness_thresholds=query.completeness_thresholds,
     )
 
 
@@ -193,5 +193,5 @@ async def samples_exons_coverage(
         samples_d4_files=samples_d4_files,
         genes=genes,
         interval_type=SQLExon,
-        completeness_threholds=query.completeness_thresholds,
+        completeness_thresholds=query.completeness_thresholds,
     )
