@@ -17,7 +17,6 @@ from chanjo2.meta.handle_d4 import (
     get_intervals_mean_coverage,
     get_d4_file,
     set_interval,
-    get_genes_coverage_completeness,
     get_gene_interval_coverage_completeness,
     get_intervals_completeness,
     get_samples_sex_metrics,
@@ -64,7 +63,7 @@ def d4_interval_coverage(query: FileCoverageQuery):
         completeness=get_intervals_completeness(
             d4_file=d4_file,
             intervals=[interval],
-            completeness_threholds=query.completeness_thresholds,
+            completeness_thresholds=query.completeness_thresholds,
         ),
     )
 
@@ -96,7 +95,7 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
     return intervals_coverage(
         d4_file=d4_file,
         intervals=intervals,
-        completeness_threholds=query.completeness_thresholds,
+        completeness_thresholds=query.completeness_thresholds,
     )
 
 
@@ -131,10 +130,12 @@ async def samples_genes_coverage(
         limit=None,
     )
 
-    return get_genes_coverage_completeness(
+    return get_gene_interval_coverage_completeness(
+        db=db,
         samples_d4_files=samples_d4_files,
         genes=genes,
-        completeness_threholds=query.completeness_thresholds,
+        interval_type=SQLGene,
+        completeness_thresholds=query.completeness_thresholds,
     )
 
 
@@ -164,7 +165,7 @@ async def samples_transcripts_coverage(
         samples_d4_files=samples_d4_files,
         genes=genes,
         interval_type=SQLTranscript,
-        completeness_threholds=query.completeness_thresholds,
+        completeness_thresholds=query.completeness_thresholds,
     )
 
 
@@ -192,5 +193,5 @@ async def samples_exons_coverage(
         samples_d4_files=samples_d4_files,
         genes=genes,
         interval_type=SQLExon,
-        completeness_threholds=query.completeness_thresholds,
+        completeness_thresholds=query.completeness_thresholds,
     )
