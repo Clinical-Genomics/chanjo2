@@ -17,7 +17,6 @@ from chanjo2.meta.handle_d4 import (
     get_intervals_mean_coverage,
     get_d4_file,
     set_interval,
-    get_genes_coverage_completeness,
     get_gene_interval_coverage_completeness,
     get_intervals_completeness,
     get_samples_sex_metrics,
@@ -131,9 +130,11 @@ async def samples_genes_coverage(
         limit=None,
     )
 
-    return get_genes_coverage_completeness(
+    return get_gene_interval_coverage_completeness(
+        db=db,
         samples_d4_files=samples_d4_files,
         genes=genes,
+        interval_type=SQLGene,
         completeness_threholds=query.completeness_thresholds,
     )
 
