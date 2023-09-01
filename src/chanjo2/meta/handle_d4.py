@@ -4,7 +4,7 @@ from statistics import mean
 from typing import List, Optional, Tuple, Union, Dict
 
 from pyd4 import D4File
-from sqlalchemy.orm import Session
+from sqlmodel import Session
 
 from chanjo2.crud.intervals import get_gene_intervals
 from chanjo2.models.pydantic_models import (
@@ -162,8 +162,11 @@ def get_sample_gene_coverage(
             intervals_coords: List[Tuple[str, int, int]] = get_intervals_coords_list(
                 intervals=sql_intervals
             )
-            gene_coverage.mean_coverage = mean(
-                get_intervals_mean_coverage(d4_file=d4_file, intervals=intervals_coords)
+            intervals_mean_covs: List[float] = get_intervals_mean_coverage(
+                d4_file=d4_file, intervals=intervals_coords
+            )
+            gene_coverage.mean_coverage = (
+                mean(intervals_mean_covs) if intervals_mean_covs else 0
             )
             gene_coverage.completeness = (
                 get_intervals_completeness(
