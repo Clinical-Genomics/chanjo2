@@ -1,3 +1,4 @@
+import logging
 from decimal import Decimal
 from typing import List, Optional, Tuple, Union, Dict
 
@@ -13,6 +14,8 @@ from chanjo2.models.pydantic_models import (
 from chanjo2.models.sql_models import Exon as SQLExon
 from chanjo2.models.sql_models import Gene as SQLGene
 from chanjo2.models.sql_models import Transcript as SQLTranscript
+
+LOG = logging.getLogger("uvicorn.access")
 
 
 def set_interval(
@@ -57,10 +60,10 @@ def intervals_coverage(
                 chromosome=interval[0],
                 start=interval[1],
                 end=interval[2],
-                mean_coverage={"D4File": d4_file.mean(interval)},
-                completeness=get_intervals_completeness(
+                mean_coverage=d4_file.mean(interval),
+                completeness=get_interval_completeness(
                     d4_file=d4_file,
-                    intervals=[interval],
+                    interval=interval,
                     completeness_thresholds=completeness_thresholds,
                 ),
             )
@@ -76,13 +79,13 @@ def get_interval_completeness(
     """Compute coverage completeness over threshold levels for a genomic interval."""
     if not completeness_thresholds:
         return {}
-
-    total_region_length += interval[2] - interval[1]
     nr_complete_bases_by_threshold: List[int] = [0 for _ in completeness_thresholds]
 
     chrom = interval[0]
     start = interval[1]
     stop = interval[2]
+
+    total_region_length = stop - start
 
     for _, _, d4_tracks_base_coverage in d4_file.enumerate_values(
         chrom, start, stop
@@ -96,10 +99,12 @@ def get_interval_completeness(
     completeness_values: Dict[int, Decimal] = {}
     for index, threshold in enumerate(completeness_thresholds):
         completeness_values[threshold] = (
-            Decimal(nr_complete_bases_by_threshold[index] / total_region_length)
+            float(nr_complete_bases_by_threshold[index] / total_region_length)
             if nr_complete_bases_by_threshold[index]
             else 0
         )
+
+    return completeness_values
 
 
 def get_sample_gene_coverage(
@@ -111,12 +116,13 @@ def get_sample_gene_coverage(
 ) -> List[GeneCoverage]:
     genes_coverage_stats: List[GeneCoverage] = []
     for gene in genes:
-        gene_coverage: GeneCoverage = GeneCoverage(
+        gene_coverage = GeneCoverage(
             **{
                 "ensembl_gene_id": gene.ensembl_id,
                 "hgnc_id": gene.hgnc_id,
                 "hgnc_symbol": gene.hgnc_symbol,
                 "interval_type": IntervalType.GENES,
+                "mean_coverage": 0,
                 "inner_intervals": [],
             }
         )
@@ -132,7 +138,6 @@ def get_sample_gene_coverage(
                 interval=gene_coordinates,
                 completeness_thresholds=completeness_thresholds,
             )
-
         else:  # Retrieve transcripts or exons for this gene
             sql_intervals: List[Union[SQLTranscript, SQLExon]] = get_gene_intervals(
                 db=db,
@@ -144,6 +149,14 @@ def get_sample_gene_coverage(
                 ensembl_gene_ids=[gene.ensembl_id],
                 limit=None,
             )
+
+            intervals_coords: List[Tuple[str, int, int]] = get_intervals_coords_list(
+                intervals=sql_intervals
+            )
+            gene_coverage.mean_coverage = mean(
+                get_intervals_mean_coverage(d4_file=d4_file, intervals=intervals_coords)
+            )
+
             for interval in sql_intervals:
                 interval_coordinates: Tuple[str, int, int] = (
                     interval.chromosome,
@@ -162,9 +175,11 @@ def get_sample_gene_coverage(
                         ),
                     }
                 )
+
                 gene_coverage.inner_intervals.append(interval_coverage)
 
     genes_coverage_stats.append(gene_coverage)
+    return genes_coverage_stats
 
 
 def predict_sex(x_cov: float, y_cov: float) -> str:

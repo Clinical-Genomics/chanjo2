@@ -18,6 +18,8 @@ from chanjo2.meta.handle_d4 import (
     get_d4_file,
     set_interval,
     get_samples_sex_metrics,
+    get_interval_completeness,
+    get_sample_gene_coverage,
 )
 from chanjo2.models.pydantic_models import (
     SampleGeneIntervalQuery,
@@ -49,16 +51,12 @@ def d4_interval_coverage(query: FileCoverageQuery):
         )
 
     return IntervalCoverage(
-        interval=interval,
-        mean_coverage=[
-            (
-                "D4File",
-                get_intervals_mean_coverage(d4_file=d4_file, intervals=[interval])[0],
-            )
-        ],
+        mean_coverage=get_intervals_mean_coverage(
+            d4_file=d4_file, intervals=[interval]
+        )[0],
         completeness=get_interval_completeness(
             d4_file=d4_file,
-            intervals=interval,
+            interval=interval,
             completeness_thresholds=query.completeness_thresholds,
         ),
     )
@@ -107,7 +105,7 @@ async def get_samples_predicted_sex(coverage_file_path: str):
     return get_samples_sex_metrics(d4_file=d4_file)
 
 
-@router.post("/coverage/samples/genes_coverage", response_model=List[GeneCoverage])
+@router.post("/coverage/samples/genes_coverage", response_model=List)
 async def samples_genes_coverage(
     query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
 ):
@@ -129,7 +127,7 @@ async def samples_genes_coverage(
     return [
         (
             sample,
-            get_gene_interval_coverage_completeness(
+            get_sample_gene_coverage(
                 db=db,
                 d4_file=d4_file,
                 genes=genes,
