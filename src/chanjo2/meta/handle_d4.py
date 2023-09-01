@@ -196,14 +196,23 @@ def get_coverage_completeness_by_sample(
                 limit=None,
             )
 
-        intervals_coverage_completeness = get_gene_interval_coverage_completeness()
+        coverage_intervals: List[CoverageInterval] = []
+        """
+        for interval in sql_intervals:
+            interval_coords = Tuple(interval.chromosome, interval.start, interval.stop)
+            coverage_interval = CoverageInterval({
+                "interval_type": interval_type,
+                "interval_id":
+            })
+        """
 
+
+        gene_intervals_coverage: Dict[SQLGene, List[CoverageInterval]] = (gene, )
         sample_stats = {
             "sample": sample,
             "overall_coverage": [],
             "overall_completeness": [],
             "intervals_coverage": ,
-            "intervals_incomplete_coverage": []
         }
 
 

@@ -1,7 +1,7 @@
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, List, Optional, Dict
+from typing import Any, List, Optional, Dict, Tuple
 
 import validators
 from pydantic import BaseModel, validator, Field, root_validator
@@ -156,8 +156,7 @@ class SampleCoverageCompleteness(BaseModel):
     sample: str
     overall_coverage: float
     overall_completeness: float
-    intervals_coverage: List[CoverageInterval]
-    intervals_incomplete_coverage: List[CoverageInterval]
+    gene_intervals_coverage: List[Tuple[Dict, List[CoverageInterval]]]
 
 
 class FileCoverageBaseQuery(BaseModel):
