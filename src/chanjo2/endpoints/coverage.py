@@ -18,7 +18,7 @@ from chanjo2.meta.handle_d4 import (
     get_d4_file,
     set_interval,
     get_samples_sex_metrics,
-    get_interval_completeness,
+    get_intervals_completeness,
     get_sample_gene_coverage,
 )
 from chanjo2.models.pydantic_models import (
@@ -54,9 +54,9 @@ def d4_interval_coverage(query: FileCoverageQuery):
         mean_coverage=get_intervals_mean_coverage(
             d4_file=d4_file, intervals=[interval]
         )[0],
-        completeness=get_interval_completeness(
+        completeness=get_intervals_completeness(
             d4_file=d4_file,
-            interval=interval,
+            interval=[interval],
             completeness_thresholds=query.completeness_thresholds,
         ),
     )
@@ -139,9 +139,7 @@ async def samples_genes_coverage(
     ]
 
 
-@router.post(
-    "/coverage/samples/transcripts_coverage", response_model=List[GeneCoverage]
-)
+@router.post("/coverage/samples/transcripts_coverage", response_model=List)
 async def samples_transcripts_coverage(
     query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
 ):
@@ -160,13 +158,19 @@ async def samples_transcripts_coverage(
         limit=None,
     )
 
-    return get_gene_interval_coverage_completeness(
-        db=db,
-        samples_d4_files=samples_d4_files,
-        genes=genes,
-        interval_type=SQLTranscript,
-        completeness_thresholds=query.completeness_thresholds,
-    )
+    return [
+        (
+            sample,
+            get_sample_gene_coverage(
+                db=db,
+                d4_file=d4_file,
+                genes=genes,
+                interval_type=SQLTranscript,
+                completeness_thresholds=query.completeness_thresholds,
+            ),
+        )
+        for sample, d4_file in samples_d4_files
+    ]
 
 
 @router.post("/coverage/samples/exons_coverage", response_model=List[GeneCoverage])
@@ -188,10 +192,16 @@ async def samples_exons_coverage(
         limit=None,
     )
 
-    return get_gene_interval_coverage_completeness(
-        db=db,
-        samples_d4_files=samples_d4_files,
-        genes=genes,
-        interval_type=SQLExon,
-        completeness_thresholds=query.completeness_thresholds,
-    )
+    return [
+        (
+            sample,
+            get_sample_gene_coverage(
+                db=db,
+                d4_file=d4_file,
+                genes=genes,
+                interval_type=SQLExon,
+                completeness_thresholds=query.completeness_thresholds,
+            ),
+        )
+        for sample, d4_file in samples_d4_files
+    ]
