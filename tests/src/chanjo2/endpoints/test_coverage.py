@@ -265,9 +265,9 @@ def test_samples_gene_coverage_hgnc_symbols(
     assert response.status_code == status.HTTP_200_OK
 
     # AND return coverage intervals data
-    coverage_intervals: List[str, GeneCoverage] = response.json()
-    for _, interval in coverage_intervals:
-        assert GeneCoverage(**interval)
+    for sample, coverage_intervals in response.json():
+        for interval in coverage_intervals:
+            assert GeneCoverage(**interval)
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -289,9 +289,9 @@ def test_samples_gene_coverage_hgnc_ids(
     assert response.status_code == status.HTTP_200_OK
 
     # AND return coverage intervals data
-    coverage_intervals: List = response.json()
-    for interval in coverage_intervals:
-        assert GeneCoverage(**interval)
+    for sample, coverage_intervals in response.json():
+        for interval in coverage_intervals:
+            assert GeneCoverage(**interval)
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -313,9 +313,9 @@ def test_samples_gene_coverage_ensembl_ids(
     assert response.status_code == status.HTTP_200_OK
 
     # AND return coverage intervals data
-    coverage_intervals: List[str, GeneCoverage] = response.json()
-    for _, interval in coverage_intervals:
-        assert GeneCoverage(**interval)
+    for sample, coverage_intervals in response.json():
+        for interval in coverage_intervals:
+            assert GeneCoverage(**interval)
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -339,9 +339,9 @@ def test_samples_transcripts_coverage_hgnc_symbols(
     assert response.status_code == status.HTTP_200_OK
 
     # AND return coverage intervals data
-    coverage_intervals: List[str, GeneCoverage] = response.json()
-    for _, interval in coverage_intervals:
-        assert GeneCoverage(**interval)
+    for sample, coverage_intervals in response.json():
+        for interval in coverage_intervals:
+            assert GeneCoverage(**interval)
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -365,9 +365,9 @@ def test_samples_transcripts_coverage_hgnc_ids(
     assert response.status_code == status.HTTP_200_OK
 
     # AND return coverage intervals data
-    coverage_intervals: List[str, GeneCoverage] = response.json()
-    for _, interval in coverage_intervals:
-        assert GeneCoverage(**interval)
+    for sample, coverage_intervals in response.json():
+        for interval in coverage_intervals:
+            assert GeneCoverage(**interval)
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -391,9 +391,9 @@ def test_samples_transcripts_coverage_ensembl_ids(
     assert response.status_code == status.HTTP_200_OK
 
     # AND return coverage intervals data
-    coverage_intervals: List[str, GeneCoverage] = response.json()
-    for _, interval in coverage_intervals:
-        assert GeneCoverage(**interval)
+    for sample, coverage_intervals in response.json():
+        for interval in coverage_intervals:
+            assert GeneCoverage(**interval)
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -415,9 +415,9 @@ def test_samples_exons_coverage_hgnc_symbols(
     assert response.status_code == status.HTTP_200_OK
 
     # AND return coverage intervals data
-    coverage_intervals: List[str, GeneCoverage] = response.json()
-    for _, interval in coverage_intervals:
-        assert GeneCoverage(**interval)
+    for sample, coverage_intervals in response.json():
+        for interval in coverage_intervals:
+            assert GeneCoverage(**interval)
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -439,9 +439,9 @@ def test_samples_exons_coverage_hgnc_ids(
     assert response.status_code == status.HTTP_200_OK
 
     # AND return coverage intervals data
-    coverage_intervals: List[str, GeneCoverage] = response.json()
-    for _, interval in coverage_intervals:
-        assert GeneCoverage(**interval)
+    for sample, coverage_intervals in response.json():
+        for interval in coverage_intervals:
+            assert GeneCoverage(**interval)
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -463,9 +463,9 @@ def test_samples_exons_coverage_ensembl_ids(
     assert response.status_code == status.HTTP_200_OK
 
     # AND return coverage intervals data
-    coverage_intervals: List[str, GeneCoverage] = response.json()
-    for _, interval in coverage_intervals:
-        assert GeneCoverage(**interval)
+    for sample, coverage_intervals in response.json():
+        for interval in coverage_intervals:
+            assert GeneCoverage(**interval)
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -485,9 +485,9 @@ def test_case_genes_coverage(
     assert response.status_code == status.HTTP_200_OK
 
     # AND return coverage intervals data
-    coverage_intervals: List[str, GeneCoverage] = response.json()
-    for _, interval in coverage_intervals:
-        assert GeneCoverage(**interval)
+    for sample, coverage_intervals in response.json():
+        for interval in coverage_intervals:
+            assert GeneCoverage(**interval)
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -507,9 +507,9 @@ def test_case_transcripts_coverage(
     assert response.status_code == status.HTTP_200_OK
 
     # AND return coverage intervals data
-    coverage_intervals: List[str, GeneCoverage] = response.json()
-    for _, interval in coverage_intervals:
-        assert GeneCoverage(**interval)
+    for sample, coverage_intervals in response.json():
+        for interval in coverage_intervals:
+            assert GeneCoverage(**interval)
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -529,6 +529,6 @@ def test_case_exons_coverage(
     assert response.status_code == status.HTTP_200_OK
 
     # AND return coverage intervals data
-    coverage_intervals: List[str, GeneCoverage] = response.json()
-    for _, interval in coverage_intervals:
-        assert GeneCoverage(**interval)
+    for sample, coverage_intervals in response.json():
+        for interval in coverage_intervals:
+            assert GeneCoverage(**interval)
