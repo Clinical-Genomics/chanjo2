@@ -147,8 +147,17 @@ class CoverageInterval(BaseModel):
     hgnc_id: Optional[int]
     hgnc_symbol: Optional[str]
     interval_id: Optional[int]
+    interval_type: Optional[IntervalType]
     mean_coverage: Dict = Field(default_factory=dict)
     start: Optional[int]
+
+
+class SampleCoverageCompleteness(BaseModel):
+    sample: str
+    overall_coverage: float
+    overall_completeness: float
+    intervals_coverage: List[CoverageInterval]
+    intervals_incomplete_coverage: List[CoverageInterval]
 
 
 class FileCoverageBaseQuery(BaseModel):
@@ -230,9 +239,3 @@ class SampleSexRow(BaseModel):
     predicted_sex: str
     x_coverage: float
     y_coverage: float
-
-
-class SampleCoverageRow(BaseModel):
-    sample: str
-    avg_coverage: float
-    completeness_levels: List

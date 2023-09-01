@@ -4,26 +4,34 @@ from statistics import mean
 from typing import List, Dict
 
 from pyd4 import D4File
+from sqlalchemy.orm import declarative_base
 from sqlmodel import Session
 
 from chanjo2.crud.intervals import get_genes
 from chanjo2.crud.samples import get_sample
 from chanjo2.meta.handle_d4 import (
-    get_gene_interval_coverage_completeness,
+    get_samples_sex_metrics,
+    get_coverage_completeness_by_sample,
 )
-from chanjo2.meta.handle_d4 import get_samples_sex_metrics
 from chanjo2.models.pydantic_models import (
     ReportQuery,
     ReportQuerySample,
     SampleSexRow,
     IntervalType,
-    SampleCoverageRow,
+    SampleCoverageCompleteness,
     CoverageInterval,
 )
 from chanjo2.models.sql_models import Gene as SQLGene
 from chanjo2.models.sql_models import Sample as SQLSample
+from chanjo2.models.sql_models import Transcript as SQLTranscript
 
 LOG = logging.getLogger("uvicorn.access")
+
+INTERVAL_TYPE_TO_SQL_INTERVAL: Dict[IntervalType, declarative_base] = {
+    IntervalType.GENES: SQLGene,
+    IntervalType.TRANSCRIPTS: SQLTranscript,
+    IntervalType.EXONS: SQLSample,
+}
 
 
 def set_samples_coverage_files(session: Session, samples: List[ReportQuerySample]):
@@ -44,6 +52,7 @@ def get_report_data(query: ReportQuery, session: Session) -> Dict:
     samples_d4_files: Dict[str, D4File] = {
         sample.name: D4File(sample.coverage_file_path) for sample in query.samples
     }
+
     genes: List[SQLGene] = get_genes(
         db=session,
         build=query.build,
@@ -59,13 +68,17 @@ def get_report_data(query: ReportQuery, session: Session) -> Dict:
             "default_level": query.default_level,
         },
         "sex_rows": get_report_sex_rows(query.samples, samples_d4_files),
-        "completeness_rows": get_report_completeness_rows(
-            levels=sorted(query.completeness_thresholds),
-            genes=genes,
-            interval_type=query.interval_type,
-            samples_d4_files=samples_d4_files,
-            session=session,
-        ),
+        "completeness_rows": [
+            get_coverage_completeness_by_sample(
+                db=session,
+                sample=sample,
+                d4_file=d4_file,
+                levels=sorted(query.completeness_thresholds),
+                genes=genes,
+                interval_type=INTERVAL_TYPE_TO_SQL_INTERVAL[query.interval_type],
+            )
+            for sample, d4_file in samples_d4_files.items()
+        ],
     }
     return data
 
@@ -156,22 +169,15 @@ def get_report_completeness_rows(
     interval_type: IntervalType,
     samples_d4_files: Dict[str, D4File],
     session: Session,
-) -> List[SampleCoverageRow]:
+) -> List[SampleCoverageCompleteness]:
     """Returns average coverage and coverage completeness by level for each sample in the query."""
 
-    samples_d4_files_tuples: List[Tuple[str, D4File]] = [
-        (sample, d4_file) for sample, d4_file in samples_d4_files.items()
-    ]
-    coverage_completeness_intervals = get_gene_interval_coverage_completeness(
-        db=session,
-        samples_d4_files=samples_d4_files_tuples,
-        genes=genes,
-        interval_type=interval_type,
-        completeness_thresholds=levels,
+    return coverage_completeness_by_sample(
+        db=session, samples_d4_files=samples_d4_files
     )
 
-    return coverage_completeness_by_sample(
-        samples=list(samples_d4_files.keys()),
-        coverage_completeness_intervals=coverage_completeness_intervals,
-        levels=levels,
-    )
+    """ db=session,
+        ,
+        genes=genes,
+        interval_type=interval_type,
+        completeness_thresholds=levels"""
