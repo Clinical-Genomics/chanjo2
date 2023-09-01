@@ -26,7 +26,6 @@ from chanjo2.models.pydantic_models import (
     FileCoverageQuery,
     FileCoverageIntervalsFileQuery,
     IntervalCoverage,
-    GeneCoverage,
 )
 from chanjo2.models.sql_models import Exon as SQLExon
 from chanjo2.models.sql_models import Gene as SQLGene
@@ -56,7 +55,7 @@ def d4_interval_coverage(query: FileCoverageQuery):
         )[0],
         completeness=get_intervals_completeness(
             d4_file=d4_file,
-            interval=[interval],
+            intervals=[interval],
             completeness_thresholds=query.completeness_thresholds,
         ),
     )
@@ -105,7 +104,7 @@ async def get_samples_predicted_sex(coverage_file_path: str):
     return get_samples_sex_metrics(d4_file=d4_file)
 
 
-@router.post("/coverage/samples/genes_coverage", response_model=List)
+@router.post("/coverage/samples/genes_coverage", response_model=List[Tuple])
 async def samples_genes_coverage(
     query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
 ):
@@ -139,7 +138,7 @@ async def samples_genes_coverage(
     ]
 
 
-@router.post("/coverage/samples/transcripts_coverage", response_model=List)
+@router.post("/coverage/samples/transcripts_coverage", response_model=List[Tuple])
 async def samples_transcripts_coverage(
     query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
 ):
@@ -173,7 +172,7 @@ async def samples_transcripts_coverage(
     ]
 
 
-@router.post("/coverage/samples/exons_coverage", response_model=List[GeneCoverage])
+@router.post("/coverage/samples/exons_coverage", response_model=List[Tuple])
 async def samples_exons_coverage(
     query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
 ):

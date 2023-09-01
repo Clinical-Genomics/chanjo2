@@ -12,7 +12,7 @@ from chanjo2.constants import (
     AMBIGUOUS_SAMPLES_INPUT,
 )
 from chanjo2.demo import gene_panel_path
-from chanjo2.models.pydantic_models import IntervalCoverage, Builds, Sex, GeneCoverage
+from chanjo2.models.pydantic_models import Builds, Sex, GeneCoverage, IntervalCoverage
 from chanjo2.populate_demo import DEMO_SAMPLE, DEMO_CASE
 
 COVERAGE_COMPLETENESS_THRESHOLDS: List[int] = [10, 20, 30]
@@ -63,11 +63,12 @@ def test_d4_interval_coverage(
 
     # THEN the mean coverage over the interval should be returned
     result = response.json()
+
     coverage_data = IntervalCoverage(**result)
     assert coverage_data.mean_coverage
 
     # THEN mean coverage value should be returned
-    assert coverage_data.mean_coverage["D4File"] > 0
+    assert coverage_data.mean_coverage > 0
     # THEN coverage completeness should be returned for each of the provided thresholds
     for cov_threshold in COVERAGE_COMPLETENESS_THRESHOLDS:
         assert coverage_data.completeness[str(cov_threshold)] > 0
@@ -164,13 +165,9 @@ def test_d4_intervals_coverage(
     # AND return stats over the intervals
     coverage_intervals: List = response.json()
     for interval in coverage_intervals:
-        coverage_data = CoverageInterval(**interval)
+        coverage_data = IntervalCoverage(**interval)
         # Including mean coverage
-        assert coverage_data.mean_coverage["D4File"] > 0
-        # Interval coordinates
-        assert coverage_data.chromosome
-        assert coverage_data.start
-        assert coverage_data.end
+        assert coverage_data.mean_coverage > 0
         # And coverage completeness for each of the specified thresholds
         for cov_threshold in COVERAGE_COMPLETENESS_THRESHOLDS:
             assert coverage_data.completeness[str(cov_threshold)] > 0

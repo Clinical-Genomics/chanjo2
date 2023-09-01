@@ -142,7 +142,7 @@ class IntervalCoverage(BaseModel):
     mean_coverage: float
     completeness: Optional[Dict] = Field(default_factory=dict)
     interval_id: Optional[str]
-    interval_type: IntervalType
+    interval_type: Optional[IntervalType]
 
 
 class GeneCoverage(IntervalCoverage):

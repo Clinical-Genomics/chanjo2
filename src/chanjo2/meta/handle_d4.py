@@ -80,7 +80,6 @@ def get_intervals_completeness(
 ) -> List[Tuple[int, Decimal]]:
     """Compute coverage completeness over threshold values for a list of intervals."""
 
-    LOG.warning(intervals)
     if not completeness_thresholds:
         return []
 
