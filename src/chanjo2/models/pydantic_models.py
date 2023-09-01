@@ -138,16 +138,18 @@ class Exon(IntervalBase):
     id: int
 
 
-class CoverageInterval(BaseModel):
-    chromosome: str
+class IntervalCoverage(BaseModel):
+    mean_coverage: float
     completeness: Dict = Field(default_factory=dict)
     ensembl_gene_id: Optional[str]
-    end: Optional[int]
     hgnc_id: Optional[int]
     hgnc_symbol: Optional[str]
     interval_id: Optional[int]
-    mean_coverage: Dict = Field(default_factory=dict)
-    start: Optional[int]
+    interval_type: Optional[IntervalType]
+
+
+class GeneCoverage(IntervalCoverage):
+    inner_intervals: List[IntervalCoverage] = []  # Transcripts or exons
 
 
 class FileCoverageBaseQuery(BaseModel):

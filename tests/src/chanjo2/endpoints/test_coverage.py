@@ -12,7 +12,7 @@ from chanjo2.constants import (
     AMBIGUOUS_SAMPLES_INPUT,
 )
 from chanjo2.demo import gene_panel_path
-from chanjo2.models.pydantic_models import CoverageInterval, Builds, Sex
+from chanjo2.models.pydantic_models import IntervalCoverage, Builds, Sex, GeneCoverage
 from chanjo2.populate_demo import DEMO_SAMPLE, DEMO_CASE
 
 COVERAGE_COMPLETENESS_THRESHOLDS: List[int] = [10, 20, 30]
@@ -63,13 +63,9 @@ def test_d4_interval_coverage(
 
     # THEN the mean coverage over the interval should be returned
     result = response.json()
-    coverage_data = CoverageInterval(**result)
+    coverage_data = IntervalCoverage(**result)
     assert coverage_data.mean_coverage
 
-    # THEN the queried interval should also be present
-    assert coverage_data.chromosome
-    assert coverage_data.start
-    assert coverage_data.end
     # THEN mean coverage value should be returned
     assert coverage_data.mean_coverage["D4File"] > 0
     # THEN coverage completeness should be returned for each of the provided thresholds
@@ -95,12 +91,8 @@ def test_d4_interval_coverage_single_chromosome(
 
     # AND the mean coverage over the entire chromosome should be present in the result
     result = response.json()
-    coverage_data = CoverageInterval(**result)
+    coverage_data = IntervalCoverage(**result)
     assert coverage_data.mean_coverage
-    # together with the queried interval
-    assert coverage_data.chromosome
-    assert coverage_data.start is None
-    assert coverage_data.end is None
 
 
 def test_d4_intervals_coverage_d4_not_found(
@@ -278,7 +270,7 @@ def test_samples_gene_coverage_hgnc_symbols(
     # AND return coverage intervals data
     coverage_intervals: List = response.json()
     for interval in coverage_intervals:
-        assert CoverageInterval(**interval)
+        assert GeneCoverage(**interval)
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -302,7 +294,7 @@ def test_samples_gene_coverage_hgnc_ids(
     # AND return coverage intervals data
     coverage_intervals: List = response.json()
     for interval in coverage_intervals:
-        assert CoverageInterval(**interval)
+        assert GeneCoverage(**interval)
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -326,7 +318,7 @@ def test_samples_gene_coverage_ensembl_ids(
     # AND return coverage intervals data
     coverage_intervals: List = response.json()
     for interval in coverage_intervals:
-        assert CoverageInterval(**interval)
+        assert GeneCoverage(**interval)
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -352,7 +344,7 @@ def test_samples_transcripts_coverage_hgnc_symbols(
     # AND return coverage intervals data
     coverage_intervals: List = response.json()
     for interval in coverage_intervals:
-        assert CoverageInterval(**interval)
+        assert GeneCoverage(**interval)
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -378,7 +370,7 @@ def test_samples_transcripts_coverage_hgnc_ids(
     # AND return coverage intervals data
     coverage_intervals: List = response.json()
     for interval in coverage_intervals:
-        assert CoverageInterval(**interval)
+        assert GeneCoverage(**interval)
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -404,7 +396,7 @@ def test_samples_transcripts_coverage_ensembl_ids(
     # AND return coverage intervals data
     coverage_intervals: List = response.json()
     for interval in coverage_intervals:
-        assert CoverageInterval(**interval)
+        assert GeneCoverage(**interval)
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -428,7 +420,7 @@ def test_samples_exons_coverage_hgnc_symbols(
     # AND return coverage intervals data
     coverage_intervals: List = response.json()
     for interval in coverage_intervals:
-        assert CoverageInterval(**interval)
+        assert GeneCoverage(**interval)
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -452,7 +444,7 @@ def test_samples_exons_coverage_hgnc_ids(
     # AND return coverage intervals data
     coverage_intervals: List = response.json()
     for interval in coverage_intervals:
-        assert CoverageInterval(**interval)
+        assert GeneCoverage(**interval)
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -476,7 +468,7 @@ def test_samples_exons_coverage_ensembl_ids(
     # AND return coverage intervals data
     coverage_intervals: List = response.json()
     for interval in coverage_intervals:
-        assert CoverageInterval(**interval)
+        assert GeneCoverage(**interval)
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -498,7 +490,7 @@ def test_case_genes_coverage(
     # AND return coverage intervals data
     coverage_intervals: List = response.json()
     for interval in coverage_intervals:
-        assert CoverageInterval(**interval)
+        assert GeneCoverage(**interval)
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -520,7 +512,7 @@ def test_case_transcripts_coverage(
     # AND return coverage intervals data
     coverage_intervals: List = response.json()
     for interval in coverage_intervals:
-        assert CoverageInterval(**interval)
+        assert GeneCoverage(**interval)
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -542,4 +534,4 @@ def test_case_exons_coverage(
     # AND return coverage intervals data
     coverage_intervals: List = response.json()
     for interval in coverage_intervals:
-        assert CoverageInterval(**interval)
+        assert GeneCoverage(**interval)

@@ -17,15 +17,14 @@ from chanjo2.meta.handle_d4 import (
     get_intervals_mean_coverage,
     get_d4_file,
     set_interval,
-    get_gene_interval_coverage_completeness,
-    get_intervals_completeness,
     get_samples_sex_metrics,
 )
 from chanjo2.models.pydantic_models import (
-    CoverageInterval,
     SampleGeneIntervalQuery,
     FileCoverageQuery,
     FileCoverageIntervalsFileQuery,
+    IntervalCoverage,
+    GeneCoverage,
 )
 from chanjo2.models.sql_models import Exon as SQLExon
 from chanjo2.models.sql_models import Gene as SQLGene
@@ -34,7 +33,7 @@ from chanjo2.models.sql_models import Transcript as SQLTranscript
 router = APIRouter()
 
 
-@router.post("/coverage/d4/interval/", response_model=CoverageInterval)
+@router.post("/coverage/d4/interval/", response_model=IntervalCoverage)
 def d4_interval_coverage(query: FileCoverageQuery):
     """Return coverage on the given interval for a D4 resource located on the disk or on a remote server."""
 
@@ -49,10 +48,7 @@ def d4_interval_coverage(query: FileCoverageQuery):
             detail=WRONG_COVERAGE_FILE_MSG,
         )
 
-    return CoverageInterval(
-        chromosome=query.chromosome,
-        start=query.start,
-        end=query.end,
+    return IntervalCoverage(
         interval=interval,
         mean_coverage=[
             (
@@ -60,15 +56,15 @@ def d4_interval_coverage(query: FileCoverageQuery):
                 get_intervals_mean_coverage(d4_file=d4_file, intervals=[interval])[0],
             )
         ],
-        completeness=get_intervals_completeness(
+        completeness=get_interval_completeness(
             d4_file=d4_file,
-            intervals=[interval],
+            intervals=interval,
             completeness_thresholds=query.completeness_thresholds,
         ),
     )
 
 
-@router.post("/coverage/d4/interval_file/", response_model=List[CoverageInterval])
+@router.post("/coverage/d4/interval_file/", response_model=List[IntervalCoverage])
 def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
     """Return coverage on the given intervals for a D4 resource located on the disk or on a remote server."""
 
@@ -111,7 +107,7 @@ async def get_samples_predicted_sex(coverage_file_path: str):
     return get_samples_sex_metrics(d4_file=d4_file)
 
 
-@router.post("/coverage/samples/genes_coverage", response_model=List[CoverageInterval])
+@router.post("/coverage/samples/genes_coverage", response_model=List[GeneCoverage])
 async def samples_genes_coverage(
     query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
 ):
@@ -130,17 +126,23 @@ async def samples_genes_coverage(
         limit=None,
     )
 
-    return get_gene_interval_coverage_completeness(
-        db=db,
-        samples_d4_files=samples_d4_files,
-        genes=genes,
-        interval_type=SQLGene,
-        completeness_thresholds=query.completeness_thresholds,
-    )
+    return [
+        (
+            sample,
+            get_gene_interval_coverage_completeness(
+                db=db,
+                d4_file=d4_file,
+                genes=genes,
+                interval_type=SQLGene,
+                completeness_thresholds=query.completeness_thresholds,
+            ),
+        )
+        for sample, d4_file in samples_d4_files
+    ]
 
 
 @router.post(
-    "/coverage/samples/transcripts_coverage", response_model=List[CoverageInterval]
+    "/coverage/samples/transcripts_coverage", response_model=List[GeneCoverage]
 )
 async def samples_transcripts_coverage(
     query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
@@ -169,7 +171,7 @@ async def samples_transcripts_coverage(
     )
 
 
-@router.post("/coverage/samples/exons_coverage", response_model=List[CoverageInterval])
+@router.post("/coverage/samples/exons_coverage", response_model=List[GeneCoverage])
 async def samples_exons_coverage(
     query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
 ):
