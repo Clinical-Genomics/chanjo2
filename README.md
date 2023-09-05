@@ -114,140 +114,66 @@ curl -X 'POST' \
 That will return this response, containing the requested statistics over the list of 4 genes:
 
 ``` shell
-[
-  {
-    "chromosome": "5",
-    "completeness": [
-      [
-        "ADM1059A2",
-        [
-          "ADM1059A2",
-          [
-            [
-              30,
-              0.209980872891671
-            ],
-            [
-              20,
-              0.742792557816032
-            ]
-          ]
-        ]
-      ]
-    ],
-    "ensembl_gene_id": "ENSG00000228716",
-    "end": 79950802,
-    "hgnc_id": 2861,
-    "hgnc_symbol": "DHFR",
-    "interval_id": null,
-    "mean_coverage": [
-      [
-        "ADM1059A2",
-        22.76025039123631
-      ]
-    ],
-    "start": 79922047
-  },
-  {
-    "chromosome": "11",
-    "completeness": [
-      [
-        "ADM1059A2",
-        [
-          "ADM1059A2",
-          [
-            [
-              30,
-              0.02906718078006822
-            ],
-            [
-              20,
-              0.7732463295269169
-            ]
-          ]
-        ]
-      ]
-    ],
-    "ensembl_gene_id": "ENSG00000110195",
-    "end": 71907345,
-    "hgnc_id": 3791,
-    "hgnc_symbol": "FOLR1",
-    "interval_id": null,
-    "mean_coverage": [
-      [
-        "ADM1059A2",
-        22.479905086756638
-      ]
-    ],
-    "start": 71900602
-  },
-  {
-    "chromosome": "1",
-    "completeness": [
-      [
-        "ADM1059A2",
-        [
-          "ADM1059A2",
-          [
-            [
-              30,
-              0.07472755578619616
-            ],
-            [
-              20,
-              0.6863235363494834
-            ]
-          ]
-        ]
-      ]
-    ],
-    "ensembl_gene_id": "ENSG00000177000",
-    "end": 11866977,
-    "hgnc_id": 7436,
-    "hgnc_symbol": "MTHFR",
-    "interval_id": null,
-    "mean_coverage": [
-      [
-        "ADM1059A2",
-        22.072038496013587
-      ]
-    ],
-    "start": 11845780
-  },
-  {
-    "chromosome": "17",
-    "completeness": [
-      [
-        "ADM1059A2",
-        [
-          "ADM1059A2",
-          [
-            [
-              30,
-              0.08523179862991875
-            ],
-            [
-              20,
-              0.7026445754341246
-            ]
-          ]
-        ]
-      ]
-    ],
-    "ensembl_gene_id": "ENSG00000076351",
-    "end": 26734215,
-    "hgnc_id": 30521,
-    "hgnc_symbol": "SLC46A1",
-    "interval_id": null,
-    "mean_coverage": [
-      [
-        "ADM1059A2",
-        22.203839413732673
-      ]
-    ],
-    "start": 26721661
-  }
-]
+{
+  "ADM1059A2": [
+    {
+      "mean_coverage": 22.76,
+      "completeness": {
+        "10": 0.89,
+        "20": 0.74,
+        "30": 0.21
+      },
+      "interval_id": null,
+      "interval_type": "genes",
+      "inner_intervals": [],
+      "hgnc_id": 2861,
+      "hgnc_symbol": "DHFR",
+      "ensembl_gene_id": "ENSG00000228716"
+    },
+    {
+      "mean_coverage": 22.48,
+      "completeness": {
+        "10": 1,
+        "20": 0.77,
+        "30": 0.03
+      },
+      "interval_id": null,
+      "interval_type": "genes",
+      "inner_intervals": [],
+      "hgnc_id": 3791,
+      "hgnc_symbol": "FOLR1",
+      "ensembl_gene_id": "ENSG00000110195"
+    },
+    {
+      "mean_coverage": 22.07,
+      "completeness": {
+        "10": 1,
+        "20": 0.69,
+        "30": 0.07
+      },
+      "interval_id": null,
+      "interval_type": "genes",
+      "inner_intervals": [],
+      "hgnc_id": 7436,
+      "hgnc_symbol": "MTHFR",
+      "ensembl_gene_id": "ENSG00000177000"
+    },
+    {
+      "mean_coverage": 22.2,
+      "completeness": {
+        "10": 0.99,
+        "20": 0.7,
+        "30": 0.09
+      },
+      "interval_id": null,
+      "interval_type": "genes",
+      "inner_intervals": [],
+      "hgnc_id": 30521,
+      "hgnc_symbol": "SLC46A1",
+      "ensembl_gene_id": "ENSG00000076351"
+    }
+  ]
+}
 ```
 
 To find more information on how to set up a REST server running chanjo2 please visit the software's [documentation pages][github-docs]. Here you'll find also instructions on how to populate the database with custom cases and different genomic intervals.
