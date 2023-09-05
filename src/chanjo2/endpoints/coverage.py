@@ -194,7 +194,7 @@ async def samples_exons_coverage(
     )
 
     return {
-        sample: get_sample_gene_coverage(
+        sample: get_sample_interval_coverage(
             db=db,
             d4_file=d4_file,
             genes=genes,
