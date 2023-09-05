@@ -19,7 +19,7 @@ from chanjo2.meta.handle_d4 import (
     set_interval,
     get_samples_sex_metrics,
     get_intervals_completeness,
-    get_sample_gene_coverage,
+    get_sample_interval_coverage,
 )
 from chanjo2.models.pydantic_models import (
     SampleGeneIntervalQuery,
@@ -127,7 +127,7 @@ async def samples_genes_coverage(
     )
 
     return {
-        sample: get_sample_gene_coverage(
+        sample: get_sample_interval_coverage(
             db=db,
             d4_file=d4_file,
             genes=genes,
@@ -161,7 +161,7 @@ async def samples_transcripts_coverage(
     )
 
     return {
-        sample: get_sample_gene_coverage(
+        sample: get_sample_interval_coverage(
             db=db,
             d4_file=d4_file,
             genes=genes,

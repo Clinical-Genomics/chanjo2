@@ -114,7 +114,7 @@ def get_intervals_completeness(
     return completeness_values
 
 
-def get_sample_gene_coverage(
+def get_sample_interval_coverage(
     db: Session,
     d4_file: D4File,
     genes: List[SQLGene],
