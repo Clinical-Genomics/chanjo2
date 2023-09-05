@@ -181,7 +181,7 @@ def get_sample_gene_coverage(
                     interval.start,
                     interval.stop,
                 )
-                LOG.warning(interval_type)
+
                 interval_coverage = IntervalCoverage(
                     **{
                         "interval_type": interval_type.__tablename__,
