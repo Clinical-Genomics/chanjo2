@@ -102,17 +102,15 @@ def get_intervals_completeness(
                 ):  # d4_tracks_base_coverage[0] is the coverage depth for the first track in the d4 file (float)
                     nr_complete_bases_by_threshold[index] += 1
 
-    completeness_values: List[Tuple[int, Decimal]] = []
+    completeness_values: Dict[int, float] = {}
 
     for index, threshold in enumerate(completeness_thresholds):
-        completeness_values.append(
-            (
-                threshold,
-                Decimal(nr_complete_bases_by_threshold[index] / total_region_length)
-                if nr_complete_bases_by_threshold[index]
-                else 0,
-            )
+        completeness_values[threshold] = (
+            float(nr_complete_bases_by_threshold[index] / total_region_length)
+            if nr_complete_bases_by_threshold[index]
+            else 0
         )
+
     return completeness_values
 
 
@@ -132,6 +130,7 @@ def get_sample_gene_coverage(
                 "hgnc_symbol": gene.hgnc_symbol,
                 "interval_type": IntervalType.GENES,
                 "mean_coverage": 0,
+                "completeness": {},
                 "inner_intervals": [],
             }
         )
@@ -162,18 +161,18 @@ def get_sample_gene_coverage(
             intervals_coords: List[Tuple[str, int, int]] = get_intervals_coords_list(
                 intervals=sql_intervals
             )
+
             intervals_mean_covs: List[float] = get_intervals_mean_coverage(
                 d4_file=d4_file, intervals=intervals_coords
             )
             gene_coverage.mean_coverage = (
                 mean(intervals_mean_covs) if intervals_mean_covs else 0
             )
-            gene_coverage.completeness = (
-                get_intervals_completeness(
-                    d4_file=d4_file,
-                    intervals=intervals_coords,
-                    completeness_thresholds=completeness_thresholds,
-                ),
+
+            gene_coverage.completeness = get_intervals_completeness(
+                d4_file=d4_file,
+                intervals=intervals_coords,
+                completeness_thresholds=completeness_thresholds,
             )
 
             for interval in sql_intervals:
@@ -182,6 +181,7 @@ def get_sample_gene_coverage(
                     interval.start,
                     interval.stop,
                 )
+                LOG.warning(interval_type)
                 interval_coverage = IntervalCoverage(
                     **{
                         "interval_type": interval_type.__tablename__,
@@ -198,6 +198,7 @@ def get_sample_gene_coverage(
                 gene_coverage.inner_intervals.append(interval_coverage)
 
         genes_coverage_stats.append(gene_coverage)
+
     return genes_coverage_stats
 
 

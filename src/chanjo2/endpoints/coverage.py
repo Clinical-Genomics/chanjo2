@@ -26,6 +26,7 @@ from chanjo2.models.pydantic_models import (
     FileCoverageQuery,
     FileCoverageIntervalsFileQuery,
     IntervalCoverage,
+    GeneCoverage,
 )
 from chanjo2.models.sql_models import Exon as SQLExon
 from chanjo2.models.sql_models import Gene as SQLGene
@@ -104,7 +105,9 @@ async def get_samples_predicted_sex(coverage_file_path: str):
     return get_samples_sex_metrics(d4_file=d4_file)
 
 
-@router.post("/coverage/samples/genes_coverage", response_model=List[Tuple])
+@router.post(
+    "/coverage/samples/genes_coverage", response_model=Dict[str, List[GeneCoverage]]
+)
 async def samples_genes_coverage(
     query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
 ):
@@ -123,22 +126,22 @@ async def samples_genes_coverage(
         limit=None,
     )
 
-    return [
-        (
-            sample,
-            get_sample_gene_coverage(
-                db=db,
-                d4_file=d4_file,
-                genes=genes,
-                interval_type=SQLGene,
-                completeness_thresholds=query.completeness_thresholds,
-            ),
+    return {
+        sample: get_sample_gene_coverage(
+            db=db,
+            d4_file=d4_file,
+            genes=genes,
+            interval_type=SQLGene,
+            completeness_thresholds=query.completeness_thresholds,
         )
         for sample, d4_file in samples_d4_files
-    ]
+    }
 
 
-@router.post("/coverage/samples/transcripts_coverage", response_model=List[Tuple])
+@router.post(
+    "/coverage/samples/transcripts_coverage",
+    response_model=Dict[str, List[GeneCoverage]],
+)
 async def samples_transcripts_coverage(
     query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
 ):
@@ -157,22 +160,21 @@ async def samples_transcripts_coverage(
         limit=None,
     )
 
-    return [
-        (
-            sample,
-            get_sample_gene_coverage(
-                db=db,
-                d4_file=d4_file,
-                genes=genes,
-                interval_type=SQLTranscript,
-                completeness_thresholds=query.completeness_thresholds,
-            ),
+    return {
+        sample: get_sample_gene_coverage(
+            db=db,
+            d4_file=d4_file,
+            genes=genes,
+            interval_type=SQLTranscript,
+            completeness_thresholds=query.completeness_thresholds,
         )
         for sample, d4_file in samples_d4_files
-    ]
+    }
 
 
-@router.post("/coverage/samples/exons_coverage", response_model=List[Tuple])
+@router.post(
+    "/coverage/samples/exons_coverage", response_model=Dict[str, List[GeneCoverage]]
+)
 async def samples_exons_coverage(
     query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
 ):
@@ -191,16 +193,13 @@ async def samples_exons_coverage(
         limit=None,
     )
 
-    return [
-        (
-            sample,
-            get_sample_gene_coverage(
-                db=db,
-                d4_file=d4_file,
-                genes=genes,
-                interval_type=SQLExon,
-                completeness_thresholds=query.completeness_thresholds,
-            ),
+    return {
+        sample: get_sample_gene_coverage(
+            db=db,
+            d4_file=d4_file,
+            genes=genes,
+            interval_type=SQLExon,
+            completeness_thresholds=query.completeness_thresholds,
         )
         for sample, d4_file in samples_d4_files
-    ]
+    }

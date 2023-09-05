@@ -264,10 +264,12 @@ def test_samples_gene_coverage_hgnc_symbols(
     response = demo_client.post(endpoints.SAMPLE_GENES_COVERAGE, json=sample_query)
     assert response.status_code == status.HTTP_200_OK
 
-    # AND return coverage intervals data
-    for sample, coverage_intervals in response.json():
-        for interval in coverage_intervals:
-            assert GeneCoverage(**interval)
+    # AND return coverage intervals data for each sample
+    samples_coverage: Dict[str, List[GeneCoverage]] = response.json()
+    for sample_name, genes_coverage in samples_coverage.items():
+        assert sample_name == DEMO_SAMPLE["name"]
+        for gene_coverage in genes_coverage:
+            assert GeneCoverage(**gene_coverage)
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -288,10 +290,12 @@ def test_samples_gene_coverage_hgnc_ids(
     response = demo_client.post(endpoints.SAMPLE_GENES_COVERAGE, json=sample_query)
     assert response.status_code == status.HTTP_200_OK
 
-    # AND return coverage intervals data
-    for sample, coverage_intervals in response.json():
-        for interval in coverage_intervals:
-            assert GeneCoverage(**interval)
+    # AND return coverage intervals data for each sample
+    samples_coverage: Dict[str, List[GeneCoverage]] = response.json()
+    for sample_name, genes_coverage in samples_coverage.items():
+        assert sample_name == DEMO_SAMPLE["name"]
+        for gene_coverage in genes_coverage:
+            assert GeneCoverage(**gene_coverage)
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -312,10 +316,12 @@ def test_samples_gene_coverage_ensembl_ids(
     response = demo_client.post(endpoints.SAMPLE_GENES_COVERAGE, json=sample_query)
     assert response.status_code == status.HTTP_200_OK
 
-    # AND return coverage intervals data
-    for sample, coverage_intervals in response.json():
-        for interval in coverage_intervals:
-            assert GeneCoverage(**interval)
+    # AND return coverage intervals data for each sample
+    samples_coverage: Dict[str, List[GeneCoverage]] = response.json()
+    for sample_name, genes_coverage in samples_coverage.items():
+        assert sample_name == DEMO_SAMPLE["name"]
+        for gene_coverage in genes_coverage:
+            assert GeneCoverage(**gene_coverage)
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -338,10 +344,12 @@ def test_samples_transcripts_coverage_hgnc_symbols(
     )
     assert response.status_code == status.HTTP_200_OK
 
-    # AND return coverage intervals data
-    for sample, coverage_intervals in response.json():
-        for interval in coverage_intervals:
-            assert GeneCoverage(**interval)
+    # AND return coverage intervals data for each sample
+    samples_coverage: Dict[str, List[GeneCoverage]] = response.json()
+    for sample_name, genes_coverage in samples_coverage.items():
+        assert sample_name == DEMO_SAMPLE["name"]
+        for gene_coverage in genes_coverage:
+            assert GeneCoverage(**gene_coverage)
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -364,10 +372,12 @@ def test_samples_transcripts_coverage_hgnc_ids(
     )
     assert response.status_code == status.HTTP_200_OK
 
-    # AND return coverage intervals data
-    for sample, coverage_intervals in response.json():
-        for interval in coverage_intervals:
-            assert GeneCoverage(**interval)
+    # AND return coverage intervals data for each sample
+    samples_coverage: Dict[str, List[GeneCoverage]] = response.json()
+    for sample_name, genes_coverage in samples_coverage.items():
+        assert sample_name == DEMO_SAMPLE["name"]
+        for gene_coverage in genes_coverage:
+            assert GeneCoverage(**gene_coverage)
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -390,10 +400,12 @@ def test_samples_transcripts_coverage_ensembl_ids(
     )
     assert response.status_code == status.HTTP_200_OK
 
-    # AND return coverage intervals data
-    for sample, coverage_intervals in response.json():
-        for interval in coverage_intervals:
-            assert GeneCoverage(**interval)
+    # AND return coverage intervals data for each sample
+    samples_coverage: Dict[str, List[GeneCoverage]] = response.json()
+    for sample_name, genes_coverage in samples_coverage.items():
+        assert sample_name == DEMO_SAMPLE["name"]
+        for gene_coverage in genes_coverage:
+            assert GeneCoverage(**gene_coverage)
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -414,10 +426,12 @@ def test_samples_exons_coverage_hgnc_symbols(
     response = demo_client.post(endpoints.SAMPLE_EXONS_COVERAGE, json=sample_query)
     assert response.status_code == status.HTTP_200_OK
 
-    # AND return coverage intervals data
-    for sample, coverage_intervals in response.json():
-        for interval in coverage_intervals:
-            assert GeneCoverage(**interval)
+    # AND return coverage intervals data for each sample
+    samples_coverage: Dict[str, List[GeneCoverage]] = response.json()
+    for sample_name, genes_coverage in samples_coverage.items():
+        assert sample_name == DEMO_SAMPLE["name"]
+        for gene_coverage in genes_coverage:
+            assert GeneCoverage(**gene_coverage)
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -438,10 +452,12 @@ def test_samples_exons_coverage_hgnc_ids(
     response = demo_client.post(endpoints.SAMPLE_EXONS_COVERAGE, json=sample_query)
     assert response.status_code == status.HTTP_200_OK
 
-    # AND return coverage intervals data
-    for sample, coverage_intervals in response.json():
-        for interval in coverage_intervals:
-            assert GeneCoverage(**interval)
+    # AND return coverage intervals data for each sample
+    samples_coverage: Dict[str, List[GeneCoverage]] = response.json()
+    for sample_name, genes_coverage in samples_coverage.items():
+        assert sample_name == DEMO_SAMPLE["name"]
+        for gene_coverage in genes_coverage:
+            assert GeneCoverage(**gene_coverage)
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -462,10 +478,12 @@ def test_samples_exons_coverage_ensembl_ids(
     response = demo_client.post(endpoints.SAMPLE_EXONS_COVERAGE, json=sample_query)
     assert response.status_code == status.HTTP_200_OK
 
-    # AND return coverage intervals data
-    for sample, coverage_intervals in response.json():
-        for interval in coverage_intervals:
-            assert GeneCoverage(**interval)
+    # AND return coverage intervals data for each sample
+    samples_coverage: Dict[str, List[GeneCoverage]] = response.json()
+    for sample_name, genes_coverage in samples_coverage.items():
+        assert sample_name == DEMO_SAMPLE["name"]
+        for gene_coverage in genes_coverage:
+            assert GeneCoverage(**gene_coverage)
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -484,10 +502,12 @@ def test_case_genes_coverage(
     response = demo_client.post(endpoints.SAMPLE_GENES_COVERAGE, json=case_query)
     assert response.status_code == status.HTTP_200_OK
 
-    # AND return coverage intervals data
-    for sample, coverage_intervals in response.json():
-        for interval in coverage_intervals:
-            assert GeneCoverage(**interval)
+    # AND return coverage intervals data for each sample
+    samples_coverage: Dict[str, List[GeneCoverage]] = response.json()
+    for sample_name, genes_coverage in samples_coverage.items():
+        assert sample_name == DEMO_SAMPLE["name"]
+        for gene_coverage in genes_coverage:
+            assert GeneCoverage(**gene_coverage)
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -506,10 +526,12 @@ def test_case_transcripts_coverage(
     response = demo_client.post(endpoints.SAMPLE_TRANSCRIPTS_COVERAGE, json=case_query)
     assert response.status_code == status.HTTP_200_OK
 
-    # AND return coverage intervals data
-    for sample, coverage_intervals in response.json():
-        for interval in coverage_intervals:
-            assert GeneCoverage(**interval)
+    # AND return coverage intervals data for each sample
+    samples_coverage: Dict[str, List[GeneCoverage]] = response.json()
+    for sample_name, genes_coverage in samples_coverage.items():
+        assert sample_name == DEMO_SAMPLE["name"]
+        for gene_coverage in genes_coverage:
+            assert GeneCoverage(**gene_coverage)
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -528,7 +550,9 @@ def test_case_exons_coverage(
     response = demo_client.post(endpoints.SAMPLE_EXONS_COVERAGE, json=case_query)
     assert response.status_code == status.HTTP_200_OK
 
-    # AND return coverage intervals data
-    for sample, coverage_intervals in response.json():
-        for interval in coverage_intervals:
-            assert GeneCoverage(**interval)
+    # AND return coverage intervals data for each sample
+    samples_coverage: Dict[str, List[GeneCoverage]] = response.json()
+    for sample_name, genes_coverage in samples_coverage.items():
+        assert sample_name == DEMO_SAMPLE["name"]
+        for gene_coverage in genes_coverage:
+            assert GeneCoverage(**gene_coverage)
