@@ -106,7 +106,7 @@ def get_intervals_completeness(
 
     for index, threshold in enumerate(completeness_thresholds):
         completeness_values[threshold] = (
-            float(nr_complete_bases_by_threshold[index] / total_region_length)
+            round(float(nr_complete_bases_by_threshold[index] / total_region_length), 2)
             if nr_complete_bases_by_threshold[index]
             else 0
         )
@@ -140,7 +140,7 @@ def get_sample_gene_coverage(
                 gene.start,
                 gene.stop,
             )
-            gene_coverage.mean_coverage = round(d4_file.mean(gene_coordinates), 3)
+            gene_coverage.mean_coverage = round(d4_file.mean(gene_coordinates), 2)
             gene_coverage.completeness = get_intervals_completeness(
                 d4_file=d4_file,
                 intervals=[gene_coordinates],
@@ -166,7 +166,7 @@ def get_sample_gene_coverage(
                 d4_file=d4_file, intervals=intervals_coords
             )
             gene_coverage.mean_coverage = (
-                round(mean(intervals_mean_covs), 3) if intervals_mean_covs else 0
+                round(mean(intervals_mean_covs), 2) if intervals_mean_covs else 0
             )
 
             gene_coverage.completeness = get_intervals_completeness(
@@ -186,7 +186,7 @@ def get_sample_gene_coverage(
                     **{
                         "interval_type": interval_type.__tablename__,
                         "interval_id": interval.ensembl_id,
-                        "mean_coverage": round(d4_file.mean(interval_coordinates), 3),
+                        "mean_coverage": round(d4_file.mean(interval_coordinates), 2),
                         "completeness": get_intervals_completeness(
                             d4_file=d4_file,
                             intervals=[interval_coordinates],
