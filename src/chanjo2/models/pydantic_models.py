@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any, List, Optional, Dict
 
 import validators
-from pydantic import BaseModel, validator, Field, root_validator
+from pydantic import BaseModel, validator, root_validator, Field
 
 from chanjo2.constants import (
     WRONG_COVERAGE_FILE_MSG,
@@ -138,16 +138,18 @@ class Exon(IntervalBase):
     id: int
 
 
-class CoverageInterval(BaseModel):
-    chromosome: str
-    completeness: Dict = Field(default_factory=dict)
-    ensembl_gene_id: Optional[str]
-    end: Optional[int]
+class IntervalCoverage(BaseModel):
+    mean_coverage: float
+    completeness: Optional[Dict] = Field(default_factory=dict)
+    interval_id: Optional[str]
+    interval_type: Optional[IntervalType]
+
+
+class GeneCoverage(IntervalCoverage):
+    inner_intervals: List[IntervalCoverage] = []  # Transcripts or exons
     hgnc_id: Optional[int]
     hgnc_symbol: Optional[str]
-    interval_id: Optional[int]
-    mean_coverage: Dict = Field(default_factory=dict)
-    start: Optional[int]
+    ensembl_gene_id: Optional[str]
 
 
 class FileCoverageBaseQuery(BaseModel):
@@ -208,7 +210,7 @@ class ReportQuerySample(BaseModel):
 
 class ReportQuery(BaseModel):
     build: Builds
-    completeness_thresholds: Optional[List[int]] = [10, 15, 20, 50, 100]
+    completeness_thresholds: List[int] = [10, 15, 20, 50, 100]
     ensembl_gene_ids: Optional[List[str]]
     hgnc_gene_ids: Optional[List[int]]
     hgnc_gene_symbols: Optional[List[str]]
