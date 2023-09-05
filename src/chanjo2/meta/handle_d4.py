@@ -140,7 +140,7 @@ def get_sample_gene_coverage(
                 gene.start,
                 gene.stop,
             )
-            gene_coverage.mean_coverage = d4_file.mean(gene_coordinates)
+            gene_coverage.mean_coverage = round(d4_file.mean(gene_coordinates), 3)
             gene_coverage.completeness = get_intervals_completeness(
                 d4_file=d4_file,
                 intervals=[gene_coordinates],
@@ -166,7 +166,7 @@ def get_sample_gene_coverage(
                 d4_file=d4_file, intervals=intervals_coords
             )
             gene_coverage.mean_coverage = (
-                mean(intervals_mean_covs) if intervals_mean_covs else 0
+                round(mean(intervals_mean_covs), 3) if intervals_mean_covs else 0
             )
 
             gene_coverage.completeness = get_intervals_completeness(
@@ -186,7 +186,7 @@ def get_sample_gene_coverage(
                     **{
                         "interval_type": interval_type.__tablename__,
                         "interval_id": interval.ensembl_id,
-                        "mean_coverage": d4_file.mean(interval_coordinates),
+                        "mean_coverage": round(d4_file.mean(interval_coordinates), 3),
                         "completeness": get_intervals_completeness(
                             d4_file=d4_file,
                             intervals=[interval_coordinates],
