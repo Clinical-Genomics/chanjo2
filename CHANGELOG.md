@@ -7,6 +7,7 @@
 - Deleted unused `src/chanjo2/meta/handle_query_intervals.py` file
 - Non-root user and password for database connections
 - Refactor and simplify code in `meta.handle_d4` module
+- Fixed documentation according to changed coverage API
 ### Fixed
 - Bump certifi from 2022.12.7 to 2023.7.22
 - Datababase connection parameters in documentation files
