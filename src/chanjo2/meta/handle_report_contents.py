@@ -1,17 +1,33 @@
 import logging
 from collections import OrderedDict
-from typing import List, Dict, Tuple
+from statistics import mean
+from typing import List, Dict, Tuple, Union
 
 from pyd4 import D4File
 from sqlmodel import Session
 
 from chanjo2.crud.intervals import get_genes
 from chanjo2.crud.samples import get_sample
-from chanjo2.meta.handle_d4 import get_samples_sex_metrics
-from chanjo2.models.pydantic_models import ReportQuery, ReportQuerySample, SampleSexRow
+from chanjo2.meta.handle_d4 import get_samples_sex_metrics, get_sample_interval_coverage
+from chanjo2.models.pydantic_models import (
+    ReportQuery,
+    ReportQuerySample,
+    SampleSexRow,
+    GeneCoverage,
+    IntervalType,
+)
+from chanjo2.models.sql_models import Exon as SQLExon
+from chanjo2.models.sql_models import Gene as SQLGene
 from chanjo2.models.sql_models import Sample as SQLSample
+from chanjo2.models.sql_models import Transcript as SQLTranscript
 
 LOG = logging.getLogger("uvicorn.access")
+
+INTERVAL_TYPE_SQL_TYPE: Dict[IntervalType, Union[SQLGene, SQLTranscript, SQLExon]] = {
+    IntervalType.GENES: SQLGene,
+    IntervalType.TRANSCRIPTS: SQLTranscript,
+    IntervalType.EXONS: SQLExon,
+}
 
 
 def set_samples_coverage_files(session: Session, samples: List[ReportQuerySample]):
@@ -40,6 +56,16 @@ def get_report_data(query: ReportQuery, session: Session) -> Dict:
         hgnc_symbols=query.hgnc_gene_symbols,
         limit=None,
     )
+    samples_coverage_stats: Dict[str, List[GeneCoverage]] = {
+        sample: get_sample_interval_coverage(
+            db=session,
+            d4_file=d4_file,
+            genes=genes,
+            interval_type=INTERVAL_TYPE_SQL_TYPE[query.interval_type],
+            completeness_thresholds=query.completeness_thresholds,
+        )
+        for sample, d4_file in samples_d4_files
+    }
 
     data: Dicr = {
         "levels": get_ordered_levels(threshold_levels=query.completeness_thresholds),
@@ -50,14 +76,40 @@ def get_report_data(query: ReportQuery, session: Session) -> Dict:
         "sex_rows": get_report_sex_rows(
             samples=query.samples, samples_d4_files=samples_d4_files
         ),
-        "completeness_rows": [],
+        "completeness_rows": get_report_completeness_rows(
+            samples_coverage_stats=samples_coverage_stats,
+            levels=query.completeness_thresholds,
+        ),
     }
     return data
 
 
-def get_report_completeness_rows():
+def get_report_completeness_rows(
+    samples_coverage_stats: Dict[str, List[GeneCoverage]], levels: List[int]
+):
     """Create and return the contents for the samples' coverage completeness rows in the coverage report"""
-    return []
+
+    completeness_rows: List[str, Dict[str, float]] = []
+
+    for sample, interval_stats in samples_coverage_stats.items():
+        sample_stats: Dict[str, List[float]] = {"mean_coverage": []}
+        for level in levels:
+            sample_stats[f"completeness_{level}"]: List[float] = []
+
+        for interval in interval_stats:
+            sample_stats["mean_coverage"].append(interval.mean_coverage)
+            for level in levels:
+                sample_stats[f"completeness_{level}"].append(
+                    interval.completeness[level]
+                )
+
+        completeness_row: Dict[str, float] = {}
+        for item, values in sample_stats.items():
+            completeness_row[item] = mean(values)
+
+        completeness_rows.append((sample, completeness_row))
+
+    return completeness_rows
 
 
 def get_report_sex_rows(
@@ -89,6 +141,6 @@ def get_report_sex_rows(
 def get_ordered_levels(threshold_levels: List[int]) -> OrderedDict:
     """Returns the coverage threshold levels as an ordered dictionary."""
     report_levels = OrderedDict()
-    for threshold in sorted(threshold_levels, reverse=True):
+    for threshold in sorted(threshold_levels):
         report_levels[threshold] = f"completeness_{threshold}"
     return report_levels
