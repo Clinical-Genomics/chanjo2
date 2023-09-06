@@ -105,7 +105,7 @@ def get_report_completeness_rows(
 
         completeness_row: Dict[str, float] = {}
         for item, values in sample_stats.items():
-            completeness_row[item] = mean(values)
+            completeness_row[item] = mean(values) if values else 0
 
         completeness_rows.append((sample, completeness_row))
 

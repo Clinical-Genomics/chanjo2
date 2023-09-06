@@ -1,4 +1,3 @@
-from decimal import Decimal
 from pathlib import PosixPath
 from typing import Dict, List, Tuple
 
@@ -13,7 +12,6 @@ from chanjo2.demo import d4_demo_path, gene_panel_path
 from chanjo2.main import Base, app, engine
 from chanjo2.meta.handle_bed import parse_bed
 from chanjo2.models import sql_models
-from chanjo2.models.pydantic_models import CoverageInterval
 
 TEST_DB = "sqlite:///./test.db"
 CASE_NAME = "123"
@@ -229,87 +227,3 @@ def real_d4_query(real_coverage_path) -> Dict[str, str]:
 def genomic_ids_per_build() -> Dict[str, List]:
     """Return a dict containing lists with test genes in different build specific formats."""
     return {BUILD_37: GENOMIC_IDS_37, BUILD_38: GENOMIC_IDS_38}
-
-
-@pytest.fixture(name="coverage_intervals")
-def coverage_intervals() -> List[CoverageInterval]:
-    """Return a list of coverage intervals stats for the sample with the default coverage threshold levels."""
-    return [
-        CoverageInterval(
-            chromosome="13",
-            completeness={
-                SAMPLE_NAME: [
-                    (10, Decimal("1")),
-                    (
-                        15,
-                        Decimal(
-                            "0.97148788927335638643256743307574652135372161865234375"
-                        ),
-                    ),
-                    (
-                        20,
-                        Decimal(
-                            "0.83349480968858136176180551046854816377162933349609375"
-                        ),
-                    ),
-                    (50, 0),
-                    (100, 0),
-                ]
-            },
-            ensembl_gene_id="ENSG00000196593",
-            end=24520921,
-            hgnc_id=42737,
-            hgnc_symbol="ANKRD20A19P",
-            interval_id=None,
-            mean_coverage={SAMPLE_NAME: 241.0300346020761},
-            start=24513696,
-        ),
-        CoverageInterval(
-            chromosome="13",
-            completeness={
-                SAMPLE_NAME: [
-                    (10, Decimal("1")),
-                    (
-                        15,
-                        Decimal(
-                            "0.97948717948717944903336274364846758544445037841796875"
-                        ),
-                    ),
-                    (
-                        20,
-                        Decimal(
-                            "0.4307692307692307931432651457726024091243743896484375"
-                        ),
-                    ),
-                    (50, 0),
-                    (100, 0),
-                ]
-            },
-            ensembl_gene_id="ENSG00000233440",
-            end=23708703,
-            hgnc_id=19121,
-            hgnc_symbol="HMGA1P6",
-            interval_id=None,
-            mean_coverage={SAMPLE_NAME: 4176.917948717949},
-            start=23708313,
-        ),
-        CoverageInterval(
-            chromosome="13",
-            completeness={
-                SAMPLE_NAME: [
-                    (10, Decimal("1")),
-                    (15, Decimal("1")),
-                    (20, Decimal("1")),
-                    (50, 0),
-                    (100, 0),
-                ]
-            },
-            ensembl_gene_id="ENSG00000207157",
-            end=23726825,
-            hgnc_id=42488,
-            hgnc_symbol="RNY3P4",
-            interval_id=None,
-            mean_coverage={SAMPLE_NAME: 17154.65},
-            start=23726725,
-        ),
-    ]
