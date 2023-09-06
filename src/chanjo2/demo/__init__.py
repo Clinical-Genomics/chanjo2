@@ -32,7 +32,7 @@ DEMO_COVERAGE_QUERY_DATA = {
         {
             "name": DEMO_SAMPLE["name"],
             "case_name": DEMO_CASE["name"],
-            "coverage_file_path": "/Users/chiararasi/Documents/work/d4_data/hg002.d4",
+            "coverage_file_path": HTTP_SERVER_D4_file,
             "analysis_date": "2023-04-23T10:20:30.400+02:30",
         }
     ],
