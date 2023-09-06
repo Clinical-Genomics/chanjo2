@@ -1,10 +1,10 @@
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, List, Optional, Dict, Tuple
+from typing import Any, List, Optional, Dict
 
 import validators
-from pydantic import BaseModel, validator, Field, root_validator
+from pydantic import BaseModel, validator, root_validator, Field
 
 from chanjo2.constants import (
     WRONG_COVERAGE_FILE_MSG,
@@ -139,24 +139,18 @@ class Exon(IntervalBase):
     id: int
 
 
-class CoverageInterval(BaseModel):
-    chromosome: str
-    completeness: Dict = Field(default_factory=dict)
-    ensembl_gene_id: Optional[str]
-    end: Optional[int]
+class IntervalCoverage(BaseModel):
+    mean_coverage: float
+    completeness: Optional[Dict] = Field(default_factory=dict)
+    interval_id: Optional[str]
+    interval_type: Optional[IntervalType]
+
+
+class GeneCoverage(IntervalCoverage):
+    inner_intervals: List[IntervalCoverage] = []  # Transcripts or exons
     hgnc_id: Optional[int]
     hgnc_symbol: Optional[str]
-    interval_id: Optional[int]
-    interval_type: Optional[IntervalType]
-    mean_coverage: Dict = Field(default_factory=dict)
-    start: Optional[int]
-
-
-class SampleCoverageCompleteness(BaseModel):
-    sample: str
-    overall_coverage: float
-    overall_completeness: float
-    gene_intervals_coverage: List[Tuple[Dict, List[CoverageInterval]]]
+    ensembl_gene_id: Optional[str]
 
 
 class FileCoverageBaseQuery(BaseModel):

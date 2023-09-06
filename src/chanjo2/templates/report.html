@@ -110,7 +110,7 @@
 	  </tr>
 	</thead>
 	<tbody>
-	  {% for sample, stats in completeness_rows.items() %}
+	  {% for sample, stats in completeness_rows %}
 		<tr>
 			<td>{{ sample }}</td>
 			<td>{{ stats.mean_coverage|round(2) if stats.mean_coverage is defined }}</td>

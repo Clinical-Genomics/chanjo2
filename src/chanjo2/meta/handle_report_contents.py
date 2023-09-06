@@ -1,37 +1,17 @@
 import logging
 from collections import OrderedDict
-from statistics import mean
-from typing import List, Dict
+from typing import List, Dict, Tuple
 
 from pyd4 import D4File
-from sqlalchemy.orm import declarative_base
 from sqlmodel import Session
 
 from chanjo2.crud.intervals import get_genes
 from chanjo2.crud.samples import get_sample
-from chanjo2.meta.handle_d4 import (
-    get_samples_sex_metrics,
-    get_coverage_completeness_by_sample,
-)
-from chanjo2.models.pydantic_models import (
-    ReportQuery,
-    ReportQuerySample,
-    SampleSexRow,
-    IntervalType,
-    SampleCoverageCompleteness,
-    CoverageInterval,
-)
-from chanjo2.models.sql_models import Gene as SQLGene
+from chanjo2.meta.handle_d4 import get_samples_sex_metrics
+from chanjo2.models.pydantic_models import ReportQuery, ReportQuerySample, SampleSexRow
 from chanjo2.models.sql_models import Sample as SQLSample
-from chanjo2.models.sql_models import Transcript as SQLTranscript
 
 LOG = logging.getLogger("uvicorn.access")
-
-INTERVAL_TYPE_TO_SQL_INTERVAL: Dict[IntervalType, declarative_base] = {
-    IntervalType.GENES: SQLGene,
-    IntervalType.TRANSCRIPTS: SQLTranscript,
-    IntervalType.EXONS: SQLSample,
-}
 
 
 def set_samples_coverage_files(session: Session, samples: List[ReportQuerySample]):
@@ -49,10 +29,9 @@ def get_report_data(query: ReportQuery, session: Session) -> Dict:
     """Return the information that will be displayed in the coverage report."""
 
     set_samples_coverage_files(session=session, samples=query.samples)
-    samples_d4_files: Dict[str, D4File] = {
-        sample.name: D4File(sample.coverage_file_path) for sample in query.samples
-    }
-
+    samples_d4_files: List[Tuple[str, D4File]] = [
+        (sample.name, D4File(sample.coverage_file_path)) for sample in query.samples
+    ]
     genes: List[SQLGene] = get_genes(
         db=session,
         build=query.build,
@@ -61,36 +40,37 @@ def get_report_data(query: ReportQuery, session: Session) -> Dict:
         hgnc_symbols=query.hgnc_gene_symbols,
         limit=None,
     )
+
     data: Dicr = {
         "levels": get_ordered_levels(threshold_levels=query.completeness_thresholds),
         "extras": {
             "panel_name": query.panel_name,
             "default_level": query.default_level,
         },
-        "sex_rows": get_report_sex_rows(query.samples, samples_d4_files),
-        "completeness_rows": [
-            get_coverage_completeness_by_sample(
-                db=session,
-                sample=sample,
-                d4_file=d4_file,
-                levels=sorted(query.completeness_thresholds),
-                genes=genes,
-                interval_type=INTERVAL_TYPE_TO_SQL_INTERVAL[query.interval_type],
-            )
-            for sample, d4_file in samples_d4_files.items()
-        ],
+        "sex_rows": get_report_sex_rows(
+            samples=query.samples, samples_d4_files=samples_d4_files
+        ),
+        "completeness_rows": [],
     }
     return data
 
 
+def get_report_completeness_rows():
+    """Create and return the contents for the samples' coverage completeness rows in the coverage report"""
+    return []
+
+
 def get_report_sex_rows(
-    samples: List[ReportQuerySample], samples_d4_files: Dict[str, D4File]
+    samples: List[ReportQuerySample], samples_d4_files: List[Tuple[str, D4File]]
 ) -> List[Dict]:
     """Create and return the contents for the sample sex lines in the coverage report."""
     sample_sex_rows: D4FileList = []
     for sample in samples:
-        sample_d4: D4File = samples_d4_files[sample.name]
-        sample_sex_metrics: Dict = get_samples_sex_metrics(d4_file=sample_d4)
+        for _, d4_file in samples_d4_files:
+            if _ != sample.name:
+                continue
+
+        sample_sex_metrics: Dict = get_samples_sex_metrics(d4_file=d4_file)
 
         sample_sex_row: SampleSexRow = SampleSexRow(
             **{
@@ -109,75 +89,6 @@ def get_report_sex_rows(
 def get_ordered_levels(threshold_levels: List[int]) -> OrderedDict:
     """Returns the coverage threshold levels as an ordered dictionary."""
     report_levels = OrderedDict()
-    for threshold in sorted(threshold_levels):
+    for threshold in sorted(threshold_levels, reverse=True):
         report_levels[threshold] = f"completeness_{threshold}"
     return report_levels
-
-
-def _get_sample_stats_row(levels: List[int]) -> Dict:
-    """Return a dictionary that will contain raw stats data for one sample."""
-    return {
-        "mean_coverage": [],
-        "complenetess_level_value": {level: [] for level in levels},
-    }
-
-
-def coverage_completeness_by_sample(
-    samples: List[str],
-    coverage_completeness_intervals: List[CoverageInterval],
-    levels: List[int],
-) -> Dict:
-    """Arrange detailed genomic intervals completeness stats by sample and coverage level."""
-
-    stats_by_sample: Dict[str, Dict] = {}
-    for sample in samples:
-        stats_by_sample[sample] = _get_sample_stats_row(levels=levels)
-
-    for interval_metrics in coverage_completeness_intervals:
-        for sample in samples:
-            stats_by_sample[sample]["mean_coverage"].append(
-                interval_metrics.mean_coverage[sample]
-            )  # retrieve mean coverage for the interval for the sample and append it to the list
-
-            # Retrieve coverage completeness for each level of each interval for all samples. Transform these decimal value to floating point numbers
-            sample_completeness_by_level: List(
-                Tuple[int, decimal]
-            ) = interval_metrics.completeness[sample]
-            for level, decimal_value in sample_completeness_by_level:
-                stats_by_sample[sample]["complenetess_level_value"][level].append(
-                    float(decimal_value) * 100
-                )
-
-    # evaluate mean values from list of stats
-    for _, stats in stats_by_sample.items():
-        stats["mean_coverage"] = (
-            mean(stats["mean_coverage"]) if stats["mean_coverage"] else 0
-        )
-        for level in levels:
-            stats["complenetess_level_value"][level] = (
-                mean(stats["complenetess_level_value"][level])
-                if stats["complenetess_level_value"][level]
-                else 0
-            )
-
-    return stats_by_sample
-
-
-def get_report_completeness_rows(
-    levels: List[int],
-    genes: List[SQLGene],
-    interval_type: IntervalType,
-    samples_d4_files: Dict[str, D4File],
-    session: Session,
-) -> List[SampleCoverageCompleteness]:
-    """Returns average coverage and coverage completeness by level for each sample in the query."""
-
-    return coverage_completeness_by_sample(
-        db=session, samples_d4_files=samples_d4_files
-    )
-
-    """ db=session,
-        ,
-        genes=genes,
-        interval_type=interval_type,
-        completeness_thresholds=levels"""
