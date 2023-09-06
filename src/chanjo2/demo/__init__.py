@@ -32,7 +32,7 @@ DEMO_COVERAGE_QUERY_DATA = {
         {
             "name": DEMO_SAMPLE["name"],
             "case_name": DEMO_CASE["name"],
-            "coverage_file_path": HTTP_SERVER_D4_file,
+            "coverage_file_path": d4_demo_path,
             "analysis_date": "2023-04-23T10:20:30.400+02:30",
         }
     ],
@@ -40,5 +40,5 @@ DEMO_COVERAGE_QUERY_DATA = {
     "interval_type": "genes",
     "ensembl_gene_ids": [],
     "hgnc_gene_ids": [],
-    "hgnc_gene_symbols": ["HMGA1P6", "RNY3P4", "ANKRD20A19P", "ATM", "LAMA1"],
+    "hgnc_gene_symbols": ["MTHFR", "DHFR", "FOLR1", "SLC46A1"],
 }
