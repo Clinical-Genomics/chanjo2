@@ -35,7 +35,7 @@ curl -X 'POST' \
   "start": 124822386,
   "end": 124929983,
   "completeness_thresholds": [
-    30,20,10
+    10,20,30
   ]
 }'
 ```
@@ -46,21 +46,14 @@ A response from the server to the query above will return for instance a mean in
 
 ``` shell
 {
-  "chromosome": "7",
+  "mean_coverage": 27.19804455514559,
   "completeness": {
-    "10": 0.9961708969580936,
-    "20": 0.8502467540916568,
-    "30": 0.3346933464687677
+    "10": 1,
+    "20": 0.85,
+    "30": 0.33
   },
-  "ensembl_gene_id": null,
-  "end": 124929983,
-  "hgnc_id": null,
-  "hgnc_symbol": null,
   "interval_id": null,
-  "mean_coverage": {
-    "D4File": 27.19804455514559
-  },
-  "start": 124822386
+  "interval_type": null
 }
 ```
 
@@ -94,74 +87,45 @@ And it would return the following result:
 
 ``` shell
 [
-  [
   {
-    "chromosome": "1",
-    "completeness": {
-      "10": 0.9969807048167193,
-      "20": 0.6901920083030617,
-      "30": 0.07694485068641789
-    },
-    "ensembl_gene_id": null,
-    "end": 11866977,
-    "hgnc_id": null,
-    "hgnc_symbol": null,
-    "interval_id": null,
-    "mean_coverage": {
-      "D4File": 22.17115629570222
-    },
-    "start": 11845780
-  },
-  {
-    "chromosome": "5",
-    "completeness": {
-      "10": 0.998226395409494,
-      "20": 0.8374195792036168,
-      "30": 0.2350547730829421
-    },
-    "ensembl_gene_id": null,
-    "end": 79950802,
-    "hgnc_id": null,
-    "hgnc_symbol": null,
-    "interval_id": null,
-    "mean_coverage": {
-      "D4File": 83.1338549817423
-    },
-    "start": 79922047
-  },
-  {
-    "chromosome": "11",
+    "mean_coverage": 22.17115629570222,
     "completeness": {
       "10": 1,
-      "20": 0.7778436897523358,
-      "30": 0.03129170992139997
+      "20": 0.69,
+      "30": 0.08
     },
-    "ensembl_gene_id": null,
-    "end": 71907345,
-    "hgnc_id": null,
-    "hgnc_symbol": null,
     "interval_id": null,
-    "mean_coverage": {
-      "D4File": 252.63072816253893
-    },
-    "start": 71900602
+    "interval_type": null
   },
   {
-    "chromosome": "17",
+    "mean_coverage": 83.1338549817423,
     "completeness": {
-      "10": 0.9944240879400987,
-      "20": 0.7026445754341246,
-      "30": 0.08531145451648876
+      "10": 1,
+      "20": 0.84,
+      "30": 0.24
     },
-    "ensembl_gene_id": null,
-    "end": 26734215,
-    "hgnc_id": null,
-    "hgnc_symbol": null,
     "interval_id": null,
-    "mean_coverage": {
-      "D4File": 141.35853114545165
+    "interval_type": null
+  },
+  {
+    "mean_coverage": 252.63072816253893,
+    "completeness": {
+      "10": 1,
+      "20": 0.78,
+      "30": 0.03
     },
-    "start": 26721661
+    "interval_id": null,
+    "interval_type": null
+  },
+  {
+    "mean_coverage": 141.35853114545165,
+    "completeness": {
+      "10": 0.99,
+      "20": 0.7,
+      "30": 0.09
+    },
+    "interval_id": null,
+    "interval_type": null
   }
 ]
 ```
