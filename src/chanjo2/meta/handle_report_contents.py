@@ -119,7 +119,7 @@ def get_report_sex_rows(
     sample_sex_rows: D4FileList = []
     for sample in samples:
         for identifier, d4_file in samples_d4_files:
-            if _ != sample.name:
+            if identifier != sample.name:
                 continue
 
         sample_sex_metrics: Dict = get_samples_sex_metrics(d4_file=d4_file)
