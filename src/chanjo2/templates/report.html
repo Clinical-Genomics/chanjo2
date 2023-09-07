@@ -115,7 +115,7 @@
 			<td>{{ sample }}</td>
 			<td>{{ stats.mean_coverage|round(2) if stats.mean_coverage is defined }}</td>
 			{% for level_int, level_key in levels.items() %}
-				<td>{{ (stats[level_key] * 100)|round(2) if stats[level_key] is defined }} </td>
+				<td>{{ stats[level_key] if stats[level_key] is defined }} </td>
 			{% endfor %}
 		</tr>
 	  {% endfor %}
