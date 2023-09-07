@@ -80,14 +80,24 @@ def get_report_data(query: ReportQuery, session: Session) -> Dict:
             samples_coverage_stats=samples_coverage_stats,
             levels=query.completeness_thresholds,
         ),
+        "default_level_row": get_report_default_completness_row(
+            samples_coverage_stats=samples_coverage_stats, level=query.default_level
+        ),
     }
     return data
+
+
+def get_report_default_completness_row(
+    samples_coverage_stats: Dict[str, List[GeneCoverage]], level: int
+):
+    """Create and return the contents of the coverage stats row at the default threshold level."""
+    default_level_row: Dict[str, float.float]
 
 
 def get_report_completeness_rows(
     samples_coverage_stats: Dict[str, List[GeneCoverage]], levels: List[int]
 ):
-    """Create and return the contents for the samples' coverage completeness rows in the coverage report"""
+    """Create and return the contents for the samples' coverage completeness rows in the coverage report."""
 
     completeness_rows: List[str, Dict[str, float]] = []
 
