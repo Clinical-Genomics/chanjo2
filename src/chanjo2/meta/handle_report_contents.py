@@ -118,7 +118,7 @@ def get_report_sex_rows(
     """Create and return the contents for the sample sex lines in the coverage report."""
     sample_sex_rows: D4FileList = []
     for sample in samples:
-        for _, d4_file in samples_d4_files:
+        for identifier, d4_file in samples_d4_files:
             if _ != sample.name:
                 continue
 
