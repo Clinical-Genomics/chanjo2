@@ -80,18 +80,39 @@ def get_report_data(query: ReportQuery, session: Session) -> Dict:
             samples_coverage_stats=samples_coverage_stats,
             levels=query.completeness_thresholds,
         ),
-        "default_level_row": get_report_default_completness_row(
+        "default_level_completeness_rows": get_report_level_completeness_rows(
             samples_coverage_stats=samples_coverage_stats, level=query.default_level
         ),
     }
     return data
 
 
-def get_report_default_completness_row(
+def get_report_level_completeness_rows(
     samples_coverage_stats: Dict[str, List[GeneCoverage]], level: int
-):
+) -> List[Tuple[str, float, float]]:
     """Create and return the contents of the coverage stats row at the default threshold level."""
-    default_level_row: Dict[str, float.float]
+    default_level_rows: List[Tuple[str, float, str]] = []
+
+    for sample, genes_stats in samples_coverage_stats.items():
+        nr_inner_intervals: int = 0
+        covered_inner_innervals: int = 0
+        for gene_stats in genes_stats:  # genes
+            for inner_interval in gene_stats.inner_intervals:  # transcripts of exons
+                nr_inner_intervals += 1
+                if inner_interval.mean_coverage >= level:
+                    covered_inner_innervals += 1
+
+        intervals_covered_percent: float = round(
+            (covered_inner_innervals / nr_inner_intervals * 100), 2
+        )
+        nr_not_covered_intervals: str = (
+            f"{nr_inner_intervals - covered_inner_innervals}/{nr_inner_intervals}"
+        )
+        default_level_rows.append(
+            (sample, intervals_covered_percent, nr_not_covered_intervals)
+        )
+
+    return default_level_rows
 
 
 def get_report_completeness_rows(

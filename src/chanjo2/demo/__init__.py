@@ -41,4 +41,5 @@ DEMO_COVERAGE_QUERY_DATA = {
     "ensembl_gene_ids": [],
     "hgnc_gene_ids": [],
     "hgnc_gene_symbols": ["MTHFR", "DHFR", "FOLR1", "SLC46A1"],
+    "default_level": 20,
 }
