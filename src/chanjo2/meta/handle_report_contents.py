@@ -96,11 +96,11 @@ def get_report_level_completeness_rows(
     for sample, genes_stats in samples_coverage_stats.items():
         nr_inner_intervals: int = 0
         covered_inner_intervals: int = 0
-        for gene_stats in genes_stats:  # genes
+        for gene_stats in genes_stats:  # loop over genes
             if gene_stats.inner_intervals:
                 for (
                     inner_interval
-                ) in gene_stats.inner_intervals:  # transcripts of exons
+                ) in gene_stats.inner_intervals:  # loop over transcripts or exons
                     nr_inner_intervals += 1
                     if inner_interval.mean_coverage >= level:
                         covered_inner_intervals += 1
