@@ -101,3 +101,5 @@ EXONS_FILE_HEADER: Dict[str, List[str]] = {
         "Exon rank in transcript",
     ],
 }
+
+DEFAULT_COMPLETENESS_LEVELS = [10, 15, 20, 50, 100]

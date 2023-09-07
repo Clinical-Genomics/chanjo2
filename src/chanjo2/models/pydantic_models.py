@@ -10,6 +10,7 @@ from chanjo2.constants import (
     WRONG_COVERAGE_FILE_MSG,
     MULTIPLE_GENE_LISTS_NOT_SUPPORTED_MSG,
     AMBIGUOUS_SAMPLES_INPUT,
+    DEFAULT_COMPLETENESS_LEVELS,
 )
 
 
@@ -201,6 +202,9 @@ class SampleGeneIntervalQuery(BaseModel):
         return values
 
 
+### Coverage report - related models ###
+
+
 class ReportQuerySample(BaseModel):
     name: str
     case_name: Optional[str]
@@ -210,7 +214,7 @@ class ReportQuerySample(BaseModel):
 
 class ReportQuery(BaseModel):
     build: Builds
-    completeness_thresholds: List[int] = [10, 15, 20, 50, 100]
+    completeness_thresholds: Optional[List[int]] = DEFAULT_COMPLETENESS_LEVELS
     ensembl_gene_ids: Optional[List[str]]
     hgnc_gene_ids: Optional[List[int]]
     hgnc_gene_symbols: Optional[List[str]]
