@@ -95,18 +95,27 @@ def get_report_level_completeness_rows(
 
     for sample, genes_stats in samples_coverage_stats.items():
         nr_inner_intervals: int = 0
-        covered_inner_innervals: int = 0
+        covered_inner_intervals: int = 0
         for gene_stats in genes_stats:  # genes
-            for inner_interval in gene_stats.inner_intervals:  # transcripts of exons
+            if gene_stats.inner_intervals:
+                for (
+                    inner_interval
+                ) in gene_stats.inner_intervals:  # transcripts of exons
+                    nr_inner_intervals += 1
+                    if inner_interval.mean_coverage >= level:
+                        covered_inner_intervals += 1
+            else:
                 nr_inner_intervals += 1
-                if inner_interval.mean_coverage >= level:
-                    covered_inner_innervals += 1
+                if gene_stats.mean_coverage >= level:
+                    covered_inner_intervals += 1
 
-        intervals_covered_percent: float = round(
-            (covered_inner_innervals / nr_inner_intervals * 100), 2
+        intervals_covered_percent: float = (
+            round((covered_inner_intervals / nr_inner_intervals * 100), 2)
+            if covered_inner_intervals > 0
+            else 0
         )
         nr_not_covered_intervals: str = (
-            f"{nr_inner_intervals - covered_inner_innervals}/{nr_inner_intervals}"
+            f"{nr_inner_intervals - covered_inner_intervals}/{nr_inner_intervals}"
         )
         default_level_rows.append(
             (sample, intervals_covered_percent, nr_not_covered_intervals)

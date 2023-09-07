@@ -126,7 +126,7 @@
 
 {% macro default_level_metrics() %}
  <table class="table table-bordered table-hover">
-	 <caption>Transcripts/Exons coverage at default coverage threshold</caption>
+	 <caption>Genes/Transcripts/Exons coverage at default coverage threshold</caption>
       <thead>
         <tr>
           <th>Sample</th>
@@ -137,21 +137,15 @@
       <tbody>
         {% for data in default_level_completeness_rows %}
           <tr>
+			  <td>{{data[0]}}</td>
 			  {% if data[1] == 100.00 %}
-			  	<td colspan="3">
-				  No incompletely covered transcripts / exons.
+			  	<td colspan="2">
+				  No incompletely covered intervals.
 				</td>
 			  {% else %}
-			  	<td>{{data[0]}}</td>
 				<td class="text-right">{{ data[1] }}</td>
 				<td class="text-center">{{ data[2] }}</td>
 			  {% endif %}
-          </tr>
-        {% else %}
-          <tr>
-            <td colspan="{{ 4 if extras.show_genes else 3 }}">
-              Inga ofullständigt täckta transkript.
-            </td>
           </tr>
         {% endfor %}
       </tbody>
