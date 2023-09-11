@@ -5,7 +5,10 @@ from sqlalchemy.orm import sessionmaker
 from chanjo2.constants import DEFAULT_COMPLETENESS_LEVELS
 from chanjo2.meta.handle_d4 import D4File
 from chanjo2.meta.handle_d4 import get_sample_interval_coverage
-from chanjo2.meta.handle_report_contents import get_report_level_completeness_rows
+from chanjo2.meta.handle_report_contents import (
+    get_report_level_completeness_rows,
+    get_report_completeness_rows,
+)
 from chanjo2.models.sql_models import Gene as SQLGene
 from chanjo2.models.sql_models import Transcript as SQLTranscript
 
