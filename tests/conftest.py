@@ -8,6 +8,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from chanjo2.constants import BUILD_38, BUILD_37
+from chanjo2.crud.intervals import get_genes
 from chanjo2.dbutil import DEMO_CONNECT_ARGS, get_session
 from chanjo2.demo import DEMO_SAMPLE
 from chanjo2.demo import d4_demo_path, gene_panel_path
@@ -132,6 +133,20 @@ def demo_client_fixture(demo_session) -> TestClient:
     app.dependency_overrides[get_session] = _override_get_db
 
     return TestClient(app)
+
+
+@pytest.fixture(name="demo_genes_37")
+def demo_genes_37(demo_session) -> List[sql_models.Gene]:
+    """Return SQL Gene objects."""
+
+    return get_genes(
+        db=demo_session,
+        build=BUILD_37,
+        ensembl_ids=[],
+        hgnc_ids=[],
+        hgnc_symbols=GENOMIC_IDS_37["hgnc_symbols"],
+        limit=None,
+    )
 
 
 @pytest.fixture(name="raw_case")
