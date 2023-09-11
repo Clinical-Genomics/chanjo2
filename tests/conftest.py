@@ -3,14 +3,17 @@ from typing import Dict, List, Tuple
 
 import pytest
 from fastapi.testclient import TestClient
+from pyd4 import D4File
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from chanjo2.constants import BUILD_38, BUILD_37
 from chanjo2.dbutil import DEMO_CONNECT_ARGS, get_session
+from chanjo2.demo import DEMO_SAMPLE
 from chanjo2.demo import d4_demo_path, gene_panel_path
 from chanjo2.main import Base, app, engine
 from chanjo2.meta.handle_bed import parse_bed
+from chanjo2.meta.handle_d4 import get_d4_file
 from chanjo2.models import sql_models
 
 TEST_DB = "sqlite:///./test.db"
@@ -109,13 +112,13 @@ def client_fixture(session) -> TestClient:
     return TestClient(app)
 
 
-@pytest.fixture(name="demo_session", scope="function")
+@pytest.fixture(name="demo_session")
 def demo_session_fixture() -> TestClient:
     """Returns an object of type sqlalchemy.orm.session.sessionmaker containing demo data."""
     return next(get_session())
 
 
-@pytest.fixture(name="demo_client", scope="function")
+@pytest.fixture(name="demo_client")
 def demo_client_fixture(demo_session) -> TestClient:
     """Returns a fastapi.testclient.TestClient used to test the endpoints of an app with a populated demo database."""
 
@@ -212,6 +215,12 @@ def interval_query(bed_interval) -> Dict:
         "start": bed_interval[1],
         "end": bed_interval[2],
     }
+
+
+@pytest.fixture(name="samples_d4_list")
+def samples_d4_list(real_coverage_path) -> List[Tuple[str, D4File]]:
+    """Return a list of samples associated with real d4 files."""
+    return [(DEMO_SAMPLE["name"], get_d4_file(real_coverage_path))]
 
 
 @pytest.fixture(name="real_d4_query")
