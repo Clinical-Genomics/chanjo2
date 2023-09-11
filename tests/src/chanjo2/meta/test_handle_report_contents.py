@@ -9,7 +9,7 @@ from chanjo2.demo import DEMO_COVERAGE_QUERY_DATA as query
 from chanjo2.meta.handle_d4 import D4File
 from chanjo2.meta.handle_d4 import get_sample_interval_coverage
 from chanjo2.meta.handle_report_contents import get_report_level_completeness_rows
-from chanjo2.models.sql_models import Gene as SQLGene
+from chanjo2.models.sql_models import Transcript as SQLTranscript
 
 DEFAULT_COVERAGE_LEVEL = 20
 
@@ -18,16 +18,12 @@ def test_get_report_level_completeness_rows(
     demo_session: sessionmaker,
     demo_client: TestClient,
     genomic_ids_per_build: Dict[str, List],
+    samples_d4_list: List[Tuple[str, D4File]],
 ):
     """Test the function that report coverage completeness stats at the default level."""
 
     with demo_client:
-        # GIVEN a list of samples associated to a d4 file
-        samples_d4_files: List[Tuple[str, D4File]] = [
-            (sample["name"], D4File(sample["coverage_file_path"]))
-            for sample in query["samples"]
-        ]
-        # And a list of genes present in the database
+        # GIVEN a list of genes present in the database
         gene_symbols = genomic_ids_per_build[query["build"]]["hgnc_symbols"]
         genes: List[SQLGene] = get_genes(
             db=demo_session,
@@ -45,10 +41,10 @@ def test_get_report_level_completeness_rows(
                 db=demo_session,
                 d4_file=d4_file,
                 genes=genes,
-                interval_type=SQLGene,
+                interval_type=SQLTranscript,
                 completeness_thresholds=DEFAULT_COMPLETENESS_LEVELS,
             )
-            for sample, d4_file in samples_d4_files
+            for sample, d4_file in samples_d4_list
         }
         assert samples_coverage_stats
 
@@ -66,12 +62,3 @@ def test_get_report_level_completeness_rows(
             assert isinstance(sample, str)
             assert isinstance(mean_cov_intervals, float) or mean_cov_intervals == 0
             assert isinstance(not_covered_intervals, str)
-
-
-def test_get_report_completeness_rows(
-    demo_session: sessionmaker,
-    demo_client: TestClient,
-    genomic_ids_per_build: Dict[str, List],
-):
-    """Test the function that report coverage completeness stats at all threshold levels."""
-    pass
