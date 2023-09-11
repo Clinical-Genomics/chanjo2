@@ -22,7 +22,7 @@ def test_get_report_level_completeness_rows(
 ):
     """Test the function that returns coverage completeness stats at the default level."""
 
-    # GIVEN coverage stats data on these genes:
+    # GIVEN coverage stats for a list of cases
     samples_coverage_stats: Dict[str, List[GeneCoverage]] = {
         sample: get_sample_interval_coverage(
             db=demo_session,
@@ -58,7 +58,7 @@ def test_get_report_completeness_rows(
 ):
     """Test the function that returns coverage completeness stats for a number of samples and different level thresholds.."""
 
-    # GIVEN coverage stats data on these genes:
+    # GIVEN coverage stats for a list of cases
     samples_coverage_stats: Dict[str, List[GeneCoverage]] = {
         sample: get_sample_interval_coverage(
             db=demo_session,
