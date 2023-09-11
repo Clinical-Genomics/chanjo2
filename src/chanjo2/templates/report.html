@@ -122,7 +122,34 @@
 	</tbody>
   </table>
 </div>
+{% endmacro %}
 
+{% macro default_level_metrics() %}
+ <table class="table table-bordered table-hover">
+	 <caption>Genes/Transcripts/Exons coverage at default coverage threshold</caption>
+      <thead>
+        <tr>
+          <th>Sample</th>
+          <th>Fully covered {{ interval_type }} [%]</th>
+          <th>Incompletely covered {{ interval_type }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for data in default_level_completeness_rows %}
+          <tr>
+			  <td>{{data[0]}}</td>
+			  {% if data[1] == 100.00 %}
+			  	<td colspan="2">
+				  No incompletely covered intervals.
+				</td>
+			  {% else %}
+				<td class="text-right">{{ data[1] }}</td>
+				<td class="text-center">{{ data[2] }}</td>
+			  {% endif %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
 {% endmacro %}
 
 
@@ -187,6 +214,11 @@
 		<h3>Generally important metrics</h3>
 
 		{{ important_metrics() }}
+
+		<h3> Transcript coverage at {{ extras.default_level }}x</h3>
+
+		{{ default_level_metrics() }}
+
 
 		<!--End of Quality report -->
 

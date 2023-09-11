@@ -37,8 +37,9 @@ DEMO_COVERAGE_QUERY_DATA = {
         }
     ],
     "gene_panel": "A test Panel 1.0",
-    "interval_type": "genes",
+    "interval_type": "transcripts",
     "ensembl_gene_ids": [],
     "hgnc_gene_ids": [],
     "hgnc_gene_symbols": ["MTHFR", "DHFR", "FOLR1", "SLC46A1"],
+    "default_level": 20,
 }
