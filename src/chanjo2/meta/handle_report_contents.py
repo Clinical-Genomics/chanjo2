@@ -96,7 +96,7 @@ def get_report_level_completeness_rows(
     for sample, genes_stats in samples_coverage_stats.items():
         nr_inner_intervals: int = 0
         covered_inner_intervals: int = 0
-        for gene_stats in genes_stats: 
+        for gene_stats in genes_stats:
             intervals = gene_stats.inner_intervals or [gene_stats]
             for interval in intervals:
                 nr_inner_intervals += 1
