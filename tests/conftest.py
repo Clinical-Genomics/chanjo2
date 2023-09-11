@@ -115,8 +115,6 @@ def client_fixture(session) -> TestClient:
 @pytest.fixture(name="demo_session", scope="function")
 def demo_session_fixture() -> TestClient:
     """Returns an object of type sqlalchemy.orm.session.sessionmaker containing demo data."""
-    # Create the database
-
     return next(get_session())
 
 

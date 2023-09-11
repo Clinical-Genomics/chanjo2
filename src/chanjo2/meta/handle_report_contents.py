@@ -88,7 +88,7 @@ def get_report_data(query: ReportQuery, session: Session) -> Dict:
 
 
 def get_report_level_completeness_rows(
-    samples_coverage_stats: Dict[str, List[GeneCoverage]], level: int
+        samples_coverage_stats: Dict[str, List[GeneCoverage]], level: int
 ) -> List[Tuple[str, float, str]]:
     """Create and return the contents of the coverage stats row at the default threshold level."""
     default_level_rows: List[Tuple[str, float, str]] = []
@@ -119,8 +119,8 @@ def get_report_level_completeness_rows(
 
 
 def get_report_completeness_rows(
-    samples_coverage_stats: Dict[str, List[GeneCoverage]], levels: List[int]
-):
+        samples_coverage_stats: Dict[str, List[GeneCoverage]], levels: List[int]
+) -> List[Tuple[str, Dict[str, float]]]:
     """Create and return the contents for the samples' coverage completeness rows in the coverage report."""
 
     completeness_rows: List[str, Dict[str, float]] = []
@@ -151,7 +151,7 @@ def get_report_completeness_rows(
 
 
 def get_report_sex_rows(
-    samples: List[ReportQuerySample], samples_d4_files: List[Tuple[str, D4File]]
+        samples: List[ReportQuerySample], samples_d4_files: List[Tuple[str, D4File]]
 ) -> List[Dict]:
     """Create and return the contents for the sample sex lines in the coverage report."""
     sample_sex_rows: D4FileList = []
