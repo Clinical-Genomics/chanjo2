@@ -68,6 +68,10 @@ def test_get_report_level_completeness_rows(
             assert isinstance(not_covered_intervals, str)
 
 
-def test_get_report_completeness_rows(session: sessionmaker):
+def test_get_report_completeness_rows(
+    demo_session: sessionmaker,
+    demo_client: TestClient,
+    genomic_ids_per_build: Dict[str, List],
+):
     """Test the function that report coverage completeness stats at all threshold levels."""
     pass
