@@ -230,8 +230,8 @@
 		<script>
 			function toggle_visibility(ids)
 			{
-				for (var i = 0; i < ids.length; i++) {
-					var e = document.getElementById(ids[i]);
+				for (let id of ids) {
+					var e = document.getElementById(id);
 					if (e.style.display == 'block'){
 						e.style.display = 'none';
 					}
