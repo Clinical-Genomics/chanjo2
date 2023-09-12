@@ -38,7 +38,7 @@
 
 					<div class="col-xs-3">
 					  <label class="control-label">Show genes</label>
-					  <div><input type="checkbox" name="show_genes" {% if extras.show_genes %}checked{% endif %}></div>
+					  <div><input type="checkbox" name="show_genes" onclick="toggle_visibility(['incompletelyCoveredGenesHeader', 'incompletelyCoveredGenesCell']);"></div>
 					</div>
 
 					<div class="col-xs-2">
@@ -125,13 +125,14 @@
 {% endmacro %}
 
 {% macro default_level_metrics() %}
- <table class="table table-bordered table-hover">
+<table class="table table-bordered table-hover">
 	 <caption>Genes/Transcripts/Exons coverage at default coverage threshold</caption>
       <thead>
         <tr>
           <th>Sample</th>
           <th>Fully covered {{ interval_type }} [%]</th>
           <th>Incompletely covered {{ interval_type }}</th>
+		  <th id="incompletelyCoveredGenesHeader"  style="display: none;">Incompletely covered genes</th>
         </tr>
       </thead>
       <tbody>
@@ -145,11 +146,15 @@
 			  {% else %}
 				<td class="text-right">{{ data[1] }}</td>
 				<td class="text-center">{{ data[2] }}</td>
+			  	<td id="incompletelyCoveredGenesCell" class="text-center" style="display: none;">
+					{{ data[3]|join(", ") }}
+				</td>
 			  {% endif %}
           </tr>
         {% endfor %}
       </tbody>
-    </table>
+ </table>
+
 {% endmacro %}
 
 
@@ -173,19 +178,11 @@
 		<!-- Oldish compiled and minified CSS -->
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 
-		<!-- Optional theme -->
-		<link rel="stylesheet" href="https://bootswatch.com/simplex/bootstrap.min.css">
-
 		<!-- Customizations -->
 		<link rel="stylesheet" type="text/css" href="{{ url_for('static', path='main.css') }}">
 	{% endblock %}
 
 	{% block css_style %}{% endblock %}
-
-	{% block js_top %}
-		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js" integrity="sha512-ju6u+4bPX50JQmgU97YOGAXmRMrD9as4LE05PdC3qycsGQmjGlfm041azyB1VfCXpkpt1i9gqXCT6XuxhBJtKg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-	{% endblock %}
 
 </head>
 <body>
@@ -219,15 +216,32 @@
 
 		{{ default_level_metrics() }}
 
-
 		<!--End of Quality report -->
 
 	</div>
 
 
-	{% block js_btm %}
+	{% block js_code %}
+		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js" integrity="sha512-ju6u+4bPX50JQmgU97YOGAXmRMrD9as4LE05PdC3qycsGQmjGlfm041azyB1VfCXpkpt1i9gqXCT6XuxhBJtKg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 		<!-- Oldish compiled and minified JavaScript -->
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+		<script>
+			function toggle_visibility(ids)
+			{
+				for (let id of ids) {
+					var e = document.getElementById(id);
+					if (e.style.display == 'block'){
+						e.style.display = 'none';
+					}
+					else {
+						e.style.display = 'block';
+					}
+				}
+			}
+    	</script>
+
 	{% endblock %}
 </body>
 </html>

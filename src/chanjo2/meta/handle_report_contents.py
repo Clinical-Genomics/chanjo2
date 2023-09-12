@@ -1,7 +1,7 @@
 import logging
 from collections import OrderedDict
 from statistics import mean
-from typing import List, Dict, Tuple, Union
+from typing import List, Dict, Tuple, Union, Set
 
 from pyd4 import D4File
 from sqlmodel import Session
@@ -89,19 +89,24 @@ def get_report_data(query: ReportQuery, session: Session) -> Dict:
 
 def get_report_level_completeness_rows(
     samples_coverage_stats: Dict[str, List[GeneCoverage]], level: int
-) -> List[Tuple[str, float, str]]:
-    """Create and return the contents of the coverage stats row at the default threshold level."""
+) -> List[Tuple[str, float, str, List[str]]]:
+    """Create and return the contents of the coverage stats row at the default threshold level and incompletely covered genes."""
     default_level_rows: List[Tuple[str, float, str]] = []
 
     for sample, genes_stats in samples_coverage_stats.items():
         nr_inner_intervals: int = 0
         covered_inner_intervals: int = 0
+        incompletely_covered_genes: Set[str] = set()
         for gene_stats in genes_stats:
             intervals = gene_stats.inner_intervals or [gene_stats]
             for interval in intervals:
                 nr_inner_intervals += 1
                 if interval.mean_coverage >= level:
                     covered_inner_intervals += 1
+                else:
+                    incompletely_covered_genes.add(
+                        gene_stats.hgnc_symbol or gene_stats.hgnc_id
+                    )
 
         intervals_covered_percent: float = (
             round((covered_inner_intervals / nr_inner_intervals * 100), 2)
@@ -112,7 +117,12 @@ def get_report_level_completeness_rows(
             f"{nr_inner_intervals - covered_inner_intervals}/{nr_inner_intervals}"
         )
         default_level_rows.append(
-            (sample, intervals_covered_percent, nr_not_covered_intervals)
+            (
+                sample,
+                intervals_covered_percent,
+                nr_not_covered_intervals,
+                sorted(incompletely_covered_genes),
+            )
         )
 
     return default_level_rows
