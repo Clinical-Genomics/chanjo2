@@ -228,18 +228,18 @@
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
 		<script>
-		function toggle_visibility(ids)
-    	{
-    		for (var i = 0; i < ids.length; i++) {
-    			var e = document.getElementById(ids[i]);
-    			if (e.style.display == 'block'){
-    				e.style.display = 'none';
-    			}
-    			else {
-    				e.style.display = 'block';
-    			}
+			function toggle_visibility(ids)
+			{
+				for (var i = 0; i < ids.length; i++) {
+					var e = document.getElementById(ids[i]);
+					if (e.style.display == 'block'){
+						e.style.display = 'none';
+					}
+					else {
+						e.style.display = 'block';
+					}
+				}
 			}
-    	}
     	</script>
 
 	{% endblock %}
