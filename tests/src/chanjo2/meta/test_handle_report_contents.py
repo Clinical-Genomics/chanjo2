@@ -45,12 +45,12 @@ def test_get_report_level_completeness_rows(
         sample,
         mean_cov_intervals,
         incompletely_covered_intervals,
-        uncovered_genes,
+        incompletely_covered_genes,
     ) in default_level_samples_coverage_stats:
         assert isinstance(sample, str)
         assert isinstance(mean_cov_intervals, float) or mean_cov_intervals == 0
-        assert isinstance(uncovered_intervals, str)
-        assert isinstance(uncovered_genes, list)
+        assert isinstance(incompletely_covered_intervals, str)
+        assert isinstance(incompletely_covered_genes, list)
 
 
 def test_get_report_completeness_rows(

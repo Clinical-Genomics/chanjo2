@@ -104,7 +104,9 @@ def get_report_level_completeness_rows(
                 if interval.mean_coverage >= level:
                     covered_inner_intervals += 1
                 else:
-                    uncovered_genes.add(gene_stats.hgnc_symbol or gene_stats.hgnc_id)
+                    incompletely_covered_genes.add(
+                        gene_stats.hgnc_symbol or gene_stats.hgnc_id
+                    )
 
         intervals_covered_percent: float = (
             round((covered_inner_intervals / nr_inner_intervals * 100), 2)
@@ -119,7 +121,7 @@ def get_report_level_completeness_rows(
                 sample,
                 intervals_covered_percent,
                 nr_not_covered_intervals,
-                sorted(uncovered_genes),
+                sorted(incompletely_covered_genes),
             )
         )
 
