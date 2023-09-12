@@ -1,7 +1,7 @@
 import logging
 from collections import OrderedDict
 from statistics import mean
-from typing import List, Dict, Tuple, Union
+from typing import List, Dict, Tuple, Union, Set
 
 from pyd4 import D4File
 from sqlmodel import Session
@@ -89,7 +89,7 @@ def get_report_data(query: ReportQuery, session: Session) -> Dict:
 
 def get_report_level_completeness_rows(
     samples_coverage_stats: Dict[str, List[GeneCoverage]], level: int
-) -> List[Tuple[str, float, str, List[str]]]:
+) -> List[Tuple[str, float, str, Set[str]]]:
     """Create and return the contents of the coverage stats row at the default threshold level."""
     default_level_rows: List[Tuple[str, float, str]] = []
 
