@@ -119,7 +119,7 @@ def get_report_level_completeness_rows(
                 sample,
                 intervals_covered_percent,
                 nr_not_covered_intervals,
-                uncovered_genes,
+                sorted(uncovered_genes),
             )
         )
 
