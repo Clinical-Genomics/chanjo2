@@ -44,7 +44,7 @@ def test_get_report_level_completeness_rows(
     for (
         sample,
         mean_cov_intervals,
-        uncovered_intervals,
+        incompletely_covered_intervals,
         uncovered_genes,
     ) in default_level_samples_coverage_stats:
         assert isinstance(sample, str)
