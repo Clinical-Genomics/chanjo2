@@ -160,26 +160,17 @@
 {% macro explanations() %}
 <h4>General</h4>
 <p>
-  <a href="https://github.com/Clinical-Genomics/chanjo2" title="chanjo2">Chanjo2</a>
-  Chanjo2 was used for coverage analysis based on read alignment.
+  <a href="https://github.com/Clinical-Genomics/chanjo2" target="_blank" rel="noopener" title="chanjo2">Chanjo2</a>
+  was used for coverage analysis based on reads alignment. Chanjo2 computes coverage and coverage completeness using an internal module based on <a href="https://github.com/38/d4-format" target="_blank" rel="noopener">d4tools</a>.
 
-  The parts of the genome that has been analyzed
-  is composed of all protein coding, exonic intervals defined in
-  <a href="http://www.genenames.org/">HGNC</a>.
-
-  {% if includes_splice_sites %}
-	Additionally, the data also includes spicing sites
-	donator and acceptor positions
-	{{ splice_site_interval }}
-	bases on either of each exon
-  {% endif %}
+  The genome has been analyzed at the {{ extras.interval_type }} level, for genes defined at <a href="http://www.genenames.org/" target="_blank" rel="noopener">HGNC</a>.
 </p>
 
-{% if CHANJO_PANEL %}
+{% if extras.panel_name %}
   <p>
-	Final coverage metrics were calculated for genes from the clinical panels
-	Note that estimations were made regarding coverage and completeness
-	on the level of transcripts
+	Final coverage metrics were calculated for genes from the clinical panels.
+	Note that <strong>estimations were made regarding coverage and completeness
+	  on the level of {{ extras.interval_type }}</strong>.
   </p>
 {% endif %}
 
@@ -191,17 +182,16 @@
 </p>
 
 <p>
-  <strong>Transcript coverage</strong>:
-  defined as the ratio of transcripts that are fully covered
-  ('i.e. with a completeness of') 100% 'at' {{ cutoff }}x.
+  <strong>Gene/Transcripts/Exons coverage</strong>:
+  defined as the ratio of these intervals are fully covered
+  ('i.e. with a completeness of') 100% 'at' {{ extras.default_level }}x.
 </p>
 
 <p>
   <strong>Gender prediction from data</strong>:
-  calculated by comparing relative chromosome coverage'
-  (X/Y).
+  calculated by comparing relative chromosome coverage (X/Y).
   Some reads randomly map to the Y chromosome.
-  Therefore, a less than 10 fold difference is used to infer a "male" sample
+  Therefore, a less than 10 fold difference is used to infer a "male" sample.
 </p>
 
 {% endmacro %}
