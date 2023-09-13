@@ -6,6 +6,7 @@
 - Default threshold level coverage lines in HTML coverage report
 - Hidden table cell showing incompletely covered genes in coverage report
 - Display optional case name on gene coverage report
+- Display error in coverage report when query genes are not found in the database
 ### Changed
 - Moved helper function from endpoints coverage to crud samples
 - Deleted unused `src/chanjo2/meta/handle_query_intervals.py` file
