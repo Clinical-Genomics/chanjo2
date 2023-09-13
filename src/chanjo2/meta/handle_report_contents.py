@@ -1,7 +1,7 @@
 import logging
 from collections import OrderedDict
 from statistics import mean
-from typing import List, Dict, Tuple, Union, Set
+from typing import List, Dict, Tuple, Union, Set, Optional
 
 from pyd4 import D4File
 from sqlmodel import Session
@@ -67,7 +67,7 @@ def get_report_data(query: ReportQuery, session: Session) -> Dict:
         for sample, d4_file in samples_d4_files
     }
 
-    data: Dicr = {
+    data: Dict = {
         "levels": get_ordered_levels(threshold_levels=query.completeness_thresholds),
         "extras": {
             "panel_name": query.panel_name,
@@ -85,8 +85,37 @@ def get_report_data(query: ReportQuery, session: Session) -> Dict:
         "default_level_completeness_rows": get_report_level_completeness_rows(
             samples_coverage_stats=samples_coverage_stats, level=query.default_level
         ),
+        "errors": [
+            get_missing_genes_from_db(
+                sql_genes=genes,
+                ensembl_ids=query.ensembl_gene_ids,
+                hgnc_ids=query.hgnc_gene_ids,
+                hgnc_symbols=query.hgnc_gene_symbols,
+            )
+        ],
     }
     return data
+
+
+def get_missing_genes_from_db(
+    sql_genes: List[SQLGene],
+    ensembl_ids: Optional[List[str]] = [],
+    hgnc_ids: Optional[List[int]] = [],
+    hgnc_symbols: Optional[List[str]] = [],
+) -> Tuple[str, List[Union[str, int]]]:
+    """Return queried genes that are not found in the database."""
+
+    if ensembl_ids:
+        sql_genes_ids = [gene.ensembl_id for gene in sql_genes]
+    elif hgnc_ids:
+        sql_genes_ids = [gene.hgnc_id for gene in sql_genes]
+    else:
+        sql_genes_ids = [gene.hgnc_symbol for gene in sql_genes]
+
+    query_ids: List[Union[str, int]] = ensembl_ids or hgnc_ids or hgnc_symbols
+    return "Gene IDs not found in the database", list(
+        set(query_ids) - set(sql_genes_ids)
+    )
 
 
 def get_report_level_completeness_rows(

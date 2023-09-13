@@ -42,5 +42,6 @@ async def demo_report(request: Request, db: Session = Depends(get_session)):
                 "default_level_completeness_rows"
             ],
             "interval_type": report_query.interval_type.value,
+            "errors": report_content["errors"],
         },
     )
