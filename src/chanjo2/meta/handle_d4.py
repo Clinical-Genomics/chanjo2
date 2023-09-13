@@ -134,6 +134,7 @@ def get_sample_interval_coverage(
                 "inner_intervals": [],
             }
         )
+
         if interval_type == SQLGene:  # The interval requested is the genes itself
             gene_coordinates: Tuple[str, int, int] = (
                 gene.chromosome,
@@ -146,6 +147,7 @@ def get_sample_interval_coverage(
                 intervals=[gene_coordinates],
                 completeness_thresholds=completeness_thresholds,
             )
+
         else:  # Retrieve transcripts or exons for this gene
             sql_intervals: List[Union[SQLTranscript, SQLExon]] = get_gene_intervals(
                 db=db,
