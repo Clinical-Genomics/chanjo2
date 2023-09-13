@@ -3,11 +3,13 @@ from typing import List, Tuple, Dict
 from sqlalchemy.orm import sessionmaker
 
 from chanjo2.constants import DEFAULT_COMPLETENESS_LEVELS
+from chanjo2.demo import DEMO_COVERAGE_QUERY_DATA
 from chanjo2.meta.handle_d4 import D4File
 from chanjo2.meta.handle_d4 import get_sample_interval_coverage
 from chanjo2.meta.handle_report_contents import (
     get_report_level_completeness_rows,
     get_report_completeness_rows,
+    get_missing_genes_from_db,
 )
 from chanjo2.models.sql_models import Gene as SQLGene
 from chanjo2.models.sql_models import Transcript as SQLTranscript
@@ -84,3 +86,19 @@ def test_get_report_completeness_rows(
         assert sample == samples_d4_list[0][0]
         for level in DEFAULT_COMPLETENESS_LEVELS:
             assert f"completeness_{level}" in stats
+
+
+def test_get_missing_genes_from_db(
+    demo_session: sessionmaker, demo_genes_37: List[SQLGene]
+):
+    """Test function that returns queried genes that are not present in the database."""
+
+    # WHEN coverage query contains gene symbols that are not present in the database
+    missing_gene_error: Tuple[str, List[Union[int, str]]] = get_missing_genes_from_db(
+        sql_genes=demo_genes_37,
+        hgnc_symbols=DEMO_COVERAGE_QUERY_DATA["hgnc_gene_symbols"],
+    )
+
+    # THEN the get_missing_genes_from_db function should return the expected error, containing description and missing IDs
+    assert missing_gene_error[0] == "Gene IDs not found in the database"
+    assert missing_gene_error[1]
