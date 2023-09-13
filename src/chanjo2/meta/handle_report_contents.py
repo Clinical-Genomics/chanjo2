@@ -73,6 +73,7 @@ def get_report_data(query: ReportQuery, session: Session) -> Dict:
             "panel_name": query.panel_name,
             "default_level": query.default_level,
             "interval_type": query.interval_type.value,
+            "case_name": query.case_display_name,
         },
         "sex_rows": get_report_sex_rows(
             samples=query.samples, samples_d4_files=samples_d4_files

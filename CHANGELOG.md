@@ -5,6 +5,7 @@
 - Coverage completeness lines in HTML coverage report
 - Default threshold level coverage lines in HTML coverage report
 - Hidden table cell showing incompletely covered genes in coverage report
+- Display optional case name on gene coverage report
 - Metrics explanation section on coverage report
 ### Changed
 - Moved helper function from endpoints coverage to crud samples
