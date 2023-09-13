@@ -1,3 +1,11 @@
+{% macro errors_block() %}
+	{% for error_description, error_content in errors %}
+		{% if error_content %}
+			<span class="alert alert-danger">{{error_description}}: {{error_content|join(", ")}}</span>
+		{% endif %}
+	{% endfor %}
+{% endmacro %}
+
 {% macro report_filters() %}
 <div class="panel-group hidden-print" id="filter-accordion">
 	<div class="panel panel-default">
@@ -201,6 +209,9 @@
 		{{ report_filters() }}
 
 		<!-- Quality report -->
+
+		{{ missing_genes_error }}
+
 		<h2>Quality report: clinical sequencing</h2>
 		{% if extras.panel_name %}
 			<p>Based on gene panel: <strong>{{ extras.panel_name }}</strong></p>
@@ -215,7 +226,8 @@
 		<h3> Transcript coverage at {{ extras.default_level }}x</h3>
 
 		{{ default_level_metrics() }}
-
+		<hr>
+		{{ errors_block() }}
 		<!--End of Quality report -->
 
 	</div>
