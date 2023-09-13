@@ -223,6 +223,7 @@ class ReportQuery(BaseModel):
     default_level: int = 10
 
     samples: List[ReportQuerySample]
+    case_display_name: Optional[str]
 
 
 class SampleSexRow(BaseModel):
