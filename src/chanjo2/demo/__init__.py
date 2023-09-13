@@ -36,6 +36,7 @@ DEMO_COVERAGE_QUERY_DATA = {
             "analysis_date": "2023-04-23T10:20:30.400+02:30",
         }
     ],
+    "case_display_name": "643594",
     "gene_panel": "A test Panel 1.0",
     "interval_type": "transcripts",
     "ensembl_gene_ids": [],

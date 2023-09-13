@@ -208,9 +208,11 @@
 
 		{{ report_filters() }}
 
-		<!-- Quality report -->
+		{% if extras.case_name %}
+			<h2>Case name: {{extras.case_name}}</h2>
+		{% endif %}
 
-		{{ missing_genes_error }}
+		<!-- Quality report -->
 
 		<h2>Quality report: clinical sequencing</h2>
 		{% if extras.panel_name %}
