@@ -37,7 +37,7 @@ def set_samples_coverage_files(session: Session, samples: List[ReportQuerySample
         if sample.coverage_file_path:  # if path to d4 is provided in the query
             continue
         else:  # fetch it from the database
-            sql_sample: SQLSample = get_sample(db=session, sample_name=sample)
+            sql_sample: SQLSample = get_sample(db=session, sample_name=sample.name)
             sample.coverage_file_path = sql_sample.coverage_file_path
 
 
@@ -56,6 +56,7 @@ def get_report_data(query: ReportQuery, session: Session) -> Dict:
         hgnc_symbols=query.hgnc_gene_symbols,
         limit=None,
     )
+
     samples_coverage_stats: Dict[str, List[GeneCoverage]] = {
         sample: get_sample_interval_coverage(
             db=session,
@@ -74,6 +75,9 @@ def get_report_data(query: ReportQuery, session: Session) -> Dict:
             "default_level": query.default_level,
             "interval_type": query.interval_type.value,
             "case_name": query.case_display_name,
+            "hgnc_gene_ids": [gene.hgnc_id for gene in genes],
+            "build": query.build.value,
+            "samples": [sample for sample in samples_d4_files],
         },
         "sex_rows": get_report_sex_rows(
             samples=query.samples, samples_d4_files=samples_d4_files

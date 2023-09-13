@@ -14,16 +14,19 @@
 				<a role="button" data-toggle="collapse" data-parent="#accordion" href="#view-filters">Customize</a>
 			</h4>
 		</div>
-
 		<div id="view-filters" class="panel-collapse collapse">
 			<div class="panel-body">
-				<form method="POST" action="#">
-				  <div class="{% if hidden %}navbar-form{% endif %}">
+				<form method="POST" action="{{ url_for('report') }}">
+					<!-- hidden fields passed from previous query -->
+					<input type="hidden" id="build" name="build" value="{{extras.build}}">
+					<input type="hidden" id="samples" name="samples">
+
+				  <div>
 					<div class="form-group">
 					  <div class="row" {% if hidden %}hidden{% endif %}>
 						<div class="col-xs-6">
 						  <label class="control-label">Completeness cutoff</label>
-						  <select class="form-control" name="level">
+						  <select class="form-control" name="default_level">
 							{% for level, _ in levels.items() %}
 							  <option value="{{ level }}" {% if level == extras.level %} selected {% endif %}>{{ level }}x</option>
 							{% endfor %}
@@ -41,7 +44,7 @@
 				  <div class="row" {% if hidden %}hidden{% endif %}>
 					<div class="col-xs-7">
 					  <label class="control-label">Included genes</label>
-					  <div><input class="form-control" type="text" name="gene_ids" value="{{ extras.gene_ids|join(', ') }}" placeholder="ADK,GIT"></div>
+					  <div><input class="form-control" type="text" name="hgnc_gene_ids" value="{{ extras.hgnc_gene_ids|join(', ') }}" placeholder="ADK,GIT"></div>
 					</div>
 
 					<div class="col-xs-3">
@@ -299,6 +302,7 @@
 					}
 				}
 			}
+			$('#samples').val({{extras.samples}});
     	</script>
 
 	{% endblock %}

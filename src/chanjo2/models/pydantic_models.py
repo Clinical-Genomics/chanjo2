@@ -208,7 +208,7 @@ class SampleGeneIntervalQuery(BaseModel):
 class ReportQuerySample(BaseModel):
     name: str
     case_name: Optional[str]
-    coverage_file_path: Optional[str]
+    coverage_file_path: Optional[str] = None
     analysis_date: Optional[datetime] = datetime.now()
 
 
