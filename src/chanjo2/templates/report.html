@@ -200,7 +200,12 @@
 
 		{{ report_filters() }}
 
+		{% if extras.case_name %}
+			<h2>Case name: {{extras.case_name}}</h2>
+		{% endif %}
+
 		<!-- Quality report -->
+
 		<h2>Quality report: clinical sequencing</h2>
 		{% if extras.panel_name %}
 			<p>Based on gene panel: <strong>{{ extras.panel_name }}</strong></p>
