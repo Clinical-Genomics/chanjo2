@@ -26,7 +26,7 @@ router = APIRouter()
 
 @router.get("/report/demo", response_class=HTMLResponse)
 async def demo_report(request: Request, db: Session = Depends(get_session)):
-    """Return a demo coverage report over a list of genes for a list of  samples."""
+    """Return a demo coverage report over a list of genes for a list of samples."""
 
     report_query = ReportQuery(**DEMO_COVERAGE_QUERY_DATA)
     report_content: Dict = get_report_data(query=report_query, session=db)
