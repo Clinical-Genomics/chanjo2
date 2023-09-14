@@ -7,7 +7,6 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlmodel import Session
 
-from chanjo2.constants import JSON_CONTENT_TYPE_HEADER, FORM_CONTENT_TYPE_HEADER
 from chanjo2.dbutil import get_session
 from chanjo2.demo import DEMO_COVERAGE_QUERY_DATA
 from chanjo2.meta.handle_report_contents import get_report_data
@@ -49,13 +48,10 @@ async def demo_report(request: Request, db: Session = Depends(get_session)):
 
 
 @router.post("/report", response_class=HTMLResponse)
-async def report(request: Request, db: Session = Depends(get_session)):
+async def report(
+    request: Request, report_query: ReportQuery, db: Session = Depends(get_session)
+):
     """Return a coverage report over a list of genes for a list of samples."""
-    if request.headers["Content-Type"] == JSON_CONTENT_TYPE_HEADER:
-        report_query = ReportQuery(**await request.json())
-    elif request.headers["Content-Type"] == FORM_CONTENT_TYPE_HEADER:
-        report_query = ReportQuery(**await request.form())
-
     report_content: Dict = get_report_data(query=report_query, session=db)
     return templates.TemplateResponse(
         "report.html",
