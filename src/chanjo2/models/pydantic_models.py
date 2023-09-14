@@ -1,4 +1,3 @@
-import json
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
@@ -225,20 +224,6 @@ class ReportQuery(BaseModel):
 
     samples: List[ReportQuerySample]
     case_display_name: Optional[str]
-
-    @validator("samples", pre=True)
-    def de_serialize_samples(cls, value):
-        if isinstance(value, list):
-            return value
-        else:
-            return json.loads(value)
-
-    @validator("hgnc_gene_ids", pre=True)
-    def genes_str_to_list(cls, value):
-        if isinstance(value, list):
-            return value
-        else:
-            return value.replace(" ", "").split(",")
 
 
 class SampleSexRow(BaseModel):

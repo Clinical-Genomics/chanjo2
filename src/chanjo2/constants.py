@@ -103,6 +103,3 @@ EXONS_FILE_HEADER: Dict[str, List[str]] = {
 }
 
 DEFAULT_COMPLETENESS_LEVELS = [10, 15, 20, 50, 100]
-
-JSON_CONTENT_TYPE_HEADER = "application/json"
-FORM_CONTENT_TYPE_HEADER = "application/x-www-form-urlencoded"

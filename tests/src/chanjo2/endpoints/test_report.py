@@ -4,7 +4,6 @@ from fastapi import status
 from fastapi.testclient import TestClient
 from requests.models import Response
 
-from chanjo2.constants import JSON_CONTENT_TYPE_HEADER
 from chanjo2.demo import DEMO_COVERAGE_QUERY_DATA
 
 
@@ -27,7 +26,6 @@ def test_report_json_data(client: TestClient, endpoints: Type):
     # GIVEN a query with json data to the report endpoint
     response: Response = client.post(
         endpoints.REPORT,
-        headers={"Content-Type": JSON_CONTENT_TYPE_HEADER},
         json=DEMO_COVERAGE_QUERY_DATA,
     )
 
