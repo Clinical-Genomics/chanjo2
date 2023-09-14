@@ -68,6 +68,7 @@ class Endpoints(str):
     SAMPLE_TRANSCRIPTS_COVERAGE = "/coverage/samples/transcripts_coverage"
     SAMPLE_EXONS_COVERAGE = "/coverage/samples/exons_coverage"
     REPORT_DEMO = "/report/demo/"
+    REPORT = "/report"
 
 
 @pytest.fixture
