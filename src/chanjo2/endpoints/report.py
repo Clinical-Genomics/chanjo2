@@ -56,7 +56,6 @@ async def report(request: Request, db: Session = Depends(get_session)):
     elif request.headers["Content-Type"] == FORM_CONTENT_TYPE_HEADER:
         report_query = ReportQuery(**await request.form())
 
-    LOG.warning(report_query)
     report_content: Dict = get_report_data(query=report_query, session=db)
     return templates.TemplateResponse(
         "report.html",

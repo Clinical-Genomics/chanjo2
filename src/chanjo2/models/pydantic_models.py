@@ -1,5 +1,4 @@
 import json
-import logging
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
@@ -14,8 +13,6 @@ from chanjo2.constants import (
     AMBIGUOUS_SAMPLES_INPUT,
     DEFAULT_COMPLETENESS_LEVELS,
 )
-
-LOG = logging.getLogger("uvicorn.access")
 
 
 class Builds(str, Enum):

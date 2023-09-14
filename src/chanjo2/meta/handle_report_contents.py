@@ -41,7 +41,7 @@ def set_samples_coverage_files(session: Session, samples: List[ReportQuerySample
             sample.coverage_file_path = sql_sample.coverage_file_path
 
 
-def _serialize_sample(sample: ReportQuerySample):
+def _serialize_sample(sample: ReportQuerySample) -> Dict(str, str):
     """Transforms a ReportQuerySample into a dictionary that can be easily json-serialized and submitted in a POST request."""
     return {
         "name": sample.name,
