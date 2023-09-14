@@ -16,11 +16,10 @@
 		</div>
 		<div id="view-filters" class="panel-collapse collapse">
 			<div class="panel-body">
-				<form method="POST" action="{{ url_for('report') }}">
+				<form method="POST" action="{{ url_for('report') }}" id="coverageForm")>
 					<!-- hidden fields passed from previous query -->
 					<input type="hidden" id="build" name="build" value="{{extras.build}}">
-					<input type="hidden" id="samples" name="samples">
-
+					<input type="hidden" id="interval_type" name="interval_type" value="{{extras.interval_type}}">
 				  <div>
 					<div class="form-group">
 					  <div class="row" {% if hidden %}hidden{% endif %}>
@@ -279,7 +278,6 @@
 		{{ explanations() }}
 
 
-
 	</div>
 
 
@@ -302,7 +300,18 @@
 					}
 				}
 			}
-			$('#samples').val({{extras.samples}});
+
+			var form = document.getElementById('coverageForm');
+			form.addEventListener("submit", function() {
+				alert("SUBMIT")
+				var input = document.createElement('input');
+				input.type = 'hidden';
+				input.name = 'samples';
+				input.value = JSON.stringify({{ extras.samples|safe }});;
+				this.appendChild(input);
+			}, true);
+
+
     	</script>
 
 	{% endblock %}

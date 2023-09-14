@@ -47,12 +47,15 @@ async def demo_report(request: Request, db: Session = Depends(get_session)):
     )
 
 
-@router.get("/report", response_class=HTMLResponse)
-async def report(
-    report_query: ReportQuery, request: Request, db: Session = Depends(get_session)
-):
+@router.post("/report", response_class=HTMLResponse)
+async def report(request: Request, db: Session = Depends(get_session)):
     """Return a coverage report over a list of genes for a list of samples."""
+    if request.headers["Content-Type"] == "application/json":
+        report_query = ReportQuery(**await request.json())
+    elif request.headers["Content-Type"] == "application/x-www-form-urlencoded":
+        report_query = ReportQuery(**await request.form())
 
+    LOG.warning(report_query)
     report_content: Dict = get_report_data(query=report_query, session=db)
     return templates.TemplateResponse(
         "report.html",

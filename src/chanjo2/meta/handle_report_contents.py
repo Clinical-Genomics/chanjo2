@@ -41,6 +41,15 @@ def set_samples_coverage_files(session: Session, samples: List[ReportQuerySample
             sample.coverage_file_path = sql_sample.coverage_file_path
 
 
+def _serialize_sample(sample: ReportQuerySample):
+    """Transforms a ReportQuerySample into a dictionary that can be easily json-serialized and submitted in a POST request."""
+    return {
+        "name": sample.name,
+        "case_name": sample.case_name,
+        "coverage_file_path": sample.coverage_file_path,
+    }
+
+
 def get_report_data(query: ReportQuery, session: Session) -> Dict:
     """Return the information that will be displayed in the coverage report."""
 
@@ -77,7 +86,8 @@ def get_report_data(query: ReportQuery, session: Session) -> Dict:
             "case_name": query.case_display_name,
             "hgnc_gene_ids": [gene.hgnc_id for gene in genes],
             "build": query.build.value,
-            "samples": [sample for sample in samples_d4_files],
+            "samples": [_serialize_sample(sample) for sample in query.samples],
+            "completeness_thresholds": query.completeness_thresholds,
         },
         "sex_rows": get_report_sex_rows(
             samples=query.samples, samples_d4_files=samples_d4_files
