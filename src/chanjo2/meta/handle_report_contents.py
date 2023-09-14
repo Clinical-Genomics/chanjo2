@@ -47,6 +47,7 @@ def _serialize_sample(sample: ReportQuerySample):
         "name": sample.name,
         "case_name": sample.case_name,
         "coverage_file_path": sample.coverage_file_path,
+        "analysis_date": sample.analysis_date.isoformat(),
     }
 
 
