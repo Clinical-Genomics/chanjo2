@@ -31,7 +31,6 @@ async def demo_overview(request: Request, db: Session = Depends(get_session)):
         "overview.html",
         {
             "request": request,
-            "levels": overview_content["levels"],
             "extras": overview_content["extras"],
         },
     )
