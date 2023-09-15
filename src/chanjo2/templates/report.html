@@ -301,6 +301,39 @@
 				}
 			}
 
+			var form = document.getElementById('coverageForm');
+			form.addEventListener("submit", function(event)
+			{
+				event.preventDefault();
+				let formDict = {
+					'build' : '{{ extras.build }}',
+					'completeness_thresholds' : {{ extras.completeness_thresholds }},
+					'hgnc_gene_ids' : {{ extras.hgnc_gene_ids }},
+					'interval_type' : '{{ extras.interval_type }}',
+					'panel_name' : '{{ extras.panel_name }}',
+					'default_level' : {{ extras.default_level }},
+					'case_display_name' : '{{ extras.case_name }}',
+					'samples' : {{ extras.samples|safe }},
+				}
+
+				console.log(formDict);
+
+				fetch('/report', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formDict)
+                    })
+                    .then(resp => resp.text())  // or, resp.json(), etc.
+                    .then(data => {
+                    	console.log(data);
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+			});
+
     	</script>
 
 	{% endblock %}
