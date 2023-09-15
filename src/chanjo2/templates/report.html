@@ -24,7 +24,7 @@
 					  <div class="row" {% if hidden %}hidden{% endif %}>
 						<div class="col-xs-6">
 						  <label class="control-label">Completeness cutoff</label>
-						  <select class="form-control" name="default_level">
+						  <select class="form-control" name="default_level" id="default_level">
 							{% for level, _ in levels.items() %}
 							  <option value="{{ level }}" {% if level == extras.level %} selected {% endif %}>{{ level }}x</option>
 							{% endfor %}
@@ -33,7 +33,7 @@
 
 					<div class="col-xs-6">
 					  <label class="control-label">Gene panel name to <i>display</i></label>
-					  <input class="form-control" name="panel_name" type="text" placeholder="Skeletal dysplasia 3.2" value="{{ extras.panel_name or '' }}">
+					  <input class="form-control" id="panel_name" type="text" placeholder="Skeletal dysplasia 3.2" value="{{ extras.panel_name or '' }}">
 					</div>
 				  </div>
 				</div>
@@ -319,8 +319,8 @@
 					'completeness_thresholds' : {{ extras.completeness_thresholds }},
 					'hgnc_gene_ids' : getFormGeneIDsAsList(),
 					'interval_type' : '{{ extras.interval_type }}',
-					'panel_name' : '{{ extras.panel_name }}',
-					'default_level' : {{ extras.default_level }},
+					'panel_name' : document.getElementById("panel_name").value,
+					'default_level' : document.getElementById("default_level").value,
 					'case_display_name' : '{{ extras.case_name }}',
 					'samples' : {{ extras.samples|safe }},
 				}
