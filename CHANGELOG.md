@@ -10,6 +10,7 @@
 - Export coverage report to PDF
 - Metrics explanation section on coverage report
 - Non-demo coverage report endpoint
+- Genes overview endpoint
 ### Changed
 - Moved helper function from endpoints coverage to crud samples
 - Deleted unused `src/chanjo2/meta/handle_query_intervals.py` file

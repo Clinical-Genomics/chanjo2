@@ -24,6 +24,7 @@ DEMO_SAMPLE: Dict[str, str] = {
 }
 
 HTTP_SERVER_D4_file = "https://d4-format-testing.s3.us-west-1.amazonaws.com/hg002.d4"
+DEMO_HGNC_GENE_SYMBOLS = ["MTHFR", "DHFR", "FOLR1", "SLC46A1", "LAMA1", "PIPPI6"]
 
 # Data for generating a demo coverage report
 DEMO_COVERAGE_QUERY_DATA = {
@@ -41,6 +42,21 @@ DEMO_COVERAGE_QUERY_DATA = {
     "interval_type": "transcripts",
     "ensembl_gene_ids": [],
     "hgnc_gene_ids": [],
-    "hgnc_gene_symbols": ["MTHFR", "DHFR", "FOLR1", "SLC46A1", "LAMA1", "PIPPI6"],
+    "hgnc_gene_symbols": DEMO_HGNC_GENE_SYMBOLS,
+    "default_level": 20,
+}
+
+DEMO_OVERVIEW_QUERY_DATA = {
+    "build": BUILD_37,
+    "samples": [
+        {
+            "name": DEMO_SAMPLE["name"],
+            "coverage_file_path": d4_demo_path,
+        }
+    ],
+    "interval_type": "transcripts",
+    "ensembl_gene_ids": [],
+    "hgnc_gene_ids": [],
+    "hgnc_gene_symbols": DEMO_HGNC_GENE_SYMBOLS,
     "default_level": 20,
 }

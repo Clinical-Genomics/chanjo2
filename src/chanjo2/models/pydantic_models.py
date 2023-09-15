@@ -202,28 +202,37 @@ class SampleGeneIntervalQuery(BaseModel):
         return values
 
 
-### Coverage report - related models ###
+## Coverage overview report - related models ###
 
 
-class ReportQuerySample(BaseModel):
+class GeneralReportQuerySample(BaseModel):
     name: str
-    case_name: Optional[str]
     coverage_file_path: Optional[str]
-    analysis_date: Optional[datetime] = datetime.now()
 
 
-class ReportQuery(BaseModel):
+class GeneralReportQuery(BaseModel):
     build: Builds
     completeness_thresholds: Optional[List[int]] = DEFAULT_COMPLETENESS_LEVELS
     ensembl_gene_ids: Optional[List[str]]
     hgnc_gene_ids: Optional[List[int]]
     hgnc_gene_symbols: Optional[List[str]]
     interval_type: IntervalType
-    panel_name: Optional[str] = "Custom panel"
     default_level: int = 10
+    samples: List[GeneralReportQuerySample]
 
-    samples: List[ReportQuerySample]
+
+### Coverage report - related models ###
+
+
+class ReportQuerySample(GeneralReportQuerySample):
+    case_name: Optional[str]
+    analysis_date: Optional[datetime] = datetime.now()
+
+
+class ReportQuery(GeneralReportQuery):
+    panel_name: Optional[str] = "Custom panel"
     case_display_name: Optional[str]
+    samples: List[ReportQuerySample]
 
 
 class SampleSexRow(BaseModel):
