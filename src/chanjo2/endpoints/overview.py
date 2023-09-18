@@ -1,11 +1,9 @@
 from os import path
 
-from fastapi import APIRouter, Request, Depends
+from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from sqlmodel import Session
 
-from chanjo2.dbutil import get_session
 from chanjo2.demo import DEMO_OVERVIEW_QUERY_DATA
 from chanjo2.meta.handle_overview_content import get_overview_data
 from chanjo2.models.pydantic_models import GeneralReportQuery
@@ -22,11 +20,11 @@ router = APIRouter()
 
 
 @router.get("/overview/demo", response_class=HTMLResponse)
-async def demo_overview(request: Request, db: Session = Depends(get_session)):
+async def demo_overview(request: Request):
     """Return a demo genes overview page over a list of genes for a list of samples."""
 
     overview_query = GeneralReportQuery(**DEMO_OVERVIEW_QUERY_DATA)
-    overview_content: Dict = get_overview_data(query=overview_query, session=db)
+    overview_content: Dict = get_overview_data(query=overview_query)
     return templates.TemplateResponse(
         "overview.html",
         {

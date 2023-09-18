@@ -1,11 +1,9 @@
 from typing import Dict
 
-from sqlmodel import Session
-
 from chanjo2.models.pydantic_models import GeneralReportQuery
 
 
-def get_overview_data(query: GeneralReportQuery, session: Session) -> Dict:
+def get_overview_data(query: GeneralReportQuery) -> Dict:
     """Return the information that will be displayed in the coverage overview page."""
 
     data: Dict = {
