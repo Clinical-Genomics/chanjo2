@@ -10,6 +10,7 @@
 - Export coverage report to PDF
 - Metrics explanation section on coverage report
 - Non-demo coverage report endpoint
+- Fixed coverage report filters to update report using other settings
 - Genes overview endpoint
 ### Changed
 - Moved helper function from endpoints coverage to crud samples
