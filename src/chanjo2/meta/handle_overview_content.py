@@ -6,7 +6,7 @@ from chanjo2.models.pydantic_models import GeneralReportQuery
 def get_overview_data(query: GeneralReportQuery) -> Dict:
     """Return the information that will be displayed in the coverage overview page."""
 
-    data: Dict = {
+    return {
         "extras": {
             "interval_type": query.interval_type.value,
             "samples": [
@@ -15,4 +15,3 @@ def get_overview_data(query: GeneralReportQuery) -> Dict:
             ],
         },
     }
-    return data
