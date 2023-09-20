@@ -3,7 +3,7 @@ from typing import Dict
 from chanjo2.models.pydantic_models import GeneralReportQuery
 
 
-def get_overview_data(query: GeneralReportQuery) -> Dict:
+def get_overview_data(query: GeneralReportQuery) -> dict:
     """Return the information that will be displayed in the coverage overview page."""
 
     return {
