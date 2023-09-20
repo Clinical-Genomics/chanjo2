@@ -226,10 +226,10 @@ class ReportQuery(BaseModel):
     case_display_name: Optional[str]
 
     @validator("samples", pre=True)
-    def samples_validator(cls, value):
-        if isinstance(value, str):
-            return json.loads(value)
-        return value
+    def samples_validator(cls, sample_list):
+        if isinstance(sample_list, str):
+            return json.loads(sample_list)
+        return sample_list
 
 
 class SampleSexRow(BaseModel):
