@@ -15,7 +15,7 @@ def get_templates_path() -> str:
     return path.join(APP_ROOT, "templates")
 
 
-templates: Jinja2Templates = Jinja2Templates(directory=get_templates_path())
+templates = Jinja2Templates(directory=get_templates_path())
 router = APIRouter()
 
 
