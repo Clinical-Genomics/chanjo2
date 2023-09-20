@@ -24,7 +24,7 @@ async def demo_overview(request: Request):
     """Return a demo genes overview page over a list of genes for a list of samples."""
 
     overview_query = GeneralReportQuery(**DEMO_OVERVIEW_QUERY_DATA)
-    overview_content: Dict = get_overview_data(query=overview_query)
+    overview_content: dict = get_overview_data(query=overview_query)
     return templates.TemplateResponse(
         "overview.html",
         {
