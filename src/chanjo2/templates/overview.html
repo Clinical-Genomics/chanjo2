@@ -1,3 +1,47 @@
+{% macro completeness_cutoffs() %}
+	<div class="row">
+		<div class="col-md-12">
+			<ul class="nav nav-pills">
+				{% for level_id, _ in levels.items() %}
+					<li>
+						<a href="#" onclick="setDivVisibily({{level_id}});">
+							Completeness {{ level_id }}x
+						</a>
+					</li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+{% endmacro %}
+
+
+{% macro incompletely_covered_intervals(active_level) %}
+	{% for level_id, _ in levels.items() %}
+		<div class="row" id="collapse{{level_id}}">
+			<div class="col-md-12">
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th>Gene</th>
+							<th>Transcript</th>
+							<th>Exon</th>
+							<th>Sample</th>
+							<th>Completeness {{ level_id }}x [%]</th>
+						</tr>
+					</thead>
+					<tbody>
+
+					</tbody>
+				</table>
+			</div>
+		</div>
+	{% endfor %}
+	{{samples_coverage_stats}}
+{% endmacro %}
+
+
+
+
 <!DOCTYPE html>
 <head>
 	<meta charset="utf-8">
@@ -53,7 +97,13 @@
 			</div>
 		</div>
 	</div>
-	</div>
+
+	{{ completeness_cutoffs() }}
+
+	<br>
+
+	{{ incompletely_covered_intervals() }}
+
 
 
 	{% block js_code %}
@@ -62,6 +112,21 @@
 		<!-- Oldish compiled and minified JavaScript -->
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
+		<script>
+			function setDivVisibily(showLevel)
+			{
+			// show/collapse the document divs at different coverage levels
+				{% for level_id, _ in levels.items() %}
+					let levelDiv = document.getElementById("collapse{{level_id}}");
+					if({{level_id}} === showLevel){
+						levelDiv.style.visibility='block';
+					}
+					else{
+						levelDiv.style.visibility='hidden';
+					}
+				{% endfor %}
+			}
+		</script>
 	{% endblock %}
 </body>
 </html>
