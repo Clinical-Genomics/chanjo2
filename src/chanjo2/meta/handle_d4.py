@@ -177,8 +177,6 @@ def get_sample_interval_coverage(
                 completeness_thresholds=completeness_thresholds,
             )
 
-            inner_intervals_ensembl_ids = set()
-
             for interval in sql_intervals:
                 if interval.ensembl_id in inner_intervals_ensembl_ids:
                     continue
