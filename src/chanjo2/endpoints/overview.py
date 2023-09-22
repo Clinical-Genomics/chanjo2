@@ -7,7 +7,7 @@ from sqlmodel import Session
 
 from chanjo2.dbutil import get_session
 from chanjo2.demo import DEMO_OVERVIEW_QUERY_DATA
-from chanjo2.meta.handle_overview_content import get_overview_data
+from chanjo2.meta.handle_report_contents import get_overview_data
 from chanjo2.models.pydantic_models import GeneralReportQuery
 
 
