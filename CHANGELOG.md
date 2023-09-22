@@ -20,7 +20,8 @@
 - Fixed documentation according to changed coverage API
 ### Fixed
 - Bump certifi from 2022.12.7 to 2023.7.22
-- Datababase connection parameters in documentation files
+- Database connection parameters in documentation files
+- Avoid duplications when retrieving transcripts and exons in gene
 
 ## [1.1.0]
 ### Added

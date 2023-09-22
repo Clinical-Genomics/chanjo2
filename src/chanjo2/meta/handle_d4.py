@@ -21,7 +21,7 @@ LOG = logging.getLogger("uvicorn.access")
 
 
 def set_interval(
-    chrom: str, start: Optional[int] = None, end: Optional[int] = None
+        chrom: str, start: Optional[int] = None, end: Optional[int] = None
 ) -> Tuple[str, Optional[int], Optional[int]]:
     """Create the interval tuple used by the pyd4 utility."""
     return (chrom, start, end) if start and end else chrom
@@ -33,7 +33,7 @@ def get_d4_file(coverage_file_path: str) -> D4File:
 
 
 def get_intervals_coords_list(
-    intervals: List[Union[SQLGene, SQLTranscript, SQLExon]]
+        intervals: List[Union[SQLGene, SQLTranscript, SQLExon]]
 ) -> List[Tuple[str, int, int]]:
     """Return the coordinates of a list of intervals as a list of tuples."""
     interval_coords: List[Tuple[str, int, int]] = []
@@ -43,16 +43,16 @@ def get_intervals_coords_list(
 
 
 def get_intervals_mean_coverage(
-    d4_file: D4File, intervals: List[Tuple[str, int, int]]
+        d4_file: D4File, intervals: List[Tuple[str, int, int]]
 ) -> List[float]:
     """Return the mean value over a list of intervals of a d4 file."""
     return d4_file.mean(intervals)
 
 
 def intervals_coverage(
-    d4_file: D4File,
-    intervals: List[Tuple[str, int, int]],
-    completeness_thresholds: Optional[List[int]],
+        d4_file: D4File,
+        intervals: List[Tuple[str, int, int]],
+        completeness_thresholds: Optional[List[int]],
 ) -> List[IntervalCoverage]:
     """Return coverage over a list of intervals."""
     intervals_cov: List[IntervalCoverage] = []
@@ -74,9 +74,9 @@ def intervals_coverage(
 
 
 def get_intervals_completeness(
-    d4_file: D4File,
-    intervals: List[Tuple[str, int, int]],
-    completeness_thresholds: Optional[List[int]],
+        d4_file: D4File,
+        intervals: List[Tuple[str, int, int]],
+        completeness_thresholds: Optional[List[int]],
 ) -> List[Tuple[int, Decimal]]:
     """Compute coverage completeness over threshold values for a list of intervals."""
 
@@ -94,11 +94,11 @@ def get_intervals_completeness(
         total_region_length += stop - start
 
         for _, _, d4_tracks_base_coverage in d4_file.enumerate_values(
-            chrom, start, stop
+                chrom, start, stop
         ):  # _ and _ -> interval chromosome and start position
             for index, threshold in enumerate(completeness_thresholds):
                 if (
-                    d4_tracks_base_coverage[0] >= threshold
+                        d4_tracks_base_coverage[0] >= threshold
                 ):  # d4_tracks_base_coverage[0] is the coverage depth for the first track in the d4 file (float)
                     nr_complete_bases_by_threshold[index] += 1
 
@@ -115,11 +115,11 @@ def get_intervals_completeness(
 
 
 def get_sample_interval_coverage(
-    db: Session,
-    d4_file: D4File,
-    genes: List[SQLGene],
-    interval_type: Union[SQLGene, SQLTranscript, SQLExon],
-    completeness_thresholds: List[Optional[int]],
+        db: Session,
+        d4_file: D4File,
+        genes: List[SQLGene],
+        interval_type: Union[SQLGene, SQLTranscript, SQLExon],
+        completeness_thresholds: List[Optional[int]],
 ) -> List[GeneCoverage]:
     genes_coverage_stats: List[GeneCoverage] = []
     for gene in genes:
@@ -177,7 +177,13 @@ def get_sample_interval_coverage(
                 completeness_thresholds=completeness_thresholds,
             )
 
+            inner_intervals_ensembl_ids = set()
+
             for interval in sql_intervals:
+                
+                if interval.ensembl_id in inner_intervals_ensembl_ids:
+                    continue
+
                 interval_coordinates: Tuple[str, int, int] = (
                     interval.chromosome,
                     interval.start,
@@ -198,6 +204,8 @@ def get_sample_interval_coverage(
                 )
 
                 gene_coverage.inner_intervals.append(interval_coverage)
+
+                inner_intervals_ensembl_ids.add(interval.ensembl_id)
 
         genes_coverage_stats.append(gene_coverage)
 
