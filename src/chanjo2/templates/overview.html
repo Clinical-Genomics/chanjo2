@@ -16,26 +16,38 @@
 
 
 {% macro incompletely_covered_intervals(active_level) %}
-	{% for level_id, _ in levels.items() %}
-		<div class="row" id="collapse{{level_id}}">
-			<div class="col-md-12">
-				<table class="table table-bordered">
-					<thead>
+	<div class="row">
+		<div class="col-md-12">
+			<table class="table table-bordered">
+				<thead>
+					<tr>
+						<th>Gene</th>
+						<th>{{ extras.interval_type }}</th>
+						<th>Sample</th>
+						<th>Completeness {{ extras.default_level }}x [%]</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for row in incomplete_coverage_rows %}
 						<tr>
-							<th>Gene</th>
-							<th>Transcript</th>
-							<th>Exon</th>
-							<th>Sample</th>
-							<th>Completeness {{ level_id }}x [%]</th>
+							<td>
+								<a href="#">
+									{{ row[0] or row[1] }}
+								</a>
+							</td>
+							<td>{{ row[1] }}</td>
+							<td>{{ row[2] }}</td>
+							<td class="text-right">{{ row[3] }}</td>
 						</tr>
-					</thead>
-					<tbody>
-
-					</tbody>
-				</table>
-			</div>
+					{% else %}
+						<tr>
+							<td colspan="4">No intervals found..</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
 		</div>
-	{% endfor %}
+	</div>
 	{{samples_coverage_stats}}
 {% endmacro %}
 
@@ -103,8 +115,6 @@
 	<br>
 
 	{{ incompletely_covered_intervals() }}
-
-
 
 	{% block js_code %}
 		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
