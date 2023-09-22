@@ -33,6 +33,6 @@ async def demo_overview(request: Request, db: Session = Depends(get_session)):
             "request": request,
             "extras": overview_content["extras"],
             "levels": overview_content["levels"],
-            "incomplete_coverage_rows": overview_content["incomplete_coverage_rows"]
+            "incomplete_coverage_rows": overview_content["incomplete_coverage_rows"],
         },
     )

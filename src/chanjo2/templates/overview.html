@@ -3,7 +3,7 @@
 		<div class="col-md-12">
 			<ul class="nav nav-pills">
 				{% for level_id, _ in levels.items() %}
-					<li>
+					<li {% if level_id == extras.default_level %}class="active"{% endif %}>
 						<a href="#" onclick="setDivVisibily({{level_id}});">
 							Completeness {{ level_id }}x
 						</a>
