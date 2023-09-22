@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, List, Union, Optional
+from typing import Dict, List, Union, Optional, Tuple
 
 from pyd4 import D4File
 from sqlmodel import Session
@@ -65,15 +65,15 @@ def get_genes_overview_incomplete_coverage_rows(
     samples_coverage_stats: Dict[str, List[GeneCoverage]],
     interval_type: IntervalType,
     cov_level: int,
-) -> List[str]:
+) -> List[Tuple[str, int, float]]:
     """Return the rows that populate a gene overview report."""
 
     def _get_genes_overview_line(
         gene: Union[str, int], interval_id: str, sample: str, completeness: float
-    ) -> Optional[List[str]]:
+    ) -> Optional[Tuple[Union[str, int, float]]]:
         """Return a gene overview report line if the interval is not fully covered at the given threshold."""
         if completeness < 1:
-            return [str(gene), interval_id, sample, round(completeness, 2)]
+            return (str(gene), interval_id, sample, round(completeness, 2))
 
     genes_overview_rows: List[str] = []
 
