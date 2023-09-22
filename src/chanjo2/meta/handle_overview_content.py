@@ -61,19 +61,25 @@ def get_overview_data(query: GeneralReportQuery, session: Session) -> dict:
     }
 
 
+def _get_genes_overview_line(
+    gene: Union[str, int], interval_id: str, sample: str, completeness: float
+) -> Optional[Tuple[Union[str, int, float]]]:
+    """Return a gene overview report line if the interval is not fully covered at the given threshold."""
+    if completeness < 1:
+        return (str(gene), interval_id, sample, round(completeness, 2))
+
+
+def _remove_empty_lines(tuple_list: List[Tuple] = []) -> List[Tuple]:
+    """Remove rows which are set to None in a list of genes overview rows."""
+    return [t for t in tuple_list if t is not None]
+
+
 def get_genes_overview_incomplete_coverage_rows(
     samples_coverage_stats: Dict[str, List[GeneCoverage]],
     interval_type: IntervalType,
     cov_level: int,
 ) -> List[Tuple[str, int, float]]:
     """Return the rows that populate a gene overview report."""
-
-    def _get_genes_overview_line(
-        gene: Union[str, int], interval_id: str, sample: str, completeness: float
-    ) -> Optional[Tuple[Union[str, int, float]]]:
-        """Return a gene overview report line if the interval is not fully covered at the given threshold."""
-        if completeness < 1:
-            return (str(gene), interval_id, sample, round(completeness, 2))
 
     genes_overview_rows: List[str] = []
 
@@ -89,8 +95,8 @@ def get_genes_overview_incomplete_coverage_rows(
                     sample=sample_name,
                     completeness=completeness_at_level,
                 )
-                if overview_line:
-                    genes_overview_rows.append(overview_line)
+
+                genes_overview_rows.append(overview_line)
 
             else:
                 for inner_interval_stats in gene_cov_stats.inner_intervals:
@@ -104,7 +110,6 @@ def get_genes_overview_incomplete_coverage_rows(
                         completeness=completeness_at_level,
                     )
 
-                    if overview_line:
-                        genes_overview_rows.append(overview_line)
+                    genes_overview_rows.append(overview_line)
 
-    return genes_overview_rows
+    return _remove_empty_lines(tuple_list=genes_overview_rows)
