@@ -202,7 +202,7 @@ class SampleGeneIntervalQuery(BaseModel):
         return values
 
 
-## Coverageand  overview report - related models ###
+## Coverage and  overview report - related models ###
 
 
 class ReportQuerySample(BaseModel):
