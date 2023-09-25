@@ -289,7 +289,9 @@ def get_genes_overview_incomplete_coverage_rows(
                 completeness_at_level: float = gene_cov_stats.completeness.get(
                     cov_level
                 )
-                overview_line: Optional[List[str]] = _get_genes_overview_line(
+                overview_line: Optional[
+                    List[str]
+                ] = _get_incomplete_gene_coverage_overview_line(
                     gene=gene_cov_stats.hgnc_symbol or gene_cov_stats.hgnc_id,
                     interval_id=gene_cov_stats.hgnc_id,
                     sample=sample_name,
@@ -303,7 +305,9 @@ def get_genes_overview_incomplete_coverage_rows(
                     completeness_at_level: float = (
                         inner_interval_stats.completeness.get(cov_level)
                     )
-                    overview_line: Optional[List[str]] = _get_genes_overview_line(
+                    overview_line: Optional[
+                        List[str]
+                    ] = _get_incomplete_gene_coverage_overview_line(
                         gene=gene_cov_stats.hgnc_symbol or gene_cov_stats.hgnc_id,
                         interval_id=inner_interval_stats.interval_id,
                         sample=sample_name,
