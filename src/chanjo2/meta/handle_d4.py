@@ -177,7 +177,12 @@ def get_sample_interval_coverage(
                 completeness_thresholds=completeness_thresholds,
             )
 
+            inner_intervals_ensembl_ids = set()
+
             for interval in sql_intervals:
+                if interval.ensembl_id in inner_intervals_ensembl_ids:
+                    continue
+
                 interval_coordinates: Tuple[str, int, int] = (
                     interval.chromosome,
                     interval.start,
@@ -198,6 +203,8 @@ def get_sample_interval_coverage(
                 )
 
                 gene_coverage.inner_intervals.append(interval_coverage)
+
+                inner_intervals_ensembl_ids.add(interval.ensembl_id)
 
         genes_coverage_stats.append(gene_coverage)
 
