@@ -63,7 +63,7 @@ def _serialize_sample(sample: ReportQuerySample) -> Dict[str, str]:
     }
 
 
-#### Functions used to create d´coverage report ####
+#### Functions used to create a coverage report ####
 
 
 def get_report_data(query: ReportQuery, session: Session) -> Dict:
@@ -247,10 +247,10 @@ def get_report_sex_rows(
     return sample_sex_rows
 
 
-#### Functions used to create genes overview report ####
+#### Functions used to create a genes overview report ####
 
 
-def get_overview_data(query: GeneralReportQuery, session: Session) -> dict:
+def get_genes_overview_data(query: GeneralReportQuery, session: Session) -> dict:
     """Return the information that will be displayed in the coverage overview page."""
 
     set_samples_coverage_files(session=session, samples=query.samples)

@@ -7,7 +7,7 @@ from sqlmodel import Session
 
 from chanjo2.dbutil import get_session
 from chanjo2.demo import DEMO_OVERVIEW_QUERY_DATA
-from chanjo2.meta.handle_report_contents import get_overview_data
+from chanjo2.meta.handle_report_contents import get_genes_overview_data
 from chanjo2.models.pydantic_models import GeneralReportQuery
 
 
@@ -26,7 +26,7 @@ async def demo_overview(request: Request, db: Session = Depends(get_session)):
     """Return a demo genes overview page over a list of genes for a list of samples."""
 
     overview_query = GeneralReportQuery(**DEMO_OVERVIEW_QUERY_DATA)
-    overview_content: dict = get_overview_data(query=overview_query, session=db)
+    overview_content: dict = get_genes_overview_data(query=overview_query, session=db)
     return templates.TemplateResponse(
         "overview.html",
         {
