@@ -113,7 +113,7 @@ def get_report_data(
         )
         return data
 
-    # Add coverage_report data
+    # Add coverage_report - specific data
     data["sex_rows"] = get_report_sex_rows(
         samples=query.samples, samples_d4_files=samples_d4_files
     )
