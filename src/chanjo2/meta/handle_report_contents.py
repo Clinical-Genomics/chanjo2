@@ -279,7 +279,7 @@ def get_genes_overview_incomplete_coverage_rows(
     interval_type: IntervalType,
     cov_level: int,
 ) -> List[Tuple[str, int, float]]:
-    """Return the rows that populate a gene overview report."""
+    """Return incomplete gene coverage rows for given coverage level."""
 
     genes_overview_rows: List[str] = []
 
