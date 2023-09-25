@@ -202,36 +202,26 @@ class SampleGeneIntervalQuery(BaseModel):
         return values
 
 
-## Coverage overview report - related models ###
+## Coverage and  overview report - related models ###
 
 
-class GeneralReportQuerySample(BaseModel):
+class ReportQuerySample(BaseModel):
     name: str
     coverage_file_path: Optional[str]
-
-
-class GeneralReportQuery(BaseModel):
-    build: Builds
-    completeness_thresholds: Optional[List[int]] = DEFAULT_COMPLETENESS_LEVELS
-    ensembl_gene_ids: Optional[List[str]]
-    hgnc_gene_ids: Optional[List[int]]
-    hgnc_gene_symbols: Optional[List[str]]
-    interval_type: IntervalType
-    default_level: int = 10
-    samples: List[GeneralReportQuerySample]
-
-
-### Coverage report - related models ###
-
-
-class ReportQuerySample(GeneralReportQuerySample):
-    case_name: Optional[str]
+    case_name: Optional[str] = None
     analysis_date: Optional[datetime] = datetime.now()
 
 
-class ReportQuery(GeneralReportQuery):
+class ReportQuery(BaseModel):
+    build: Builds
+    completeness_thresholds: Optional[List[int]] = DEFAULT_COMPLETENESS_LEVELS
+    ensembl_gene_ids: Optional[List[str]] = []
+    hgnc_gene_ids: Optional[List[int]] = []
+    hgnc_gene_symbols: Optional[List[str]] = []
+    interval_type: IntervalType
+    default_level: int = 10
     panel_name: Optional[str] = "Custom panel"
-    case_display_name: Optional[str]
+    case_display_name: Optional[str] = None
     samples: List[ReportQuerySample]
 
     @validator("samples", pre=True)

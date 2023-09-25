@@ -30,6 +30,17 @@ INTERVAL_TYPE_SQL_TYPE: Dict[IntervalType, Union[SQLGene, SQLTranscript, SQLExon
 }
 
 
+#### Functions used by all reports ####
+
+
+def get_ordered_levels(threshold_levels: List[int]) -> OrderedDict:
+    """Returns the coverage threshold levels as an ordered dictionary."""
+    report_levels = OrderedDict()
+    for threshold in sorted(threshold_levels):
+        report_levels[threshold] = f"completeness_{threshold}"
+    return report_levels
+
+
 def set_samples_coverage_files(session: Session, samples: List[ReportQuerySample]):
     """Set path to coverage file for each sample in the samples list."""
 
@@ -51,8 +62,10 @@ def _serialize_sample(sample: ReportQuerySample) -> Dict[str, str]:
     }
 
 
-def get_report_data(query: ReportQuery, session: Session) -> Dict:
-    """Return the information that will be displayed in the coverage report."""
+def get_report_data(
+    query: ReportQuery, session: Session, is_overview_report: bool
+) -> Dict:
+    """Return the information that will be displayed in the coverage report or in the genes overview report.."""
 
     set_samples_coverage_files(session=session, samples=query.samples)
     samples_d4_files: List[Tuple[str, D4File]] = [
@@ -90,26 +103,39 @@ def get_report_data(query: ReportQuery, session: Session) -> Dict:
             "completeness_thresholds": query.completeness_thresholds,
             "samples": [_serialize_sample(sample) for sample in query.samples],
         },
-        "sex_rows": get_report_sex_rows(
-            samples=query.samples, samples_d4_files=samples_d4_files
-        ),
-        "completeness_rows": get_report_completeness_rows(
-            samples_coverage_stats=samples_coverage_stats,
-            levels=query.completeness_thresholds,
-        ),
-        "default_level_completeness_rows": get_report_level_completeness_rows(
-            samples_coverage_stats=samples_coverage_stats, level=query.default_level
-        ),
-        "errors": [
-            get_missing_genes_from_db(
-                sql_genes=genes,
-                ensembl_ids=query.ensembl_gene_ids,
-                hgnc_ids=query.hgnc_gene_ids,
-                hgnc_symbols=query.hgnc_gene_symbols,
-            )
-        ],
     }
+
+    if is_overview_report:
+        data["incomplete_coverage_rows"] = get_genes_overview_incomplete_coverage_rows(
+            samples_coverage_stats=samples_coverage_stats,
+            interval_type=query.interval_type.value,
+            cov_level=query.default_level,
+        )
+        return data
+
+    # Add coverage_report - specific data
+    data["sex_rows"] = get_report_sex_rows(
+        samples=query.samples, samples_d4_files=samples_d4_files
+    )
+    data["completeness_rows"] = get_report_completeness_rows(
+        samples_coverage_stats=samples_coverage_stats,
+        levels=query.completeness_thresholds,
+    )
+    data["default_level_completeness_rows"] = get_report_level_completeness_rows(
+        samples_coverage_stats=samples_coverage_stats, level=query.default_level
+    )
+    data["errors"] = [
+        get_missing_genes_from_db(
+            sql_genes=genes,
+            ensembl_ids=query.ensembl_gene_ids,
+            hgnc_ids=query.hgnc_gene_ids,
+            hgnc_symbols=query.hgnc_gene_symbols,
+        )
+    ]
     return data
+
+
+#### Functions used to create coverage report data
 
 
 def get_missing_genes_from_db(
@@ -232,9 +258,62 @@ def get_report_sex_rows(
     return sample_sex_rows
 
 
-def get_ordered_levels(threshold_levels: List[int]) -> OrderedDict:
-    """Returns the coverage threshold levels as an ordered dictionary."""
-    report_levels = OrderedDict()
-    for threshold in sorted(threshold_levels):
-        report_levels[threshold] = f"completeness_{threshold}"
-    return report_levels
+#### Functions used to create a genes overview report ####
+
+
+def _get_incomplete_gene_coverage_overview_line(
+    gene: Union[str, int], interval_id: str, sample: str, completeness: float
+) -> Optional[Tuple[Union[str, int, float]]]:
+    """Return a gene overview report line if the interval is not fully covered at the given threshold."""
+    if completeness < 1:
+        return (str(gene), interval_id, sample, round(completeness, 2))
+
+
+def _remove_none_elements(tuple_list: List[Tuple] = []) -> List[Tuple]:
+    """Remove rows which are set to None in a list of genes overview rows."""
+    return [tuple for tuple in tuple_list if tuple is not None]
+
+
+def get_genes_overview_incomplete_coverage_rows(
+    samples_coverage_stats: Dict[str, List[GeneCoverage]],
+    interval_type: IntervalType,
+    cov_level: int,
+) -> List[Tuple[str, int, float]]:
+    """Return incomplete gene coverage rows for given coverage level."""
+
+    genes_overview_rows: List[str] = []
+
+    for sample_name, genes_cov_stats_list in samples_coverage_stats.items():
+        for gene_cov_stats in genes_cov_stats_list:
+            if interval_type == IntervalType.GENES:
+                completeness_at_level: float = gene_cov_stats.completeness.get(
+                    cov_level
+                )
+                overview_line: Optional[
+                    List[str]
+                ] = _get_incomplete_gene_coverage_overview_line(
+                    gene=gene_cov_stats.hgnc_symbol or gene_cov_stats.hgnc_id,
+                    interval_id=gene_cov_stats.hgnc_id,
+                    sample=sample_name,
+                    completeness=completeness_at_level,
+                )
+
+                genes_overview_rows.append(overview_line)
+
+            else:
+                for inner_interval_stats in gene_cov_stats.inner_intervals:
+                    completeness_at_level: float = (
+                        inner_interval_stats.completeness.get(cov_level)
+                    )
+                    overview_line: Optional[
+                        List[str]
+                    ] = _get_incomplete_gene_coverage_overview_line(
+                        gene=gene_cov_stats.hgnc_symbol or gene_cov_stats.hgnc_id,
+                        interval_id=inner_interval_stats.interval_id,
+                        sample=sample_name,
+                        completeness=completeness_at_level,
+                    )
+
+                    genes_overview_rows.append(overview_line)
+
+    return _remove_none_elements(tuple_list=genes_overview_rows)

@@ -45,18 +45,3 @@ DEMO_COVERAGE_QUERY_DATA = {
     "hgnc_gene_symbols": DEMO_HGNC_GENE_SYMBOLS,
     "default_level": 20,
 }
-
-DEMO_OVERVIEW_QUERY_DATA = {
-    "build": BUILD_37,
-    "samples": [
-        {
-            "name": DEMO_SAMPLE["name"],
-            "coverage_file_path": d4_demo_path,
-        }
-    ],
-    "interval_type": "transcripts",
-    "ensembl_gene_ids": [],
-    "hgnc_gene_ids": [],
-    "hgnc_gene_symbols": DEMO_HGNC_GENE_SYMBOLS,
-    "default_level": 20,
-}
