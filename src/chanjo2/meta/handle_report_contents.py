@@ -261,7 +261,7 @@ def get_report_sex_rows(
 #### Functions used to create a genes overview report ####
 
 
-def _get_genes_overview_line(
+def _get_incomplete_gene_coverage_overview_line(
     gene: Union[str, int], interval_id: str, sample: str, completeness: float
 ) -> Optional[Tuple[Union[str, int, float]]]:
     """Return a gene overview report line if the interval is not fully covered at the given threshold."""
