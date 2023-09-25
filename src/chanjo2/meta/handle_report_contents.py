@@ -269,7 +269,7 @@ def _get_incomplete_gene_coverage_overview_line(
         return (str(gene), interval_id, sample, round(completeness, 2))
 
 
-def _remove_empty_lines(tuple_list: List[Tuple] = []) -> List[Tuple]:
+def _remove_none_elements(tuple_list: List[Tuple] = []) -> List[Tuple]:
     """Remove rows which are set to None in a list of genes overview rows."""
     return [tuple for tuple in tuple_list if tuple is not None]
 
@@ -316,4 +316,4 @@ def get_genes_overview_incomplete_coverage_rows(
 
                     genes_overview_rows.append(overview_line)
 
-    return _remove_empty_lines(tuple_list=genes_overview_rows)
+    return _remove_none_elements(tuple_list=genes_overview_rows)
