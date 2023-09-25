@@ -54,7 +54,9 @@ async def report(
     request: Request, report_query: ReportQuery, db: Session = Depends(get_session)
 ):
     """Return a coverage report over a list of genes for a list of samples."""
-    report_content: Dict = get_report_data(query=report_query, session=db)
+    report_content: Dict = get_report_data(
+        query=report_query, session=db, is_overview_report=False
+    )
     return templates.TemplateResponse(
         "report.html",
         {
