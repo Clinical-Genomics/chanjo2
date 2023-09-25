@@ -65,7 +65,7 @@ def _serialize_sample(sample: ReportQuerySample) -> Dict[str, str]:
 def get_report_data(
     query: ReportQuery, session: Session, is_overview_report: bool
 ) -> Dict:
-    """Return the information that will be displayed in the coverage report."""
+    """Return the information that will be displayed in the coverage report or in the genes overview report.."""
 
     set_samples_coverage_files(session=session, samples=query.samples)
     samples_d4_files: List[Tuple[str, D4File]] = [
@@ -113,7 +113,7 @@ def get_report_data(
         )
         return data
 
-    # coverage_report
+    # Add coverage_report data
     data["sex_rows"] = get_report_sex_rows(
         samples=query.samples, samples_d4_files=samples_d4_files
     )
