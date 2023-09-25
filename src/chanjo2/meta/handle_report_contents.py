@@ -15,7 +15,6 @@ from chanjo2.models.pydantic_models import (
     SampleSexRow,
     GeneCoverage,
     IntervalType,
-    GeneralReportQuery,
 )
 from chanjo2.models.sql_models import Exon as SQLExon
 from chanjo2.models.sql_models import Gene as SQLGene
@@ -63,10 +62,9 @@ def _serialize_sample(sample: ReportQuerySample) -> Dict[str, str]:
     }
 
 
-#### Functions used to create a coverage report ####
-
-
-def get_report_data(query: ReportQuery, session: Session) -> Dict:
+def get_report_data(
+    query: ReportQuery, session: Session, is_overview_report: bool
+) -> Dict:
     """Return the information that will be displayed in the coverage report."""
 
     set_samples_coverage_files(session=session, samples=query.samples)
@@ -105,26 +103,39 @@ def get_report_data(query: ReportQuery, session: Session) -> Dict:
             "completeness_thresholds": query.completeness_thresholds,
             "samples": [_serialize_sample(sample) for sample in query.samples],
         },
-        "sex_rows": get_report_sex_rows(
-            samples=query.samples, samples_d4_files=samples_d4_files
-        ),
-        "completeness_rows": get_report_completeness_rows(
-            samples_coverage_stats=samples_coverage_stats,
-            levels=query.completeness_thresholds,
-        ),
-        "default_level_completeness_rows": get_report_level_completeness_rows(
-            samples_coverage_stats=samples_coverage_stats, level=query.default_level
-        ),
-        "errors": [
-            get_missing_genes_from_db(
-                sql_genes=genes,
-                ensembl_ids=query.ensembl_gene_ids,
-                hgnc_ids=query.hgnc_gene_ids,
-                hgnc_symbols=query.hgnc_gene_symbols,
-            )
-        ],
     }
+
+    if is_overview_report:
+        data["incomplete_coverage_rows"] = get_genes_overview_incomplete_coverage_rows(
+            samples_coverage_stats=samples_coverage_stats,
+            interval_type=query.interval_type.value,
+            cov_level=query.default_level,
+        )
+        return data
+
+    # coverage_report
+    data["sex_rows"] = get_report_sex_rows(
+        samples=query.samples, samples_d4_files=samples_d4_files
+    )
+    data["completeness_rows"] = get_report_completeness_rows(
+        samples_coverage_stats=samples_coverage_stats,
+        levels=query.completeness_thresholds,
+    )
+    data["default_level_completeness_rows"] = get_report_level_completeness_rows(
+        samples_coverage_stats=samples_coverage_stats, level=query.default_level
+    )
+    data["errors"] = [
+        get_missing_genes_from_db(
+            sql_genes=genes,
+            ensembl_ids=query.ensembl_gene_ids,
+            hgnc_ids=query.hgnc_gene_ids,
+            hgnc_symbols=query.hgnc_gene_symbols,
+        )
+    ]
     return data
+
+
+#### Functions used to create coverage report data
 
 
 def get_missing_genes_from_db(
@@ -248,50 +259,6 @@ def get_report_sex_rows(
 
 
 #### Functions used to create a genes overview report ####
-
-
-def get_genes_overview_data(query: GeneralReportQuery, session: Session) -> dict:
-    """Return the information that will be displayed in the coverage overview page."""
-
-    set_samples_coverage_files(session=session, samples=query.samples)
-    samples_d4_files: List[Tuple[str, D4File]] = [
-        (sample.name, D4File(sample.coverage_file_path)) for sample in query.samples
-    ]
-    genes: List[SQLGene] = get_genes(
-        db=session,
-        build=query.build,
-        ensembl_ids=query.ensembl_gene_ids,
-        hgnc_ids=query.hgnc_gene_ids,
-        hgnc_symbols=query.hgnc_gene_symbols,
-        limit=None,
-    )
-    samples_coverage_stats: Dict[str, List[GeneCoverage]] = {
-        sample: get_sample_interval_coverage(
-            db=session,
-            d4_file=d4_file,
-            genes=genes,
-            interval_type=INTERVAL_TYPE_SQL_TYPE[query.interval_type],
-            completeness_thresholds=[query.default_level],
-        )
-        for sample, d4_file in samples_d4_files
-    }
-
-    return {
-        "extras": {
-            "default_level": query.default_level,
-            "interval_type": query.interval_type.value,
-            "samples": [
-                {"name": sample.name, "coverage_file_path": sample.coverage_file_path}
-                for sample in query.samples
-            ],
-        },
-        "levels": get_ordered_levels(query.completeness_thresholds),
-        "incomplete_coverage_rows": get_genes_overview_incomplete_coverage_rows(
-            samples_coverage_stats=samples_coverage_stats,
-            interval_type=query.interval_type.value,
-            cov_level=query.default_level,
-        ),
-    }
 
 
 def _get_genes_overview_line(
