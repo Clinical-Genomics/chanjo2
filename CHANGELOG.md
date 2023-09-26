@@ -23,6 +23,7 @@
 - Bump certifi from 2022.12.7 to 2023.7.22
 - Database connection parameters in documentation files
 - Avoid duplications when retrieving transcripts and exons in gene
+- Add upgrade-insecure-requests meta to HTML page to be able to use javascript fetch in requests
 
 ## [1.1.0]
 ### Added
