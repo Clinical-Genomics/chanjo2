@@ -143,7 +143,7 @@
 					'samples' : {{ extras.samples|safe }},
 				}
 
-				fetch('{{url_for("overview")}}', {
+				fetch('/overview', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
