@@ -38,3 +38,23 @@ async def demo_overview(request: Request, db: Session = Depends(get_session)):
             "incomplete_coverage_rows": overview_content["incomplete_coverage_rows"],
         },
     )
+
+
+@router.post("/overview", response_class=HTMLResponse)
+async def overview(
+    request: Request, report_query: ReportQuery, db: Session = Depends(get_session)
+):
+    """Return the genes overview page over a list of genes for a list of samples."""
+
+    overview_content: dict = get_report_data(
+        query=report_query, session=db, is_overview_report=True
+    )
+    return templates.TemplateResponse(
+        "overview.html",
+        {
+            "request": request,
+            "extras": overview_content["extras"],
+            "levels": overview_content["levels"],
+            "incomplete_coverage_rows": overview_content["incomplete_coverage_rows"],
+        },
+    )

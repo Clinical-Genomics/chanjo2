@@ -11,8 +11,8 @@
 - Metrics explanation section on coverage report
 - Non-demo coverage report endpoint
 - Fixed coverage report filters to update report using other settings
-- Demo genes overview endpoint
-- Incomplete intervals at different coverage thresholds on demo genes overview page
+- Demo and non-demo genes overview endpoint
+- Incomplete intervals at different coverage thresholds on genes overview page
 ### Changed
 - Moved helper function from endpoints coverage to crud samples
 - Deleted unused `src/chanjo2/meta/handle_query_intervals.py` file
