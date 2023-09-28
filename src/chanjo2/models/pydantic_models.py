@@ -1,3 +1,5 @@
+import json
+import logging
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
@@ -12,6 +14,8 @@ from chanjo2.constants import (
     AMBIGUOUS_SAMPLES_INPUT,
     DEFAULT_COMPLETENESS_LEVELS,
 )
+
+LOG = logging.getLogger("uvicorn.access")
 
 
 class Builds(str, Enum):
@@ -227,8 +231,28 @@ class ReportQuery(BaseModel):
     @validator("samples", pre=True)
     def samples_validator(cls, sample_list):
         if isinstance(sample_list, str):
-            return json.loads(sample_list)
+            return json.loads(sample_list.replace("'", '"'))
         return sample_list
+
+
+class GeneReportForm(BaseModel):
+    build: Builds
+    completeness_thresholds: Optional[List[int]] = DEFAULT_COMPLETENESS_LEVELS
+    hgnc_gene_id: int
+    default_level: int = 10
+    samples: List[ReportQuerySample]
+    interval_type: IntervalType
+
+    @validator("samples", pre=True)
+    def samples_validator(cls, sample_list):
+        if isinstance(sample_list, str):
+            return json.loads(sample_list.replace("'", '"'))
+        return sample_list
+
+    @validator("completeness_thresholds", pre=True)
+    def coverage_thresholds_validator(cls, completeness_thresholds: str):
+        thresholds: List[str] = completeness_thresholds.split(",")
+        return [int(threshold.strip()) for threshold in thresholds]
 
 
 class SampleSexRow(BaseModel):
