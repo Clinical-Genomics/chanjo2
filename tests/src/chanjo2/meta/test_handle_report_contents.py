@@ -135,8 +135,15 @@ def test_get_genes_overview_incomplete_coverage_rows(
     )
 
     # THEN each transcript line should contain the expected values
-    for gene, transcript_id, sample, completeness in genes_overview_lines:
-        assert isinstance(gene, str)
+    for (
+        gene_symbol,
+        gene_hgnc_id,
+        transcript_id,
+        sample,
+        completeness,
+    ) in genes_overview_lines:
+        assert isinstance(gene_symbol, str)
+        assert isinstance(gene_hgnc_id, int)
         assert isinstance(transcript_id, str)
         assert sample == samples_d4_list[0][0]
         assert completeness < 1
