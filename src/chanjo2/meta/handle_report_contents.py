@@ -363,7 +363,7 @@ def get_gene_overview_data(form_data: GeneReportForm, session: Session):
 
 def get_gene_coverage_stats_by_interval(
     coverage_by_sample: Dict[str, List[GeneCoverage]]
-):
+) -> Dict[str, List[Tuple]]:
     """Arrange coverage stats by interval id instead of by sample."""
 
     intervals_stats: Dict[str, List] = {}
