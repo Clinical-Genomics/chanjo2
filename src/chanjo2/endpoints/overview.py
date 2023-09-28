@@ -10,7 +10,7 @@ from sqlmodel import Session
 from chanjo2.dbutil import get_session
 from chanjo2.demo import DEMO_COVERAGE_QUERY_DATA
 from chanjo2.meta.handle_report_contents import get_report_data, get_gene_overview_data
-from chanjo2.models.pydantic_models import ReportQuery, GeneReportForm
+from chanjo2.models.pydantic_models import ReportQuery, GeneReportForm, GeneCoverage
 
 LOG = logging.getLogger("uvicorn.access")
 
@@ -86,15 +86,19 @@ async def gene_overview(
         interval_type=interval_type,
     )
 
-    gene_overview_content: dict = get_gene_overview_data(
+    gene_overview_content: Dict[str, List[GeneCoverage]] = get_gene_overview_data(
         form_data=form_data, session=db
     )
-
-    LOG.warning(gene_overview_content)
 
     return templates.TemplateResponse(
         "gene-overview.html",
         {
             "request": request,
+            "interval_type": gene_overview_content["interval_type"],
+            "gene": gene_overview_content["gene"],
+            "interval_coverage_stats": gene_overview_content[
+                "samples_coverage_stats_by_interval"
+            ],
+            "levels": gene_overview_content["levels"],
         },
     )

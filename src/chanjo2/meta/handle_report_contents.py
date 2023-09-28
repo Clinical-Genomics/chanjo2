@@ -349,4 +349,43 @@ def get_gene_overview_data(form_data: GeneReportForm, session: Session):
         for sample, d4_file in samples_d4_files
     }
 
-    return samples_coverage_stats
+    return {
+        "levels": get_ordered_levels(
+            threshold_levels=form_data.completeness_thresholds
+        ),
+        "interval_type": form_data.interval_type.value,
+        "gene": gene,
+        "samples_coverage_stats_by_interval": get_gene_coverage_stats_by_interval(
+            coverage_by_sample=samples_coverage_stats
+        ),
+    }
+
+
+def get_gene_coverage_stats_by_interval(
+    coverage_by_sample: Dict[str, List[GeneCoverage]]
+):
+    """Arrange coverage stats by interval id instead of by sample."""
+
+    intervals_stats: Dict[str, List] = {}
+
+    for sample, stats in coverage_by_sample.items():
+        for gene_interval in stats:
+            for inner_interval in gene_interval.inner_intervals:
+                if inner_interval.interval_id in intervals_stats:
+                    intervals_stats[inner_interval.interval_id].append(
+                        (
+                            sample,
+                            inner_interval.mean_coverage,
+                            inner_interval.completeness,
+                        )
+                    )
+                else:
+                    intervals_stats[inner_interval.interval_id] = [
+                        (
+                            sample,
+                            inner_interval.mean_coverage,
+                            inner_interval.completeness,
+                        )
+                    ]
+
+    return intervals_stats
