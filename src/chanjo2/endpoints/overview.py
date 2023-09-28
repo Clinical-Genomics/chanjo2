@@ -65,7 +65,7 @@ async def overview(
     )
 
 
-@router.post("/gene-overview", response_class=HTMLResponse)
+@router.post("/gene_overview", response_class=HTMLResponse)
 async def gene_overview(
     request: Request,
     db: Session = Depends(get_session),
@@ -84,10 +84,10 @@ async def gene_overview(
         {
             "request": request,
             "interval_type": gene_overview_content["interval_type"],
-            "gene": gene_overview_content["gene"],
-            "interval_coverage_stats": gene_overview_content[
+            "gene": gene_overview_content.get("gene"),
+            "interval_coverage_stats": gene_overview_content.get(
                 "samples_coverage_stats_by_interval"
-            ],
+            ),
             "levels": gene_overview_content["levels"],
         },
     )

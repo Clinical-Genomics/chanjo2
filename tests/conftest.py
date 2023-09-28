@@ -69,6 +69,7 @@ class Endpoints(str):
     SAMPLE_EXONS_COVERAGE = "/coverage/samples/exons_coverage"
     REPORT_DEMO = "/report/demo/"
     REPORT = "/report"
+    GENE_OVERVIEW = "/gene_overview"
     OVERVIEW = "/overview"
     OVERVIEW_DEMO = "/overview/demo/"
 

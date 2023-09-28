@@ -328,6 +328,14 @@ def get_genes_overview_incomplete_coverage_rows(
 def get_gene_overview_data(form_data: GeneReportForm, session: Session):
     """Returns coverage stats over the intervals sof one gene for one or more samples."""
 
+    gene_stats = {
+        "levels": get_ordered_levels(
+            threshold_levels=form_data.completeness_thresholds
+        ),
+        "interval_type": form_data.interval_type.value,
+        "samples_coverage_stats_by_interval": {},
+    }
+
     set_samples_coverage_files(session=session, samples=form_data.samples)
 
     samples_d4_files: List[Tuple[str, D4File]] = [
@@ -337,6 +345,9 @@ def get_gene_overview_data(form_data: GeneReportForm, session: Session):
     gene: SQLGene = get_hgnc_gene(
         build=form_data.build, hgnc_id=form_data.hgnc_gene_id, db=session
     )
+    if gene is None:
+        return gene_stats
+    gene_stats["gene"] = gene
 
     samples_coverage_stats: Dict[str, List[GeneCoverage]] = {
         sample: get_sample_interval_coverage(
@@ -348,17 +359,10 @@ def get_gene_overview_data(form_data: GeneReportForm, session: Session):
         )
         for sample, d4_file in samples_d4_files
     }
-
-    return {
-        "levels": get_ordered_levels(
-            threshold_levels=form_data.completeness_thresholds
-        ),
-        "interval_type": form_data.interval_type.value,
-        "gene": gene,
-        "samples_coverage_stats_by_interval": get_gene_coverage_stats_by_interval(
-            coverage_by_sample=samples_coverage_stats
-        ),
-    }
+    gene_stats[
+        "samples_coverage_stats_by_interval"
+    ] = get_gene_coverage_stats_by_interval(coverage_by_sample=samples_coverage_stats)
+    return gene_stats
 
 
 def get_gene_coverage_stats_by_interval(
