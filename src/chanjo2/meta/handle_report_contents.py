@@ -4,7 +4,7 @@ from statistics import mean
 from typing import List, Dict, Tuple, Union, Set, Optional
 
 from pyd4 import D4File
-from sqlmodel import Session
+from sqlalchemy.orm import Session
 
 from chanjo2.crud.intervals import get_genes
 from chanjo2.crud.samples import get_sample

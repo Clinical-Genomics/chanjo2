@@ -3,7 +3,7 @@ from os import path
 from fastapi import APIRouter, Request, Depends
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from sqlmodel import Session
+from sqlalchemy.orm import Session
 
 from chanjo2.dbutil import get_session
 from chanjo2.demo import DEMO_COVERAGE_QUERY_DATA

@@ -9,7 +9,6 @@ authors = ["northwestwitch <chiara.rasi@scilifelab.se>"]
 [tool.poetry.dependencies]
 python = "^3.8"
 fastapi = "^0.68.1"
-sqlmodel = "^0.0.4"
 python-multipart = "^0.0.5"
 mysqlclient = "^2.1.0"
 gunicorn = "^20.1.0"

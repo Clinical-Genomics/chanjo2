@@ -4,7 +4,7 @@ from typing import Iterator, List, Union, Optional
 import requests
 from schug.load.biomart import EnsemblBiomartClient
 from schug.models.common import Build as SchugBuild
-from sqlmodel import Session
+from sqlalchemy.orm import Session
 
 from chanjo2.constants import (
     ENSEMBL_RESOURCE_CLIENT,
