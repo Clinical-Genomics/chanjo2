@@ -771,12 +771,12 @@ files = [
 
 [[package]]
 name = "pyd4"
-version = "0.3.9"
+version = "0.3.6.2"
 description = ""
 optional = false
 python-versions = "*"
 files = [
-    {file = "pyd4-0.3.9.tar.gz", hash = "sha256:52021139315c65d63b68cc1805a107971ba70aee600e324c9565da1b69318c36"},
+    {file = "pyd4-0.3.6.2.tar.gz", hash = "sha256:211ca79573a770b15aaf96b452a47eb09144c19c795d275cfdf8d8b9546c8e92"},
 ]
 
 [package.dependencies]
@@ -1375,4 +1375,4 @@ m1 = ["pyd4"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "2d5ee8a74d458157a9ce6bf15fe1f8faf4d8eff7f625510e99e1c2068cc3aaa3"
+content-hash = "5e47fe27c87bc1d44483180239f9d1561285f85b7c4513a64cf8083881960932"
