@@ -114,7 +114,7 @@ def bulk_insert_transcripts(db: Session, transcripts: List[TranscriptBase]):
     )
     db.commit()
 
-    
+
 def get_hgnc_gene(db: Session, build: Builds, hgnc_id: int) -> SQLGene:
     """Return a gene object by its HGNC ID."""
     gene_query: query.Query = (
