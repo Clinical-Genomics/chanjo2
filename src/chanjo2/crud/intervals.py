@@ -114,6 +114,16 @@ def bulk_insert_transcripts(db: Session, transcripts: List[TranscriptBase]):
     )
     db.commit()
 
+    
+def get_hgnc_gene(db: Session, build: Builds, hgnc_id: int) -> SQLGene:
+    """Return a gene object by its HGNC ID."""
+    gene_query: query.Query = (
+        db.query(SQLGene)
+        .filter(SQLGene.hgnc_id == hgnc_id)
+        .filter(SQLGene.build == build)
+    )
+    return gene_query.first()
+
 
 def _filter_transcripts_by_tag(
     transcripts: query.Query, transcript_tags: List[TranscriptTag] = []

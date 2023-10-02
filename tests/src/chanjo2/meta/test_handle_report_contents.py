@@ -11,6 +11,7 @@ from chanjo2.meta.handle_report_contents import (
     get_report_completeness_rows,
     get_missing_genes_from_db,
     get_genes_overview_incomplete_coverage_rows,
+    get_gene_coverage_stats_by_interval,
 )
 from chanjo2.models.sql_models import Gene as SQLGene
 from chanjo2.models.sql_models import Transcript as SQLTranscript
@@ -135,8 +136,51 @@ def test_get_genes_overview_incomplete_coverage_rows(
     )
 
     # THEN each transcript line should contain the expected values
-    for gene, transcript_id, sample, completeness in genes_overview_lines:
-        assert isinstance(gene, str)
+    for (
+        gene_symbol,
+        gene_hgnc_id,
+        transcript_id,
+        sample,
+        completeness,
+    ) in genes_overview_lines:
+        assert isinstance(gene_symbol, str)
+        assert isinstance(gene_hgnc_id, int)
         assert isinstance(transcript_id, str)
         assert sample == samples_d4_list[0][0]
         assert completeness < 1
+
+
+def test_get_gene_coverage_stats_by_interval(
+    demo_session: sessionmaker,
+    samples_d4_list: List[Tuple[str, D4File]],
+    demo_genes_37: List[SQLGene],
+):
+    """Tests the function that arranges samples coverage stats by inner interval."""
+
+    # Given coverage stats by sample
+    samples_coverage_stats: Dict[str, List[GeneCoverage]] = {
+        sample: get_sample_interval_coverage(
+            db=demo_session,
+            d4_file=d4_file,
+            genes=demo_genes_37,
+            interval_type=SQLTranscript,
+            completeness_thresholds=DEFAULT_COMPLETENESS_LEVELS,
+        )
+        for sample, d4_file in samples_d4_list
+    }
+
+    # WHEN passed to the get_gene_coverage_stats_by_interval function:
+    intervals_coverage_stats: Dict[
+        str, List[Tuple]
+    ] = get_gene_coverage_stats_by_interval(coverage_by_sample=samples_coverage_stats)
+
+    # THEN the returned data should have the expected format
+    for interval_id, stats_tuples in intervals_coverage_stats.items():
+        assert isinstance(interval_id, str)
+
+        for stats_tuple in stats_tuples:
+            assert isinstance(stats_tuple[0], str)  # sample name
+            assert isinstance(stats_tuple[1], float)  # mean coverage
+            assert isinstance(
+                stats_tuple[2], dict
+            )  # coverage completeness over threshoulds

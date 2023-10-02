@@ -16,7 +16,13 @@
 
 
 {% macro incompletely_covered_intervals(active_level) %}
-
+ <form id="geneStatsForm" action="{{url_for('gene_overview')}}" method="post">
+	 <input type="hidden" name="build" value="{{extras.build}}"/>
+	 <input type="hidden" name="default_level" value="{{extras.default_level}}"/>
+	 <input type="hidden" name="completeness_thresholds" value="{{extras.completeness_thresholds|join(',')}}"/>
+	 <input type="hidden" name="samples" value="{{extras.samples|safe}}"/>
+	 <input type="hidden" name="interval_type" value="{{extras.interval_type}}"/>
+</form>
 	<div class="row">
 		<div class="col-md-12">
 			<table class="table table-bordered">
@@ -33,13 +39,13 @@
 					{% for row in incomplete_coverage_rows %}
 						<tr>
 							<td>
-								<a href="#">
-									{{ row[0] or row[1] }}
+								<a href="#" onclick="getGeneStatsPage({{row[1]}});" target="_blank" rel="noopener">
+									{{row[0]}}
 								</a>
 							</td>
-							<td>{{ row[1] }}</td>
 							<td>{{ row[2] }}</td>
-							<td class="text-right">{{ row[3] }}</td>
+							<td>{{ row[3] }}</td>
+							<td class="text-right">{{ row[4] }}</td>
 						</tr>
 					{% else %}
 						<tr>
@@ -50,10 +56,10 @@
 			</table>
 		</div>
 	</div>
+
 	{{samples_coverage_stats}}
+
 {% endmacro %}
-
-
 
 
 <!DOCTYPE html>
@@ -159,6 +165,20 @@
                         console.error(error);
                 });
 			}
+
+
+			function getGeneStatsPage(hgncId)
+			{
+				event.preventDefault();
+				var theForm = document.getElementById("geneStatsForm");
+				var geneInput = document.createElement("input");
+				geneInput.setAttribute("type", "hidden");
+				geneInput.setAttribute("name", "hgnc_gene_id");
+				geneInput.setAttribute("value", hgncId);
+				theForm.appendChild(geneInput);
+				theForm.submit();
+			}
+
 		</script>
 	{% endblock %}
 </body>
