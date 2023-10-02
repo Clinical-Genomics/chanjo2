@@ -1,14 +1,22 @@
+import logging
 from os import path
 
 from fastapi import APIRouter, Request, Depends
+from fastapi.encoders import jsonable_encoder
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
+from starlette.datastructures import FormData
 
 from chanjo2.dbutil import get_session
 from chanjo2.demo import DEMO_COVERAGE_QUERY_DATA
-from chanjo2.meta.handle_report_contents import get_report_data
-from chanjo2.models.pydantic_models import ReportQuery
+from chanjo2.meta.handle_report_contents import (
+    get_report_data,
+    get_gene_overview_coverage_stats,
+)
+from chanjo2.models.pydantic_models import ReportQuery, GeneReportForm, GeneCoverage
+
+LOG = logging.getLogger("uvicorn.access")
 
 
 def get_templates_path() -> str:
@@ -56,5 +64,33 @@ async def overview(
             "extras": overview_content["extras"],
             "levels": overview_content["levels"],
             "incomplete_coverage_rows": overview_content["incomplete_coverage_rows"],
+        },
+    )
+
+
+@router.post("/gene_overview", response_class=HTMLResponse)
+async def gene_overview(
+    request: Request,
+    db: Session = Depends(get_session),
+):
+    """Returns coverage overview stats for a group of samples over genomic intervals of a single gene."""
+    form_data: FormData = await request.form()
+    form_dict: dict = jsonable_encoder(form_data)
+    validated_form = GeneReportForm(**form_dict)
+
+    gene_overview_content: Dict[
+        str, List[GeneCoverage]
+    ] = get_gene_overview_coverage_stats(form_data=validated_form, session=db)
+
+    return templates.TemplateResponse(
+        "gene-overview.html",
+        {
+            "request": request,
+            "interval_type": gene_overview_content["interval_type"],
+            "gene": gene_overview_content.get("gene"),
+            "interval_coverage_stats": gene_overview_content.get(
+                "samples_coverage_stats_by_interval"
+            ),
+            "levels": gene_overview_content["levels"],
         },
     )
