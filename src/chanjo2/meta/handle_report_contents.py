@@ -87,6 +87,7 @@ def get_report_data(
             genes=genes,
             interval_type=INTERVAL_TYPE_SQL_TYPE[query.interval_type],
             completeness_thresholds=query.completeness_thresholds,
+            transcript_tags=["refseq_mrna"],
         )
         for sample, d4_file in samples_d4_files
     }

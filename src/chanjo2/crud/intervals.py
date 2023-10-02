@@ -10,6 +10,7 @@ from chanjo2.models.pydantic_models import (
     ExonBase,
     GeneBase,
     TranscriptBase,
+    TranscriptTag,
 )
 from chanjo2.models.sql_models import Exon as SQLExon
 from chanjo2.models.sql_models import Gene as SQLGene
@@ -114,6 +115,17 @@ def bulk_insert_transcripts(db: Session, transcripts: List[TranscriptBase]):
     db.commit()
 
 
+def _filter_transcripts_by_tag(
+    transcripts: query.Query, transcript_tags: List[TranscriptTag] = []
+) -> query.Query:
+    """Return transcripts which contain one or more RefSeq tag."""
+    for tag in transcript_tags:
+        transcripts: query.Query = transcripts.filter(
+            getattr(SQLTranscript, tag).isnot(None)
+        )
+    return transcripts
+
+
 def get_gene_intervals(
     db: Session,
     build: Builds,
@@ -123,6 +135,7 @@ def get_gene_intervals(
     ensembl_gene_ids: Optional[List[str]],
     limit: Optional[int],
     interval_type: Union[SQLTranscript, SQLExon],
+    transcript_tags: Optional[List[TranscriptTag]] = [],
 ) -> List[Union[SQLTranscript, SQLExon]]:
     """Retrieve transcripts or exons from a list of genes."""
 
@@ -139,6 +152,11 @@ def get_gene_intervals(
         intervals: query.Query = intervals.filter(SQLGene.hgnc_id.in_(hgnc_ids))
     elif hgnc_symbols:
         intervals: query.Query = intervals.filter(SQLGene.hgnc_symbol.in_(hgnc_symbols))
+
+    if interval_type == SQLTranscript and transcript_tags:
+        intervals = _filter_transcripts_by_tag(
+            transcripts=intervals, transcript_tags=transcript_tags
+        )
 
     intervals: query.Query = intervals.filter(interval_type.build == build)
 

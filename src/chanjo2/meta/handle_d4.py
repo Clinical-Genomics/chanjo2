@@ -12,6 +12,7 @@ from chanjo2.models.pydantic_models import (
     Sex,
     GeneCoverage,
     IntervalType,
+    TranscriptTag,
 )
 from chanjo2.models.sql_models import Exon as SQLExon
 from chanjo2.models.sql_models import Gene as SQLGene
@@ -120,6 +121,7 @@ def get_sample_interval_coverage(
     genes: List[SQLGene],
     interval_type: Union[SQLGene, SQLTranscript, SQLExon],
     completeness_thresholds: List[Optional[int]],
+    transcript_tags: Optional[List[TranscriptTag]] = [],
 ) -> List[GeneCoverage]:
     genes_coverage_stats: List[GeneCoverage] = []
     for gene in genes:
@@ -158,6 +160,7 @@ def get_sample_interval_coverage(
                 hgnc_symbols=None,
                 ensembl_gene_ids=[gene.ensembl_id],
                 limit=None,
+                transcript_tags=transcript_tags,
             )
 
             intervals_coords: List[Tuple[str, int, int]] = get_intervals_coords_list(
@@ -192,7 +195,7 @@ def get_sample_interval_coverage(
                 interval_coverage = IntervalCoverage(
                     **{
                         "interval_type": interval_type.__tablename__,
-                        "interval_id": interval.ensembl_id,
+                        "interval_id": interval.refseq_mrna or interval.ensembl_id,
                         "mean_coverage": d4_file.mean(interval_coordinates),
                         "completeness": get_intervals_completeness(
                             d4_file=d4_file,
