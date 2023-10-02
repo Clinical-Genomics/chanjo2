@@ -6,7 +6,7 @@ from typing import List, Dict, Tuple, Union, Set, Optional
 from pyd4 import D4File
 from sqlmodel import Session
 
-from chanjo2.crud.intervals import get_genes
+from chanjo2.crud.intervals import get_genes, get_hgnc_gene
 from chanjo2.crud.samples import get_sample
 from chanjo2.meta.handle_d4 import get_samples_sex_metrics, get_sample_interval_coverage
 from chanjo2.models.pydantic_models import (
@@ -15,6 +15,7 @@ from chanjo2.models.pydantic_models import (
     SampleSexRow,
     GeneCoverage,
     IntervalType,
+    GeneReportForm,
 )
 from chanjo2.models.sql_models import Exon as SQLExon
 from chanjo2.models.sql_models import Gene as SQLGene
@@ -262,11 +263,11 @@ def get_report_sex_rows(
 
 
 def _get_incomplete_gene_coverage_overview_line(
-    gene: Union[str, int], interval_id: str, sample: str, completeness: float
+    hgnc_symbol: str, hgnc_id: int, interval_id: str, sample: str, completeness: float
 ) -> Optional[Tuple[Union[str, int, float]]]:
     """Return a gene overview report line if the interval is not fully covered at the given threshold."""
     if completeness < 1:
-        return (str(gene), interval_id, sample, round(completeness, 2))
+        return (hgnc_symbol, hgnc_id, interval_id, sample, round(completeness, 2))
 
 
 def _remove_none_elements(tuple_list: List[Tuple] = []) -> List[Tuple]:
@@ -292,7 +293,8 @@ def get_genes_overview_incomplete_coverage_rows(
                 overview_line: Optional[
                     List[str]
                 ] = _get_incomplete_gene_coverage_overview_line(
-                    gene=gene_cov_stats.hgnc_symbol or gene_cov_stats.hgnc_id,
+                    hgnc_symbol=gene_cov_stats.hgnc_symbol,
+                    hgnc_id=gene_cov_stats.hgnc_id,
                     interval_id=gene_cov_stats.hgnc_id,
                     sample=sample_name,
                     completeness=completeness_at_level,
@@ -308,7 +310,8 @@ def get_genes_overview_incomplete_coverage_rows(
                     overview_line: Optional[
                         List[str]
                     ] = _get_incomplete_gene_coverage_overview_line(
-                        gene=gene_cov_stats.hgnc_symbol or gene_cov_stats.hgnc_id,
+                        hgnc_symbol=gene_cov_stats.hgnc_symbol,
+                        hgnc_id=gene_cov_stats.hgnc_id,
                         interval_id=inner_interval_stats.interval_id,
                         sample=sample_name,
                         completeness=completeness_at_level,
@@ -317,3 +320,76 @@ def get_genes_overview_incomplete_coverage_rows(
                     genes_overview_rows.append(overview_line)
 
     return _remove_none_elements(tuple_list=genes_overview_rows)
+
+
+#### Functions used to create a gene overview report ####
+
+
+def get_gene_overview_coverage_stats(form_data: GeneReportForm, session: Session):
+    """Returns coverage stats over the intervals sof one gene for one or more samples."""
+
+    gene_stats = {
+        "levels": get_ordered_levels(
+            threshold_levels=form_data.completeness_thresholds
+        ),
+        "interval_type": form_data.interval_type.value,
+        "samples_coverage_stats_by_interval": {},
+    }
+
+    set_samples_coverage_files(session=session, samples=form_data.samples)
+
+    samples_d4_files: List[Tuple[str, D4File]] = [
+        (sample.name, D4File(sample.coverage_file_path)) for sample in form_data.samples
+    ]
+
+    gene: SQLGene = get_hgnc_gene(
+        build=form_data.build, hgnc_id=form_data.hgnc_gene_id, db=session
+    )
+    if gene is None:
+        return gene_stats
+    gene_stats["gene"] = gene
+
+    samples_coverage_stats: Dict[str, List[GeneCoverage]] = {
+        sample: get_sample_interval_coverage(
+            db=session,
+            d4_file=d4_file,
+            genes=[gene],
+            interval_type=INTERVAL_TYPE_SQL_TYPE[form_data.interval_type],
+            completeness_thresholds=form_data.completeness_thresholds,
+        )
+        for sample, d4_file in samples_d4_files
+    }
+    gene_stats[
+        "samples_coverage_stats_by_interval"
+    ] = get_gene_coverage_stats_by_interval(coverage_by_sample=samples_coverage_stats)
+    return gene_stats
+
+
+def get_gene_coverage_stats_by_interval(
+    coverage_by_sample: Dict[str, List[GeneCoverage]]
+) -> Dict[str, List[Tuple]]:
+    """Arrange coverage stats by interval id instead of by sample."""
+
+    intervals_stats: Dict[str, List] = {}
+
+    for sample, stats in coverage_by_sample.items():
+        for gene_interval in stats:
+            for inner_interval in gene_interval.inner_intervals:
+                if inner_interval.interval_id in intervals_stats:
+                    intervals_stats[inner_interval.interval_id].append(
+                        (
+                            sample,
+                            inner_interval.mean_coverage,
+                            inner_interval.completeness,
+                        )
+                    )
+                else:
+                    intervals_stats[inner_interval.interval_id] = [
+                        (
+                            sample,
+                            inner_interval.mean_coverage,
+                            inner_interval.completeness,
+                        )
+                    ]
+
+    return intervals_stats
