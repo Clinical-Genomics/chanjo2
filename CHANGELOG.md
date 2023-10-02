@@ -19,6 +19,7 @@
 - Non-root user and password for database connections
 - Refactor and simplify code in `meta.handle_d4` module
 - Fixed documentation according to changed coverage API
+- Show only RefSeq transcripts in coverage report and overview
 ### Fixed
 - Bump certifi from 2022.12.7 to 2023.7.22
 - Database connection parameters in documentation files
