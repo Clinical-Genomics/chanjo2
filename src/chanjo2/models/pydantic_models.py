@@ -37,6 +37,11 @@ class TranscriptTag(str, Enum):
     REFSEQ_MANE_SELECT = "refseq_mane_select"
     REFSEQ_MANE_PLUS_CLINICAL = "refseq_mane_plus_clinical"
 
+    @staticmethod
+    def get_enum_values() -> List[str]:
+        """Returns the values of enum class."""
+        return [member.value for member in TranscriptTag]
+
 
 class Sex(str, Enum):
     FEMALE = "female"

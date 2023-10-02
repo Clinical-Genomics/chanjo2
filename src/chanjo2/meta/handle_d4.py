@@ -214,6 +214,20 @@ def get_sample_interval_coverage(
     return genes_coverage_stats
 
 
+def _get_interval_id(sql_interval: Union[SQLTranscript, SQLExon]) -> str:
+    """Returns an Ensembl ID for an exon or several joined IDs (Ensembl, Mane or RefSeq) for a transcript."""
+
+    if isinstance(sql_interval, SQLExon):
+        return interval.ensembl_id
+
+    interval_ids = []
+    for field in ["ensembl_id"] + TranscriptTag.get_enum_values():
+        if getattr(SQLTranscript, field).isnot(None):
+            interval_ids.append(f"{field}:{getattr(SQLTranscript, field)}")
+
+    return ", ".jon[interval_ids]
+
+
 def predict_sex(x_cov: float, y_cov: float) -> str:
     """Return predict sex based on sex chromosomes coverage - this code is taken from the old chanjo."""
     if y_cov == 0:
