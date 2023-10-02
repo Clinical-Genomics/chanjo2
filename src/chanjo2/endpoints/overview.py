@@ -10,7 +10,10 @@ from starlette.datastructures import FormData
 
 from chanjo2.dbutil import get_session
 from chanjo2.demo import DEMO_COVERAGE_QUERY_DATA
-from chanjo2.meta.handle_report_contents import get_report_data, get_gene_overview_data
+from chanjo2.meta.handle_report_contents import (
+    get_report_data,
+    get_gene_overview_coverage_stats,
+)
 from chanjo2.models.pydantic_models import ReportQuery, GeneReportForm, GeneCoverage
 
 LOG = logging.getLogger("uvicorn.access")
@@ -75,9 +78,9 @@ async def gene_overview(
     form_dict: dict = jsonable_encoder(form_data)
     validated_form = GeneReportForm(**form_dict)
 
-    gene_overview_content: Dict[str, List[GeneCoverage]] = get_gene_overview_data(
-        form_data=validated_form, session=db
-    )
+    gene_overview_content: Dict[
+        str, List[GeneCoverage]
+    ] = get_gene_overview_coverage_stats(form_data=validated_form, session=db)
 
     return templates.TemplateResponse(
         "gene-overview.html",
