@@ -8,7 +8,7 @@ USER root
 # Install base dependencies
 RUN apt-get update && \
      apt-get -y upgrade && \
-     apt-get -y install -y --no-install-recommends gcc default-libmysqlclient-dev && \
+     apt-get -y install -y --no-install-recommends gcc default-libmysqlclient-dev pkg-config && \
      apt-get clean && \
      rm -rf /var/lib/apt/lists/*
 

@@ -1,7 +1,7 @@
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlmodel import Session
+from sqlalchemy.orm import Session
 
 from chanjo2.crud.samples import (
     create_sample_in_case,

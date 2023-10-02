@@ -5,7 +5,7 @@ from fastapi import APIRouter, Request, Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from sqlmodel import Session
+from sqlalchemy.orm import Session
 from starlette.datastructures import FormData
 
 from chanjo2.dbutil import get_session
