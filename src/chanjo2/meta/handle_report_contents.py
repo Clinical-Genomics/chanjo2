@@ -325,7 +325,7 @@ def get_genes_overview_incomplete_coverage_rows(
 #### Functions used to create a gene overview report ####
 
 
-def get_gene_overview_data(form_data: GeneReportForm, session: Session):
+def get_gene_overview_coverage_stats(form_data: GeneReportForm, session: Session):
     """Returns coverage stats over the intervals sof one gene for one or more samples."""
 
     gene_stats = {
