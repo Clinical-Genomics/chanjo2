@@ -2,7 +2,7 @@ from typing import List, Optional, Tuple, Dict
 
 from fastapi import APIRouter, HTTPException, status, Depends
 from pyd4 import D4File
-from sqlmodel import Session
+from sqlalchemy.orm import Session
 
 from chanjo2.constants import (
     WRONG_BED_FILE_MSG,

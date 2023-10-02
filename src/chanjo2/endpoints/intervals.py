@@ -2,7 +2,7 @@ from typing import List, Union, Optional, Iterator
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from fastapi.responses import JSONResponse
-from sqlmodel import Session
+from sqlalchemy.orm import Session
 
 from chanjo2.constants import (
     MULTIPLE_PARAMS_NOT_SUPPORTED_MSG,
