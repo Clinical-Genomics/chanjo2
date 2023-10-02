@@ -195,7 +195,7 @@ def get_sample_interval_coverage(
                 interval_coverage = IntervalCoverage(
                     **{
                         "interval_type": interval_type.__tablename__,
-                        "interval_id": interval.refseq_mrna or interval.ensembl_id,
+                        "interval_id": _get_interval_id(sql_interval=interval),
                         "mean_coverage": d4_file.mean(interval_coordinates),
                         "completeness": get_intervals_completeness(
                             d4_file=d4_file,
@@ -217,15 +217,13 @@ def get_sample_interval_coverage(
 def _get_interval_id(sql_interval: Union[SQLTranscript, SQLExon]) -> str:
     """Returns an Ensembl ID for an exon or several joined IDs (Ensembl, Mane or RefSeq) for a transcript."""
 
-    if isinstance(sql_interval, SQLExon):
-        return interval.ensembl_id
-
     interval_ids = []
-    for field in ["ensembl_id"] + TranscriptTag.get_enum_values():
-        if getattr(SQLTranscript, field).isnot(None):
-            interval_ids.append(f"{field}:{getattr(SQLTranscript, field)}")
+    for field in TranscriptTag.get_enum_values():
+        transcript_tag: str = sql_interval.__dict__.get(field)
+        if transcript_tag:
+            interval_ids.append(transcript_tag)
 
-    return ", ".jon[interval_ids]
+    return ", ".join(interval_ids) or sql_interval.ensembl_id
 
 
 def predict_sex(x_cov: float, y_cov: float) -> str:
