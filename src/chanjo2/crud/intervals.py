@@ -139,12 +139,12 @@ def _filter_transcripts_by_tag(
 def get_gene_intervals(
     db: Session,
     build: Builds,
-    ensembl_ids: Optional[List[str]],
-    hgnc_ids: Optional[List[int]],
-    hgnc_symbols: Optional[List[str]],
-    ensembl_gene_ids: Optional[List[str]],
-    limit: Optional[int],
     interval_type: Union[SQLTranscript, SQLExon],
+    ensembl_ids: Optional[List[str]] = [],
+    hgnc_ids: Optional[List[int]] = [],
+    hgnc_symbols: Optional[List[str]] = [],
+    ensembl_gene_ids: Optional[List[str]] = [],
+    limit: Optional[int] = None,
     transcript_tags: Optional[List[TranscriptTag]] = [],
 ) -> List[Union[SQLTranscript, SQLExon]]:
     """Retrieve transcripts or exons from a list of genes."""
