@@ -12,6 +12,7 @@ from chanjo2.models.pydantic_models import (
     Sex,
     GeneCoverage,
     IntervalType,
+    TranscriptTag,
 )
 from chanjo2.models.sql_models import Exon as SQLExon
 from chanjo2.models.sql_models import Gene as SQLGene
@@ -120,6 +121,7 @@ def get_sample_interval_coverage(
     genes: List[SQLGene],
     interval_type: Union[SQLGene, SQLTranscript, SQLExon],
     completeness_thresholds: List[Optional[int]],
+    transcript_tags: Optional[List[TranscriptTag]] = [],
 ) -> List[GeneCoverage]:
     genes_coverage_stats: List[GeneCoverage] = []
     for gene in genes:
@@ -158,6 +160,7 @@ def get_sample_interval_coverage(
                 hgnc_symbols=None,
                 ensembl_gene_ids=[gene.ensembl_id],
                 limit=None,
+                transcript_tags=transcript_tags,
             )
 
             intervals_coords: List[Tuple[str, int, int]] = get_intervals_coords_list(
@@ -192,7 +195,7 @@ def get_sample_interval_coverage(
                 interval_coverage = IntervalCoverage(
                     **{
                         "interval_type": interval_type.__tablename__,
-                        "interval_id": interval.ensembl_id,
+                        "interval_id": _get_interval_id(sql_interval=interval),
                         "mean_coverage": d4_file.mean(interval_coordinates),
                         "completeness": get_intervals_completeness(
                             d4_file=d4_file,
@@ -209,6 +212,19 @@ def get_sample_interval_coverage(
         genes_coverage_stats.append(gene_coverage)
 
     return genes_coverage_stats
+
+
+def _get_interval_id(sql_interval: Union[SQLTranscript, SQLExon]) -> str:
+    """Returns an Ensembl ID for an exon or several joined IDs (Ensembl, Mane or RefSeq) for a transcript."""
+
+    interval_ids = []
+    interval_as_dict = sql_interval.__dict__
+    for field in [member.value for member in TranscriptTag]:
+        transcript_tag = interval_as_dict.get(field)
+        if transcript_tag:
+            interval_ids.append(transcript_tag)
+
+    return ", ".join(interval_ids) or sql_interval.ensembl_id
 
 
 def predict_sex(x_cov: float, y_cov: float) -> str:

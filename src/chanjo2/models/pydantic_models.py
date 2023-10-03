@@ -35,6 +35,13 @@ class IntervalType(str, Enum):
     CUSTOM = "custom_intervals"
 
 
+class TranscriptTag(str, Enum):
+    REFSEQ_MRNA = "refseq_mrna"
+    REFSEQ_NCRNA = "refseq_ncrna"
+    REFSEQ_MANE_SELECT = "refseq_mane_select"
+    REFSEQ_MANE_PLUS_CLINICAL = "refseq_mane_plus_clinical"
+
+
 class Sex(str, Enum):
     FEMALE = "female"
     MALE = "male"
