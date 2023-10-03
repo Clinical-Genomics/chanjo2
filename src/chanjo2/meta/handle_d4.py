@@ -219,7 +219,7 @@ def _get_interval_id(sql_interval: Union[SQLTranscript, SQLExon]) -> str:
 
     interval_ids = []
     for field in TranscriptTag.get_enum_values():
-        transcript_tag: str = sql_interval.dict().get(field)
+        transcript_tag: str = sql_interval.__dict__.get(field)
         if transcript_tag:
             interval_ids.append(transcript_tag)
 
