@@ -218,8 +218,9 @@ def _get_interval_id(sql_interval: Union[SQLTranscript, SQLExon]) -> str:
     """Returns an Ensembl ID for an exon or several joined IDs (Ensembl, Mane or RefSeq) for a transcript."""
 
     interval_ids = []
-    for field in TranscriptTag.get_enum_values():
-        transcript_tag: str = sql_interval.__dict__.get(field)
+    interval_as_dict = sql_interval.__dict__
+    for field in [member.value for member in TranscriptTag]:
+        transcript_tag = interval_as_dict.get(field)
         if transcript_tag:
             interval_ids.append(transcript_tag)
 
