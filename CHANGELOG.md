@@ -14,6 +14,7 @@
 - Demo and non-demo genes coverage overview endpoint
 - Incomplete intervals at different coverage thresholds on genes overview page
 - Gene coverage overview endpoint
+- Documentation to create custom genes coverage and coverage overview reports
 ### Changed
 - Moved helper function from endpoints coverage to crud samples
 - Deleted unused `src/chanjo2/meta/handle_query_intervals.py` file

@@ -179,10 +179,27 @@ That will return this response, containing the requested statistics over the lis
 To find more information on how to set up a REST server running chanjo2 please visit the software's [documentation pages][github-docs]. Here you'll find also instructions on how to populate the database with custom cases and different genomic intervals.
 
 
+#### Coverage report and genes coverage overview
+
+Chanjo2 can be directly used to create the same types of report produced by [chanjo-report][chanjo-report] in conjunction with chanjo[chanjo].
+
+Given a running demo instance of chanjo2, with gene genes and transcripts from genome build GRCh37 loaded in the database, an example of the coverage report based on PanelAPP gene panel described is provided by this demo report endpoint: http://0.0.0.0:8000/report/demo:
+
+<img width="816" alt="image" src="https://github.com/Clinical-Genomics/chanjo2/assets/28093618/dfeb0db8-a5ed-4a2e-9e65-ad2fa34b9816">
+
+Similarly, an example report containing an overview of the genes with partial coverage at the given coverage thresholds is provided by the demo overview endpoint:
+
+<img width="1014" alt="image" src="https://github.com/Clinical-Genomics/chanjo2/assets/28093618/70bfdfb4-2345-47dd-b6e4-f6ea49d43cbc">
+
+Follow the instructions present in the [documentation pages][github-docs] to learn how to use the report and the overview endpoints to create customised gene coverage report using this software.
+
+
 
 [actions-build-status]: https://github.com/Clinical-Genomics/chanjo2/actions/workflows/build_and_push_docker_stage.yml/badge.svg
 [black-image]: https://img.shields.io/badge/code%20style-black-000000.svg
 [black-url]: https://github.com/psf/black
+[chanjo2]: https://github.com/Clinical-Genomics/chanjo
+[chanjo-report]: https://github.com/Clinical-Genomics/chanjo-report
 [codecov-img]: https://codecov.io/gh/Clinical-Genomics/chanjo2/branch/main/graph/badge.svg?token=6U8ILA2SOY
 [codecov-url]: https://codecov.io/gh/Clinical-Genomics/chanjo2
 [d4-article]: https://www.nature.com/articles/s43588-021-00085-0
