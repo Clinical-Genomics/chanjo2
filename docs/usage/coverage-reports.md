@@ -6,9 +6,9 @@ An example of this report is shown by the demo report endpoint: http://0.0.0.0:8
 
 The statistics from the report above are computed using the transcripts intervals present in the provided genes.
 
-Given an application running in production settings, with <ins>genes, transcripts and exons</ins> loaded into the database, a coverage report like the one above can be created taking into account one of these types of intervals from any gene of choice.
+Given an application running in production settings, with **genes, transcripts and exons** loaded into the database, a coverage report like the one above can be created taking into account one of these types of intervals from any gene of choice.
 
-The gene list might be provided as a list of <ins>Ensembl gene IDs, HGNC gene IDs or HGNC gene symbol</INS>s.
+The gene list might be provided as a list of **Ensembl gene IDs, HGNC gene IDs or HGNC gene symbols**.
 
 Here is what the request data of a **POST request to the `/report` endpoint** looks like:
 
@@ -43,10 +43,10 @@ Here is what the request data of a **POST request to the `/report` endpoint** lo
 ### Mandatory parameters
 
 - **build** _either "GRCh37" or "GRCh38"_
-- **ensembl_gene_ids <ins>OR</ins> hgnc_gene_ids <ins>OR</ins> hgnc_gene_symbols** _either a list of strings (for Ensembl IDs or HGNC symbols or a list of integers for HGNC IDs_
+- **ensembl_gene_ids OR hgnc_gene_ids OR hgnc_gene_symbols** _either a list of strings (for Ensembl IDs or HGNC symbols or a list of integers for HGNC IDs_
 - **interval_type** _either "genes", "transcripts" or "exons", depending on the analysis type (WGS, WES, WTS)_
 - **default_level** _default coverage threshold level to take into account for displaying the number of fully covered or partially covered intervals_
-- **samples** _mandatory parameters are **name** and <ins>either</ins> **coverage_file_path** <ins>or</ins> **case_name**_
+- **samples** _mandatory parameters are **name** and either **coverage_file_path** or **case_name**_
 
 ### Optional parameters
 
