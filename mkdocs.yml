@@ -13,3 +13,4 @@ nav:
         - Loading and displaying genes, transcripts and exons: "usage/loading-intervals.md"
         - Cases and samples: "usage/loading-samples.md"
         - Coverage and coverage completeness queries: "usage/sample-coverage.md"
+        - Coverage and genes overview reports: "usage/coverage-reports.md"
