@@ -1,3 +1,5 @@
+{% extends "base-layout.html" %}
+
 {% macro completeness_cutoffs() %}
 	<div class="row">
 		<div class="col-md-12">
@@ -61,61 +63,25 @@
 
 {% endmacro %}
 
+{% block title %}
+<title>Chanjo2 genes coverage overview</title>
+{% endblock %}
 
-<!DOCTYPE html>
-<head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-	<title>Chanjo2 genes coverage overview</title>
-
-	<meta name="description" content="Chanjo2 Report: coverage report generator">
-	<meta name="author" content="Chiara Rasi">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-
-	<!-- place 'favicon.ico' + 'apple-touch-icon.png' in the root directory -->
-	<link rel="Shortcut Icon"
-				href="#"
-				type="image/x-icon">
-
-	{% block css %}
-		<!-- Oldish compiled and minified CSS -->
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-
-		<!-- Customizations -->
-		<link rel="stylesheet" type="text/css" href="{{ url_for('static', path='main.css') }}">
-	{% endblock %}
-
-	{% block css_style %}{% endblock %}
-
-</head>
-<body>
-
-	<nav class="navbar navbar-default">
-	  <div class="container">
-		<div class="navbar-header">
-		  <a class="navbar-brand" href="#">Chanjo2 report</a>
-		</div>
-	  </div><!-- /.container -->
-	</nav>
-
-	<div class="container">
-		<div class="row">
-		<div class="col-md-12">
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h4>Incomplete {{ extras.interval_type }}</h4>
-				</div>
-				<ul class="list-group">
-					<li class="list-group-item">
-						Samples:
-						{% for sample in extras.samples %}
-							<strong>{{ sample.name }}</strong>
-						{% endfor %}
-					</li>
-				</ul>
+{% block content %}
+	<div class="col-md-12">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h4>Incomplete {{ extras.interval_type }}</h4>
 			</div>
+			<ul class="list-group">
+				<li class="list-group-item">
+					Samples:
+					{% for sample in extras.samples %}
+						<strong>{{ sample.name }}</strong>
+					{% endfor %}
+				</li>
+			</ul>
 		</div>
 	</div>
 
@@ -125,61 +91,56 @@
 
 	{{ incompletely_covered_intervals() }}
 
-	{% block js_code %}
-		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js" integrity="sha512-ju6u+4bPX50JQmgU97YOGAXmRMrD9as4LE05PdC3qycsGQmjGlfm041azyB1VfCXpkpt1i9gqXCT6XuxhBJtKg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-		<!-- Oldish compiled and minified JavaScript -->
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+{% endblock %}
 
-		<script>
 
-			// Extracts the content of the body element of an HTML page as a string
-			function updatedReportBody(html)
-			{
-				return /<body.*?>([\s\S]*)<\/body>/.exec(html)[1];
+{% block js_code %}
+	<script>
+
+		// Extracts the content of the body element of an HTML page as a string
+		function updatedReportBody(html)
+		{
+			return /<body.*?>([\s\S]*)<\/body>/.exec(html)[1];
+		}
+
+		function updateOverview(customLevel)
+		{
+			let formDict = {
+				'build' : '{{ extras.build }}',
+				'completeness_thresholds' : {{ extras.completeness_thresholds }},
+				'hgnc_gene_ids' : {{ extras.hgnc_gene_ids }},
+				'interval_type' : '{{ extras.interval_type }}',
+				'default_level' : customLevel,
+				'samples' : {{ extras.samples|safe }},
 			}
 
-			function updateOverview(customLevel)
-			{
-				let formDict = {
-					'build' : '{{ extras.build }}',
-					'completeness_thresholds' : {{ extras.completeness_thresholds }},
-					'hgnc_gene_ids' : {{ extras.hgnc_gene_ids }},
-					'interval_type' : '{{ extras.interval_type }}',
-					'default_level' : customLevel,
-					'samples' : {{ extras.samples|safe }},
-				}
-
-				fetch('/overview', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(formDict)
-                    })
-                    .then(resp => resp.text())
-                    .then(html => {
-                    	document.body.innerHTML = updatedReportBody(html);
-                    })
-                    .catch(error => {
-                        console.error(error);
-                });
-			}
+			fetch('/overview', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify(formDict)
+				})
+				.then(resp => resp.text())
+				.then(html => {
+					document.body.innerHTML = updatedReportBody(html);
+				})
+				.catch(error => {
+					console.error(error);
+			});
+		}
 
 
-			function getGeneStatsPage(hgncId)
-			{
-				event.preventDefault();
-				var theForm = document.getElementById("geneStatsForm");
-				var geneInput = document.createElement("input");
-				geneInput.setAttribute("type", "hidden");
-				geneInput.setAttribute("name", "hgnc_gene_id");
-				geneInput.setAttribute("value", hgncId);
-				theForm.appendChild(geneInput);
-				theForm.submit();
-			}
-
-		</script>
-	{% endblock %}
-</body>
-</html>
+		function getGeneStatsPage(hgncId)
+		{
+			event.preventDefault();
+			var theForm = document.getElementById("geneStatsForm");
+			var geneInput = document.createElement("input");
+			geneInput.setAttribute("type", "hidden");
+			geneInput.setAttribute("name", "hgnc_gene_id");
+			geneInput.setAttribute("value", hgncId);
+			theForm.appendChild(geneInput);
+			theForm.submit();
+		}
+	</script>
+{% endblock %}
