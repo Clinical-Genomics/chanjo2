@@ -179,7 +179,7 @@ That will return this response, containing the requested statistics over the lis
 To find more information on how to set up a REST server running chanjo2 please visit the software's [documentation pages][github-docs]. Here you'll find also instructions on how to populate the database with custom cases and different genomic intervals.
 
 
-#### Coverage report and genes coverage overview
+## Coverage report and genes coverage overview
 
 Chanjo2 can be directly used to create the same types of report produced by [chanjo-report][chanjo-report] in conjunction with chanjo[chanjo].
 
