@@ -23,6 +23,7 @@
 - Fixed documentation according to changed coverage API
 - Removed unused `sqlmodel` and updated some other dependencies
 - Show only RefSeq transcripts in coverage report and overview
+- Refactored HTML templates to reduce repetitions by inheriting code from base template
 - Coverage report form to accept genes as Ensembl IDS, HGNC IDs and HGNC symbols
 - Moved coverage report "show genes" outside form and just above custom coverage stats table
 ### Fixed
