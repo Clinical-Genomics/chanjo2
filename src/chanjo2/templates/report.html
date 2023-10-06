@@ -41,7 +41,7 @@
 				<div class="form-group">
 				  <div class="row" {% if hidden %}hidden{% endif %}>
 					<div class="col-xs-7">
-					  <label class="control-label">Included genes</label>
+					  <label class="control-label">Included genes (Comma separated list of Ensembl IDs, HGNC IDs or HGNC symbols)</label>
 					  <div><input class="form-control" type="text" name="gene_ids" id ="gene_ids" value="{{ extras.hgnc_gene_ids|join(', ') }}" placeholder="ADK,GIT"></div>
 					</div>
 
