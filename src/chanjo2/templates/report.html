@@ -42,12 +42,7 @@
 				  <div class="row" {% if hidden %}hidden{% endif %}>
 					<div class="col-xs-7">
 					  <label class="control-label">Included genes</label>
-					  <div><input class="form-control" type="text" name="hgnc_gene_ids" id ="hgnc_gene_ids" value="{{ extras.hgnc_gene_ids|join(', ') }}" placeholder="ADK,GIT"></div>
-					</div>
-
-					<div class="col-xs-3">
-					  <label class="control-label">Show genes</label>
-					  <div><input type="checkbox" name="show_genes" onclick="toggle_visibility(['incompletelyCoveredGenesHeader', 'incompletelyCoveredGenesCell']);"></div>
+					  <div><input class="form-control" type="text" name="gene_ids" id ="gene_ids" value="{{ extras.hgnc_gene_ids|join(', ') }}" placeholder="ADK,GIT"></div>
 					</div>
 
 					<div class="col-xs-2">
@@ -130,6 +125,10 @@
 {% endmacro %}
 
 {% macro default_level_metrics() %}
+ <div class="col-xs-1 col-xs-offset-9" style="text-align: right;"><input type="checkbox" name="show_genes" onclick="toggle_visibility(['incompletelyCoveredGenesHeader', 'incompletelyCoveredGenesCell']);"></div>
+	 <div class="col-xs-2">
+		 <label class="control-label">Show genes</label>
+	 </div>
 <table class="table table-bordered table-hover">
 	 <caption>Genes/Transcripts/Exons coverage at default coverage threshold</caption>
       <thead>
@@ -309,16 +308,30 @@
 			// Returns the list of HGNC genes present in the user query as a sring as a list of integers
 			function getFormGeneIDsAsList()
 			{
-				return document.getElementById("hgnc_gene_ids").value.replace(/\s/g, '').split(",").map(Number);
+				let geneIdsTypes = [null, null, null]; // [Ensembl_ids_list, HGNC_ids_list, HGNC_symbols_list];
+				let formGeneIds = document.getElementById('gene_ids').value.replace(/\s/g, '').split(",");
+				if (!isNaN(formGeneIds[0])) {
+					geneIdsTypes[1] = formGeneIds.map(Number);
+				}
+				else if (formGeneIds[0].startsWith('ENSG')){
+					geneIdsTypes[0] = formGeneIds;
+				}
+				else{
+					geneIdsTypes[2] = formGeneIds;
+				}
+				return geneIdsTypes;
 			}
 
 			function submitAsJson()
 			{
 				event.preventDefault();
+				let geneIds = getFormGeneIDsAsList();
 				let formDict = {
 					'build' : '{{ extras.build }}',
 					'completeness_thresholds' : {{ extras.completeness_thresholds }},
-					'hgnc_gene_ids' : getFormGeneIDsAsList(),
+					'ensembl_gene_ids': geneIds[0],
+					'hgnc_gene_ids' : geneIds[1],
+					'hgnc_gene_symbols' : geneIds[2],
 					'interval_type' : '{{ extras.interval_type }}',
 					'panel_name' : document.getElementById("panel_name").value,
 					'default_level' : document.getElementById("default_level").value,
