@@ -1,3 +1,5 @@
+{% extends "base-layout.html" %}
+
 {% macro errors_block() %}
 	{% for error_description, error_content in errors %}
 		{% if error_content %}
@@ -201,149 +203,111 @@
 
 {% endmacro %}
 
-<!DOCTYPE html>
-<head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+{% block title %}
+<title>Coverage report</title>
+{% endblock %}
 
-	<title>Coverage report</title>
-
-	<meta name="description" content="Chanjo2 Report: coverage report generator">
-	<meta name="author" content="Chiara Rasi">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-
-	<!-- place 'favicon.ico' + 'apple-touch-icon.png' in the root directory -->
-	<link rel="Shortcut Icon"
-				href="#"
-				type="image/x-icon">
-
-	{% block css %}
-		<!-- Oldish compiled and minified CSS -->
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-
-		<!-- Customizations -->
-		<link rel="stylesheet" type="text/css" href="{{ url_for('static', path='main.css') }}">
-	{% endblock %}
-
-	{% block css_style %}{% endblock %}
-
-</head>
-<body>
-
-	<nav class="navbar navbar-default">
-	  <div class="container">
-		<div class="navbar-header">
-		  <a class="navbar-brand" href="#">Chanjo2</a>
+{% block pdf_export %}
+	<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+		<div class="nav navbar-nav navbar-right">
+			<button class="navbar-brand" onclick="window.focus(); window.print();">Create PDF</button>
 		</div>
-		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-		  <div class="nav navbar-nav navbar-right">
-			<button class="navbar-brand" onclick="window.print();">Create PDF</button>
-		  </div>
-		</div><!-- /.navbar-collapse -->
-	  </div><!-- /.container -->
-	</nav>
-
-	<div class="container">
-
-		{{ report_filters() }}
-
-		{% if extras.case_name %}
-			<h2>Case name: {{extras.case_name}}</h2>
-		{% endif %}
-
-		<!-- Quality report -->
-
-		<h2>Quality report: clinical sequencing</h2>
-		{% if extras.panel_name %}
-			<p>Based on gene panel: <strong>{{ extras.panel_name }}</strong></p>
-		{% endif %}
-
-		{{ sex_rows_block() }}
-
-		<h3>Generally important metrics</h3>
-
-		{{ important_metrics() }}
-
-		<h3> Transcript coverage at {{ extras.default_level }}x</h3>
-
-		{{ default_level_metrics() }}
-		<hr>
-		{{ errors_block() }}
-		<!--End of Quality report -->
-
-		<h3>Explanations</h3>
-
-		{{ explanations() }}
-
-
-	</div>
-
-
-	{% block js_code %}
-		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js" integrity="sha512-ju6u+4bPX50JQmgU97YOGAXmRMrD9as4LE05PdC3qycsGQmjGlfm041azyB1VfCXpkpt1i9gqXCT6XuxhBJtKg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-		<!-- Oldish compiled and minified JavaScript -->
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-
-		<script>
-			function toggle_visibility(ids)
-			{
-				for (let id of ids) {
-					var e = document.getElementById(id);
-					if (e.style.display == 'block'){
-						e.style.display = 'none';
-					}
-					else {
-						e.style.display = 'block';
-					}
-				}
-			}
-
-			// Extracts the content of the body element of an HTML page as a string
-			function updatedReportBody(html)
-			{
-				return /<body.*?>([\s\S]*)<\/body>/.exec(html)[1];
-			}
-
-			// Returns the list of HGNC genes present in the user query as a sring as a list of integers
-			function getFormGeneIDsAsList()
-			{
-				return document.getElementById("hgnc_gene_ids").value.replace(/\s/g, '').split(",").map(Number);
-			}
-
-			function submitAsJson()
-			{
-				event.preventDefault();
-				let formDict = {
-					'build' : '{{ extras.build }}',
-					'completeness_thresholds' : {{ extras.completeness_thresholds }},
-					'hgnc_gene_ids' : getFormGeneIDsAsList(),
-					'interval_type' : '{{ extras.interval_type }}',
-					'panel_name' : document.getElementById("panel_name").value,
-					'default_level' : document.getElementById("default_level").value,
-					'case_display_name' : '{{ extras.case_name }}',
-					'samples' : {{ extras.samples|safe }},
-				}
-
-				fetch('/report', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(formDict)
-                    })
-                    .then(resp => resp.text())
-                    .then(html => {
-                    	document.body.innerHTML = updatedReportBody(html);
-                    })
-                    .catch(error => {
-                        console.error(error);
-                });
-			}
-
-    	</script>
-
+	</div><!-- /.navbar-collapse -->
 	{% endblock %}
-</body>
-</html>
+
+	{% block content %}
+
+	{{ report_filters() }}
+
+	{% if extras.case_name %}
+		<h2>Case name: {{extras.case_name}}</h2>
+	{% endif %}
+
+	<!-- Quality report -->
+
+	<h2>Quality report: clinical sequencing</h2>
+	{% if extras.panel_name %}
+		<p>Based on gene panel: <strong>{{ extras.panel_name }}</strong></p>
+	{% endif %}
+
+	{{ sex_rows_block() }}
+
+	<h3>Generally important metrics</h3>
+
+	{{ important_metrics() }}
+
+	<h3> Transcript coverage at {{ extras.default_level }}x</h3>
+
+	{{ default_level_metrics() }}
+	<hr>
+	{{ errors_block() }}
+	<!--End of Quality report -->
+
+	<h3>Explanations</h3>
+
+	{{ explanations() }}
+
+{% endblock %}
+
+
+{% block js_code %}
+	{{ super() }}
+	<script>
+		function toggle_visibility(ids)
+		{
+			for (let id of ids) {
+				var e = document.getElementById(id);
+				if (e.style.display == 'block'){
+					e.style.display = 'none';
+				}
+				else {
+					e.style.display = 'block';
+				}
+			}
+		}
+
+		// Extracts the content of the body element of an HTML page as a string
+		function updatedReportBody(html)
+		{
+			return /<body.*?>([\s\S]*)<\/body>/.exec(html)[1];
+		}
+
+		// Returns the list of HGNC genes present in the user query as a sring as a list of integers
+		function getFormGeneIDsAsList()
+		{
+			return document.getElementById("hgnc_gene_ids").value.replace(/\s/g, '').split(",").map(Number);
+		}
+
+		function submitAsJson()
+		{
+			event.preventDefault();
+			let formDict = {
+				'build' : '{{ extras.build }}',
+				'completeness_thresholds' : {{ extras.completeness_thresholds }},
+				'hgnc_gene_ids' : getFormGeneIDsAsList(),
+				'interval_type' : '{{ extras.interval_type }}',
+				'panel_name' : document.getElementById("panel_name").value,
+				'default_level' : document.getElementById("default_level").value,
+				'case_display_name' : '{{ extras.case_name }}',
+				'samples' : {{ extras.samples|safe }},
+			}
+
+			fetch('/report', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify(formDict)
+				})
+				.then(resp => resp.text())
+				.then(html => {
+					document.body.innerHTML = updatedReportBody(html);
+				})
+				.catch(error => {
+					console.error(error);
+			});
+		}
+
+	</script>
+
+{% endblock %}
