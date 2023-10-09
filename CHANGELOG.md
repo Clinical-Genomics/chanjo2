@@ -1,4 +1,4 @@
-## [unreleased]
+## [1.2]
 ### Added
 - Load genes, transcripts and exons from pre-downloaded files
 - Demo coverage report endpoint in new `report` module
