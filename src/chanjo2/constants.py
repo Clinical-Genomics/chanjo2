@@ -1,7 +1,10 @@
 from typing import Callable, Dict, List
 
-from schug.load.ensembl import fetch_ensembl_exon_lines as fetch_ensembl_exons
-from schug.load.ensembl import fetch_ensembl_genes, fetch_ensembl_transcripts
+from schug.load.ensembl import (
+    fetch_ensembl_genes,
+    fetch_ensembl_transcripts,
+    fetch_ensembl_exons,
+)
 
 SAMPLE_NOT_FOUND: str = "One of more requested samples were not present in the database"
 WRONG_COVERAGE_FILE_MSG: str = (

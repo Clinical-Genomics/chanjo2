@@ -26,11 +26,13 @@
 - Refactored HTML templates to reduce repetitions by inheriting code from base template
 - Coverage report form to accept genes as Ensembl IDS, HGNC IDs and HGNC symbols
 - Moved coverage report "show genes" outside form and just above custom coverage stats table
+- Updated several Python libraries including schug
 ### Fixed
 - Bump certifi from 2022.12.7 to 2023.7.22
 - Database connection parameters in documentation files
 - Avoid duplications when retrieving transcripts and exons in gene
 - Add upgrade-insecure-requests meta to HTML page to be able to use javascript fetch in requests
+- Renamed imported function from schug 1.3
 
 ## [1.1.0]
 ### Added
