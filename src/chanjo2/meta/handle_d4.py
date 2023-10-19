@@ -7,6 +7,7 @@ from pyd4 import D4File
 from sqlalchemy.orm import Session
 
 from chanjo2.crud.intervals import get_gene_intervals
+from chanjo2.models import SQLExon, SQLGene, SQLTranscript
 from chanjo2.models.pydantic_models import (
     IntervalCoverage,
     Sex,
@@ -14,9 +15,6 @@ from chanjo2.models.pydantic_models import (
     IntervalType,
     TranscriptTag,
 )
-from chanjo2.models.sql_models import Exon as SQLExon
-from chanjo2.models.sql_models import Gene as SQLGene
-from chanjo2.models.sql_models import Transcript as SQLTranscript
 
 LOG = logging.getLogger("uvicorn.access")
 

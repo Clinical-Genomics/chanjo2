@@ -1,3 +1,7 @@
+## [unreleased]
+### Changed
+- Simplified the import of SQL classes from `scout.models.sql_model`
+
 ## [1.2]
 ### Added
 - Load genes, transcripts and exons from pre-downloaded files

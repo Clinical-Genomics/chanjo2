@@ -10,10 +10,8 @@ from sqlalchemy.sql.expression import Delete
 from chanjo2.constants import SAMPLE_NOT_FOUND, WRONG_COVERAGE_FILE_MSG
 from chanjo2.crud.cases import filter_cases_by_name
 from chanjo2.meta.handle_d4 import get_d4_file
+from chanjo2.models import SQLCase, SQLSample, CaseSample
 from chanjo2.models.pydantic_models import SampleCreate
-from chanjo2.models.sql_models import Case as SQLCase
-from chanjo2.models.sql_models import CaseSample
-from chanjo2.models.sql_models import Sample as SQLSample
 
 
 def _filter_samples_by_name(

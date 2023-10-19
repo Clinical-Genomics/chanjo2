@@ -4,10 +4,8 @@ from sqlalchemy import delete
 from sqlalchemy.engine.cursor import CursorResult
 from sqlalchemy.orm import Session, query
 
+from chanjo2.models import SQLCase, SQLSample, CaseSample
 from chanjo2.models.pydantic_models import Case, CaseCreate
-from chanjo2.models.sql_models import Case as SQLCase
-from chanjo2.models.sql_models import CaseSample
-from chanjo2.models.sql_models import Sample as SQLSample
 
 
 def filter_cases_by_name(cases: query.Query, case_name: str) -> SQLCase:

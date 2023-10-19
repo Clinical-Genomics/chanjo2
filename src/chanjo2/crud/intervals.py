@@ -12,9 +12,7 @@ from chanjo2.models.pydantic_models import (
     TranscriptBase,
     TranscriptTag,
 )
-from chanjo2.models.sql_models import Exon as SQLExon
-from chanjo2.models.sql_models import Gene as SQLGene
-from chanjo2.models.sql_models import Transcript as SQLTranscript
+from chanjo2.models import SQLGene, SQLExon, SQLTranscript
 
 LOG = logging.getLogger("uvicorn.access")
 
