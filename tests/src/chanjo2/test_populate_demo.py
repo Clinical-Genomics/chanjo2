@@ -1,10 +1,11 @@
+from fastapi.testclient import TestClient
+from sqlalchemy.orm import sessionmaker
+
 from chanjo2.crud.cases import get_cases
 from chanjo2.crud.intervals import get_genes, get_gene_intervals
 from chanjo2.crud.samples import get_samples
+from chanjo2.models import SQLCase, SQLGene, SQLTranscript, SQLExon, SQLSample
 from chanjo2.models.pydantic_models import Builds
-from chanjo2.models.sql_models import Case, Sample, Gene, Transcript, Exon
-from fastapi.testclient import TestClient
-from sqlalchemy.orm import sessionmaker
 
 
 def test_load_demo_data(demo_client: TestClient, demo_session: sessionmaker):
@@ -13,17 +14,17 @@ def test_load_demo_data(demo_client: TestClient, demo_session: sessionmaker):
     # WHEN the app is launched
     with demo_client:
         # THEN database should contain a case
-        cases: List[Case] = get_cases(db=demo_session)
-        assert isinstance(cases[0], Case)
+        cases: List[SQLCase] = get_cases(db=demo_session)
+        assert isinstance(cases[0], SQLCase)
 
         # THEN database should contain samples
-        samples: List[Sample] = get_samples(db=demo_session)
-        assert isinstance(samples[0], Sample)
+        samples: List[SQLSample] = get_samples(db=demo_session)
+        assert isinstance(samples[0], SQLSample)
 
         # THEN for each genome build
         for build in Builds.get_enum_values():
             # database should contain genes
-            genes: List[Gene] = get_genes(
+            genes: List[SQLGene] = get_genes(
                 db=demo_session,
                 build=build,
                 ensembl_ids=None,
@@ -31,10 +32,10 @@ def test_load_demo_data(demo_client: TestClient, demo_session: sessionmaker):
                 hgnc_symbols=None,
                 limit=1,
             )
-            assert isinstance(genes[0], Gene)
+            assert isinstance(genes[0], SQLGene)
 
             # database should contain transcripts
-            transcripts: List[Transcripts] = get_gene_intervals(
+            transcripts: List[SQLTranscripts] = get_gene_intervals(
                 db=demo_session,
                 build=build,
                 ensembl_ids=None,
@@ -42,12 +43,12 @@ def test_load_demo_data(demo_client: TestClient, demo_session: sessionmaker):
                 hgnc_symbols=None,
                 ensembl_gene_ids=None,
                 limit=1,
-                interval_type=Transcript,
+                interval_type=SQLTranscript,
             )
-            assert isinstance(transcripts[0], Transcript)
+            assert isinstance(transcripts[0], SQLTranscript)
 
             # database should contain exons
-            exons: List[Exon] = get_gene_intervals(
+            exons: List[SQLExon] = get_gene_intervals(
                 db=demo_session,
                 build=build,
                 ensembl_ids=None,
@@ -55,6 +56,6 @@ def test_load_demo_data(demo_client: TestClient, demo_session: sessionmaker):
                 hgnc_symbols=None,
                 ensembl_gene_ids=None,
                 limit=1,
-                interval_type=Exon,
+                interval_type=SQLExon,
             )
-            assert isinstance(exons[0], Exon)
+            assert isinstance(exons[0], SQLExon)

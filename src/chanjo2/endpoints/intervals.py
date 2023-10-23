@@ -15,6 +15,7 @@ from chanjo2.meta.handle_load_intervals import (
     update_genes,
     update_transcripts,
 )
+from chanjo2.models import SQLExon, SQLTranscript
 from chanjo2.models.pydantic_models import (
     Builds,
     Exon,
@@ -23,8 +24,6 @@ from chanjo2.models.pydantic_models import (
     GeneQuery,
     GeneIntervalQuery,
 )
-from chanjo2.models.sql_models import Exon as SQLExon
-from chanjo2.models.sql_models import Transcript as SQLTranscript
 
 router = APIRouter()
 

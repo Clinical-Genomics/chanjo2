@@ -13,8 +13,7 @@ from chanjo2.meta.handle_report_contents import (
     get_genes_overview_incomplete_coverage_rows,
     get_gene_coverage_stats_by_interval,
 )
-from chanjo2.models.sql_models import Gene as SQLGene
-from chanjo2.models.sql_models import Transcript as SQLTranscript
+from chanjo2.models import SQLGene, SQLTranscript
 
 DEFAULT_COVERAGE_LEVEL = 20
 

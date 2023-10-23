@@ -21,6 +21,7 @@ from chanjo2.meta.handle_d4 import (
     get_intervals_completeness,
     get_sample_interval_coverage,
 )
+from chanjo2.models import SQLExon, SQLGene, SQLTranscript
 from chanjo2.models.pydantic_models import (
     SampleGeneIntervalQuery,
     FileCoverageQuery,
@@ -28,9 +29,6 @@ from chanjo2.models.pydantic_models import (
     IntervalCoverage,
     GeneCoverage,
 )
-from chanjo2.models.sql_models import Exon as SQLExon
-from chanjo2.models.sql_models import Gene as SQLGene
-from chanjo2.models.sql_models import Transcript as SQLTranscript
 
 router = APIRouter()
 

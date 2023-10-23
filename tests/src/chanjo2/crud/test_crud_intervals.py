@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 
 from chanjo2.constants import BUILD_37
 from chanjo2.crud.intervals import get_gene_intervals
-from chanjo2.models.sql_models import Transcript as SQLTranscript
+from chanjo2.models import SQLTranscript
 
 
 def test_get_gene_intervals_all_transcripts(
