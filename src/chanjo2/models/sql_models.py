@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, String, Index, Table
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -23,6 +25,7 @@ class Case(Base):
     samples = relationship("Sample", secondary=CaseSample, back_populates="cases")
 
 
+@dataclass
 class Sample(Base):
     """Used to define a single sample belonging to a Case."""
 
