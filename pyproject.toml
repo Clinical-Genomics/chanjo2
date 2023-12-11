@@ -8,7 +8,7 @@ authors = ["northwestwitch <chiara.rasi@scilifelab.se>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-fastapi = "^0.68.1"
+fastapi = "^0.104.1"
 python-multipart = "^0.0.5"
 mysqlclient = "^2.1.0"
 gunicorn = "^20.1.0"
@@ -22,6 +22,7 @@ pyd4 = "0.3.6.2"
 python-dotenv = "^1.0.0"
 mkdocs = "^1.4.3"
 jinja2 = "==3.0.3"
+pydantic = "^2.5.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
