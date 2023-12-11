@@ -188,7 +188,7 @@ class SampleGeneIntervalQuery(BaseModel):
 
     model_validator(mode="before")
 
-    def check_genes_lists(cls, values):
+    def check_genes_lists(self, values):
         nr_provided_gene_lists: int = 0
         for gene_list in [
             values.get("ensembl_gene_ids"),
@@ -203,7 +203,7 @@ class SampleGeneIntervalQuery(BaseModel):
 
     model_validator(mode="before")
 
-    def check_sample_input(cls, values):
+    def check_sample_input(self, values):
         case = values.get("case", "") != ""
         samples = bool(values.get("samples", []))
         if case == samples:
