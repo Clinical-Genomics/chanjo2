@@ -6,7 +6,8 @@ from pathlib import Path
 from typing import Any, List, Optional, Dict
 
 import validators
-from pydantic import BaseModel, validator, root_validator, Field
+from pydantic import BaseModel, field_validator, model_validator, Field
+from pydantic_settings import SettingsConfigDict
 
 from chanjo2.constants import (
     WRONG_COVERAGE_FILE_MSG,
@@ -63,7 +64,7 @@ class SampleBase(BaseModel):
     track_name: str
     name: str
 
-    @validator("coverage_file_path", pre=True)
+    @field_validator("coverage_file_path", mode="before")
     def validate_coverage_path(cls, value: str) -> Any:
         if not Path(value).is_file() and not validators.url(value):
             raise ValueError(WRONG_COVERAGE_FILE_MSG)
@@ -78,17 +79,13 @@ class SampleCreate(SampleBase):
 class Sample(SampleBase):
     created_at: datetime
     id: int
-
-    class Config:
-        orm_mode = True
+    model_config = SettingsConfigDict(from_attributes=True)
 
 
 class Case(CaseBase):
     id: int
     samples: List = []
-
-    class Config:
-        orm_mode = True
+    model_config = SettingsConfigDict(from_attributes=True)
 
 
 class IntervalBase(BaseModel):
@@ -189,7 +186,8 @@ class SampleGeneIntervalQuery(BaseModel):
     samples: Optional[List[str]]
     case: Optional[str]
 
-    @root_validator(pre=True)
+    model_validator(mode='before')
+
     def check_genes_lists(cls, values):
         nr_provided_gene_lists: int = 0
         for gene_list in [
@@ -203,7 +201,8 @@ class SampleGeneIntervalQuery(BaseModel):
             raise ValueError(MULTIPLE_GENE_LISTS_NOT_SUPPORTED_MSG)
         return values
 
-    @root_validator(pre=True)
+    model_validator(mode='before')
+
     def check_sample_input(cls, values):
         case = values.get("case", "") != ""
         samples = bool(values.get("samples", []))
@@ -235,7 +234,7 @@ class ReportQuery(BaseModel):
     case_display_name: Optional[str] = None
     samples: List[ReportQuerySample]
 
-    @validator("samples", pre=True)
+    @field_validator("samples", mode="before")
     def samples_validator(cls, sample_list):
         if isinstance(sample_list, str):
             return json.loads(sample_list.replace("'", '"'))
@@ -250,13 +249,13 @@ class GeneReportForm(BaseModel):
     samples: List[ReportQuerySample]
     interval_type: IntervalType
 
-    @validator("samples", pre=True)
+    @field_validator("samples", mode="before")
     def samples_validator(cls, sample_list):
         if isinstance(sample_list, str):
             return json.loads(sample_list.replace("'", '"'))
         return sample_list
 
-    @validator("completeness_thresholds", pre=True)
+    @field_validator("completeness_thresholds", mode="before")
     def coverage_thresholds_validator(cls, completeness_thresholds: str):
         thresholds: List[str] = completeness_thresholds.split(",")
         return [int(threshold.strip()) for threshold in thresholds]
