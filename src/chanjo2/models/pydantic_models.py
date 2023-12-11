@@ -186,7 +186,7 @@ class SampleGeneIntervalQuery(BaseModel):
     samples: Optional[List[str]]
     case: Optional[str]
 
-    model_validator(mode='before')
+    model_validator(mode="before")
 
     def check_genes_lists(cls, values):
         nr_provided_gene_lists: int = 0
@@ -201,7 +201,7 @@ class SampleGeneIntervalQuery(BaseModel):
             raise ValueError(MULTIPLE_GENE_LISTS_NOT_SUPPORTED_MSG)
         return values
 
-    model_validator(mode='before')
+    model_validator(mode="before")
 
     def check_sample_input(cls, values):
         case = values.get("case", "") != ""

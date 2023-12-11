@@ -35,9 +35,9 @@ def count_nr_filters(filters: List[str]) -> int:
 
 @router.post("/intervals/load/genes/{build}")
 async def load_genes(
-        build: Builds,
-        file_path: Optional[str] = None,
-        session: Session = Depends(get_session),
+    build: Builds,
+    file_path: Optional[str] = None,
+    session: Session = Depends(get_session),
 ) -> Response:
     """Load genes in the given genome build."""
 
@@ -62,7 +62,7 @@ async def load_genes(
 
 @router.post("/intervals/genes")
 async def genes(
-        query: GeneQuery, session: Session = Depends(get_session)
+    query: GeneQuery, session: Session = Depends(get_session)
 ) -> List[Gene]:
     """Return genes according to query parameters."""
     nr_filters = count_nr_filters(
@@ -86,9 +86,9 @@ async def genes(
 
 @router.post("/intervals/load/transcripts/{build}")
 async def load_transcripts(
-        build: Builds,
-        file_path: Optional[str] = None,
-        session: Session = Depends(get_session),
+    build: Builds,
+    file_path: Optional[str] = None,
+    session: Session = Depends(get_session),
 ) -> Response:
     """Load transcripts in the given genome build."""
 
@@ -117,7 +117,7 @@ async def load_transcripts(
 
 @router.post("/intervals/transcripts")
 async def transcripts(
-        query: GeneIntervalQuery, session: Session = Depends(get_session)
+    query: GeneIntervalQuery, session: Session = Depends(get_session)
 ) -> List[Transcript]:
     """Return transcripts according to query parameters."""
     nr_filters = count_nr_filters(
@@ -147,9 +147,9 @@ async def transcripts(
 
 @router.post("/intervals/load/exons/{build}")
 async def load_exons(
-        build: Builds,
-        file_path: Optional[str] = None,
-        session: Session = Depends(get_session),
+    build: Builds,
+    file_path: Optional[str] = None,
+    session: Session = Depends(get_session),
 ) -> Response:
     """Load exons in the given genome build."""
 
@@ -174,7 +174,7 @@ async def load_exons(
 
 @router.post("/intervals/exons")
 async def exons(
-        query: GeneIntervalQuery, session: Session = Depends(get_session)
+    query: GeneIntervalQuery, session: Session = Depends(get_session)
 ) -> List[Exon]:
     """Return exons in the given genome build."""
     nr_filters = count_nr_filters(
