@@ -1,6 +1,9 @@
 ## [unreleased]
 ### Changed
 - Simplified the import of SQL classes from `scout.models.sql_model`
+- Upgraded Pydantic and Fastapi libraries and their dependencies
+- Use app lifespan instead of deprecated startup `on_event'.
+- Modified code to support upgraded libraries
 
 ## [1.2]
 ### Added
