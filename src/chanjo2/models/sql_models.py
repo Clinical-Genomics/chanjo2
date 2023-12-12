@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, String, Index, Table
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -13,6 +15,7 @@ CaseSample = Table(
 )
 
 
+@dataclass
 class Case(Base):
     """Used to define a case containing samples."""
 
@@ -23,6 +26,7 @@ class Case(Base):
     samples = relationship("Sample", secondary=CaseSample, back_populates="cases")
 
 
+@dataclass
 class Sample(Base):
     """Used to define a single sample belonging to a Case."""
 
@@ -36,6 +40,7 @@ class Sample(Base):
     cases = relationship("Case", secondary=CaseSample, back_populates="samples")
 
 
+@dataclass
 class Interval(Base):
     """Used to define a single genomic interval."""
 
@@ -47,6 +52,7 @@ class Interval(Base):
     stop = Column(Integer, nullable=False)
 
 
+@dataclass
 class Gene(Base):
     """Used to define a gene entity."""
 
@@ -68,6 +74,7 @@ class Gene(Base):
     )
 
 
+@dataclass
 class Transcript(Base):
     """Used to define a transcript entity."""
 
@@ -97,6 +104,7 @@ class Transcript(Base):
     )
 
 
+@dataclass
 class Exon(Base):
     """Used to define an exon entity."""
 

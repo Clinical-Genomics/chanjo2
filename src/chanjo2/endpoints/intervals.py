@@ -1,4 +1,4 @@
-from typing import List, Union, Optional, Iterator
+from typing import List, Optional, Iterator
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from fastapi.responses import JSONResponse
@@ -38,7 +38,7 @@ async def load_genes(
     build: Builds,
     file_path: Optional[str] = None,
     session: Session = Depends(get_session),
-) -> Union[Response, HTTPException]:
+) -> Response:
     """Load genes in the given genome build."""
 
     try:
@@ -89,7 +89,7 @@ async def load_transcripts(
     build: Builds,
     file_path: Optional[str] = None,
     session: Session = Depends(get_session),
-) -> Union[Response, HTTPException]:
+) -> Response:
     """Load transcripts in the given genome build."""
 
     try:
@@ -150,7 +150,7 @@ async def load_exons(
     build: Builds,
     file_path: Optional[str] = None,
     session: Session = Depends(get_session),
-) -> Union[Response, HTTPException]:
+) -> Response:
     """Load exons in the given genome build."""
 
     try:

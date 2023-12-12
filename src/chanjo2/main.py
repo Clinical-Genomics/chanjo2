@@ -1,5 +1,6 @@
 import logging
 import os
+from contextlib import asynccontextmanager
 from typing import List, Tuple
 
 import uvicorn
@@ -27,7 +28,15 @@ def create_db_and_tables():
     Base.metadata.create_all(engine)
 
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app_: FastAPI):
+    LOG.info("Starting up...")
+    await startup_db()
+    yield
+    LOG.info("Shutting down...")
+
+
+app = FastAPI(lifespan=lifespan)
 
 
 def configure_static(app):
@@ -46,8 +55,7 @@ for router, tag in APP_ROUTER_TAGS:
     )
 
 
-@app.on_event("startup")
-async def on_startup():
+async def startup_db():
     # Configure logging
     console_formatter = uvicorn.logging.ColourizedFormatter(
         "{levelprefix} {asctime} : {message}", style="{", use_colors=True
