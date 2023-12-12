@@ -1182,13 +1182,13 @@ idna2008 = ["idna"]
 
 [[package]]
 name = "schug"
-version = "1.4"
+version = "1.5"
 description = "Keep track of genes, transcripts and exons from different sources"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "schug-1.4-py3-none-any.whl", hash = "sha256:47815f57d2bdfb16ef91bc712ab55a22d3671da7af4c42f15e19d8ba49453f38"},
-    {file = "schug-1.4.tar.gz", hash = "sha256:38ebb2ba27cc4dbdd51640b68793e5416a44398b4f1a5198cb6fc99d94c635af"},
+    {file = "schug-1.5-py3-none-any.whl", hash = "sha256:149d4b0866dbe8ad4cd4425495f73e3f6f594b5daf14c8b1faf7a2773c2f62d8"},
+    {file = "schug-1.5.tar.gz", hash = "sha256:56e803c9111f6544feb08f782e1824c24374e6ea04934c8c41ce3236e9cb6c4d"},
 ]
 
 [package.dependencies]
@@ -1527,4 +1527,4 @@ m1 = ["pyd4"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "99ad1f6e2eab834d7bae934594e851758d1c152376ada1ee352fbf7ea0a7f627"
+content-hash = "d35339fc74056e9e4396537923830bb5ed486e0ef73649e591a8bbcaca40557d"

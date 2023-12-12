@@ -23,7 +23,7 @@ mkdocs = "^1.4.3"
 jinja2 = "==3.0.3"
 pydantic = "^2.5.2"
 sqlalchemy = "^2.0.23"
-schug = "^1.4"
+schug = "^1.5"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
