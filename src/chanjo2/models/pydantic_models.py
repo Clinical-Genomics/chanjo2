@@ -107,14 +107,14 @@ class GeneBase(IntervalBase):
 
 class GeneQuery(BaseModel):
     build: Builds
-    ensembl_ids: Optional[List[str]]
-    hgnc_ids: Optional[List[int]]
-    hgnc_symbols: Optional[List[str]]
+    ensembl_ids: Optional[List[str]] = None
+    hgnc_ids: Optional[List[int]] = None
+    hgnc_symbols: Optional[List[str]] = None
     limit: Optional[int] = 100
 
 
 class GeneIntervalQuery(GeneQuery):
-    ensembl_gene_ids: Optional[List[str]]
+    ensembl_gene_ids: Optional[List[str]] = None
 
 
 class Gene(IntervalBase):
@@ -180,9 +180,9 @@ class FileCoverageIntervalsFileQuery(FileCoverageBaseQuery):
 class SampleGeneIntervalQuery(BaseModel):
     build: Builds
     completeness_thresholds: Optional[List[int]] = []
-    ensembl_gene_ids: Optional[List[str]] = []
-    hgnc_gene_ids: Optional[List[int]] = []
-    hgnc_gene_symbols: Optional[List[str]] = []
+    ensembl_gene_ids: Optional[List[str]] = None
+    hgnc_gene_ids: Optional[List[int]] = None
+    hgnc_gene_symbols: Optional[List[str]] = None
     samples: Optional[List[str]] = None
     case: Optional[str] = None
 
@@ -223,9 +223,9 @@ class ReportQuerySample(BaseModel):
 class ReportQuery(BaseModel):
     build: Builds
     completeness_thresholds: Optional[List[int]] = DEFAULT_COMPLETENESS_LEVELS
-    ensembl_gene_ids: Optional[List[str]] = []
-    hgnc_gene_ids: Optional[List[int]] = []
-    hgnc_gene_symbols: Optional[List[str]] = []
+    ensembl_gene_ids: Optional[List[str]] = None
+    hgnc_gene_ids: Optional[List[int]] = None
+    hgnc_gene_symbols: Optional[List[str]] = None
     interval_type: IntervalType
     default_level: int = 10
     panel_name: Optional[str] = "Custom panel"

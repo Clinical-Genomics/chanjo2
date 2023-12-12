@@ -29,7 +29,7 @@ def test_create_sample_for_case_no_local_coverage_file(
     result = response.json()
 
     # WITH a meaningful message
-    assert result["detail"][0]["msg"] == WRONG_COVERAGE_FILE_MSG
+    assert WRONG_COVERAGE_FILE_MSG in result["detail"][0]["msg"]
 
 
 def test_create_sample_for_case_no_remote_coverage_file(
@@ -51,7 +51,7 @@ def test_create_sample_for_case_no_remote_coverage_file(
 
     # WITH a meaningful message
     result = response.json()
-    assert result["detail"][0]["msg"] == WRONG_COVERAGE_FILE_MSG
+    assert WRONG_COVERAGE_FILE_MSG in result["detail"][0]["msg"]
 
 
 def test_create_sample_for_case_no_case(
