@@ -125,11 +125,11 @@ class TranscriptBase(IntervalBase):
     build: Builds
     ensembl_id: str
     ensembl_gene_id: str
-    refseq_mrna: Optional[str]
-    refseq_mrna_pred: Optional[str]
-    refseq_ncrna: Optional[str]
-    refseq_mane_select: Optional[str]
-    refseq_mane_plus_clinical: Optional[str]
+    refseq_mrna: Optional[str] = None
+    refseq_mrna_pred: Optional[str] = None
+    refseq_ncrna: Optional[str] = None
+    refseq_mane_select: Optional[str] = None
+    refseq_mane_plus_clinical: Optional[str] = None
 
 
 class Transcript(TranscriptBase):
@@ -150,15 +150,15 @@ class Exon(IntervalBase):
 class IntervalCoverage(BaseModel):
     mean_coverage: float
     completeness: Optional[Dict] = Field(default_factory=dict)
-    interval_id: Optional[str]
-    interval_type: Optional[IntervalType]
+    interval_id: Optional[str] = None
+    interval_type: Optional[IntervalType] = IntervalType.CUSTOM
 
 
 class GeneCoverage(IntervalCoverage):
     inner_intervals: List[IntervalCoverage] = []  # Transcripts or exons
-    hgnc_id: Optional[int]
-    hgnc_symbol: Optional[str]
-    ensembl_gene_id: Optional[str]
+    hgnc_id: Optional[int] = None
+    hgnc_symbol: Optional[str] = None
+    ensembl_gene_id: Optional[str] = None
 
 
 class FileCoverageBaseQuery(BaseModel):
@@ -167,28 +167,27 @@ class FileCoverageBaseQuery(BaseModel):
 
 class FileCoverageQuery(FileCoverageBaseQuery):
     chromosome: str
-    start: Optional[int]
-    end: Optional[int]
-    completeness_thresholds: Optional[List[int]]
+    start: Optional[int] = None
+    end: Optional[int] = None
+    completeness_thresholds: Optional[List[int]] = []
 
 
 class FileCoverageIntervalsFileQuery(FileCoverageBaseQuery):
     intervals_bed_path: str
-    completeness_thresholds: Optional[List[int]]
+    completeness_thresholds: Optional[List[int]] = []
 
 
 class SampleGeneIntervalQuery(BaseModel):
     build: Builds
-    completeness_thresholds: Optional[List[int]]
-    ensembl_gene_ids: Optional[List[str]]
-    hgnc_gene_ids: Optional[List[int]]
-    hgnc_gene_symbols: Optional[List[str]]
-    samples: Optional[List[str]]
-    case: Optional[str]
+    completeness_thresholds: Optional[List[int]] = []
+    ensembl_gene_ids: Optional[List[str]] = []
+    hgnc_gene_ids: Optional[List[int]] = []
+    hgnc_gene_symbols: Optional[List[str]] = []
+    samples: Optional[List[str]] = None
+    case: Optional[str] = None
 
-    model_validator(mode="before")
-
-    def check_genes_lists(self, values):
+    @model_validator(mode="before")
+    def check_genes_lists(cls, values: dict):
         nr_provided_gene_lists: int = 0
         for gene_list in [
             values.get("ensembl_gene_ids"),
@@ -201,12 +200,11 @@ class SampleGeneIntervalQuery(BaseModel):
             raise ValueError(MULTIPLE_GENE_LISTS_NOT_SUPPORTED_MSG)
         return values
 
-    model_validator(mode="before")
-
-    def check_sample_input(self, values):
-        case = values.get("case", "") != ""
-        samples = bool(values.get("samples", []))
-        if case == samples:
+    @model_validator(mode="before")
+    def check_sample_input(cls, values: dict):
+        case = values.get("case")
+        samples = values.get("samples")
+        if case and samples:
             raise ValueError(AMBIGUOUS_SAMPLES_INPUT)
 
         return values
@@ -217,7 +215,7 @@ class SampleGeneIntervalQuery(BaseModel):
 
 class ReportQuerySample(BaseModel):
     name: str
-    coverage_file_path: Optional[str]
+    coverage_file_path: Optional[str] = None
     case_name: Optional[str] = None
     analysis_date: Optional[datetime] = datetime.now()
 

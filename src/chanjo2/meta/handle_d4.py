@@ -76,11 +76,11 @@ def get_intervals_completeness(
     d4_file: D4File,
     intervals: List[Tuple[str, int, int]],
     completeness_thresholds: Optional[List[int]],
-) -> List[Tuple[int, Decimal]]:
+) -> Optional[List[Tuple[int, Decimal]]]:
     """Compute coverage completeness over threshold values for a list of intervals."""
 
     if not completeness_thresholds:
-        return []
+        return None
 
     total_region_length: int = 0
     nr_complete_bases_by_threshold: List[int] = [0 for _ in completeness_thresholds]

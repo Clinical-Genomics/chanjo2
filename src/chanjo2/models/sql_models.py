@@ -15,6 +15,7 @@ CaseSample = Table(
 )
 
 
+@dataclass
 class Case(Base):
     """Used to define a case containing samples."""
 
@@ -39,6 +40,7 @@ class Sample(Base):
     cases = relationship("Case", secondary=CaseSample, back_populates="samples")
 
 
+@dataclass
 class Interval(Base):
     """Used to define a single genomic interval."""
 
@@ -50,6 +52,7 @@ class Interval(Base):
     stop = Column(Integer, nullable=False)
 
 
+@dataclass
 class Gene(Base):
     """Used to define a gene entity."""
 
@@ -71,6 +74,7 @@ class Gene(Base):
     )
 
 
+@dataclass
 class Transcript(Base):
     """Used to define a transcript entity."""
 
@@ -100,6 +104,7 @@ class Transcript(Base):
     )
 
 
+@dataclass
 class Exon(Base):
     """Used to define an exon entity."""
 

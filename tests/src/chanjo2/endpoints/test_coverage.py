@@ -218,7 +218,7 @@ def test_gene_coverage_case_and_samples(
 
     # WITH a meaningful message
     result = response.json()
-    assert result["detail"][0]["msg"] == AMBIGUOUS_SAMPLES_INPUT
+    assert AMBIGUOUS_SAMPLES_INPUT in result["detail"][0]["msg"]
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -243,7 +243,7 @@ def test_samples_coverage_multiple_genes_lists(
     # AND a meaningful message
     result = response.json()
 
-    assert result["detail"][0]["msg"] == MULTIPLE_GENE_LISTS_NOT_SUPPORTED_MSG
+    assert MULTIPLE_GENE_LISTS_NOT_SUPPORTED_MSG in result["detail"][0]["msg"]
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
