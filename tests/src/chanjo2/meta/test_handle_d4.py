@@ -1,5 +1,4 @@
 from chanjo2.constants import DEFAULT_COMPLETENESS_LEVELS
-from decimal import Decimal
 from chanjo2.meta.handle_d4 import predict_sex
 from chanjo2.models.pydantic_models import Sex
 from chanjo2.meta.handle_d4 import get_intervals_completeness, get_d4_file
@@ -58,4 +57,6 @@ def test_get_intervals_completeness(real_coverage_path, bed_interval):
 
     # CONTAINING stats for all the provided coverage thresholds
     for level in DEFAULT_COMPLETENESS_LEVELS:
-        assert isinstance(completeness_stats[level], Decimal)
+        assert completeness_stats[level] == 0 or isinstance(
+            completeness_stats[level], float
+        )
