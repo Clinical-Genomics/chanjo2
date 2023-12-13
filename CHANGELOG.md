@@ -4,7 +4,7 @@
 - Upgraded Pydantic and Fastapi libraries and their dependencies
 - Use app lifespan instead of deprecated startup `on_event'.
 - Modified code to support upgraded libraries
-- Rename a test file from `test_d4.py` to `test_handle_d4.py`
+- Rename a test file from `test_d4.py` to `test_handle_d4.py` and add 2 new tests to it
 - Fix return type of `get_intervals_completeness` function
 
 ## [1.2]
