@@ -7,8 +7,11 @@ from chanjo2.demo import DEMO_COVERAGE_QUERY_DATA
 from chanjo2.meta.handle_d4 import D4File, get_sample_interval_coverage
 from chanjo2.meta.handle_report_contents import (
     get_gene_coverage_stats_by_interval,
-    get_genes_overview_incomplete_coverage_rows, get_missing_genes_from_db,
-    get_report_completeness_rows, get_report_level_completeness_rows)
+    get_genes_overview_incomplete_coverage_rows,
+    get_missing_genes_from_db,
+    get_report_completeness_rows,
+    get_report_level_completeness_rows,
+)
 from chanjo2.models import SQLGene, SQLTranscript
 
 DEFAULT_COVERAGE_LEVEL = 20

@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 
-from sqlalchemy import (Column, DateTime, Enum, ForeignKey, Index, Integer,
-                        String, Table)
+from sqlalchemy import Column, DateTime, Enum, ForeignKey, Index, Integer, String, Table
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
