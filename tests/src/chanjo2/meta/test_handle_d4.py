@@ -1,8 +1,7 @@
 from pyd4 import D4File
 
 from chanjo2.constants import DEFAULT_COMPLETENESS_LEVELS
-from chanjo2.meta.handle_d4 import (get_d4_file, get_intervals_completeness,
-                                    predict_sex)
+from chanjo2.meta.handle_d4 import get_d4_file, get_intervals_completeness, predict_sex
 from chanjo2.models.pydantic_models import Sex
 
 

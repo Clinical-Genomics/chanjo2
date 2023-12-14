@@ -9,10 +9,12 @@ import validators
 from pydantic import BaseModel, Field, field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
 
-from chanjo2.constants import (AMBIGUOUS_SAMPLES_INPUT,
-                               DEFAULT_COMPLETENESS_LEVELS,
-                               MULTIPLE_GENE_LISTS_NOT_SUPPORTED_MSG,
-                               WRONG_COVERAGE_FILE_MSG)
+from chanjo2.constants import (
+    AMBIGUOUS_SAMPLES_INPUT,
+    DEFAULT_COMPLETENESS_LEVELS,
+    MULTIPLE_GENE_LISTS_NOT_SUPPORTED_MSG,
+    WRONG_COVERAGE_FILE_MSG,
+)
 
 LOG = logging.getLogger("uvicorn.access")
 

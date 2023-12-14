@@ -11,9 +11,10 @@ from starlette.datastructures import FormData
 from chanjo2.dbutil import get_session
 from chanjo2.demo import DEMO_COVERAGE_QUERY_DATA
 from chanjo2.meta.handle_report_contents import (
-    get_gene_overview_coverage_stats, get_report_data)
-from chanjo2.models.pydantic_models import (GeneCoverage, GeneReportForm,
-                                            ReportQuery)
+    get_gene_overview_coverage_stats,
+    get_report_data,
+)
+from chanjo2.models.pydantic_models import GeneCoverage, GeneReportForm, ReportQuery
 
 LOG = logging.getLogger("uvicorn.access")
 

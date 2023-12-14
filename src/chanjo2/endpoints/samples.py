@@ -3,8 +3,13 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from chanjo2.crud.samples import (create_sample_in_case, delete_sample,
-                                  get_case_samples, get_sample, get_samples)
+from chanjo2.crud.samples import (
+    create_sample_in_case,
+    delete_sample,
+    get_case_samples,
+    get_sample,
+    get_samples,
+)
 from chanjo2.dbutil import get_session
 from chanjo2.models.pydantic_models import Sample, SampleCreate
 
