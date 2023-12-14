@@ -8,20 +8,12 @@ from chanjo2.constants import MULTIPLE_PARAMS_NOT_SUPPORTED_MSG
 from chanjo2.crud.intervals import get_gene_intervals, get_genes
 from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import resource_lines
-from chanjo2.meta.handle_load_intervals import (
-    update_exons,
-    update_genes,
-    update_transcripts,
-)
+from chanjo2.meta.handle_load_intervals import (update_exons, update_genes,
+                                                update_transcripts)
 from chanjo2.models import SQLExon, SQLTranscript
-from chanjo2.models.pydantic_models import (
-    Builds,
-    Exon,
-    Gene,
-    GeneIntervalQuery,
-    GeneQuery,
-    Transcript,
-)
+from chanjo2.models.pydantic_models import (Builds, Exon, Gene,
+                                            GeneIntervalQuery, GeneQuery,
+                                            Transcript)
 
 router = APIRouter()
 

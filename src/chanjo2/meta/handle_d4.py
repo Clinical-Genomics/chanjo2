@@ -7,13 +7,8 @@ from sqlalchemy.orm import Session
 
 from chanjo2.crud.intervals import get_gene_intervals
 from chanjo2.models import SQLExon, SQLGene, SQLTranscript
-from chanjo2.models.pydantic_models import (
-    GeneCoverage,
-    IntervalCoverage,
-    IntervalType,
-    Sex,
-    TranscriptTag,
-)
+from chanjo2.models.pydantic_models import (GeneCoverage, IntervalCoverage,
+                                            IntervalType, Sex, TranscriptTag)
 
 LOG = logging.getLogger("uvicorn.access")
 

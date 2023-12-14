@@ -6,13 +6,8 @@ from sqlalchemy.orm import Session, query
 from sqlalchemy.sql.expression import Delete
 
 from chanjo2.models import SQLExon, SQLGene, SQLTranscript
-from chanjo2.models.pydantic_models import (
-    Builds,
-    ExonBase,
-    GeneBase,
-    TranscriptBase,
-    TranscriptTag,
-)
+from chanjo2.models.pydantic_models import (Builds, ExonBase, GeneBase,
+                                            TranscriptBase, TranscriptTag)
 
 LOG = logging.getLogger("uvicorn.access")
 

@@ -9,23 +9,16 @@ from chanjo2.crud.intervals import get_genes
 from chanjo2.crud.samples import get_samples_coverage_file
 from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import parse_bed
-from chanjo2.meta.handle_d4 import (
-    get_d4_file,
-    get_intervals_completeness,
-    get_intervals_mean_coverage,
-    get_sample_interval_coverage,
-    get_samples_sex_metrics,
-    intervals_coverage,
-    set_interval,
-)
+from chanjo2.meta.handle_d4 import (get_d4_file, get_intervals_completeness,
+                                    get_intervals_mean_coverage,
+                                    get_sample_interval_coverage,
+                                    get_samples_sex_metrics,
+                                    intervals_coverage, set_interval)
 from chanjo2.models import SQLExon, SQLGene, SQLTranscript
-from chanjo2.models.pydantic_models import (
-    FileCoverageIntervalsFileQuery,
-    FileCoverageQuery,
-    GeneCoverage,
-    IntervalCoverage,
-    SampleGeneIntervalQuery,
-)
+from chanjo2.models.pydantic_models import (FileCoverageIntervalsFileQuery,
+                                            FileCoverageQuery, GeneCoverage,
+                                            IntervalCoverage,
+                                            SampleGeneIntervalQuery)
 
 router = APIRouter()
 
