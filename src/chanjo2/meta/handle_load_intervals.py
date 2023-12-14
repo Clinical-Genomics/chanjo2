@@ -1,32 +1,20 @@
 import logging
-from typing import Iterator, List, Union, Optional
+from typing import Iterator, List, Optional, Union
 
 import requests
 from schug.load.biomart import EnsemblBiomartClient
 from schug.models.common import Build as SchugBuild
 from sqlalchemy.orm import Session
 
-from chanjo2.constants import (
-    ENSEMBL_RESOURCE_CLIENT,
-    EXONS_FILE_HEADER,
-    GENES_FILE_HEADER,
-    TRANSCRIPTS_FILE_HEADER,
-)
-from chanjo2.crud.intervals import (
-    bulk_insert_exons,
-    bulk_insert_genes,
-    bulk_insert_transcripts,
-    count_intervals_for_build,
-    delete_intervals_for_build,
-)
+from chanjo2.constants import (ENSEMBL_RESOURCE_CLIENT, EXONS_FILE_HEADER,
+                               GENES_FILE_HEADER, TRANSCRIPTS_FILE_HEADER)
+from chanjo2.crud.intervals import (bulk_insert_exons, bulk_insert_genes,
+                                    bulk_insert_transcripts,
+                                    count_intervals_for_build,
+                                    delete_intervals_for_build)
 from chanjo2.models import SQLExon, SQLGene, SQLTranscript
-from chanjo2.models.pydantic_models import (
-    Builds,
-    ExonBase,
-    GeneBase,
-    IntervalType,
-    TranscriptBase,
-)
+from chanjo2.models.pydantic_models import (Builds, ExonBase, GeneBase,
+                                            IntervalType, TranscriptBase)
 
 LOG = logging.getLogger("uvicorn.access")
 MAX_NR_OF_RECORDS = 10_000

@@ -1,19 +1,17 @@
 import copy
-from typing import Type, Dict, List
+from typing import Dict, List, Type
 
 import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
 
-from chanjo2.constants import (
-    WRONG_COVERAGE_FILE_MSG,
-    WRONG_BED_FILE_MSG,
-    MULTIPLE_GENE_LISTS_NOT_SUPPORTED_MSG,
-    AMBIGUOUS_SAMPLES_INPUT,
-)
+from chanjo2.constants import (AMBIGUOUS_SAMPLES_INPUT,
+                               MULTIPLE_GENE_LISTS_NOT_SUPPORTED_MSG,
+                               WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG)
 from chanjo2.demo import gene_panel_path
-from chanjo2.models.pydantic_models import Builds, Sex, GeneCoverage, IntervalCoverage
-from chanjo2.populate_demo import DEMO_SAMPLE, DEMO_CASE
+from chanjo2.models.pydantic_models import (Builds, GeneCoverage,
+                                            IntervalCoverage, Sex)
+from chanjo2.populate_demo import DEMO_CASE, DEMO_SAMPLE
 
 COVERAGE_COMPLETENESS_THRESHOLDS: List[int] = [10, 20, 30]
 

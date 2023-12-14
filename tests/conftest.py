@@ -7,11 +7,10 @@ from pyd4 import D4File
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from chanjo2.constants import BUILD_38, BUILD_37
+from chanjo2.constants import BUILD_37, BUILD_38
 from chanjo2.crud.intervals import get_genes
 from chanjo2.dbutil import DEMO_CONNECT_ARGS, get_session
-from chanjo2.demo import DEMO_SAMPLE
-from chanjo2.demo import d4_demo_path, gene_panel_path
+from chanjo2.demo import DEMO_SAMPLE, d4_demo_path, gene_panel_path
 from chanjo2.main import Base, app, engine
 from chanjo2.meta.handle_bed import parse_bed
 from chanjo2.meta.handle_d4 import get_d4_file
