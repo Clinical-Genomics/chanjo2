@@ -1,5 +1,4 @@
 import logging
-from decimal import Decimal
 from statistics import mean
 from typing import List, Optional, Tuple, Union, Dict
 
@@ -76,7 +75,7 @@ def get_intervals_completeness(
     d4_file: D4File,
     intervals: List[Tuple[str, int, int]],
     completeness_thresholds: Optional[List[int]],
-) -> Optional[List[Tuple[int, Decimal]]]:
+) -> Optional[Dict[int, float]]:
     """Compute coverage completeness over threshold values for a list of intervals."""
 
     if not completeness_thresholds:
