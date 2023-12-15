@@ -1,4 +1,4 @@
-## [unreleased]
+## [1.3]
 ### Changed
 - Simplified the import of SQL classes from `scout.models.sql_model`
 - Upgraded Pydantic and Fastapi libraries and their dependencies
