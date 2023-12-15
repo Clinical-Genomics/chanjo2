@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "chanjo2"
-version = "1.2.0"
+version = "1.3.0"
 description = "Next generation coverage analysis"
 authors = ["northwestwitch <chiara.rasi@scilifelab.se>"]
 
