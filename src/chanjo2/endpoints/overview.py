@@ -1,7 +1,7 @@
 import logging
 from os import path
 
-from fastapi import APIRouter, Request, Depends
+from fastapi import APIRouter, Depends, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -11,10 +11,10 @@ from starlette.datastructures import FormData
 from chanjo2.dbutil import get_session
 from chanjo2.demo import DEMO_COVERAGE_QUERY_DATA
 from chanjo2.meta.handle_report_contents import (
-    get_report_data,
     get_gene_overview_coverage_stats,
+    get_report_data,
 )
-from chanjo2.models.pydantic_models import ReportQuery, GeneReportForm, GeneCoverage
+from chanjo2.models.pydantic_models import GeneCoverage, GeneReportForm, ReportQuery
 
 LOG = logging.getLogger("uvicorn.access")
 

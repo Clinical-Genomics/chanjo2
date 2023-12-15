@@ -6,6 +6,7 @@
 - Modified code to support upgraded libraries
 - Rename a test file from `test_d4.py` to `test_handle_d4.py` and add 2 new tests to it
 - Fix return type of `get_intervals_completeness` function
+- Isort imports of the entire repo
 
 ## [1.2]
 ### Added

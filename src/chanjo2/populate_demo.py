@@ -1,4 +1,4 @@
-from typing import List, Tuple, Iterator
+from typing import Iterator, List, Tuple
 
 from schug.demo import (
     EXONS_37_FILE_PATH,
@@ -14,14 +14,14 @@ from chanjo2.constants import BUILD_37, BUILD_38
 from chanjo2.crud.cases import create_db_case
 from chanjo2.crud.samples import create_sample_in_case
 from chanjo2.dbutil import get_session
-from chanjo2.demo import DEMO_SAMPLE, DEMO_CASE
+from chanjo2.demo import DEMO_CASE, DEMO_SAMPLE
 from chanjo2.meta.handle_bed import resource_lines
 from chanjo2.meta.handle_load_intervals import (
+    update_exons,
     update_genes,
     update_transcripts,
-    update_exons,
 )
-from chanjo2.models.pydantic_models import CaseCreate, SampleCreate, Builds
+from chanjo2.models.pydantic_models import Builds, CaseCreate, SampleCreate
 
 db: sessionmaker = next(get_session())
 
