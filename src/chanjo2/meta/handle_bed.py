@@ -1,4 +1,4 @@
-from typing import List, Tuple, Iterator
+from typing import Iterator, List, Tuple
 
 
 def resource_lines(file_path: str) -> Iterator[str]:

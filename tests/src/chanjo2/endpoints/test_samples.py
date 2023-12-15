@@ -5,8 +5,7 @@ from fastapi import status
 from fastapi.testclient import TestClient
 from pytest_mock.plugin import MockerFixture
 
-from chanjo2.models.pydantic_models import Case
-from chanjo2.models.pydantic_models import WRONG_COVERAGE_FILE_MSG, Sample
+from chanjo2.models.pydantic_models import WRONG_COVERAGE_FILE_MSG, Case, Sample
 from chanjo2.populate_demo import DEMO_CASE, DEMO_SAMPLE
 
 

@@ -2,9 +2,9 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import sessionmaker
 
 from chanjo2.crud.cases import get_cases
-from chanjo2.crud.intervals import get_genes, get_gene_intervals
+from chanjo2.crud.intervals import get_gene_intervals, get_genes
 from chanjo2.crud.samples import get_samples
-from chanjo2.models import SQLCase, SQLGene, SQLTranscript, SQLExon, SQLSample
+from chanjo2.models import SQLCase, SQLExon, SQLGene, SQLSample, SQLTranscript
 from chanjo2.models.pydantic_models import Builds
 
 

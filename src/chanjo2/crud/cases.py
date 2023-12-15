@@ -4,7 +4,7 @@ from sqlalchemy import delete
 from sqlalchemy.engine.cursor import CursorResult
 from sqlalchemy.orm import Session, query
 
-from chanjo2.models import SQLCase, SQLSample, CaseSample
+from chanjo2.models import CaseSample, SQLCase, SQLSample
 from chanjo2.models.pydantic_models import Case, CaseCreate
 
 

@@ -3,17 +3,17 @@ import logging
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, List, Optional, Dict
+from typing import Any, Dict, List, Optional
 
 import validators
-from pydantic import BaseModel, field_validator, model_validator, Field
+from pydantic import BaseModel, Field, field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
 
 from chanjo2.constants import (
-    WRONG_COVERAGE_FILE_MSG,
-    MULTIPLE_GENE_LISTS_NOT_SUPPORTED_MSG,
     AMBIGUOUS_SAMPLES_INPUT,
     DEFAULT_COMPLETENESS_LEVELS,
+    MULTIPLE_GENE_LISTS_NOT_SUPPORTED_MSG,
+    WRONG_COVERAGE_FILE_MSG,
 )
 
 LOG = logging.getLogger("uvicorn.access")

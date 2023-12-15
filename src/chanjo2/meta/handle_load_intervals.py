@@ -1,5 +1,5 @@
 import logging
-from typing import Iterator, List, Union, Optional
+from typing import Iterator, List, Optional, Union
 
 import requests
 from schug.load.biomart import EnsemblBiomartClient

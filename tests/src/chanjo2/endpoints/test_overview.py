@@ -1,4 +1,4 @@
-from typing import Type, Dict, List
+from typing import Dict, List, Type
 
 from fastapi import status
 from fastapi.testclient import TestClient

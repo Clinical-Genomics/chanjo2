@@ -1,8 +1,9 @@
-from chanjo2 import __version__
-from chanjo2.dbutil import DEMO_CONNECT_ARGS
 from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, inspect
+
+from chanjo2 import __version__
+from chanjo2.dbutil import DEMO_CONNECT_ARGS
 
 DB_TABLES = ["cases", "intervals", "samples", "genes"]
 
