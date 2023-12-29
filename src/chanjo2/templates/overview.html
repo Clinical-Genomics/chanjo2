@@ -3,10 +3,10 @@
 {% macro completeness_cutoffs() %}
 	<div class="row">
 		<div class="col-md-12">
-			<ul class="nav nav-pills">
+			<ul class="nav">
 				{% for level_id, _ in levels.items() %}
-					<li {% if level_id == extras.default_level %}class="active"{% endif %}>
-						<a href="#" onclick="updateOverview({{level_id}});">
+					<li class="nav-item" {% if level_id == extras.default_level %}class="active"{% endif %}>
+						<a class="nav-link" href="#" onclick="updateOverview({{level_id}});">
 							Completeness {{ level_id }}x
 						</a>
 					</li>
@@ -31,10 +31,10 @@
 			<caption>Incompletely covered {{ extras.interval_type }}</caption>
 				<thead>
 					<tr>
-						<th>Gene</th>
-						<th>{{ extras.interval_type }}</th>
-						<th>Sample</th>
-						<th>Completeness {{ extras.default_level }}x [%]</th>
+						<th scope="col">Gene</th>
+						<th scope="col">{{ extras.interval_type }}</th>
+						<th scope="col">Sample</th>
+						<th scope="col">Completeness {{ extras.default_level }}x [%]</th>
 					</tr>
 				</thead>
 				<tbody>
