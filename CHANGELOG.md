@@ -7,6 +7,7 @@
 - Rename a test file from `test_d4.py` to `test_handle_d4.py` and add 2 new tests to it
 - Fix return type of `get_intervals_completeness` function
 - Isort imports of the entire repo
+- Upgraded Bootstrap and JQuery versions on gene overview and report pages
 
 ## [1.2]
 ### Added
