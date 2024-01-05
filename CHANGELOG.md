@@ -1,3 +1,7 @@
+## []
+### Changed
+- Upgraded Bootstrap and JQuery versions on genes coverage overview and coverage report pages
+
 ## [1.3]
 ### Changed
 - Simplified the import of SQL classes from `scout.models.sql_model`
@@ -7,7 +11,6 @@
 - Rename a test file from `test_d4.py` to `test_handle_d4.py` and add 2 new tests to it
 - Fix return type of `get_intervals_completeness` function
 - Isort imports of the entire repo
-- Upgraded Bootstrap and JQuery versions on genes coverage overview and coverage report pages
 
 ## [1.2]
 ### Added
