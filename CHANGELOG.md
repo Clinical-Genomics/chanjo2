@@ -1,3 +1,7 @@
+## []
+### Changed
+- Upgraded Bootstrap and JQuery versions on genes coverage overview and coverage report pages
+
 ## [1.3]
 ### Changed
 - Simplified the import of SQL classes from `scout.models.sql_model`

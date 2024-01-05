@@ -1,19 +1,22 @@
 {% extends "base-layout.html" %}
 
+{% block css %}
+{{ super() }}
+{% endblock %}
+
 {% macro completeness_cutoffs() %}
-	<div class="row">
-		<div class="col-md-12">
-			<ul class="nav nav-pills">
-				{% for level_id, _ in levels.items() %}
-					<li {% if level_id == extras.default_level %}class="active"{% endif %}>
-						<a href="#" onclick="updateOverview({{level_id}});">
-							Completeness {{ level_id }}x
-						</a>
-					</li>
-				{% endfor %}
-			</ul>
-		</div>
-	</div>
+<!-- Grey with black text -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid">
+    <ul class="navbar-nav">
+		{% for level_id, _ in levels.items() %}
+			<li class="nav-item">
+				<a class="nav-link {% if level_id == extras.default_level %}active{% endif %}" href="#" onclick="updateOverview({{level_id}});">Completeness {{ level_id }}x</a>
+			</li>
+		{% endfor%}
+    </ul>
+  </div>
+</nav>
 {% endmacro %}
 
 
@@ -31,10 +34,10 @@
 			<caption>Incompletely covered {{ extras.interval_type }}</caption>
 				<thead>
 					<tr>
-						<th>Gene</th>
-						<th>{{ extras.interval_type }}</th>
-						<th>Sample</th>
-						<th>Completeness {{ extras.default_level }}x [%]</th>
+						<th scope="col">Gene</th>
+						<th scope="col">{{ extras.interval_type }}</th>
+						<th scope="col">Sample</th>
+						<th scope="col">Completeness {{ extras.default_level }}x [%]</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -95,6 +98,7 @@
 
 
 {% block js_code %}
+	{{ super() }}
 	<script>
 
 		// Extracts the content of the body element of an HTML page as a string
