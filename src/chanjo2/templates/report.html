@@ -1,5 +1,9 @@
 {% extends "base-layout.html" %}
 
+{% block css %}
+{{ super() }}
+{% endblock %}
+
 {% macro errors_block() %}
 	{% for error_description, error_content in errors %}
 		{% if error_content %}

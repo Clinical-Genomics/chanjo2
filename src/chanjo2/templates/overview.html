@@ -1,17 +1,22 @@
 {% extends "base-layout.html" %}
 
+{% block css %}
+{{ super() }}
+{% endblock %}
+
 {% macro completeness_cutoffs() %}
-	<div class="row">
-		<div class="col-md-12">
-			<nav class="navbar navbar-expand-lg navbar-light bg-light">
-				{% for level_id, _ in levels.items() %}
-					<a class="nav-link {% if level_id == extras.default_level %}active{% endif %}" aria-current="page" href="#" onclick="updateOverview({{level_id}});">
-						Completeness {{ level_id }}x
-					</a>
-				{% endfor %}
-			</nav>
-		</div>
-	</div>
+<!-- Grey with black text -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid">
+    <ul class="navbar-nav">
+		{% for level_id, _ in levels.items() %}
+			<li class="nav-item">
+				<a class="nav-link {% if level_id == extras.default_level %}active{% endif %}" href="#" onclick="updateOverview({{level_id}});">Completeness {{ level_id }}x</a>
+			</li>
+		{% endfor%}
+    </ul>
+  </div>
+</nav>
 {% endmacro %}
 
 
@@ -93,6 +98,7 @@
 
 
 {% block js_code %}
+	{{ super() }}
 	<script>
 
 		// Extracts the content of the body element of an HTML page as a string
