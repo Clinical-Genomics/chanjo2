@@ -1,4 +1,4 @@
-## []
+## [1.4]
 ### Changed
 - Upgraded Bootstrap and JQuery versions on genes coverage overview and coverage report pages
 
