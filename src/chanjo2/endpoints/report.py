@@ -54,7 +54,7 @@ async def report(
     request: Request, report_query: ReportQuery, db: Session = Depends(get_session)
 ):
     """Return a coverage report over a list of genes for a list of samples."""
-    LOG.warning(f"Received: {request}")
+    LOG.info(f"Received: {request}")
     report_content: Dict = get_report_data(
         query=report_query, session=db, is_overview_report=False
     )
