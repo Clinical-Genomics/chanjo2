@@ -21,3 +21,5 @@ def bed_line_to_region(bytes_line: bytes) -> Tuple[str, int, int]:
     """Returns a single genomic interval corresponding to a bed file line."""
     line_elements: List = bytes_line.decode("utf-8").rsplit("\t")
     return (line_elements[0], int(line_elements[1]), int(line_elements[2]))
+
+

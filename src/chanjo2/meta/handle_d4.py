@@ -1,4 +1,5 @@
 import logging
+import subprocess
 from statistics import mean
 from typing import Dict, List, Optional, Tuple, Union
 
@@ -46,7 +47,6 @@ def get_intervals_mean_coverage(
     """Return the mean value over a list of intervals of a d4 file."""
     return d4_file.mean(intervals)
 
-
 def intervals_coverage(
     d4_file: D4File,
     intervals: List[Tuple[str, int, int]],
@@ -70,6 +70,14 @@ def intervals_coverage(
         )
     return intervals_cov
 
+def get_interval_completeness(d4_file_path: str, region: str) -> float:
+    """Return coverage completeness for one interval in a D4 file."""
+    total_region_length: int = stop-start
+    with open(d4_file_path, 'w') as f:
+        subprocess.call(["d4tools", "view", d4_file_path, "--region", region], stdout=f)
+    pass
+
+    return coverage>=threshold
 
 def get_intervals_completeness(
     d4_file: D4File,

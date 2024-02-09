@@ -1,3 +1,7 @@
+import logging
+import subprocess
+import tempfile
+
 from typing import Dict, List, Optional, Tuple
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -16,6 +20,7 @@ from chanjo2.meta.handle_d4 import (
     get_sample_interval_coverage,
     get_samples_sex_metrics,
     intervals_coverage,
+    is_coverage_above_threshold,
     set_interval,
 )
 from chanjo2.models import SQLExon, SQLGene, SQLTranscript
@@ -24,10 +29,12 @@ from chanjo2.models.pydantic_models import (
     FileCoverageQuery,
     GeneCoverage,
     IntervalCoverage,
+    IntervalType,
     SampleGeneIntervalQuery,
 )
 
 router = APIRouter()
+LOG = logging.getLogger("uvicorn.access")
 
 
 @router.post("/coverage/d4/interval/", response_model=IntervalCoverage)
@@ -57,35 +64,37 @@ def d4_interval_coverage(query: FileCoverageQuery):
     )
 
 
-@router.post("/coverage/d4/interval_file/", response_model=List[IntervalCoverage])
+@router.post("/coverage/d4/interval_file/")
 def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
     """Return coverage on the given intervals for a D4 resource located on the disk or on a remote server."""
 
-    try:
-        d4_file: D4File = get_d4_file(coverage_file_path=query.coverage_file_path)
-    except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=WRONG_COVERAGE_FILE_MSG,
-        )
+    tmp = tempfile.NamedTemporaryFile()
 
-    try:
-        with open(query.intervals_bed_path, "rb") as bed_file:
-            bed_file_content = bed_file.read()
-            intervals: List[Tuple[str, Optional[int], Optional[int]]] = parse_bed(
-                bed_file_content=bed_file_content
-            )
-    except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=WRONG_BED_FILE_MSG,
-        )
+    # Compute coverage stats and write values to temp .bed file
+    with open(tmp.name, 'w') as f:
+        subprocess.call(["d4tools", "stat", "--region", query.intervals_bed_path, query.coverage_file_path], stdout=f)
 
-    return intervals_coverage(
-        d4_file=d4_file,
-        intervals=intervals,
-        completeness_thresholds=query.completeness_thresholds,
-    )
+    # Collect only column with coverage stats
+    with open(tmp.name, 'r') as f:
+        gene_coverage: List[str] = [line.rstrip().split("\t")[3] for line in f]
+
+    with open(query.intervals_bed_path, "r") as bed_file:
+        interval_names: List[str] = [line.rstrip().split("\t")[4] for line in bed_file if line.startswith("#") is False]
+
+    intervals_coverage : List[IntervalCoverage] = []
+    counter:int = 0
+    for interval_name in interval_names:
+        completeness_data: dict[int, float] = {threshold: is_coverage_above_threshold for threshold in query.completeness_thresholds}
+        cov_stats: dict = {
+            "mean_coverage": gene_coverage[counter],
+            "interval_id": interval_name,
+            "completeness": completeness_data,
+            "interval_type": IntervalType.CUSTOM
+        }
+        intervals_coverage.append(IntervalCoverage(**cov_stats))
+        counter +=1
+
+    return intervals_coverage
 
 
 @router.get("/coverage/samples/predicted_sex", response_model=Dict)
