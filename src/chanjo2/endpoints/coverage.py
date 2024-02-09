@@ -1,37 +1,27 @@
 import logging
 import subprocess
 import tempfile
-
+from statistics import mean
 from typing import Dict, List, Optional, Tuple
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pyd4 import D4File
 from sqlalchemy.orm import Session
 
-from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
+from chanjo2.constants import WRONG_COVERAGE_FILE_MSG
 from chanjo2.crud.intervals import get_genes
 from chanjo2.crud.samples import get_samples_coverage_file
 from chanjo2.dbutil import get_session
-from chanjo2.meta.handle_bed import parse_bed
-from chanjo2.meta.handle_d4 import (
-    get_d4_file,
-    get_intervals_completeness,
-    get_intervals_mean_coverage,
-    get_sample_interval_coverage,
-    get_samples_sex_metrics,
-    intervals_coverage,
-    is_coverage_above_threshold,
-    set_interval,
-)
+from chanjo2.meta.handle_d4 import (get_d4_file, get_interval_completeness,
+                                    get_intervals_completeness,
+                                    get_intervals_mean_coverage,
+                                    get_sample_interval_coverage,
+                                    get_samples_sex_metrics, set_interval)
 from chanjo2.models import SQLExon, SQLGene, SQLTranscript
-from chanjo2.models.pydantic_models import (
-    FileCoverageIntervalsFileQuery,
-    FileCoverageQuery,
-    GeneCoverage,
-    IntervalCoverage,
-    IntervalType,
-    SampleGeneIntervalQuery,
-)
+from chanjo2.models.pydantic_models import (FileCoverageIntervalsFileQuery,
+                                            FileCoverageQuery, GeneCoverage,
+                                            IntervalCoverage, IntervalType,
+                                            SampleGeneIntervalQuery)
 
 router = APIRouter()
 LOG = logging.getLogger("uvicorn.access")
@@ -64,35 +54,69 @@ def d4_interval_coverage(query: FileCoverageQuery):
     )
 
 
-@router.post("/coverage/d4/interval_file/")
+@router.post("/coverage/d4/interval_file/", response_model=List[IntervalCoverage])
 def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
     """Return coverage on the given intervals for a D4 resource located on the disk or on a remote server."""
 
+    try:
+        get_d4_file(query.coverage_file_path)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=WRONG_COVERAGE_FILE_MSG,
+        )
+
+    try:
+        with open(query.intervals_bed_path, "r") as bed_file:
+            bed_intervals: List[str] = [
+                line.rstrip().split("\t")
+                for line in bed_file
+                if line.startswith("#") is False
+            ]
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=WRONG_BED_FILE_MSG,
+        )
+
+    intervals_coverage: List[IntervalCoverage] = []
     tmp = tempfile.NamedTemporaryFile()
+    counter = 0
+    for interval in bed_intervals:
+        counter += 1
+        # Write stats for the interval
+        with open(tmp.name, "w") as f:
+            subprocess.call(
+                [
+                    "d4tools",
+                    "view",
+                    query.coverage_file_path,
+                    f"{interval[0]}:{interval[1]}-{interval[2]}",
+                ],
+                stdout=f,
+            )
+        # collect coverage by base for all bases in the interval
+        with open(tmp.name, "r") as region_bed_file:
+            coverage_by_base: List[int] = [
+                int(line.rstrip().split("\t")[3]) for line in region_bed_file
+            ]
 
-    # Compute coverage stats and write values to temp .bed file
-    with open(tmp.name, 'w') as f:
-        subprocess.call(["d4tools", "stat", "--region", query.intervals_bed_path, query.coverage_file_path], stdout=f)
-
-    # Collect only column with coverage stats
-    with open(tmp.name, 'r') as f:
-        gene_coverage: List[str] = [line.rstrip().split("\t")[3] for line in f]
-
-    with open(query.intervals_bed_path, "r") as bed_file:
-        interval_names: List[str] = [line.rstrip().split("\t")[4] for line in bed_file if line.startswith("#") is False]
-
-    intervals_coverage : List[IntervalCoverage] = []
-    counter:int = 0
-    for interval_name in interval_names:
-        completeness_data: dict[int, float] = {threshold: is_coverage_above_threshold for threshold in query.completeness_thresholds}
-        cov_stats: dict = {
-            "mean_coverage": gene_coverage[counter],
-            "interval_id": interval_name,
+        completeness_data = {}
+        if query.completeness_thresholds:
+            completeness_data: dict[int, float] = {
+                threshold: get_interval_completeness(
+                    coverage_values=coverage_by_base, threshold=threshold
+                )
+                for threshold in query.completeness_thresholds
+            }
+        interval_coverage_stats = {
+            "mean_coverage": mean(coverage_by_base),
+            "interval_id": interval[3] if len(interval) >= 3 else None,
             "completeness": completeness_data,
-            "interval_type": IntervalType.CUSTOM
+            "interval_type": IntervalType.CUSTOM,
         }
-        intervals_coverage.append(IntervalCoverage(**cov_stats))
-        counter +=1
+        intervals_coverage.append(IntervalCoverage(**interval_coverage_stats))
+        LOG.warning(f"GENE -->{counter}")
 
     return intervals_coverage
 
