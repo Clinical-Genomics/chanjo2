@@ -288,14 +288,14 @@ def get_genes_overview_incomplete_coverage_rows(
                 completeness_at_level: float = gene_cov_stats.completeness.get(
                     cov_level
                 )
-                overview_line: Optional[
-                    List[str]
-                ] = _get_incomplete_gene_coverage_overview_line(
-                    hgnc_symbol=gene_cov_stats.hgnc_symbol,
-                    hgnc_id=gene_cov_stats.hgnc_id,
-                    interval_id=gene_cov_stats.hgnc_id,
-                    sample=sample_name,
-                    completeness=completeness_at_level,
+                overview_line: Optional[List[str]] = (
+                    _get_incomplete_gene_coverage_overview_line(
+                        hgnc_symbol=gene_cov_stats.hgnc_symbol,
+                        hgnc_id=gene_cov_stats.hgnc_id,
+                        interval_id=gene_cov_stats.hgnc_id,
+                        sample=sample_name,
+                        completeness=completeness_at_level,
+                    )
                 )
 
                 genes_overview_rows.append(overview_line)
@@ -305,14 +305,14 @@ def get_genes_overview_incomplete_coverage_rows(
                     completeness_at_level: float = (
                         inner_interval_stats.completeness.get(cov_level)
                     )
-                    overview_line: Optional[
-                        List[str]
-                    ] = _get_incomplete_gene_coverage_overview_line(
-                        hgnc_symbol=gene_cov_stats.hgnc_symbol,
-                        hgnc_id=gene_cov_stats.hgnc_id,
-                        interval_id=inner_interval_stats.interval_id,
-                        sample=sample_name,
-                        completeness=completeness_at_level,
+                    overview_line: Optional[List[str]] = (
+                        _get_incomplete_gene_coverage_overview_line(
+                            hgnc_symbol=gene_cov_stats.hgnc_symbol,
+                            hgnc_id=gene_cov_stats.hgnc_id,
+                            interval_id=inner_interval_stats.interval_id,
+                            sample=sample_name,
+                            completeness=completeness_at_level,
+                        )
                     )
 
                     genes_overview_rows.append(overview_line)
@@ -357,9 +357,9 @@ def get_gene_overview_coverage_stats(form_data: GeneReportForm, session: Session
         )
         for sample, d4_file in samples_d4_files
     }
-    gene_stats[
-        "samples_coverage_stats_by_interval"
-    ] = get_gene_coverage_stats_by_interval(coverage_by_sample=samples_coverage_stats)
+    gene_stats["samples_coverage_stats_by_interval"] = (
+        get_gene_coverage_stats_by_interval(coverage_by_sample=samples_coverage_stats)
+    )
     return gene_stats
 
 

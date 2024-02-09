@@ -38,10 +38,10 @@ def test_get_report_level_completeness_rows(
     assert samples_coverage_stats
 
     # THEN it should be possible to retrieve stats for the default coverage level:
-    default_level_samples_coverage_stats: List[
-        Tuple[str, float, str]
-    ] = get_report_level_completeness_rows(
-        samples_coverage_stats=samples_coverage_stats, level=DEFAULT_COVERAGE_LEVEL
+    default_level_samples_coverage_stats: List[Tuple[str, float, str]] = (
+        get_report_level_completeness_rows(
+            samples_coverage_stats=samples_coverage_stats, level=DEFAULT_COVERAGE_LEVEL
+        )
     )
     for (
         sample,
@@ -76,11 +76,11 @@ def test_get_report_completeness_rows(
     assert samples_coverage_stats
 
     # THEN completeness rows should contain the expected stats for each sample
-    samples_completeness_rows: List[
-        Tuple[str, Dict[str, float]]
-    ] = get_report_completeness_rows(
-        samples_coverage_stats=samples_coverage_stats,
-        levels=DEFAULT_COMPLETENESS_LEVELS,
+    samples_completeness_rows: List[Tuple[str, Dict[str, float]]] = (
+        get_report_completeness_rows(
+            samples_coverage_stats=samples_coverage_stats,
+            levels=DEFAULT_COMPLETENESS_LEVELS,
+        )
     )
     for sample, stats in samples_completeness_rows:
         assert sample == samples_d4_list[0][0]
@@ -125,12 +125,12 @@ def test_get_genes_overview_incomplete_coverage_rows(
     assert samples_coverage_stats
 
     # THEN it should be possible to retrieve stats for the transcripts that are not fully covered at the given threshold
-    genes_overview_lines: List[
-        Tuple[Union[str, int, float]]
-    ] = get_genes_overview_incomplete_coverage_rows(
-        samples_coverage_stats=samples_coverage_stats,
-        interval_type=SQLTranscript,
-        cov_level=DEFAULT_COMPLETENESS_LEVELS[0],
+    genes_overview_lines: List[Tuple[Union[str, int, float]]] = (
+        get_genes_overview_incomplete_coverage_rows(
+            samples_coverage_stats=samples_coverage_stats,
+            interval_type=SQLTranscript,
+            cov_level=DEFAULT_COMPLETENESS_LEVELS[0],
+        )
     )
 
     # THEN each transcript line should contain the expected values
@@ -168,9 +168,9 @@ def test_get_gene_coverage_stats_by_interval(
     }
 
     # WHEN passed to the get_gene_coverage_stats_by_interval function:
-    intervals_coverage_stats: Dict[
-        str, List[Tuple]
-    ] = get_gene_coverage_stats_by_interval(coverage_by_sample=samples_coverage_stats)
+    intervals_coverage_stats: Dict[str, List[Tuple]] = (
+        get_gene_coverage_stats_by_interval(coverage_by_sample=samples_coverage_stats)
+    )
 
     # THEN the returned data should have the expected format
     for interval_id, stats_tuples in intervals_coverage_stats.items():
