@@ -1,6 +1,7 @@
 ## [1.4]
 ### Changed
 - Upgraded Bootstrap and JQuery versions on genes coverage overview and coverage report pages
+- Optimized indexes to speed up retrieval of genes, transcripts and exons intervals from database
 
 ## [1.3]
 ### Changed
