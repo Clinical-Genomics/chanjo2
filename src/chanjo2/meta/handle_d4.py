@@ -121,9 +121,7 @@ def get_sample_interval_coverage(
     transcript_tags: Optional[List[TranscriptTag]] = [],
 ) -> List[GeneCoverage]:
     genes_coverage_stats: List[GeneCoverage] = []
-    gene_counter = 0
     for gene in genes:
-        gene_counter += 1
         gene_coverage = GeneCoverage(
             **{
                 "ensembl_gene_id": gene.ensembl_id,
@@ -209,8 +207,6 @@ def get_sample_interval_coverage(
                 inner_intervals_ensembl_ids.add(interval.ensembl_id)
 
         genes_coverage_stats.append(gene_coverage)
-
-        LOG.warning(f"------------> GENE COUNTER: {gene_counter}")
 
     return genes_coverage_stats
 
