@@ -78,6 +78,10 @@ def get_report_data(
         limit=None,
     )
 
+    LOG.warning(
+        "---------------------------->GENES COLLECTED<------------------------------"
+    )
+
     samples_coverage_stats: Dict[str, List[GeneCoverage]] = {
         sample: get_sample_interval_coverage(
             db=session,
