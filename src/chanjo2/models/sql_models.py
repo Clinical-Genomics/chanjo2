@@ -61,12 +61,10 @@ class Gene(Base):
     chromosome = Column(String(6), nullable=False)
     start = Column(Integer, nullable=False)
     stop = Column(Integer, nullable=False)
-    ensembl_id = Column(String(24), nullable=False)
-    hgnc_id = Column(Integer, nullable=True)
+    ensembl_id = Column(String(24), nullable=False, index=True)
+    hgnc_id = Column(Integer, nullable=True, index=True)
     hgnc_symbol = Column(String(64), nullable=True)
-    build = Column(
-        Enum(Builds, values_callable=lambda x: Builds.get_enum_values()), index=True
-    )
+    build = Column(Enum(Builds, values_callable=lambda x: Builds.get_enum_values()), index=True)
     __table_args__ = (
         Index("gene_idx_ensembl_id_build", "ensembl_id", "build"),
         Index("gene_idx_hgnc_id_build", "hgnc_id", "build"),
@@ -83,25 +81,21 @@ class Transcript(Base):
     chromosome = Column(String(6), nullable=False)
     start = Column(Integer, nullable=False)
     stop = Column(Integer, nullable=False)
-    ensembl_id = Column(String(24), nullable=False, index=True)
+    ensembl_id = Column(String(24), nullable=False)
     refseq_mrna = Column(String(24), nullable=True)
     refseq_mrna_pred = Column(String(24), nullable=True)
     refseq_ncrna = Column(String(24), nullable=True)
     refseq_mane_select = Column(String(24), nullable=True, index=True)
     refseq_mane_plus_clinical = Column(String(24), nullable=True, index=True)
-    ensembl_gene_id = Column(String(24), ForeignKey("genes.ensembl_id"), nullable=False)
-    build = Column(
-        Enum(Builds, values_callable=lambda x: Builds.get_enum_values()), index=True
-    )
+    ensembl_gene_id = Column(String(24), ForeignKey("genes.ensembl_id"), nullable=False, index=True)
+    build = Column(Enum(Builds, values_callable=lambda x: Builds.get_enum_values()), index=True)
 
     genes = relationship(
         "Gene",
         primaryjoin="Transcript.ensembl_gene_id==Gene.ensembl_id",
     )
 
-    __table_args__ = (
-        Index("transcript_idx_ensembl_gene_build", "ensembl_gene_id", "build"),
-    )
+    __table_args__ = (Index("transcript_idx_ensembl_gene_build", "ensembl_gene_id", "build"),)
 
 
 @dataclass
@@ -113,17 +107,13 @@ class Exon(Base):
     chromosome = Column(String(6), nullable=False)
     start = Column(Integer, nullable=False)
     stop = Column(Integer, nullable=False)
-    ensembl_id = Column(String(24), nullable=False, index=False)
-    ensembl_gene_id = Column(String(24), ForeignKey("genes.ensembl_id"), nullable=False)
-    build = Column(
-        Enum(Builds, values_callable=lambda x: Builds.get_enum_values()), index=True
-    )
+    ensembl_id = Column(String(24), nullable=False)
+    ensembl_gene_id = Column(String(24), ForeignKey("genes.ensembl_id"), nullable=False, index=True)
+    build = Column(Enum(Builds, values_callable=lambda x: Builds.get_enum_values()), index=True)
 
     genes = relationship(
         "Gene",
         primaryjoin="Exon.ensembl_gene_id==Gene.ensembl_id",
     )
 
-    __table_args__ = (
-        Index("exon_idx_ensembl_gene:_build", "ensembl_gene_id", "build"),
-    )
+    __table_args__ = (Index("exon_idx_ensembl_gene:_build", "ensembl_gene_id", "build"),)
