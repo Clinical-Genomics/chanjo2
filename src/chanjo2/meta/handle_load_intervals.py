@@ -149,9 +149,9 @@ async def update_transcripts(
                 refseq_mrna_pred=items[6],
                 refseq_ncrna=items[7],
                 refseq_mane_select=items[8] if build == Builds.build_38 else None,
-                refseq_mane_plus_clinical=items[9]
-                if build == Builds.build_38
-                else None,
+                refseq_mane_plus_clinical=(
+                    items[9] if build == Builds.build_38 else None
+                ),
                 build=build,
             )
             transcripts_bulk.append(transcript)

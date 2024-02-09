@@ -78,9 +78,9 @@ async def gene_overview(
     form_dict: dict = jsonable_encoder(form_data)
     validated_form = GeneReportForm(**form_dict)
 
-    gene_overview_content: Dict[
-        str, List[GeneCoverage]
-    ] = get_gene_overview_coverage_stats(form_data=validated_form, session=db)
+    gene_overview_content: Dict[str, List[GeneCoverage]] = (
+        get_gene_overview_coverage_stats(form_data=validated_form, session=db)
+    )
 
     return templates.TemplateResponse(
         "gene-overview.html",
