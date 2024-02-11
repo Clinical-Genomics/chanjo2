@@ -11,16 +11,25 @@ from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
 from chanjo2.crud.intervals import get_genes
 from chanjo2.crud.samples import get_samples_coverage_file
 from chanjo2.dbutil import get_session
-from chanjo2.meta.handle_d4 import (get_d4_file, get_d4_intervals_coverage, get_d4_intervals_completeness,
-                                    get_intervals_completeness,
-                                    get_intervals_mean_coverage,
-                                    get_sample_interval_coverage,
-                                    get_samples_sex_metrics, set_interval)
+from chanjo2.meta.handle_d4 import (
+    get_d4_file,
+    get_d4_intervals_coverage,
+    get_d4_intervals_completeness,
+    get_intervals_completeness,
+    get_intervals_mean_coverage,
+    get_sample_interval_coverage,
+    get_samples_sex_metrics,
+    set_interval,
+)
 from chanjo2.models import SQLExon, SQLGene, SQLTranscript
-from chanjo2.models.pydantic_models import (FileCoverageIntervalsFileQuery,
-                                            FileCoverageQuery, GeneCoverage,
-                                            IntervalCoverage, IntervalType,
-                                            SampleGeneIntervalQuery)
+from chanjo2.models.pydantic_models import (
+    FileCoverageIntervalsFileQuery,
+    FileCoverageQuery,
+    GeneCoverage,
+    IntervalCoverage,
+    IntervalType,
+    SampleGeneIntervalQuery,
+)
 
 router = APIRouter()
 LOG = logging.getLogger("uvicorn.access")
@@ -63,21 +72,36 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
             detail=WRONG_BED_FILE_MSG,
         )
 
-    if path.exists(query.coverage_file_path) is False or validators.url(query.coverage_file_path) is False:
+    if (
+        path.exists(query.coverage_file_path) is False
+        or validators.url(query.coverage_file_path) is False
+    ):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=WRONG_COVERAGE_FILE_MSG,
         )
 
-    coverage_by_interval: List[int] = get_d4_intervals_coverage(d4_file_path=query.coverage_file_path, bed_file_path=query.intervals_bed_path)
+    coverage_by_interval: List[int] = get_d4_intervals_coverage(
+        d4_file_path=query.coverage_file_path, bed_file_path=query.intervals_bed_path
+    )
     with open(query.intervals_bed_path, "r") as bed_file:
-        bed_file_contents: List[List[str]] = [line.rstrip().split("\t") for line in bed_file if line.startswith("#") is False]
+        bed_file_contents: List[List[str]] = [
+            line.rstrip().split("\t")
+            for line in bed_file
+            if line.startswith("#") is False
+        ]
 
     completeness_by_interval: List[Dict[int:float]] = []
     if query.completeness_thresholds:
-        bed_file_regions: List[Tuple[str, int, int]] = [(bed_interval[0], int(bed_interval[1]), int(bed_interval[2])) for bed_interval in bed_file_contents]
-        completeness_by_interval: List[Dict[int:float]] = get_d4_intervals_completeness(d4_file_path=query.coverage_file_path, intervals=bed_file_regions, thresholds=query.completeness_thresholds )
-
+        bed_file_regions: List[Tuple[str, int, int]] = [
+            (bed_interval[0], int(bed_interval[1]), int(bed_interval[2]))
+            for bed_interval in bed_file_contents
+        ]
+        completeness_by_interval: List[Dict[int:float]] = get_d4_intervals_completeness(
+            d4_file_path=query.coverage_file_path,
+            intervals=bed_file_regions,
+            thresholds=query.completeness_thresholds,
+        )
 
     interval_counter = 0
     intervals_coverage: List[IntervalCoverage] = []
