@@ -1,4 +1,6 @@
 import logging
+import subprocess
+import tempfile
 from statistics import mean
 from typing import Dict, List, Optional, Tuple, Union
 
@@ -65,14 +67,42 @@ def intervals_coverage(
         )
     return intervals_cov
 
+def get_d4_intervals_completeness(d4_file_path: str, intervals: List[str], thresholds:List[int]=[]) -> List[dict]:
+    """Return the coverage completeness for the specified intervals of a d4 file."""
 
-def get_interval_completeness(coverage_values: List[int], threshold: int) -> float:
-    """Return coverage completeness for one interval in a D4 file."""
+    def _fraction_of_covered_bases(interval_length:int, nr_bases_covered_above_threshold:int) -> float:
+        """Returns the fraction of bases covered above threshold in a genomic interval."""
+        return nr_bases_covered_above_threshold / interval_length
 
-    nr_bases_covered_above_thresholds: int = sum(
-        cov > threshold for cov in coverage_values
-    )
-    return nr_bases_covered_above_thresholds / len(coverage_values)
+    completeness_values: List[Dict[int: float]] = []
+
+    for interval in intervals:
+        thresholds_dict = {}
+        d4tools_view = subprocess.Popen(["d4tools", "view", d4_file_path, f"{interval[0]}:{interval[1]}-{interval[2]}"], stdout=subprocess.PIPE)
+
+        for threshold in thresholds:
+            filter = " ".join([f"$4>{threshold}", "{print $4}"])
+            output = subprocess.check_output(('awk', filter), stdin=d4tools_view.stdout, text=True)
+            nr_bases_above_threshold: int = len(output.splitlines())
+            thresholds_dict[threshold] = _fraction_of_covered_bases(interval_length=interval[2]-interval[1], nr_bases_covered_above_threshold=nr_bases_above_threshold)
+
+        completeness_values.append(thresholds_dict)
+        d4tools_view.wait()
+
+    return completeness_values
+
+
+def get_d4_intervals_coverage(d4_file_path: str, bed_file_path: str) -> List[int]:
+    """Return the coverage for the specified intervals of a d4 file."""
+
+    tmp_stats_file = tempfile.NamedTemporaryFile()
+    with open(tmp_stats_file.name, "w") as f:
+        subprocess.call(["d4tools", "stat", "--region", bed_file_path, d4_file_path], stdout=f)
+
+    with open(tmp_stats_file.name, "r") as f:
+        coverage_by_interval : List[float] = [float(line.rstrip().split("\t")[3]) for line in f]
+
+    return coverage_by_interval
 
 
 def get_intervals_completeness(

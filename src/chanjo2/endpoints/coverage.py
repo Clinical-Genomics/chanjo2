@@ -1,18 +1,17 @@
 import logging
-import subprocess
-import tempfile
-from statistics import mean
+import validators
+from os import path
 from typing import Dict, List, Optional, Tuple
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pyd4 import D4File
 from sqlalchemy.orm import Session
 
-from chanjo2.constants import WRONG_COVERAGE_FILE_MSG
+from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
 from chanjo2.crud.intervals import get_genes
 from chanjo2.crud.samples import get_samples_coverage_file
 from chanjo2.dbutil import get_session
-from chanjo2.meta.handle_d4 import (get_d4_file, get_interval_completeness,
+from chanjo2.meta.handle_d4 import (get_d4_file, get_d4_intervals_coverage, get_d4_intervals_completeness,
                                     get_intervals_completeness,
                                     get_intervals_mean_coverage,
                                     get_sample_interval_coverage,
@@ -58,65 +57,40 @@ def d4_interval_coverage(query: FileCoverageQuery):
 def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
     """Return coverage on the given intervals for a D4 resource located on the disk or on a remote server."""
 
-    try:
-        get_d4_file(query.coverage_file_path)
-    except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=WRONG_COVERAGE_FILE_MSG,
-        )
-
-    try:
-        with open(query.intervals_bed_path, "r") as bed_file:
-            bed_intervals: List[str] = [
-                line.rstrip().split("\t")
-                for line in bed_file
-                if line.startswith("#") is False
-            ]
-    except Exception:
+    if path.exists(query.intervals_bed_path) is False:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=WRONG_BED_FILE_MSG,
         )
 
-    intervals_coverage: List[IntervalCoverage] = []
-    tmp = tempfile.NamedTemporaryFile()
-    counter = 0
-    for interval in bed_intervals:
-        counter += 1
-        # Write stats for the interval
-        with open(tmp.name, "w") as f:
-            subprocess.call(
-                [
-                    "d4tools",
-                    "view",
-                    query.coverage_file_path,
-                    f"{interval[0]}:{interval[1]}-{interval[2]}",
-                ],
-                stdout=f,
-            )
-        # collect coverage by base for all bases in the interval
-        with open(tmp.name, "r") as region_bed_file:
-            coverage_by_base: List[int] = [
-                int(line.rstrip().split("\t")[3]) for line in region_bed_file
-            ]
+    if path.exists(query.coverage_file_path) is False or validators.url(query.coverage_file_path) is False:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=WRONG_COVERAGE_FILE_MSG,
+        )
 
-        completeness_data = {}
-        if query.completeness_thresholds:
-            completeness_data: dict[int, float] = {
-                threshold: get_interval_completeness(
-                    coverage_values=coverage_by_base, threshold=threshold
-                )
-                for threshold in query.completeness_thresholds
-            }
+    coverage_by_interval: List[int] = get_d4_intervals_coverage(d4_file_path=query.coverage_file_path, bed_file_path=query.intervals_bed_path)
+    with open(query.intervals_bed_path, "r") as bed_file:
+        bed_file_contents: List[List[str]] = [line.rstrip().split("\t") for line in bed_file if line.startswith("#") is False]
+
+    completeness_by_interval: List[Dict[int:float]] = []
+    if query.completeness_thresholds:
+        bed_file_regions: List[Tuple[str, int, int]] = [(bed_interval[0], int(bed_interval[1]), int(bed_interval[2])) for bed_interval in bed_file_contents]
+        completeness_by_interval: List[Dict[int:float]] = get_d4_intervals_completeness(d4_file_path=query.coverage_file_path, intervals=bed_file_regions, thresholds=query.completeness_thresholds )
+
+
+    interval_counter = 0
+    intervals_coverage: List[IntervalCoverage] = []
+
+    for interval in bed_file_contents:
         interval_coverage_stats = {
-            "mean_coverage": mean(coverage_by_base),
-            "interval_id": interval[3] if len(interval) >= 3 else None,
-            "completeness": completeness_data,
+            "mean_coverage": coverage_by_interval[interval_counter],
+            "interval_id": interval[4] if len(interval) >= 4 else None,
+            "completeness": completeness_by_interval[interval_counter],
             "interval_type": IntervalType.CUSTOM,
         }
         intervals_coverage.append(IntervalCoverage(**interval_coverage_stats))
-        LOG.warning(f"GENE -->{counter}")
+        interval_counter += 1
 
     return intervals_coverage
 
