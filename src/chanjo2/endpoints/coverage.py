@@ -108,7 +108,11 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
         interval_coverage_stats = {
             "mean_coverage": coverage_by_interval[interval_counter],
             "interval_id": interval[4] if len(interval) >= 4 else None,
-            "completeness": completeness_by_interval[interval_counter],
+            "completeness": (
+                completeness_by_interval[interval_counter]
+                if completeness_by_interval
+                else {}
+            ),
             "interval_type": IntervalType.CUSTOM,
         }
         intervals_coverage.append(IntervalCoverage(**interval_coverage_stats))
