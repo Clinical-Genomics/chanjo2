@@ -1,3 +1,7 @@
+## [unreleased]
+### Changed
+- Replace use of pyd4 lib with direct calls d4tools sub-processes in `coverage.d4_intervals_coverage` to speed up stats retrieval
+
 ## [1.4]
 ### Changed
 - Upgraded Bootstrap and JQuery versions on genes coverage overview and coverage report pages
