@@ -9,6 +9,12 @@ jobs:
       - name: Check out git repository
         uses: actions/checkout@v3
 
+      - name: Install d4tools
+        steps:
+          - uses: dtolnay/install@master
+            with:
+              crate: d4tools
+
       - name: Set up python
         id: setup-python
         uses: actions/setup-python@v4

@@ -130,14 +130,10 @@ def get_d4_intervals_completeness(
 def get_d4_intervals_coverage(d4_file_path: str, bed_file_path: str) -> List[int]:
     """Return the coverage for intervals of a d4 file that are found in a bed file."""
 
-    d4tools_cmd: str = (
-        f"d4tools stat --region {bed_file_path} {d4_file_path} --stat mean"
-    )
-
     d4tools_stats_mean_cmd = subprocess.check_output(
-        (d4tools_cmd), shell=True, text=True
+        ["d4tools", "stat", "--region", bed_file_path, d4_file_path, "--stat", "mean"],
+        text=True,
     )
-    LOG.warning(d4tools_stats_mean_cmd)
     coverage_by_interval = [
         float(line.rstrip().split("\t")[3])
         for line in d4tools_stats_mean_cmd.splitlines()
