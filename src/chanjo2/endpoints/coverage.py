@@ -1,4 +1,4 @@
-from os import path
+from os.path import isfile
 from typing import Dict, List, Optional, Tuple
 
 import validators
@@ -10,25 +10,17 @@ from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
 from chanjo2.crud.intervals import get_genes
 from chanjo2.crud.samples import get_samples_coverage_file
 from chanjo2.dbutil import get_session
-from chanjo2.meta.handle_d4 import (
-    get_d4_file,
-    get_d4_intervals_completeness,
-    get_d4_intervals_coverage,
-    get_intervals_completeness,
-    get_intervals_mean_coverage,
-    get_sample_interval_coverage,
-    get_samples_sex_metrics,
-    set_interval,
-)
+from chanjo2.meta.handle_d4 import (get_d4_file, get_d4_intervals_completeness,
+                                    get_d4_intervals_coverage,
+                                    get_intervals_completeness,
+                                    get_intervals_mean_coverage,
+                                    get_sample_interval_coverage,
+                                    get_samples_sex_metrics, set_interval)
 from chanjo2.models import SQLExon, SQLGene, SQLTranscript
-from chanjo2.models.pydantic_models import (
-    FileCoverageIntervalsFileQuery,
-    FileCoverageQuery,
-    GeneCoverage,
-    IntervalCoverage,
-    IntervalType,
-    SampleGeneIntervalQuery,
-)
+from chanjo2.models.pydantic_models import (FileCoverageIntervalsFileQuery,
+                                            FileCoverageQuery, GeneCoverage,
+                                            IntervalCoverage, IntervalType,
+                                            SampleGeneIntervalQuery)
 
 router = APIRouter()
 
@@ -65,7 +57,7 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
     """Return coverage on the given intervals for a D4 resource located on the disk or on a remote server."""
 
     if (
-        path.exists(query.coverage_file_path) is False
+        isfile(query.coverage_file_path) is False
         or validators.url(query.coverage_file_path) is False
     ):
         raise HTTPException(
@@ -73,7 +65,7 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
             detail=WRONG_COVERAGE_FILE_MSG,
         )
 
-    if path.exists(query.intervals_bed_path) is False:
+    if isfile(query.intervals_bed_path) is False:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=WRONG_BED_FILE_MSG,

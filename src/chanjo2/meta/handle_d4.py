@@ -9,13 +9,8 @@ from sqlalchemy.orm import Session
 
 from chanjo2.crud.intervals import get_gene_intervals
 from chanjo2.models import SQLExon, SQLGene, SQLTranscript
-from chanjo2.models.pydantic_models import (
-    GeneCoverage,
-    IntervalCoverage,
-    IntervalType,
-    Sex,
-    TranscriptTag,
-)
+from chanjo2.models.pydantic_models import (GeneCoverage, IntervalCoverage,
+                                            IntervalType, Sex, TranscriptTag)
 
 LOG = logging.getLogger("uvicorn.access")
 
@@ -93,7 +88,6 @@ def get_d4_intervals_completeness(
                     d4_file_path,
                     f"{interval[0]}:{interval[1]}-{interval[2]}",
                 ],
-                shell=True,
                 stdout=f,
             )
             d4tools_view_cmd.wait()
@@ -134,6 +128,8 @@ def get_d4_intervals_coverage(d4_file_path: str, bed_file_path: str) -> List[int
         ["d4tools", "stat", "--region", bed_file_path, d4_file_path, "--stat", "mean"],
         text=True,
     )
+
+    LOG.warning(d4tools_stats_mean_cmd)
     coverage_by_interval = [
         float(line.rstrip().split("\t")[3])
         for line in d4tools_stats_mean_cmd.splitlines()
