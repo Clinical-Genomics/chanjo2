@@ -81,8 +81,6 @@ def get_d4tools_coverage_completeness(
 ):
     """Return the coverage completeness for the specified intervals of a d4 file."""
 
-    # interval_id_stats : Dict[str: IntervalCoverage]
-
     for interval_id, interval_coords in interval_ids_coords:
 
         # Create a temporary minified bedgraph file with the lines containing this specific genomic interval
