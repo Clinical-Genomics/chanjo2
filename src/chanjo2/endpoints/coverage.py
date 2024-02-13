@@ -83,68 +83,37 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
         bed_file_contents: List[List[str]] = [
             line.rstrip().split("\t") for line in f if line.startswith("#") is False
         ]
-    bed_intervals_id_coords: List[Tuple[str, str]] = [
+
+    interval_id_coords: List[Tuple[str, tuple]] = [
         (
             interval[4] if len(interval) >= 4 else None,
-            f"{interval[0]}:{interval[1]}-{interval[2]}",
+            (interval[0], int(interval[1]), int(interval[2])),
         )
         for interval in bed_file_contents
     ]
 
-    if not query.completeness_thresholds:  # fast method to collect only mean coverage
-        return get_d4tools_intervals_coverage(
-            d4_file_path=query.coverage_file_path,
-            bed_file_path=query.intervals_bed_path,
-            interval_ids=[item[0] for item in bed_intervals_id_coords],
-        )
-
-    return ()
-
-    """
-    
-
-    coverage_by_interval: List[int] = get_d4_intervals_coverage(
+    intervals_coverage: List[float] = get_d4tools_intervals_coverage(
         d4_file_path=query.coverage_file_path, bed_file_path=query.intervals_bed_path
     )
-    with open(query.intervals_bed_path, "r") as bed_file:
-        bed_file_contents: List[List[str]] = [
-            line.rstrip().split("\t")
-            for line in bed_file
-            if line.startswith("#") is False
-        ]
-
-    completeness_by_interval: List[Dict[int:float]] = []
-    if query.completeness_thresholds:
-        bed_file_regions: List[Tuple[str, int, int]] = [
-            (bed_interval[0], int(bed_interval[1]), int(bed_interval[2]))
-            for bed_interval in bed_file_contents
-        ]
-        completeness_by_interval: List[Dict[int:float]] = coverage_completeness_multitasker(
+    intervals_completeness: Dict[str, Dict[int, float]] = (
+        coverage_completeness_multitasker(
             d4_file_path=query.coverage_file_path,
-            intervals=bed_file_regions,
             thresholds=query.completeness_thresholds,
+            interval_ids_coords=interval_id_coords,
         )
+    )
 
-    interval_counter = 0
-    intervals_coverage: List[IntervalCoverage] = []
-
-    for interval in bed_file_contents:
-        interval_coverage_stats = {
-            "mean_coverage": coverage_by_interval[interval_counter],
-            "interval_id": interval[4] if len(interval) >= 4 else None,
-            "completeness": (
-                completeness_by_interval[interval_counter]
-                if completeness_by_interval
-                else {}
-            ),
+    results: List[IntervalCoverage] = []
+    for counter, interval_data in enumerate(interval_id_coords):
+        interval_coverage = {
             "interval_type": IntervalType.CUSTOM,
+            "interval_id": interval_data[0],
+            "mean_coverage": intervals_coverage[counter],
+            "completeness": intervals_completeness[interval_data[0]],
         }
-        intervals_coverage.append(IntervalCoverage(**interval_coverage_stats))
-        interval_counter += 1
+        results.append(IntervalCoverage(**interval_coverage))
 
-    return intervals_coverage
-    """
-    return []
+    return results
 
 
 @router.get("/coverage/samples/predicted_sex", response_model=Dict)
