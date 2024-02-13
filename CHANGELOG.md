@@ -1,6 +1,6 @@
 ## [unreleased]
 ### Changed
-- Replace use of pyd4 lib with direct calls d4tools sub-processes in `coverage.d4_intervals_coverage` to speed up stats retrieval
+- Speed up response by `coverage.d4_intervals_coverage` by replacing pyd4 lib with direct calls d4tools and multiprocessing
 
 ## [1.4]
 ### Changed
