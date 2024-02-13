@@ -12,14 +12,14 @@ from chanjo2.crud.samples import get_samples_coverage_file
 from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_d4 import (
     get_d4_file,
-    get_d4_intervals_completeness,
-    get_d4_intervals_coverage,
+    get_d4tools_intervals_coverage,
     get_intervals_completeness,
     get_intervals_mean_coverage,
     get_sample_interval_coverage,
     get_samples_sex_metrics,
     set_interval,
 )
+from chanjo2.meta.handle_tasks import coverage_completeness_multitasker
 from chanjo2.models import SQLExon, SQLGene, SQLTranscript
 from chanjo2.models.pydantic_models import (
     FileCoverageIntervalsFileQuery,
@@ -79,6 +79,30 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
             detail=WRONG_BED_FILE_MSG,
         )
 
+    with open(query.intervals_bed_path, "r") as f:
+        bed_file_contents: List[List[str]] = [
+            line.rstrip().split("\t") for line in f if line.startswith("#") is False
+        ]
+    bed_intervals_id_coords: List[Tuple[str, str]] = [
+        (
+            interval[4] if len(interval) >= 4 else None,
+            f"{interval[0]}:{interval[1]}-{interval[2]}",
+        )
+        for interval in bed_file_contents
+    ]
+
+    if not query.completeness_thresholds:  # fast method to collect only mean coverage
+        return get_d4tools_intervals_coverage(
+            d4_file_path=query.coverage_file_path,
+            bed_file_path=query.intervals_bed_path,
+            interval_ids=[item[0] for item in bed_intervals_id_coords],
+        )
+
+    return ()
+
+    """
+    
+
     coverage_by_interval: List[int] = get_d4_intervals_coverage(
         d4_file_path=query.coverage_file_path, bed_file_path=query.intervals_bed_path
     )
@@ -95,7 +119,7 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
             (bed_interval[0], int(bed_interval[1]), int(bed_interval[2]))
             for bed_interval in bed_file_contents
         ]
-        completeness_by_interval: List[Dict[int:float]] = get_d4_intervals_completeness(
+        completeness_by_interval: List[Dict[int:float]] = coverage_completeness_multitasker(
             d4_file_path=query.coverage_file_path,
             intervals=bed_file_regions,
             thresholds=query.completeness_thresholds,
@@ -119,6 +143,8 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
         interval_counter += 1
 
     return intervals_coverage
+    """
+    return []
 
 
 @router.get("/coverage/samples/predicted_sex", response_model=Dict)

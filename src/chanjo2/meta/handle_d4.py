@@ -73,11 +73,13 @@ def intervals_coverage(
     return intervals_cov
 
 
-def get_d4_intervals_completeness(
-    d4_file_path: str, intervals: List[str], thresholds: List[int] = []
+def get_d4tools_coverage_completeness(
+    d4_file_path: str, thresholds: List[int], intervals: List[Tuple[str, str]] = []
 ) -> List[dict]:
     """Return the coverage completeness for the specified intervals of a d4 file."""
 
+    return [x for x in range(50)]
+    """
     completeness_values: List[Dict[int:float]] = []
 
     for interval in intervals:
@@ -122,11 +124,16 @@ def get_d4_intervals_completeness(
                 i += 1
                 f.flush()
                 f.seek(0)
+    
 
     return completeness_values
+    """
+    return []
 
 
-def get_d4_intervals_coverage(d4_file_path: str, bed_file_path: str) -> List[int]:
+def get_d4tools_intervals_coverage(
+    d4_file_path: str, bed_file_path: str, interval_ids=List[str]
+) -> List[IntervalCoverage]:
     """Return the coverage for intervals of a d4 file that are found in a bed file."""
 
     d4tools_stats_mean_cmd: str = subprocess.check_output(
@@ -137,7 +144,17 @@ def get_d4_intervals_coverage(d4_file_path: str, bed_file_path: str) -> List[int
         float(line.rstrip().split("\t")[3])
         for line in d4tools_stats_mean_cmd.splitlines()
     ]
-    return coverage_by_interval
+    intervals_coverage: List[IntervalCoverage] = []
+    for counter, interval_id in enumerate(interval_ids):
+        interval_coverage_stats: dict = {
+            "mean_coverage": coverage_by_interval[counter],
+            "interval_id": interval_id,
+            "completeness": {},
+            "interval_type": IntervalType.CUSTOM,
+        }
+        intervals_coverage.append(IntervalCoverage(**interval_coverage_stats))
+
+    return intervals_coverage
 
 
 def get_intervals_completeness(
