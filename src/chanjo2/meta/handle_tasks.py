@@ -3,9 +3,10 @@ from typing import Dict
 
 LOG = logging.getLogger("uvicorn.access")
 
-from chanjo2.meta.handle_d4 import get_d4tools_coverage_completeness
-from typing import List, Tuple
 from multiprocessing import Manager, Pool
+from typing import List, Tuple
+
+from chanjo2.meta.handle_d4 import get_d4tools_coverage_completeness
 
 
 def coverage_completeness_multitasker(

@@ -1,3 +1,5 @@
+import logging
+import time
 from os.path import isfile
 from typing import Dict, List, Optional, Tuple
 
@@ -10,27 +12,21 @@ from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
 from chanjo2.crud.intervals import get_genes
 from chanjo2.crud.samples import get_samples_coverage_file
 from chanjo2.dbutil import get_session
-from chanjo2.meta.handle_d4 import (
-    get_d4_file,
-    get_d4tools_intervals_coverage,
-    get_intervals_completeness,
-    get_intervals_mean_coverage,
-    get_sample_interval_coverage,
-    get_samples_sex_metrics,
-    set_interval,
-)
+from chanjo2.meta.handle_d4 import (get_d4_file,
+                                    get_d4tools_intervals_coverage,
+                                    get_intervals_completeness,
+                                    get_intervals_mean_coverage,
+                                    get_sample_interval_coverage,
+                                    get_samples_sex_metrics, set_interval)
 from chanjo2.meta.handle_tasks import coverage_completeness_multitasker
 from chanjo2.models import SQLExon, SQLGene, SQLTranscript
-from chanjo2.models.pydantic_models import (
-    FileCoverageIntervalsFileQuery,
-    FileCoverageQuery,
-    GeneCoverage,
-    IntervalCoverage,
-    IntervalType,
-    SampleGeneIntervalQuery,
-)
+from chanjo2.models.pydantic_models import (FileCoverageIntervalsFileQuery,
+                                            FileCoverageQuery, GeneCoverage,
+                                            IntervalCoverage, IntervalType,
+                                            SampleGeneIntervalQuery)
 
 router = APIRouter()
+LOG = logging.getLogger("uvicorn.access")
 
 
 @router.post("/coverage/d4/interval/", response_model=IntervalCoverage)
@@ -64,6 +60,7 @@ def d4_interval_coverage(query: FileCoverageQuery):
 def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
     """Return coverage on the given intervals for a D4 resource located on the disk or on a remote server."""
 
+    start_time = time.time()
     if (
         isfile(query.coverage_file_path) is False
         or validators.url(query.coverage_file_path) is False
@@ -112,6 +109,10 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
             "completeness": intervals_completeness[interval_data[0]],
         }
         results.append(IntervalCoverage(**interval_coverage))
+
+    LOG.info(
+        f"Time to compute stats on {counter+1} intervals and {len(query.completeness_thresholds)} coverage thresholds: {time.time() - start_time} seconds."
+    )
 
     return results
 
