@@ -85,7 +85,9 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
 
     with open(query.intervals_bed_path, "r") as bed_file:
         bed_file_contents: List[List[str]] = [
-            line.rstrip().split("\t") for line in f if line.startswith("#") is False
+            line.rstrip().split("\t")
+            for line in bed_file
+            if line.startswith("#") is False
         ]
 
     interval_id_coords: List[Tuple[str, tuple]] = [
