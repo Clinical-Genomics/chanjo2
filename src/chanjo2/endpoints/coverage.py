@@ -83,7 +83,7 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
             detail=WRONG_BED_FILE_MSG,
         )
 
-    with open(query.intervals_bed_path, "r") as f:
+    with open(query.intervals_bed_path, "r") as bed_file:
         bed_file_contents: List[List[str]] = [
             line.rstrip().split("\t") for line in f if line.startswith("#") is False
         ]
