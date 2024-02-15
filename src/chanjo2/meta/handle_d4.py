@@ -18,6 +18,9 @@ from chanjo2.models.pydantic_models import (
 )
 
 LOG = logging.getLogger("uvicorn.access")
+CHROM_INDEX = 0
+START_INDEX = 1
+STOP_INDEX = 2
 
 
 def set_interval(
@@ -91,19 +94,19 @@ def get_d4tools_coverage_completeness(
                     "d4tools",
                     "view",
                     d4_file_path,
-                    f"{interval_coords[0]}:{interval_coords[1]}-{interval_coords[2]}",
+                    f"{interval_coords[CHROM_INDEX]}:{interval_coords[START_INDEX]}-{interval_coords[STOP_INDEX]}",
                 ],
                 stdout=stats_file,
             )
             d4tools_view_cmd.wait()
 
             thresholds_dict = {}
-            i = 0
-            while i < len(thresholds):
+            threshold_index = 0
+            while threshold_index < len(thresholds):
                 # Collect the size of the intervals for each line with coverage above this threshold
 
                 filter_lines_above_threshold: str = (
-                    f"awk '{{ if ($4 >= {thresholds[i]} ) {{ print $3-$2; }} }}' {tmp_stats_file.name}"
+                    f"awk '{{ if ($4 >= {thresholds[threshold_index]} ) {{ print $3-$2; }} }}' {tmp_stats_file.name}"
                 )
                 intervals_above_threshold_sizes = subprocess.check_output(
                     [filter_lines_above_threshold], shell=True, text=True
@@ -114,11 +117,12 @@ def get_d4tools_coverage_completeness(
                 )
 
                 # Compute the fraction of bases covered above threshold
-                thresholds_dict[thresholds[i]] = nr_bases_covered_above_threshold / (
-                    interval_coords[2] - interval_coords[1]
+                thresholds_dict[thresholds[threshold_index]] = (
+                    nr_bases_covered_above_threshold
+                    / (interval_coords[STOP_INDEX] - interval_coords[START_INDEX])
                 )
 
-                i += 1
+                threshold_index += 1
                 f.flush()
                 f.seek(0)
 
