@@ -8,6 +8,8 @@ from typing import List, Tuple
 
 from chanjo2.meta.handle_d4 import get_d4tools_coverage_completeness
 
+INTERVAL_CHUNKS = 250
+
 
 def coverage_completeness_multitasker(
     d4_file_path: str,
@@ -20,8 +22,8 @@ def coverage_completeness_multitasker(
     return_dict = manager.dict()  # Used for storing results from the separate processes
 
     split_intervals: List[List[Tuple[str, Tuple[str, int, int]]]] = [
-        interval_ids_coords[i : i + 250]
-        for i in range(0, len(interval_ids_coords), 250)
+        interval_ids_coords[i : i + INTERVAL_CHUNKS]
+        for i in range(0, len(interval_ids_coords), INTERVAL_CHUNKS)
     ]
     tasks_params = [
         (d4_file_path, thresholds, return_dict, intervals)
