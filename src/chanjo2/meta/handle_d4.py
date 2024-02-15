@@ -85,7 +85,7 @@ def get_d4tools_coverage_completeness(
 
         # Create a temporary minified bedgraph file with the lines containing this specific genomic interval
         tmp_stats_file = tempfile.NamedTemporaryFile()
-        with open(tmp_stats_file.name, "w") as f:
+        with open(tmp_stats_file.name, "w") as stats_file:
             d4tools_view_cmd = subprocess.Popen(
                 [
                     "d4tools",
@@ -93,7 +93,7 @@ def get_d4tools_coverage_completeness(
                     d4_file_path,
                     f"{interval_coords[0]}:{interval_coords[1]}-{interval_coords[2]}",
                 ],
-                stdout=f,
+                stdout=stats_file,
             )
             d4tools_view_cmd.wait()
 
