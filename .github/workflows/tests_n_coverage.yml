@@ -10,6 +10,14 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install d4tools
+        steps:
+          - uses: actions/checkout@v4
+          - uses: actions-rs/install@v0.1
+            with:
+              crate: d4tools
+              version: latest
+
+      - name: Install d4tools
         uses: dtolnay/install@master
         with:
           crate: d4tools
