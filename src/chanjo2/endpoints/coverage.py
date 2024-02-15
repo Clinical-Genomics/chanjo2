@@ -21,6 +21,7 @@ from chanjo2.meta.handle_d4 import (
     get_samples_sex_metrics,
     set_interval,
 )
+from chanjo2.meta.handle_bed import bed_file_interval_id_coords
 from chanjo2.meta.handle_tasks import coverage_completeness_multitasker
 from chanjo2.models import SQLExon, SQLGene, SQLTranscript
 from chanjo2.models.pydantic_models import (
@@ -83,20 +84,9 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
             detail=WRONG_BED_FILE_MSG,
         )
 
-    with open(query.intervals_bed_path, "r") as bed_file:
-        bed_file_contents: List[List[str]] = [
-            line.rstrip().split("\t")
-            for line in bed_file
-            if line.startswith("#") is False
-        ]
-
-    interval_id_coords: List[Tuple[str, tuple]] = [
-        (
-            interval[4] if len(interval) >= 4 else None,
-            (interval[0], int(interval[1]), int(interval[2])),
-        )
-        for interval in bed_file_contents
-    ]
+    interval_id_coords: List[Tuple[str, Tuple[str, int, int]]] = (
+        bed_file_interval_id_coords(file_path=query.intervals_bed_path)
+    )
 
     intervals_coverage: List[float] = get_d4tools_intervals_coverage(
         d4_file_path=query.coverage_file_path, bed_file_path=query.intervals_bed_path
@@ -119,7 +109,7 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
         }
         results.append(IntervalCoverage(**interval_coverage))
 
-    LOG.info(
+    LOG.debug(
         f"Time to compute stats on {counter+1} intervals and {len(query.completeness_thresholds)} coverage thresholds: {time.time() - start_time} seconds."
     )
 
