@@ -107,7 +107,7 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
             "mean_coverage": intervals_coverage[counter],
             "completeness": intervals_completeness[interval_data[0]],
         }
-        results.append(IntervalCoverage(**interval_coverage))
+        results.append(IntervalCoverage.model_validate(interval_coverage))
 
     LOG.debug(
         f"Time to compute stats on {counter+1} intervals and {len(query.completeness_thresholds)} coverage thresholds: {time.time() - start_time} seconds."
