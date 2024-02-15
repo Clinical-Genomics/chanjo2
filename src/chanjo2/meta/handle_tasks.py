@@ -22,8 +22,8 @@ def coverage_completeness_multitasker(
     return_dict = manager.dict()  # Used for storing results from the separate processes
 
     split_intervals: List[List[Tuple[str, Tuple[str, int, int]]]] = [
-        interval_ids_coords[i : i + INTERVAL_CHUNKS]
-        for i in range(0, len(interval_ids_coords), INTERVAL_CHUNKS)
+        interval_ids_coords[chunk_index : chunk_index + INTERVAL_CHUNKS]
+        for chunk_index in range(0, len(interval_ids_coords), INTERVAL_CHUNKS)
     ]
     tasks_params = [
         (d4_file_path, thresholds, return_dict, intervals)
