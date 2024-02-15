@@ -12,8 +12,8 @@ jobs:
       - name: Install d4tools
         steps:
         uses: dtolnay/install@master
-          with:
-            crate: d4tools
+        with:
+          crate: d4tools
 
       - name: Set up python
         id: setup-python
