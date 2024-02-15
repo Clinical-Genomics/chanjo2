@@ -1,5 +1,9 @@
+import logging
+import time
+from os.path import isfile
 from typing import Dict, List, Optional, Tuple
 
+import validators
 from fastapi import APIRouter, Depends, HTTPException, status
 from pyd4 import D4File
 from sqlalchemy.orm import Session
@@ -8,26 +12,29 @@ from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
 from chanjo2.crud.intervals import get_genes
 from chanjo2.crud.samples import get_samples_coverage_file
 from chanjo2.dbutil import get_session
-from chanjo2.meta.handle_bed import parse_bed
 from chanjo2.meta.handle_d4 import (
     get_d4_file,
+    get_d4tools_intervals_coverage,
     get_intervals_completeness,
     get_intervals_mean_coverage,
     get_sample_interval_coverage,
     get_samples_sex_metrics,
-    intervals_coverage,
     set_interval,
 )
+from chanjo2.meta.handle_bed import bed_file_interval_id_coords
+from chanjo2.meta.handle_tasks import coverage_completeness_multitasker
 from chanjo2.models import SQLExon, SQLGene, SQLTranscript
 from chanjo2.models.pydantic_models import (
     FileCoverageIntervalsFileQuery,
     FileCoverageQuery,
     GeneCoverage,
     IntervalCoverage,
+    IntervalType,
     SampleGeneIntervalQuery,
 )
 
 router = APIRouter()
+LOG = logging.getLogger("uvicorn.access")
 
 
 @router.post("/coverage/d4/interval/", response_model=IntervalCoverage)
@@ -61,31 +68,52 @@ def d4_interval_coverage(query: FileCoverageQuery):
 def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
     """Return coverage on the given intervals for a D4 resource located on the disk or on a remote server."""
 
-    try:
-        d4_file: D4File = get_d4_file(coverage_file_path=query.coverage_file_path)
-    except Exception:
+    start_time = time.time()
+    if (
+        isfile(query.coverage_file_path) is False
+        or validators.url(query.coverage_file_path) is False
+    ):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=WRONG_COVERAGE_FILE_MSG,
         )
 
-    try:
-        with open(query.intervals_bed_path, "rb") as bed_file:
-            bed_file_content = bed_file.read()
-            intervals: List[Tuple[str, Optional[int], Optional[int]]] = parse_bed(
-                bed_file_content=bed_file_content
-            )
-    except Exception:
+    if isfile(query.intervals_bed_path) is False:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=WRONG_BED_FILE_MSG,
         )
 
-    return intervals_coverage(
-        d4_file=d4_file,
-        intervals=intervals,
-        completeness_thresholds=query.completeness_thresholds,
+    interval_id_coords: List[Tuple[str, Tuple[str, int, int]]] = (
+        bed_file_interval_id_coords(file_path=query.intervals_bed_path)
     )
+
+    intervals_coverage: List[float] = get_d4tools_intervals_coverage(
+        d4_file_path=query.coverage_file_path, bed_file_path=query.intervals_bed_path
+    )
+    intervals_completeness: Dict[str, Dict[int, float]] = (
+        coverage_completeness_multitasker(
+            d4_file_path=query.coverage_file_path,
+            thresholds=query.completeness_thresholds,
+            interval_ids_coords=interval_id_coords,
+        )
+    )
+
+    results: List[IntervalCoverage] = []
+    for counter, interval_data in enumerate(interval_id_coords):
+        interval_coverage = {
+            "interval_type": IntervalType.CUSTOM,
+            "interval_id": interval_data[0],
+            "mean_coverage": intervals_coverage[counter],
+            "completeness": intervals_completeness[interval_data[0]],
+        }
+        results.append(IntervalCoverage.model_validate(interval_coverage))
+
+    LOG.debug(
+        f"Time to compute stats on {counter+1} intervals and {len(query.completeness_thresholds)} coverage thresholds: {time.time() - start_time} seconds."
+    )
+
+    return results
 
 
 @router.get("/coverage/samples/predicted_sex", response_model=Dict)

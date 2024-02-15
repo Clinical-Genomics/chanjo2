@@ -7,7 +7,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out git repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Install d4tools
+        uses: actions-rs/install@v0.1
+        with:
+          crate: d4tools
+          version: latest
 
       - name: Set up python
         id: setup-python
