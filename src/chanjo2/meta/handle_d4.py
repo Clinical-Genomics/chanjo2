@@ -123,8 +123,8 @@ def get_d4tools_coverage_completeness(
                 )
 
                 threshold_index += 1
-                f.flush()
-                f.seek(0)
+                stats_file.flush()
+                stats_file.seek(0)
 
         return_dict[interval_id] = thresholds_dict
 
