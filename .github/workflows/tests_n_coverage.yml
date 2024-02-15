@@ -15,11 +15,6 @@ jobs:
           crate: d4tools
           version: latest
 
-      - name: Install d4tools
-        uses: dtolnay/install@master
-        with:
-          crate: d4tools
-
       - name: Set up python
         id: setup-python
         uses: actions/setup-python@v4
