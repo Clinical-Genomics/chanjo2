@@ -3,6 +3,7 @@
 - `coverage.d4_intervals_coverage` responses contain also interval name as provided in bed file
 ### Changed
 - Speed up response by `coverage.d4_intervals_coverage` by replacing pyd4 lib with direct calls d4tools and multiprocessing
+- Removed 2 redundant functions in `meta.handle.bed.py`
 
 ## [1.4]
 ### Changed

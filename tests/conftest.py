@@ -12,7 +12,7 @@ from chanjo2.crud.intervals import get_genes
 from chanjo2.dbutil import DEMO_CONNECT_ARGS, get_session
 from chanjo2.demo import DEMO_SAMPLE, d4_demo_path, gene_panel_path
 from chanjo2.main import Base, app, engine
-from chanjo2.meta.handle_bed import parse_bed
+from chanjo2.meta.handle_bed import bed_file_interval_id_coords
 from chanjo2.meta.handle_d4 import get_d4_file
 from chanjo2.models import sql_models
 
@@ -216,12 +216,8 @@ def real_coverage_path() -> str:
 
 @pytest.fixture(name="bed_interval")
 def bed_interval() -> Tuple[str, int, int]:
-    """Returns a genomic interval as tuple."""
-    interval: Tuple[str, int, int] = ()
-    with open(gene_panel_path, "rb") as f:
-        contents = f.read()
-        interval = parse_bed(contents)[0]
-    return interval
+    """Returns a genomic interval (chr, start, stop) as a tuple."""
+    return bed_file_interval_id_coords(file_path=gene_panel_path)[0][1]
 
 
 @pytest.fixture(name="interval_query")

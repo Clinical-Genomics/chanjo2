@@ -12,21 +12,6 @@ def resource_lines(file_path: str) -> Iterator[str]:
     return iter(lines)
 
 
-def parse_bed(bed_file_content: bytes) -> List[Tuple[str, int, int]]:
-    """Parses a bed file containing genomic coordinates."""
-    intervals: List[Tuple[str, int, int]] = []
-    for line_byte in bed_file_content.rsplit(b"\n"):
-        if len(line_byte) > 0 and not line_byte.startswith(b"#"):
-            intervals.append(bed_line_to_region(bytes_line=line_byte))
-    return intervals
-
-
-def bed_line_to_region(bytes_line: bytes) -> Tuple[str, int, int]:
-    """Returns a single genomic interval corresponding to a bed file line."""
-    line_elements: List = bytes_line.decode("utf-8").rsplit("\t")
-    return (line_elements[0], int(line_elements[1]), int(line_elements[2]))
-
-
 def bed_file_interval_id_coords(
     file_path: str,
 ) -> List[Tuple[str, Tuple[str, int, int]]]:
