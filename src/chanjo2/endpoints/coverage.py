@@ -13,18 +13,25 @@ from chanjo2.crud.intervals import get_genes
 from chanjo2.crud.samples import get_samples_coverage_file
 from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import bed_file_interval_id_coords
-from chanjo2.meta.handle_d4 import (get_d4_file,
-                                    get_d4tools_intervals_coverage,
-                                    get_d4tools_intervals_mean_coverage,
-                                    get_intervals_completeness,
-                                    get_sample_interval_coverage,
-                                    get_samples_sex_metrics, set_interval)
+from chanjo2.meta.handle_d4 import (
+    get_d4_file,
+    get_d4tools_coverage_completeness,
+    get_d4tools_intervals_coverage,
+    get_d4tools_intervals_mean_coverage,
+    get_sample_interval_coverage,
+    get_samples_sex_metrics,
+    set_interval,
+)
 from chanjo2.meta.handle_tasks import coverage_completeness_multitasker
 from chanjo2.models import SQLExon, SQLGene, SQLTranscript
-from chanjo2.models.pydantic_models import (FileCoverageIntervalsFileQuery,
-                                            FileCoverageQuery, GeneCoverage,
-                                            IntervalCoverage, IntervalType,
-                                            SampleGeneIntervalQuery)
+from chanjo2.models.pydantic_models import (
+    FileCoverageIntervalsFileQuery,
+    FileCoverageQuery,
+    GeneCoverage,
+    IntervalCoverage,
+    IntervalType,
+    SampleGeneIntervalQuery,
+)
 
 router = APIRouter()
 LOG = logging.getLogger("uvicorn.access")
@@ -37,28 +44,40 @@ def d4_interval_coverage(query: FileCoverageQuery):
     interval: str = query.chromosome
 
     if query.start and query.end:
-        interval += f":{query.start}-{query.end}"
-
-    LOG.warning(interval)
+        interval += f"\t{query.start}\t{query.end}"
 
     if (
-            isfile(query.coverage_file_path) is False
-            or validators.url(query.coverage_file_path) is False
+        isfile(query.coverage_file_path) is False
+        or validators.url(query.coverage_file_path) is False
     ):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=WRONG_COVERAGE_FILE_MSG,
         )
+    mean_coverage: float = get_d4tools_intervals_mean_coverage(
+        d4_file_path=query.coverage_file_path, intervals=[interval]
+    )[0]
+    completeness_dict = {}
+    get_d4tools_coverage_completeness(
+        d4_file_path=query.coverage_file_path,
+        interval_ids_coords=[
+            (
+                interval,
+                (
+                    set_interval(
+                        chrom=query.chromosome, start=query.start, end=query.end
+                    )
+                ),
+            )
+        ],
+        thresholds=query.completeness_thresholds,
+        return_dict=completeness_dict,
+    ),
 
     return IntervalCoverage(
-        mean_coverage=get_d4tools_intervals_mean_coverage(
-            d4_file_path=query.coverage_file_path, intervals=[interval]
-        )[0],
-        completeness=get_d4tools_coverage_completeness(
-            d4_file_path=d4_file,
-            interval_ids_coords=[set_interval(chrom=query.chromosome, start=query.start, end=query.end)],
-            thresholds=query.completeness_thresholds,
-        ),
+        mean_coverage=mean_coverage,
+        completeness=completeness_dict[interval],
+        interval_id=f"{query.chromosome}:{query.start}-{query.end}",
     )
 
 
