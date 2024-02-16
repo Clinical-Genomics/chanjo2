@@ -9,13 +9,8 @@ from sqlalchemy.orm import Session
 
 from chanjo2.crud.intervals import get_gene_intervals
 from chanjo2.models import SQLExon, SQLGene, SQLTranscript
-from chanjo2.models.pydantic_models import (
-    GeneCoverage,
-    IntervalCoverage,
-    IntervalType,
-    Sex,
-    TranscriptTag,
-)
+from chanjo2.models.pydantic_models import (GeneCoverage, IntervalCoverage,
+                                            IntervalType, Sex, TranscriptTag)
 
 LOG = logging.getLogger("uvicorn.access")
 CHROM_INDEX = 0
@@ -44,6 +39,16 @@ def get_intervals_coords_list(
         interval_coords.append((interval.chromosome, interval.start, interval.stop))
     return interval_coords
 
+
+def get_d4tools_intervals_mean_coverage(d4_file_path: str, intervals: List[str]) -> List[float]:
+    """Return the mean value over a list of intervals of a d4 file."""
+
+    tmp_bed_file = tempfile.NamedTemporaryFile()
+    with open("tmp_bed_file", "w") as tmp_bed_file:
+        tmp_bed_file.write("\n".join(intervals))
+        mean_cov_by_interval: List[float] = get_d4tools_intervals_coverage(d4_file_path = d4_file_path, bed_file_path = tmp_bed_file.name)
+
+        return mean_cov_by_interval
 
 def get_intervals_mean_coverage(
     d4_file: D4File, intervals: List[Tuple[str, int, int]]
