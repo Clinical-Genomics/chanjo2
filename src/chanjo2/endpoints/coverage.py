@@ -15,6 +15,7 @@ from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import bed_file_interval_id_coords
 from chanjo2.meta.handle_d4 import (
     get_d4_file,
+    get_d4tools_chromosome_mean_coverage,
     get_d4tools_coverage_completeness,
     get_d4tools_intervals_coverage,
     get_d4tools_intervals_mean_coverage,
@@ -41,11 +42,6 @@ LOG = logging.getLogger("uvicorn.access")
 def d4_interval_coverage(query: FileCoverageQuery):
     """Return coverage on the given interval for a D4 resource located on the disk or on a remote server."""
 
-    interval: str = query.chromosome
-
-    if query.start and query.end:
-        interval += f"\t{query.start}\t{query.end}"
-
     if (
         isfile(query.coverage_file_path) is False
         or validators.url(query.coverage_file_path) is False
@@ -54,29 +50,33 @@ def d4_interval_coverage(query: FileCoverageQuery):
             status_code=status.HTTP_404_NOT_FOUND,
             detail=WRONG_COVERAGE_FILE_MSG,
         )
+
+    interval: str = query.chromosome
+    if None in [query.start, query.end]:  # Coverage over a single chromosome
+        return IntervalCoverage(
+            mean_coverage=get_d4tools_chromosome_mean_coverage(
+                d4_file_path=query.coverage_file_path, chromosome=query.chromosome
+            ),
+            completeness={},
+            interval_id=interval,
+        )
+
+    interval += f"\t{query.start}\t{query.end}"
+    completeness_dict = {}
+
     mean_coverage: float = get_d4tools_intervals_mean_coverage(
         d4_file_path=query.coverage_file_path, intervals=[interval]
     )[0]
-    completeness_dict = {}
     get_d4tools_coverage_completeness(
         d4_file_path=query.coverage_file_path,
-        interval_ids_coords=[
-            (
-                interval,
-                (
-                    set_interval(
-                        chrom=query.chromosome, start=query.start, end=query.end
-                    )
-                ),
-            )
-        ],
+        interval_ids_coords=[(interval, (query.chromosome, query.start, query.end))],
         thresholds=query.completeness_thresholds,
         return_dict=completeness_dict,
-    ),
+    )
 
     return IntervalCoverage(
         mean_coverage=mean_coverage,
-        completeness=completeness_dict[interval],
+        completeness=completeness_dict.get(interval),
         interval_id=f"{query.chromosome}:{query.start}-{query.end}",
     )
 

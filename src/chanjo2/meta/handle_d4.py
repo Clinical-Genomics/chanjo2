@@ -21,6 +21,7 @@ LOG = logging.getLogger("uvicorn.access")
 CHROM_INDEX = 0
 START_INDEX = 1
 STOP_INDEX = 2
+STATS_INDEX = 3
 
 
 def set_interval(
@@ -43,6 +44,20 @@ def get_intervals_coords_list(
     for interval in intervals:
         interval_coords.append((interval.chromosome, interval.start, interval.stop))
     return interval_coords
+
+
+def get_d4tools_chromosome_mean_coverage(d4_file_path: str, chromosome=str) -> float:
+    """Return mean coverage over one entire chromosome."""
+
+    chromosomes_stats_mean_cmd: List[str] = subprocess.check_output(
+        ["d4tools", "stat", "-s" "mean", d4_file_path],
+        text=True,
+    ).splitlines()
+
+    for line in chromosomes_stats_mean_cmd:
+        stats_data: List[str] = line.split("\t")
+        if chromosome == stats_data[CHROM_INDEX]:
+            return stats_data[STATS_INDEX]
 
 
 def get_d4tools_intervals_mean_coverage(
