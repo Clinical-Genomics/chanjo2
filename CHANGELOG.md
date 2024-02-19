@@ -1,9 +1,13 @@
 ## [unreleased]
 ### Added
 - `coverage.d4_intervals_coverage` responses contain also interval name as provided in bed file
+- `coverage.d4_interval_coverage` responses now returns also the genomic region used to compute the stats on
 ### Changed
 - Speed up response by `coverage.d4_intervals_coverage` by replacing pyd4 lib with direct calls d4tools and multiprocessing
 - Removed 2 redundant functions in `meta.handle.bed.py`
+- `coverage.d4_interval_coverage` is using direct calls to d4tools to retrieve stats over an entire chromosome or a genomic interval
+### Fixed
+-  `coverage.d4_interval_coverage` endpoint crashing trying to computer coverage completeness over an entire chromosome
 
 ## [1.4]
 ### Changed
