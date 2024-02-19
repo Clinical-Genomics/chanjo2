@@ -113,9 +113,7 @@ def get_report_data(
         return data
 
     # Add coverage_report - specific data
-    data["sex_rows"] = get_report_sex_rows(
-        samples=query.samples, samples_d4_files=samples_d4_files
-    )
+    data["sex_rows"] = get_report_sex_rows(samples=query.samples)
     data["completeness_rows"] = get_report_completeness_rows(
         samples_coverage_stats=samples_coverage_stats,
         levels=query.completeness_thresholds,
@@ -231,17 +229,13 @@ def get_report_completeness_rows(
     return completeness_rows
 
 
-def get_report_sex_rows(
-    samples: List[ReportQuerySample], samples_d4_files: List[Tuple[str, D4File]]
-) -> List[Dict]:
+def get_report_sex_rows(samples: List[ReportQuerySample]) -> List[Dict]:
     """Create and return the contents for the sample sex lines in the coverage report."""
     sample_sex_rows: D4FileList = []
     for sample in samples:
-        for identifier, d4_file in samples_d4_files:
-            if identifier != sample.name:
-                continue
-
-        sample_sex_metrics: Dict = get_samples_sex_metrics(d4_file=d4_file)
+        sample_sex_metrics: Dict = get_samples_sex_metrics(
+            d4_file_path=sample.coverage_file_path
+        )
 
         sample_sex_row: SampleSexRow = SampleSexRow(
             **{
