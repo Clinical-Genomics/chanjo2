@@ -98,70 +98,7 @@
 </div>
 {% endmacro %}
 
-{% macro important_metrics() %}
-<div class="table-responsive">
-  <table class="table table-bordered table-hover">
-    <caption>Average coverage and coverage completeness data</caption>
-	<thead>
-	  <tr>
-		<th>Sample</th>
-		<th>Average coverage[x]</th>
-		{% for level_int, level_key in levels.items() %}
-		  <th>Completeness {{ level_int }}x [%]</th>
-		{% endfor %}
-	  </tr>
-	</thead>
-	<tbody>
-	  {% for sample, stats in completeness_rows %}
-		<tr>
-			<td>{{ sample }}</td>
-			<td>{{ stats.mean_coverage|round(2) if stats.mean_coverage is defined }}</td>
-			{% for level_int, level_key in levels.items() %}
-				<td>{{ stats[level_key] if stats[level_key] is defined }} </td>
-			{% endfor %}
-		</tr>
-	  {% endfor %}
-	</tbody>
-  </table>
-</div>
-{% endmacro %}
 
-{% macro default_level_metrics() %}
- <div class="col-xs-1 col-xs-offset-9" style="text-align: right;"><input type="checkbox" name="show_genes" onclick="toggle_visibility(['incompletelyCoveredGenesHeader', 'incompletelyCoveredGenesCell']);"></div>
-	 <div class="col-xs-2">
-		 <label class="control-label">Show genes</label>
-	 </div>
-<table class="table table-bordered table-hover">
-	 <caption>Genes/Transcripts/Exons coverage at default coverage threshold</caption>
-      <thead>
-        <tr>
-          <th>Sample</th>
-          <th>Fully covered {{ interval_type }} [%]</th>
-          <th>Incompletely covered {{ interval_type }}</th>
-		  <th id="incompletelyCoveredGenesHeader"  style="display: none;">Incompletely covered genes</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for data in default_level_completeness_rows %}
-          <tr>
-			  <td>{{data[0]}}</td>
-			  {% if data[1] == 100.00 %}
-			  	<td colspan="2">
-				  No incompletely covered intervals.
-				</td>
-			  {% else %}
-				<td class="text-right">{{ data[1] }}</td>
-				<td class="text-center">{{ data[2] }}</td>
-			  	<td id="incompletelyCoveredGenesCell" class="text-center" style="display: none;">
-					{{ data[3]|join(", ") }}
-				</td>
-			  {% endif %}
-          </tr>
-        {% endfor %}
-      </tbody>
- </table>
-
-{% endmacro %}
 
 {% macro explanations() %}
 <h4>General</h4>
@@ -231,11 +168,11 @@
 
 	<h3>Generally important metrics</h3>
 
-	{{ important_metrics() }}
+	"{{" important_metrics() "}}"
 
 	<h3> Transcript coverage at {{ extras.default_level }}x</h3>
 
-	{{ default_level_metrics() }}
+	"{{" default_level_metrics() "}}"
 	<hr>
 	{{ errors_block() }}
 	<!--End of Quality report -->

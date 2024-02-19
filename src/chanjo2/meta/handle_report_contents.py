@@ -66,8 +66,8 @@ def get_report_data(
     """Return the information that will be displayed in the coverage report or in the genes overview report.."""
 
     set_samples_coverage_files(session=session, samples=query.samples)
-    samples_d4_files: List[Tuple[str, D4File]] = [
-        (sample.name, D4File(sample.coverage_file_path)) for sample in query.samples
+    samples_d4_files_path: List[Tuple[str, str]] = [
+        (sample.name, sample.coverage_file_path) for sample in query.samples
     ]
     genes: List[SQLGene] = get_genes(
         db=session,
@@ -77,18 +77,6 @@ def get_report_data(
         hgnc_symbols=query.hgnc_gene_symbols,
         limit=None,
     )
-
-    samples_coverage_stats: Dict[str, List[GeneCoverage]] = {
-        sample: get_sample_interval_coverage(
-            db=session,
-            d4_file=d4_file,
-            genes=genes,
-            interval_type=INTERVAL_TYPE_SQL_TYPE[query.interval_type],
-            completeness_thresholds=query.completeness_thresholds,
-            transcript_tags=["refseq_mrna"],
-        )
-        for sample, d4_file in samples_d4_files
-    }
 
     data: Dict = {
         "levels": get_ordered_levels(threshold_levels=query.completeness_thresholds),
@@ -104,6 +92,27 @@ def get_report_data(
         },
     }
 
+    # Add coverage_report - specific data
+    data["sex_rows"] = get_report_sex_rows(
+        samples=query.samples, samples_d4_files_path=samples_d4_files_path
+    )
+
+    """
+
+    samples_coverage_stats: Dict[str, List[GeneCoverage]] = {
+        sample: get_sample_interval_coverage(
+            db=session,
+            d4_file=d4_file,
+            genes=genes,
+            interval_type=INTERVAL_TYPE_SQL_TYPE[query.interval_type],
+            completeness_thresholds=query.completeness_thresholds,
+            transcript_tags=["refseq_mrna"],
+        )
+        for sample, d4_file in samples_d4_files
+    }
+
+
+
     if is_overview_report:
         data["incomplete_coverage_rows"] = get_genes_overview_incomplete_coverage_rows(
             samples_coverage_stats=samples_coverage_stats,
@@ -111,11 +120,11 @@ def get_report_data(
             cov_level=query.default_level,
         )
         return data
+    """
 
-    # Add coverage_report - specific data
-    data["sex_rows"] = get_report_sex_rows(
-        samples=query.samples, samples_d4_files=samples_d4_files
-    )
+
+
+    """
     data["completeness_rows"] = get_report_completeness_rows(
         samples_coverage_stats=samples_coverage_stats,
         levels=query.completeness_thresholds,
@@ -131,6 +140,7 @@ def get_report_data(
             hgnc_symbols=query.hgnc_gene_symbols,
         )
     ]
+    """
     return data
 
 
@@ -232,12 +242,12 @@ def get_report_completeness_rows(
 
 
 def get_report_sex_rows(
-    samples: List[ReportQuerySample], samples_d4_files: List[Tuple[str, D4File]]
+    samples: List[ReportQuerySample], samples_d4_files_path: List[Tuple[str, str]]
 ) -> List[Dict]:
     """Create and return the contents for the sample sex lines in the coverage report."""
-    sample_sex_rows: D4FileList = []
+    sample_sex_rows: List[dict] = []
     for sample in samples:
-        for identifier, d4_file in samples_d4_files:
+        for identifier, d4_file in samples_d4_files_path:
             if identifier != sample.name:
                 continue
 
