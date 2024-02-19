@@ -14,7 +14,6 @@ from chanjo2.crud.samples import get_samples_coverage_file
 from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import bed_file_interval_id_coords
 from chanjo2.meta.handle_d4 import (
-    get_d4_file,
     get_d4tools_chromosome_mean_coverage,
     get_d4tools_coverage_completeness,
     get_d4tools_intervals_coverage,
