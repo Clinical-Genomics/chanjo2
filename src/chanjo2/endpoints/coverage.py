@@ -21,7 +21,6 @@ from chanjo2.meta.handle_d4 import (
     get_d4tools_intervals_mean_coverage,
     get_sample_interval_coverage,
     get_samples_sex_metrics,
-    set_interval,
 )
 from chanjo2.meta.handle_tasks import coverage_completeness_multitasker
 from chanjo2.models import SQLExon, SQLGene, SQLTranscript
@@ -135,14 +134,16 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
 
 @router.get("/coverage/samples/predicted_sex", response_model=Dict)
 async def get_samples_predicted_sex(coverage_file_path: str):
-    try:
-        d4_file: D4File = get_d4_file(coverage_file_path=coverage_file_path)
-    except Exception:
+    """Return predicted sex for a sample given the coverage over its sex chromosomes."""
+    if (
+        isfile(coverage_file_path) is False
+        or validators.url(coverage_file_path) is False
+    ):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=WRONG_COVERAGE_FILE_MSG,
         )
-    return get_samples_sex_metrics(d4_file=d4_file)
+    return get_samples_sex_metrics(d4_file_path=coverage_file_path)
 
 
 @router.post(

@@ -57,7 +57,7 @@ def get_d4tools_chromosome_mean_coverage(d4_file_path: str, chromosome=str) -> f
     for line in chromosomes_stats_mean_cmd:
         stats_data: List[str] = line.split("\t")
         if chromosome == stats_data[CHROM_INDEX]:
-            return stats_data[STATS_MEAN_COVERAGE_INDEX]
+            return float(stats_data[STATS_MEAN_COVERAGE_INDEX])
 
 
 def get_d4tools_intervals_mean_coverage(
@@ -342,12 +342,16 @@ def predict_sex(x_cov: float, y_cov: float) -> str:
             return Sex.FEMALE.value
 
 
-def get_samples_sex_metrics(d4_file: D4File) -> Dict:
+def get_samples_sex_metrics(d4_file_path: str) -> Dict:
     """Compute coverage over sex chromosomes and predicted sex."""
 
-    sex_chroms_coverage: List[float] = get_intervals_mean_coverage(
-        d4_file=d4_file, intervals=[("X"), ("Y")]
-    )
+    sex_chroms_coverage: List[float] = [
+        get_d4tools_chromosome_mean_coverage(
+            d4_file_path=d4_file_path, chromosome=chrom
+        )
+        for chrom in ["X", "Y"]
+    ]
+
     return {
         "x_coverage": round(sex_chroms_coverage[0], 1),
         "y_coverage": round(sex_chroms_coverage[1], 1),
