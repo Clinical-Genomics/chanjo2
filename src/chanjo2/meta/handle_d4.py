@@ -21,7 +21,7 @@ LOG = logging.getLogger("uvicorn.access")
 CHROM_INDEX = 0
 START_INDEX = 1
 STOP_INDEX = 2
-STATS_INDEX = 3
+STATS_MEAN_COVERAGE_INDEX = 3
 
 
 def set_interval(
