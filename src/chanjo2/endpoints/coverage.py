@@ -53,8 +53,8 @@ def d4_interval_coverage(query: FileCoverageQuery):
     if None in [query.start, query.end]:  # Coverage over an entire chromosome
         return IntervalCoverage(
             mean_coverage=get_d4tools_chromosome_mean_coverage(
-                d4_file_path=query.coverage_file_path, chromosome=query.chromosome
-            ),
+                d4_file_path=query.coverage_file_path, chromosomes=[query.chromosome]
+            )[0][1],
             completeness={},
             interval_id=interval,
         )
