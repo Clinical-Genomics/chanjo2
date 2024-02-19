@@ -57,7 +57,7 @@ def get_d4tools_chromosome_mean_coverage(d4_file_path: str, chromosome=str) -> f
     for line in chromosomes_stats_mean_cmd:
         stats_data: List[str] = line.split("\t")
         if chromosome == stats_data[CHROM_INDEX]:
-            return stats_data[STATS_INDEX]
+            return stats_data[STATS_MEAN_COVERAGE_INDEX]
 
 
 def get_d4tools_intervals_mean_coverage(
