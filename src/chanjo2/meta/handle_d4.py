@@ -46,18 +46,23 @@ def get_intervals_coords_list(
     return interval_coords
 
 
-def get_d4tools_chromosome_mean_coverage(d4_file_path: str, chromosome=str) -> float:
-    """Return mean coverage over one entire chromosome."""
+def get_d4tools_chromosome_mean_coverage(
+    d4_file_path: str, chromosomes=List[str]
+) -> List[Tuple[str, float]]:
+    """Return mean coverage over entire chromosomes."""
 
     chromosomes_stats_mean_cmd: List[str] = subprocess.check_output(
         ["d4tools", "stat", "-s" "mean", d4_file_path],
         text=True,
     ).splitlines()
-
+    chromosomes_coverage: List[Tuple[str, float]] = []
     for line in chromosomes_stats_mean_cmd:
         stats_data: List[str] = line.split("\t")
-        if chromosome == stats_data[CHROM_INDEX]:
-            return stats_data[STATS_MEAN_COVERAGE_INDEX]
+        if stats_data[CHROM_INDEX] in chromosomes:
+            chromosomes_coverage.append(
+                (stats_data[CHROM_INDEX], float(stats_data[STATS_MEAN_COVERAGE_INDEX]))
+            )
+    return chromosomes_coverage
 
 
 def get_d4tools_intervals_mean_coverage(
@@ -342,16 +347,17 @@ def predict_sex(x_cov: float, y_cov: float) -> str:
             return Sex.FEMALE.value
 
 
-def get_samples_sex_metrics(d4_file: D4File) -> Dict:
+def get_samples_sex_metrics(d4_file_path: str) -> Dict:
     """Compute coverage over sex chromosomes and predicted sex."""
 
-    sex_chroms_coverage: List[float] = get_intervals_mean_coverage(
-        d4_file=d4_file, intervals=[("X"), ("Y")]
+    sex_chroms_coverage: List[Tuple[str, float]] = get_d4tools_chromosome_mean_coverage(
+        d4_file_path=d4_file_path, chromosomes=["X", "Y"]
     )
+
     return {
-        "x_coverage": round(sex_chroms_coverage[0], 1),
-        "y_coverage": round(sex_chroms_coverage[1], 1),
+        "x_coverage": round(sex_chroms_coverage[0][1], 1),
+        "y_coverage": round(sex_chroms_coverage[1][1], 1),
         "predicted_sex": predict_sex(
-            x_cov=sex_chroms_coverage[0], y_cov=sex_chroms_coverage[1]
+            x_cov=sex_chroms_coverage[0][1], y_cov=sex_chroms_coverage[1][1]
         ),
     }
