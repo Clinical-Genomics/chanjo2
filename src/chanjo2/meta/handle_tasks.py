@@ -83,9 +83,7 @@ def report_stats_multitasker(
     report_data["completeness_rows"] = []
     # report_data["default_level_completeness_rows"] = []
     for sample in query.samples:
-        sample_stats = {
-            "mean_coverage": mean(temp_stats_dict[sample.name]["intervals_coverage"])
-        }
+
         # Compute coverage completeness for this samples using multiprocessing (250 intervals per processor
         sample_completeness_stats: dict = dict(
             coverage_completeness_multitasker(
@@ -104,28 +102,24 @@ def report_stats_multitasker(
                 ],
             )
         )
+        sample_stats = {
+            "mean_coverage": mean(temp_stats_dict[sample.name]["intervals_coverage"])
+
+        }
 
         nr_interval_above_custom_threshold = 0
-        for ensembl_gene, gene_coords in gene_intervals_coords.items():
-            pass
+        intervals_thresholds_stats = {f"completeness_{threshold}":[] for threshold in query.completeness_thresholds}
+        for interval_nr, (ensembl_gene, gene_coords) in enumerate(gene_intervals_coords.items()):
 
-        """
-        
+            for coords in gene_coords:
+                str_coords: str = f"{coords[0]}:{coords[1]}-{coords[2]}"
+                for threshold in query.completeness_thresholds:
+                    intervals_thresholds_stats[f"completeness_{threshold}"].append(sample_completeness_stats[str_coords][threshold])
         
         
         for threshold in query.completeness_thresholds:
-            sample_stats[f"completeness_level_{threshold}"] = []
+            intervals_thresholds_stats[f"completeness_{threshold}"] = round(mean(intervals_thresholds_stats[f"completeness_{threshold}"])*100, 2)
 
-        
+        sample_stats.update(intervals_thresholds_stats)
 
-        for _, interval_completeness in sample_completeness_stats.items():
-           for threshold in query.completeness_thresholds:
-                if threshold == query.default_level and interval_completeness[threshold] >= 
-
-               sample_stats[f"completeness_level_{threshold}"].append(interval_completeness[threshold])
-
-        for threshold in query.completeness_thresholds:
-            sample_stats[f"completeness_level_{threshold}"] = mean(sample_stats[f"completeness_level_{threshold}"])
-        
-        """
         report_data["completeness_rows"].append((sample.name, sample_stats))
