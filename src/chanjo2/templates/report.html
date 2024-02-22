@@ -98,6 +98,33 @@
 </div>
 {% endmacro %}
 
+{% macro important_metrics() %}
+<div class="table-responsive">
+  <table class="table table-bordered table-hover">
+    <caption>Average coverage and coverage completeness data</caption>
+	<thead>
+	  <tr>
+		<th>Sample</th>
+		<th>Average coverage[x]</th>
+		{% for level_int, level_key in levels.items() %}
+		  <th>Completeness {{ level_int }}x [%]</th>
+		{% endfor %}
+	  </tr>
+	</thead>
+	<tbody>
+	  {% for sample, stats in completeness_rows %}
+		<tr>
+			<td>{{ sample }}</td>
+			<td>{{ stats.mean_coverage|round(2) if stats.mean_coverage is defined }}</td>
+			{% for level_int, level_key in levels.items() %}
+				<td>{{ stats[level_key] if stats[level_key] is defined }} </td>
+			{% endfor %}
+		</tr>
+	  {% endfor %}
+	</tbody>
+  </table>
+</div>
+{% endmacro %}
 
 
 {% macro explanations() %}
@@ -168,7 +195,7 @@
 
 	<h3>Generally important metrics</h3>
 
-	"{{" important_metrics() "}}"
+	{{ important_metrics() }}
 
 	<h3> Transcript coverage at {{ extras.default_level }}x</h3>
 
