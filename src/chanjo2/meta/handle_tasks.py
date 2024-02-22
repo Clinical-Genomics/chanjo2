@@ -81,7 +81,7 @@ def report_stats_multitasker(
     temp_stats_dict = dict(temp_stats_dict)
 
     report_data["completeness_rows"] = []
-    # report_data["default_level_completeness_rows"] = []
+    report_data["default_level_completeness_rows"] = []
     for sample in query.samples:
 
         # Compute coverage completeness for this samples using multiprocessing (250 intervals per processor
@@ -104,22 +104,30 @@ def report_stats_multitasker(
         )
         sample_stats = {
             "mean_coverage": mean(temp_stats_dict[sample.name]["intervals_coverage"])
-
         }
 
-        nr_interval_above_custom_threshold = 0
         intervals_thresholds_stats = {f"completeness_{threshold}":[] for threshold in query.completeness_thresholds}
+        nr_fully_covered_intervals = 0
         for interval_nr, (ensembl_gene, gene_coords) in enumerate(gene_intervals_coords.items()):
 
             for coords in gene_coords:
+
+                # Compute coverage completeness by threshold
                 str_coords: str = f"{coords[0]}:{coords[1]}-{coords[2]}"
                 for threshold in query.completeness_thresholds:
-                    intervals_thresholds_stats[f"completeness_{threshold}"].append(sample_completeness_stats[str_coords][threshold])
-        
+                    completeness_at_level: float = sample_completeness_stats[str_coords][threshold]
+                    intervals_thresholds_stats[f"completeness_{threshold}"].append(completeness_at_level)
+
+                    if threshold == query.default_level and completeness_at_level==1:
+                        nr_fully_covered_intervals += 1
         
         for threshold in query.completeness_thresholds:
-            intervals_thresholds_stats[f"completeness_{threshold}"] = round(mean(intervals_thresholds_stats[f"completeness_{threshold}"])*100, 2)
+            intervals_thresholds_stats[f"completeness_{threshold}"] = round(mean(intervals_thresholds_stats[f"completeness_{threshold}"]), 2)
 
         sample_stats.update(intervals_thresholds_stats)
 
         report_data["completeness_rows"].append((sample.name, sample_stats))
+        fully_covered_intervals_percent = (100 * nr_fully_covered_intervals)/len(all_intervals)
+        fully_covereged_intervals_fraction = f"{nr_fully_covered_intervals}/{len(all_intervals)}"
+        report_data["default_level_completeness_rows"].append((nr_fully_covered_intervals*100)/len(all_intervals))
+        report_data["default_level_completeness_rows"].append((fully_covered_intervals_percent, fully_covereged_intervals_fraction))
