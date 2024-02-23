@@ -15,13 +15,15 @@ from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import bed_file_interval_id_coords
 from chanjo2.meta.handle_d4 import (
     get_d4tools_chromosome_mean_coverage,
-    get_d4tools_coverage_completeness,
     get_d4tools_intervals_coverage,
     get_d4tools_intervals_mean_coverage,
     get_sample_interval_coverage,
     get_samples_sex_metrics,
 )
-from chanjo2.meta.handle_tasks import coverage_completeness_multitasker
+from chanjo2.meta.handle_tasks import (
+    coverage_completeness_multitasker,
+    get_d4tools_coverage_completeness,
+)
 from chanjo2.models import SQLExon, SQLGene, SQLTranscript
 from chanjo2.models.pydantic_models import (
     FileCoverageIntervalsFileQuery,

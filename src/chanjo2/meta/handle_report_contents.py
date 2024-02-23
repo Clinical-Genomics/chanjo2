@@ -8,7 +8,10 @@ from sqlalchemy.orm import Session
 
 from chanjo2.crud.intervals import get_genes, get_hgnc_gene
 from chanjo2.crud.samples import get_sample
-from chanjo2.meta.handle_d4 import get_sample_interval_coverage, get_samples_sex_metrics
+from chanjo2.meta.handle_d4 import (
+    get_d4tools_sample_interval_coverage,
+    get_samples_sex_metrics,
+)
 from chanjo2.models import SQLExon, SQLGene, SQLSample, SQLTranscript
 from chanjo2.models.pydantic_models import (
     GeneCoverage,
@@ -66,9 +69,7 @@ def get_report_data(
     """Return the information that will be displayed in the coverage report or in the genes overview report.."""
 
     set_samples_coverage_files(session=session, samples=query.samples)
-    samples_d4_files: List[Tuple[str, D4File]] = [
-        (sample.name, D4File(sample.coverage_file_path)) for sample in query.samples
-    ]
+
     genes: List[SQLGene] = get_genes(
         db=session,
         build=query.build,
@@ -79,15 +80,15 @@ def get_report_data(
     )
 
     samples_coverage_stats: Dict[str, List[GeneCoverage]] = {
-        sample: get_sample_interval_coverage(
+        sample.name: get_d4tools_sample_interval_coverage(
             db=session,
-            d4_file=d4_file,
+            d4_file_path=sample.coverage_file_path,
             genes=genes,
             interval_type=INTERVAL_TYPE_SQL_TYPE[query.interval_type],
             completeness_thresholds=query.completeness_thresholds,
             transcript_tags=["refseq_mrna"],
         )
-        for sample, d4_file in samples_d4_files
+        for sample in query.samples
     }
 
     data: Dict = {
