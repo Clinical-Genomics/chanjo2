@@ -217,6 +217,9 @@ def get_d4tools_sample_interval_coverage(
 ) -> List[GeneCoverage]:
     """Return coverage and coverage completeness over genes transcripts or exons."""
 
+    if not genes:
+        return []
+
     # Compute intervals coverage
     sql_intervals: List[Union[SQLTranscript, SQLExon]] = get_gene_intervals(
         db=db,
