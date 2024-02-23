@@ -78,7 +78,7 @@ def samples_coverage_multitasker(
     manager = Manager()
     return_dict = manager.dict()  # Used for storing results from the separate processes
 
-    all_intervals_coords: Tuple[str, int, int] = []
+    all_intervals_coords: List[Tuple[str, int, int]] = []
     for gene, interval in gene_intervals_coords.items():
         for interval_id, interval_coords in interval:
             all_intervals_coords.append(interval_coords)
