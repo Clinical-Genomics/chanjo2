@@ -66,7 +66,10 @@ def get_d4tools_chromosome_mean_coverage(
 
 
 def get_d4tools_intervals_mean_coverage(
-    d4_file_path: str, intervals: List[str], return_dict: Optional[dict], sample: Optional[str]
+    d4_file_path: str,
+    intervals: List[str],
+    return_dict: Optional[dict],
+    sample: Optional[str],
 ) -> List[float]:
     """Return the mean value over a list of intervals of a d4 file."""
 
@@ -79,7 +82,7 @@ def get_d4tools_intervals_mean_coverage(
     )
 
     if sample:
-        return_dict[sample]={"intervals_coverage" : mean_coverage_by_interval}
+        return_dict[sample] = mean_coverage_by_interval
 
     return mean_coverage_by_interval
 
@@ -122,7 +125,6 @@ def get_d4tools_coverage_completeness(
     interval_ids_coords: List[Tuple[str, tuple]],
 ):
     """Return the coverage completeness for the specified intervals of a d4 file."""
-
     for interval_id, interval_coords in interval_ids_coords:
 
         # Create a temporary minified bedgraph file with the lines containing this specific genomic interval

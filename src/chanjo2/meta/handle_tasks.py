@@ -1,8 +1,8 @@
 import logging
-from typing import Dict, List, Tuple
-from chanjo2.models.pydantic_models import ReportQuery, IntervalType
 from itertools import chain
-from statistics import mean
+from typing import Dict, List, Tuple
+
+from chanjo2.models.pydantic_models import IntervalType, ReportQuery
 
 LOG = logging.getLogger("uvicorn.access")
 
@@ -45,29 +45,53 @@ def coverage_completeness_multitasker(
     return return_dict
 
 
-def report_stats_multitasker(
-    query: ReportQuery,
-    gene_intervals_coords: Dict[str, List[Tuple[str, int, int]]],
-    report_data=dict,
+def samples_coverage_completeness_multitasker(
+    query: ReportQuery, gene_intervals_coords: Dict[str, List[Tuple[str, int, int]]]
 ):
-    """Compute coverage and completeness over genomic intervals for a list of samples."""
+    """Compute coverage completeness over genomic intervals for one or more samples using multiprocessing."""
+
+    coverage_completeness_by_sample: dict[str, Dict[str, float]] = {}
+    interval_ids_coords = []
+    for ensembl_gene, coords_list in gene_intervals_coords.items():
+        for coords in coords_list:
+            interval_id: str = (
+                f"{ensembl_gene}_{coords[CHROM_INDEX]}:{coords[START_INDEX]}-{coords[STOP_INDEX]}"
+            )
+            interval_ids_coords.append((interval_id, coords))
+
+    for sample in query.samples:
+        coverage_completeness_by_sample[sample.name] = dict(
+            coverage_completeness_multitasker(
+                d4_file_path=sample.coverage_file_path,
+                thresholds=query.completeness_thresholds,
+                interval_ids_coords=interval_ids_coords,
+            )
+        )
+
+    return coverage_completeness_by_sample
+
+
+def samples_coverage_multitasker(
+    query: ReportQuery, gene_intervals_coords: Dict[str, List[Tuple[str, int, int]]]
+) -> Dict[str, List[float]]:
+    """Compute coverage over genomic intervals for one or more samples using multiprocessing."""
 
     manager = Manager()
-    temp_stats_dict = manager.dict()
+    return_dict = manager.dict()  # Used for storing results from the separate processes
 
-    all_intervals: List[Tuple[str, int, int]] = list(
+    all_intervals_coords: List[Tuple[str, int, int]] = list(
         chain(*gene_intervals_coords.values())
     )
 
-    # Compute coverage over all intervals for all samples using multiprocessing (one sample per processor)
+    # Each coverage computation for a sample is a distinct multiprocessing task running in parallel
     parallel_coverage_tasks_by_sample = [
         (
             sample.coverage_file_path,
             [
                 f"{tuple[CHROM_INDEX]}\t{tuple[START_INDEX]}\t{tuple[STOP_INDEX]}"
-                for tuple in all_intervals
+                for tuple in all_intervals_coords
             ],
-            temp_stats_dict,
+            return_dict,
             sample.name,
         )
         for sample in query.samples
@@ -78,56 +102,4 @@ def report_stats_multitasker(
             get_d4tools_intervals_mean_coverage, parallel_coverage_tasks_by_sample
         )
 
-    temp_stats_dict = dict(temp_stats_dict)
-
-    report_data["completeness_rows"] = []
-    report_data["default_level_completeness_rows"] = []
-    for sample in query.samples:
-
-        # Compute coverage completeness for this samples using multiprocessing (250 intervals per processor
-        sample_completeness_stats: dict = dict(
-            coverage_completeness_multitasker(
-                d4_file_path=sample.coverage_file_path,
-                thresholds=query.completeness_thresholds,
-                interval_ids_coords=[
-                    (
-                        f"{interval[CHROM_INDEX]}:{interval[START_INDEX]}-{interval[STOP_INDEX]}",
-                        (
-                            interval[CHROM_INDEX],
-                            interval[START_INDEX],
-                            interval[STOP_INDEX],
-                        ),
-                    )
-                    for interval in all_intervals
-                ],
-            )
-        )
-        sample_stats = {
-            "mean_coverage": mean(temp_stats_dict[sample.name]["intervals_coverage"])
-        }
-
-        intervals_thresholds_stats = {f"completeness_{threshold}":[] for threshold in query.completeness_thresholds}
-        nr_fully_covered_intervals = 0
-        for interval_nr, (ensembl_gene, gene_coords) in enumerate(gene_intervals_coords.items()):
-
-            for coords in gene_coords:
-
-                # Compute coverage completeness by threshold
-                str_coords: str = f"{coords[0]}:{coords[1]}-{coords[2]}"
-                for threshold in query.completeness_thresholds:
-                    completeness_at_level: float = sample_completeness_stats[str_coords][threshold]
-                    intervals_thresholds_stats[f"completeness_{threshold}"].append(completeness_at_level)
-
-                    if threshold == query.default_level and completeness_at_level==1:
-                        nr_fully_covered_intervals += 1
-        
-        for threshold in query.completeness_thresholds:
-            intervals_thresholds_stats[f"completeness_{threshold}"] = round(mean(intervals_thresholds_stats[f"completeness_{threshold}"]), 2)
-
-        sample_stats.update(intervals_thresholds_stats)
-
-        report_data["completeness_rows"].append((sample.name, sample_stats))
-        fully_covered_intervals_percent = (100 * nr_fully_covered_intervals)/len(all_intervals)
-        fully_covereged_intervals_fraction = f"{nr_fully_covered_intervals}/{len(all_intervals)}"
-        report_data["default_level_completeness_rows"].append((nr_fully_covered_intervals*100)/len(all_intervals))
-        report_data["default_level_completeness_rows"].append((fully_covered_intervals_percent, fully_covereged_intervals_fraction))
+    return return_dict
