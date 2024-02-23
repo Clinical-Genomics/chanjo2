@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from chanjo2.crud.intervals import get_genes, get_hgnc_gene
 from chanjo2.crud.samples import get_sample
 from chanjo2.meta.handle_d4 import (
-    get_d4tools_sample_interval_coverage,
+    get_d4tools_sample_genes_coverage,
     get_samples_sex_metrics,
 )
 from chanjo2.models import SQLExon, SQLGene, SQLSample, SQLTranscript
@@ -79,17 +79,16 @@ def get_report_data(
         limit=None,
     )
 
-    samples_coverage_stats: Dict[str, List[GeneCoverage]] = {
-        sample.name: get_d4tools_sample_interval_coverage(
-            db=session,
-            d4_file_path=sample.coverage_file_path,
-            genes=genes,
-            interval_type=INTERVAL_TYPE_SQL_TYPE[query.interval_type],
-            completeness_thresholds=query.completeness_thresholds,
-            transcript_tags=["refseq_mrna"],
-        )
-        for sample in query.samples
-    }
+    if query.interval_type == IntervalType.GENES.value:
+        samples_coverage_stats: Dict[str, List[GeneCoverage]] = {
+            sample.name: get_d4tools_sample_genes_coverage(
+                d4_file_path=sample.coverage_file_path,
+                genes=genes,
+                interval_type=INTERVAL_TYPE_SQL_TYPE[query.interval_type],
+                completeness_thresholds=query.completeness_thresholds,
+            )
+            for sample in query.samples
+        }
 
     data: Dict = {
         "levels": get_ordered_levels(threshold_levels=query.completeness_thresholds),
