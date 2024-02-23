@@ -263,9 +263,14 @@ def get_d4tools_sample_interval_coverage(
         for gene in genes
     }
 
+    inner_intervals_ensembl_ids = set()
     for interval_nr, interval in enumerate(sql_intervals):
-        interval_ensembl_gene: str = interval.ensembl_gene_id
+
         interval_ensembl_id: str = interval.ensembl_id
+        if interval_ensembl_id in inner_intervals_ensembl_ids:
+            continue
+
+        interval_ensembl_gene: str = interval.ensembl_gene_id
 
         genes_stats[interval_ensembl_gene]["mean_coverage"].append(
             intervals_coverage[interval_nr]
@@ -287,6 +292,7 @@ def get_d4tools_sample_interval_coverage(
                 }
             )
         )
+        inner_intervals_ensembl_ids.add(interval_ensembl_id)
 
     for gene in genes:
 
