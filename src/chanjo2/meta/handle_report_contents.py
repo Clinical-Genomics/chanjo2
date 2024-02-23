@@ -100,7 +100,6 @@ def _serialize_sample(sample: ReportQuerySample) -> Dict[str, str]:
 
 #### Functions to create gene coverage report and genes overview report
 
-
 def set_general_report_data(query: ReportQuery) -> dict:
     """Set general report info from parameters derived from user query."""
     data: Dict = {
@@ -208,20 +207,17 @@ def get_report_data(
             )
         )
 
-    """
     if is_overview_report:
         data["incomplete_coverage_rows"] = get_genes_overview_incomplete_coverage_rows(
             samples_coverage_stats=samples_coverage_stats,
             interval_type=query.interval_type.value,
             cov_level=query.default_level,
         )
-        return data
-    """
+
     return data
 
 
 #### Functions used to create coverage report data
-
 
 def get_missing_genes_from_db(
     sql_genes: List[SQLGene],
@@ -266,8 +262,16 @@ def get_report_sex_rows(samples: List[ReportQuerySample]) -> List[Dict]:
     return sample_sex_rows
 
 
-#### Functions used to create a gene overview report ####
+### Functions used to create genes coverage overiew report
 
+def get_genes_overview_incomplete_coverage_rows(coverage_completeness_by_sample:List[Tuple[str, Dict[str, float]]], ) -> List[Tuple]:
+    """Creates the lines of a coverage overview report."""
+
+
+
+
+
+#### Functions used to create a gene overview report ####
 
 def get_gene_overview_coverage_stats(form_data: GeneReportForm, session: Session):
     """Returns coverage stats over the intervals sof one gene for one or more samples."""
