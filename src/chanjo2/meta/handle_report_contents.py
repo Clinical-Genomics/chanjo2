@@ -45,7 +45,9 @@ def get_gene_intervals_coords(
 
     if interval_type == IntervalType.GENES.value:
         return {
-            gene.ensembl_id: [(gene.chromosome, gene.start, gene.stop)]
+            gene.ensembl_id: [
+                (gene.ensembl_id, (gene.chromosome, gene.start, gene.stop))
+            ]
             for gene in genes
         }
 
@@ -136,15 +138,6 @@ def get_report_data(
     )
 
     data["extras"]["hgnc_gene_ids"] = ([gene.hgnc_id for gene in genes],)
-    data["sex_rows"] = get_report_sex_rows(samples=query.samples)
-    data["errors"] = [
-        get_missing_genes_from_db(
-            sql_genes=genes,
-            ensembl_ids=query.ensembl_gene_ids,
-            hgnc_ids=query.hgnc_gene_ids,
-            hgnc_symbols=query.hgnc_gene_symbols,
-        )
-    ]
 
     gene_intervals_coords: Dict[str, List[Tuple[str, Tuple[str, int, int]]]] = (
         get_gene_intervals_coords(
@@ -174,6 +167,16 @@ def get_report_data(
             cov_level=query.default_level,
         )
         return data
+
+    data["sex_rows"] = get_report_sex_rows(samples=query.samples)
+    data["errors"] = [
+        get_missing_genes_from_db(
+            sql_genes=genes,
+            ensembl_ids=query.ensembl_gene_ids,
+            hgnc_ids=query.hgnc_gene_ids,
+            hgnc_symbols=query.hgnc_gene_symbols,
+        )
+    ]
 
     data["completeness_rows"] = []
     data["default_level_completeness_rows"] = []
