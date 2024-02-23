@@ -52,11 +52,9 @@ def samples_coverage_completeness_multitasker(
 
     coverage_completeness_by_sample: dict[str, Dict[str, float]] = {}
     interval_ids_coords = []
-    for ensembl_gene, coords_list in gene_intervals_coords.items():
-        for coords in coords_list:
-            interval_id: str = (
-                f"{ensembl_gene}_{coords[CHROM_INDEX]}:{coords[START_INDEX]}-{coords[STOP_INDEX]}"
-            )
+    for ensembl_gene, interval_coords in gene_intervals_coords.items():
+        for ensembl_id, coords in interval_coords:
+            interval_id: str = f"{ensembl_gene}_{ensembl_id}"
             interval_ids_coords.append((interval_id, coords))
 
     for sample in query.samples:
@@ -72,16 +70,18 @@ def samples_coverage_completeness_multitasker(
 
 
 def samples_coverage_multitasker(
-    query: ReportQuery, gene_intervals_coords: Dict[str, List[Tuple[str, int, int]]]
+    query: ReportQuery,
+    gene_intervals_coords: Dict[str, List[Tuple[str, Tuple[str, int, int]]]],
 ) -> Dict[str, List[float]]:
     """Compute coverage over genomic intervals for one or more samples using multiprocessing."""
 
     manager = Manager()
     return_dict = manager.dict()  # Used for storing results from the separate processes
 
-    all_intervals_coords: List[Tuple[str, int, int]] = list(
-        chain(*gene_intervals_coords.values())
-    )
+    all_intervals_coords: Tuple[str, int, int] = []
+    for gene, interval in gene_intervals_coords.items():
+        for interval_id, interval_coords in interval:
+            all_intervals_coords.append(interval_coords)
 
     # Each coverage computation for a sample is a distinct multiprocessing task running in parallel
     parallel_coverage_tasks_by_sample = [

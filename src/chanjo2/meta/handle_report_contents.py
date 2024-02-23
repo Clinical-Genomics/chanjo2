@@ -40,7 +40,7 @@ def get_gene_intervals_coords(
     interval_type: IntervalType,
     db: Session,
     build: Builds,
-) -> Dict[str, List[Tuple[str, int, int]]]:
+) -> Dict[str, List[Tuple[str, Tuple[str, int, int]]]]:
     """Returns a dictionary with gene ensembl IDs as keys and gene intervals (gene / gene transcripts / gene exons) coordinates as values."""
 
     if interval_type == IntervalType.GENES.value:
@@ -49,7 +49,7 @@ def get_gene_intervals_coords(
             for gene in genes
         }
 
-    gene_intervals_coords: Dict[str, List[Tuple[str, int, int]]] = {
+    gene_intervals_coords: Dict[str, List[Tuple[str, Tuple[str, int, int]]]] = {
         gene.ensembl_id: [] for gene in genes
     }
 
@@ -63,7 +63,7 @@ def get_gene_intervals_coords(
 
     for interval in intervals:
         gene_intervals_coords[interval.ensembl_gene_id].append(
-            (interval.chromosome, interval.start, interval.stop)
+            (interval.ensembl_id, (interval.chromosome, interval.start, interval.stop))
         )
 
     return gene_intervals_coords
@@ -99,6 +99,7 @@ def _serialize_sample(sample: ReportQuerySample) -> Dict[str, str]:
 
 
 #### Functions to create gene coverage report and genes overview report
+
 
 def set_general_report_data(query: ReportQuery) -> dict:
     """Set general report info from parameters derived from user query."""
@@ -145,7 +146,7 @@ def get_report_data(
         )
     ]
 
-    gene_intervals_coords: Dict[str, List[Tuple[str, int, int]]] = (
+    gene_intervals_coords: Dict[str, List[Tuple[str, Tuple[str, int, int]]]] = (
         get_gene_intervals_coords(
             genes=genes,
             interval_type=query.interval_type,
@@ -164,14 +165,15 @@ def get_report_data(
     )
 
     if is_overview_report:
-        gene_symbol_ensembl_id_mapping = {gene.ensembl_id:gene.hgnc_symbol for gene in genes}
+        gene_symbol_ensembl_id_mapping = {
+            gene.ensembl_id: gene.hgnc_symbol for gene in genes
+        }
         data["incomplete_coverage_rows"] = get_genes_overview_incomplete_coverage_rows(
             coverage_completeness_by_sample=coverage_completeness_by_sample,
             genes_mapping=gene_symbol_ensembl_id_mapping,
             cov_level=query.default_level,
         )
         return data
-
 
     data["completeness_rows"] = []
     data["default_level_completeness_rows"] = []
@@ -222,24 +224,39 @@ def get_report_data(
 
 ### Functions used to create genes coverage overiew report
 
-def get_genes_overview_incomplete_coverage_rows(coverage_completeness_by_sample:List[Tuple[str, Dict[str, float]]], genes_mapping:Dict[str, str], cov_level:int) -> List[Tuple]:
+
+def get_genes_overview_incomplete_coverage_rows(
+    coverage_completeness_by_sample: List[Tuple[str, Dict[str, float]]],
+    genes_mapping: Dict[str, str],
+    cov_level: int,
+) -> List[Tuple]:
     """Creates the lines of a coverage overview report."""
     incomplete_cov_rows: List[Tuple[str, str, str, float]] = []
 
     for sample, interval_stats_dict in coverage_completeness_by_sample.items():
         for interval_gene_coords, completeness_stats in interval_stats_dict.items():
-            LOG.warning(interval_gene_coords)
             if completeness_stats[cov_level] == 1:
                 continue
-            ensembl_gene_id = interval_gene_coords.split("_")[0]
-            ensembl_interval_ids = interval_gene_coords.split("_")[1]
-            hgnc_symbol: str = genes_mapping[ensembl_gene_id]
-            incomplete_cov_rows.append((hgnc_symbol, ensembl_interval_ids, sample, completeness_stats[cov_level]))
+            interva_ids = interval_gene_coords.split("_")
+            ensembl_gene_id = interva_ids[0]
+            hgnc_symbol: str = genes_mapping[interva_ids[0]]
+            ensembl_interval_id = interva_ids[1]
+            percent_completeness = round(completeness_stats[cov_level] * 100, 2)
+            incomplete_cov_rows.append(
+                (
+                    hgnc_symbol,
+                    ensembl_gene_id,
+                    ensembl_interval_id,
+                    sample,
+                    percent_completeness,
+                )
+            )
 
     return incomplete_cov_rows
 
 
 #### Functions used to create coverage report data
+
 
 def get_missing_genes_from_db(
     sql_genes: List[SQLGene],
@@ -285,6 +302,7 @@ def get_report_sex_rows(samples: List[ReportQuerySample]) -> List[Dict]:
 
 
 #### Functions used to create a gene overview report ####
+
 
 def get_gene_overview_coverage_stats(form_data: GeneReportForm, session: Session):
     """Returns coverage stats over the intervals sof one gene for one or more samples."""
