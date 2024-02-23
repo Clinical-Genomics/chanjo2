@@ -178,49 +178,12 @@ def get_report_data(
         )
     ]
 
-    data["completeness_rows"] = []
-    data["default_level_completeness_rows"] = []
-    for sample in query.samples:
-
-        nr_fully_covered_intervals: List[float] = []
-
-        sample_stats: dict = {
-            f"completeness_{threshold}": []
-            for threshold in query.completeness_thresholds
-        }
-        for interval, completeness_values in coverage_completeness_by_sample[
-            sample.name
-        ].items():
-
-            for threshold, value in completeness_values.items():
-
-                sample_stats[f"completeness_{threshold}"].append(value)
-
-        for key, completeness_values in sample_stats.items():
-
-            # Evaluate default level completeness row stats
-            if key == f"completeness_{query.default_level}":
-                nr_fully_covered_intervals = len(
-                    [
-                        completeness
-                        for completeness in completeness_values
-                        if completeness == 1
-                    ]
-                )
-                nr_intervals = len(coverage_by_sample[sample.name])
-
-            sample_stats[key] = round(mean(completeness_values) * 100, 2)
-
-        sample_stats["mean_coverage"] = mean(coverage_by_sample[sample.name])
-
-        data["completeness_rows"].append((sample.name, sample_stats))
-        data["default_level_completeness_rows"].append(
-            (
-                sample.name,
-                round((nr_fully_covered_intervals * 100) / nr_intervals, 2),
-                f"{nr_intervals - nr_fully_covered_intervals}/{nr_intervals}",
-            )
-        )
+    set_report_completeness_rows(
+        query=query,
+        coverage_by_sample=coverage_by_sample,
+        coverage_completeness_by_sample=coverage_completeness_by_sample,
+        data=data,
+    )
 
     return data
 
@@ -302,6 +265,58 @@ def get_report_sex_rows(samples: List[ReportQuerySample]) -> List[Dict]:
         )
         sample_sex_rows.append(sample_sex_row)
     return sample_sex_rows
+
+
+def set_report_completeness_rows(
+    query: ReportQuery,
+    coverage_by_sample: Dict[str, List[float]],
+    coverage_completeness_by_sample: List[Tuple[str, Dict[str, float]]],
+    data: dict,
+):
+    """Set completeness_rows and default_level_completeness_rows key/values in the gene coverage report data."""
+
+    data["completeness_rows"] = []
+    data["default_level_completeness_rows"] = []
+    for sample in query.samples:
+
+        nr_fully_covered_intervals: List[float] = []
+
+        sample_stats: dict = {
+            f"completeness_{threshold}": []
+            for threshold in query.completeness_thresholds
+        }
+        for interval, completeness_values in coverage_completeness_by_sample[
+            sample.name
+        ].items():
+
+            for threshold, value in completeness_values.items():
+                sample_stats[f"completeness_{threshold}"].append(value)
+
+        for key, completeness_values in sample_stats.items():
+
+            # Evaluate default level completeness row stats
+            if key == f"completeness_{query.default_level}":
+                nr_fully_covered_intervals = len(
+                    [
+                        completeness
+                        for completeness in completeness_values
+                        if completeness == 1
+                    ]
+                )
+                nr_intervals = len(coverage_by_sample[sample.name])
+
+            sample_stats[key] = round(mean(completeness_values) * 100, 2)
+
+        sample_stats["mean_coverage"] = mean(coverage_by_sample[sample.name])
+
+        data["completeness_rows"].append((sample.name, sample_stats))
+        data["default_level_completeness_rows"].append(
+            (
+                sample.name,
+                round((nr_fully_covered_intervals * 100) / nr_intervals, 2),
+                f"{nr_intervals - nr_fully_covered_intervals}/{nr_intervals}",
+            )
+        )
 
 
 #### Functions used to create a gene overview report ####
