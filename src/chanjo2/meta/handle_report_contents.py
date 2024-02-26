@@ -224,6 +224,8 @@ def get_report_completeness_rows(
                     if completeness_values
                     else 0
                 )
+            else:
+                completeness_row[completeness_key] = round(mean(completeness_values), 2)
 
         completeness_rows.append((sample, completeness_row))
 
