@@ -48,7 +48,7 @@ jobs:
 
       # Install additional pyd4 lib
       - name: Install pyd4
-        run:
+        run: |
           source .venv/bin/activate
           pip install setuptools-rust pyd4
 
