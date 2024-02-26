@@ -218,14 +218,12 @@ def get_report_completeness_rows(
 
         completeness_row: Dict[str, float] = {}
         for completeness_key, completeness_values in sample_stats.items():
+            column_value = mean(completeness_values)
             if completeness_key != "mean_coverage":
-                completeness_row[completeness_key] = (
-                    round((mean(completeness_values) * 100), 2)
-                    if completeness_values
-                    else 0
-                )
-            else:
-                completeness_row[completeness_key] = round(mean(completeness_values), 2)
+                column_value = column_value * 100
+            completeness_row[completeness_key] = (
+                round(column_value, 2) if column_value else 0
+            )
 
         completeness_rows.append((sample, completeness_row))
 
