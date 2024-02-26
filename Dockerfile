@@ -1,4 +1,4 @@
-FROM clinicalgenomics/python3.11-venv-pyd4:1.0
+FROM clinicalgenomics/python3.11-venv-pyd4:2.0
 
 LABEL about.home="https://github.com/Clinical-Genomics/chanjo2"
 LABEL about.license="MIT License (MIT)"
@@ -19,6 +19,7 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /home/worker/app
 COPY --chown=worker:worker . /home/worker/app
 
+RUN pip install pyd4
 RUN pip install poetry
 RUN poetry config virtualenvs.create false
 RUN poetry install --no-interaction
