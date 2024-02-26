@@ -9,6 +9,7 @@
 - Reformat report sample' sex rows and coverage.get_samples_predicted_sex endpoint to use d4tools and not pyd4 for evaluating sample sex
 ### Fixed
 -  `coverage.d4_interval_coverage` endpoint crashing trying to computer coverage completeness over an entire chromosome
+- Do not install pyd4 via poetry but use the version provided in Docker base image
 
 ## [1.4]
 ### Changed
