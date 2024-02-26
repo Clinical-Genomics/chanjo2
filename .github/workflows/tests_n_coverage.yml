@@ -21,9 +21,6 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install pyd4
-        run: pip install --no-cache-dir setuptools-rust pyd4
-
       # install & configure poetry
       - name: Install Poetry
         uses: snok/install-poetry@v1
@@ -39,6 +36,9 @@ jobs:
         with:
           path: .venv
           key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install pyd4
+        run: pip install --no-cache-dir setuptools-rust pyd4
 
       # install dependencies if cache does not exist
       - name: Install dependencies
