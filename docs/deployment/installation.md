@@ -20,6 +20,12 @@ And install the software with poetry:
 poetry install
 ```
 
+Installe the additional pyd4 library using pip (installation fails using poetry)
+
+```
+pip install setuptools-rust pyd4
+```
+
 You can run a demo instance of the web server by typing:
 
 ```
