@@ -9,6 +9,7 @@
 - Reformat report sample' sex rows and coverage.get_samples_predicted_sex endpoint to use d4tools and not pyd4 for evaluating sample sex
 ### Fixed
 -  `coverage.d4_interval_coverage` endpoint crashing trying to computer coverage completeness over an entire chromosome
+- Samples mean coverage values a hundredfold higher on coverage reports
 
 ## [1.4]
 ### Changed
