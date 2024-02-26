@@ -7,6 +7,7 @@
 - Removed 2 redundant functions in `meta.handle.bed.py`
 - `coverage.d4_interval_coverage` is using direct calls to d4tools to retrieve stats over an entire chromosome or a genomic interval
 - Reformat report sample' sex rows and coverage.get_samples_predicted_sex endpoint to use d4tools and not pyd4 for evaluating sample sex
+- Upgraded pyd4 version to 0.3.9
 ### Fixed
 -  `coverage.d4_interval_coverage` endpoint crashing trying to computer coverage completeness over an entire chromosome
 - Do not install pyd4 via poetry but use the version provided in Docker base image
