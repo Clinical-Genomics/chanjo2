@@ -18,9 +18,10 @@ ENV PYTHONUNBUFFERED=1
 # Install app
 WORKDIR /home/worker/app
 COPY --chown=worker:worker . /home/worker/app
+RUN 
 
 RUN pip install poetry
-RUN poetry config virtualenvs.path /venv
+RUN poetry env use /venv/bin/python
 RUN poetry install --no-interaction
 
 # Run commands as non-root
