@@ -1,4 +1,4 @@
-FROM clinicalgenomics/python3.11-venv-pyd4:2.0 AS builder
+FROM clinicalgenomics/python3.11-venv-pyd4:2.0
 
 LABEL about.home="https://github.com/Clinical-Genomics/chanjo2"
 LABEL about.license="MIT License (MIT)"
@@ -22,8 +22,8 @@ WORKDIR /home/worker/app
 COPY --chown=worker:worker . /home/worker/app
 
 # Copy pre-installed software from builder
-COPY --chown=worker:worker --from=builder /venv /venv
-COPY --chown=worker:worker --from=builder /home/worker/libs /home/worker/libs
+COPY --chown=worker:worker /venv
+COPY --chown=worker:worker /home/worker/libs
 
 RUN pip install poetry
 RUN poetry config virtualenvs.create false
