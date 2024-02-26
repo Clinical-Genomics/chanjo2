@@ -14,6 +14,8 @@ RUN apt-get update && \
 
 # make sure all messages always reach console
 ENV PYTHONUNBUFFERED=1
+ENV PATH="/venv/bin:$PATH"
+RUN echo export PATH="/venv/bin:\$PATH" > /etc/profile.d/venv.sh
 
 # Install app
 WORKDIR /home/worker/app
