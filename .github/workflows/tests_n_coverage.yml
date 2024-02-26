@@ -15,30 +15,18 @@ jobs:
           crate: d4tools
           version: latest
 
+      - name: Install poetry
+        run: pip install poetry
+
       - name: Set up python
         id: setup-python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
-      # install & configure poetry
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-        with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-          installer-parallel: true
-
-      # load cached venv if cache exists
-      - name: Load cached venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@v3
-        with:
-          path: .venv
-          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+          cache: 'poetry'
 
       - name: Install pyd4
-        run: pip install --no-cache-dir setuptools-rust pyd4
+        run: pip install setuptools-rust pyd4
 
       # install dependencies if cache does not exist
       - name: Install dependencies
