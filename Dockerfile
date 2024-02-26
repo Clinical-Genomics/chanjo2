@@ -20,7 +20,7 @@ WORKDIR /home/worker/app
 COPY --chown=worker:worker . /home/worker/app
 
 RUN pip install poetry
-RUN poetry env use /venv/bin/python
+RUN poetry config virtualenvs.create false
 RUN poetry install --no-interaction
 
 # Run commands as non-root
