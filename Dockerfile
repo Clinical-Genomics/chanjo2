@@ -14,12 +14,16 @@ RUN apt-get update && \
 
 # make sure all messages always reach console
 ENV PYTHONUNBUFFERED=1
-ENV PATH="/venv/bin:$PATH"
+ENV PATH="/home/worker/libs/d4tools/bin:${PATH}"
 RUN echo export PATH="/venv/bin:\$PATH" > /etc/profile.d/venv.sh
 
 # Install app
 WORKDIR /home/worker/app
 COPY --chown=worker:worker . /home/worker/app
+
+# Copy pre-installed software from builder
+COPY --chown=worker:worker --from=builder /venv /venv
+COPY --chown=worker:worker --from=builder /home/worker/libs /home/worker/libs
 
 RUN pip install poetry
 RUN poetry config virtualenvs.create false
