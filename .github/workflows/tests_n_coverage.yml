@@ -15,14 +15,14 @@ jobs:
           crate: d4tools
           version: latest
 
-      - name: Install pyd4
-        run: pip install --no-cache-dir setuptools-rust pyd4
-
       - name: Set up python
         id: setup-python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
+
+      - name: Install pyd4
+        run: pip install --no-cache-dir setuptools-rust pyd4
 
       # install & configure poetry
       - name: Install Poetry
