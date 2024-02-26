@@ -1,4 +1,4 @@
-FROM clinicalgenomics/python3.11-venv-pyd4:2.0 as builder
+FROM clinicalgenomics/python3.11-venv-pyd4:2.0
 
 LABEL about.home="https://github.com/Clinical-Genomics/chanjo2"
 LABEL about.license="MIT License (MIT)"
@@ -15,18 +15,12 @@ RUN apt-get update && \
 # make sure all messages always reach console
 ENV PYTHONUNBUFFERED=1
 
-# Copy pre-installed software from builder
-COPY --chown=worker:worker --from=builder /venv /venv
-COPY --chown=worker:worker --from=builder /home/worker/libs /home/worker/libs
-
 # Install app
 WORKDIR /home/worker/app
 COPY --chown=worker:worker . /home/worker/app
-ENV PATH="/venv/bin:$PATH"
-ENV PATH="/home/worker/libs/d4tools/bin:${PATH}"
 
 RUN pip install poetry
-RUN poetry config virtualenvs.create false
+RUN poetry config virtualenvs.path /venv
 RUN poetry install --no-interaction
 
 # Run commands as non-root
