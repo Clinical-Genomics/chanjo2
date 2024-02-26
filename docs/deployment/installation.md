@@ -20,7 +20,7 @@ And install the software with poetry:
 poetry install
 ```
 
-Installe the additional pyd4 library using pip (installation fails using poetry)
+Install the pyd4 library using pip (installation via poetry currently fails with an error. See [this issue](https://github.com/Clinical-Genomics/chanjo2/issues/233) for details)
 
 ```
 pip install setuptools-rust pyd4
