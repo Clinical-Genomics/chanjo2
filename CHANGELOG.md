@@ -11,6 +11,7 @@
 - pyd4 lib must be installed separately when chanjo2 is installed installed locally - Docs updated accordingly
 ### Fixed
 -  `coverage.d4_interval_coverage` endpoint crashing trying to computer coverage completeness over an entire chromosome
+- Samples mean coverage values a hundredfold higher on coverage reports
 
 ## [1.4]
 ### Changed

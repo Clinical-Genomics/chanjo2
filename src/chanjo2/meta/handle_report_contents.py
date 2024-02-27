@@ -205,24 +205,20 @@ def get_report_completeness_rows(
     completeness_rows: List[str, Dict[str, float]] = []
 
     for sample, interval_stats in samples_coverage_stats.items():
-        sample_stats: Dict[str, List[float]] = {"mean_coverage": []}
+        sample_stats: Dict[str, List[float]] = {
+            "mean_coverage": [interval.mean_coverage for interval in interval_stats]
+        }
         for level in levels:
-            sample_stats[f"completeness_{level}"]: List[float] = []
-
-        for interval in interval_stats:
-            sample_stats["mean_coverage"].append(interval.mean_coverage)
-            for level in levels:
-                sample_stats[f"completeness_{level}"].append(
-                    interval.completeness[level]
-                )
+            sample_stats[f"completeness_{level}"]: List[float] = [
+                interval.completeness[level] for interval in interval_stats
+            ]
 
         completeness_row: Dict[str, float] = {}
         for completeness_key, completeness_values in sample_stats.items():
-            completeness_row[completeness_key] = (
-                round((mean(completeness_values) * 100), 2)
-                if completeness_values
-                else 0
-            )
+            column_value = mean(completeness_values) if completeness_values else 0
+            if completeness_key != "mean_coverage":
+                column_value = column_value * 100
+            completeness_row[completeness_key] = round(column_value or 0, 2)
 
         completeness_rows.append((sample, completeness_row))
 
