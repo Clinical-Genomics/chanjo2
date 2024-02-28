@@ -156,45 +156,32 @@ def get_missing_genes_from_db(
     )
 
 
-def get_report_level_completeness_rows(
-    samples_coverage_stats: Dict[str, List[GeneCoverage]], level: int
-) -> List[Tuple[str, float, str, List[str]]]:
-    """Create and return the contents of the coverage stats row at the default threshold level and incompletely covered genes."""
-    default_level_rows: List[Tuple[str, float, str]] = []
+def get_report_completeness_rows(
+    samples_coverage_stats: Dict[str, List[GeneCoverage]], levels: List[int]
+) -> List[Tuple[str, Dict[str, float]]]:
+    """Create and return the contents for the samples' coverage completeness rows in the coverage report."""
 
-    for sample, genes_stats in samples_coverage_stats.items():
-        nr_inner_intervals: int = 0
-        covered_inner_intervals: int = 0
-        incompletely_covered_genes: Set[str] = set()
-        for gene_stats in genes_stats:
-            intervals = gene_stats.inner_intervals or [gene_stats]
-            for interval in intervals:
-                nr_inner_intervals += 1
-                if interval.mean_coverage >= level:
-                    covered_inner_intervals += 1
-                else:
-                    incompletely_covered_genes.add(
-                        gene_stats.hgnc_symbol or gene_stats.hgnc_id
-                    )
+    completeness_rows: List[str, Dict[str, float]] = []
 
-        intervals_covered_percent: float = (
-            round((covered_inner_intervals / nr_inner_intervals * 100), 2)
-            if covered_inner_intervals > 0
-            else 0
-        )
-        nr_not_covered_intervals: str = (
-            f"{nr_inner_intervals - covered_inner_intervals}/{nr_inner_intervals}"
-        )
-        default_level_rows.append(
-            (
-                sample,
-                intervals_covered_percent,
-                nr_not_covered_intervals,
-                sorted(incompletely_covered_genes),
-            )
-        )
+    for sample, interval_stats in samples_coverage_stats.items():
+        sample_stats: Dict[str, List[float]] = {
+            "mean_coverage": [interval.mean_coverage for interval in interval_stats]
+        }
+        for level in levels:
+            sample_stats[f"completeness_{level}"]: List[float] = [
+                interval.completeness[level] for interval in interval_stats
+            ]
 
-    return default_level_rows
+        completeness_row: Dict[str, float] = {}
+        for completeness_key, completeness_values in sample_stats.items():
+            column_value = mean(completeness_values) if completeness_values else 0
+            if completeness_key != "mean_coverage":
+                column_value = column_value * 100
+            completeness_row[completeness_key] = round(column_value or 0, 2)
+
+        completeness_rows.append((sample, completeness_row))
+
+    return completeness_rows
 
 
 def get_report_completeness_rows(
