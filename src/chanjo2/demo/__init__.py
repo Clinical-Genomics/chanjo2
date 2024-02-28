@@ -39,7 +39,7 @@ DEMO_COVERAGE_QUERY_DATA = {
     ],
     "case_display_name": "643594",
     "gene_panel": "A test Panel 1.0",
-    "interval_type": "transcripts",
+    "interval_type": "genes",
     "ensembl_gene_ids": [],
     "hgnc_gene_ids": [],
     "hgnc_gene_symbols": DEMO_HGNC_GENE_SYMBOLS,

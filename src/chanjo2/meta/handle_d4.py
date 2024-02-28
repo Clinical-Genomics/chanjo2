@@ -167,47 +167,7 @@ def get_intervals_completeness(
     return completeness_values
 
 
-def get_d4tools_sample_genes_coverage(
-    d4_file_path: str,
-    genes: List[SQLGene],
-    completeness_thresholds: List[Optional[int]],
-):
-    """Return coverage and coverage completeness over entire genes."""
-    # Compute genes coverage
-    genes_coords: List[str] = [
-        f"{gene.chromosome}\t{gene.start}\t{gene.stop}" for gene in genes
-    ]
-    genes_coverage: List[float] = get_d4tools_intervals_mean_coverage(
-        d4_file_path=d4_file_path, intervals=genes_coords
-    )
-    # Compute genes coverage completeness
-    genes_ids_coords: List[Tuple[str, Tuple[str, int, int]]] = [
-        (gene.ensembl_id, (gene.chromosome, gene.start, gene.stop)) for gene in genes
-    ]
-    genes_coverage_completeness: Dict[str, dict] = coverage_completeness_multitasker(
-        d4_file_path=d4_file_path,
-        thresholds=completeness_thresholds,
-        interval_ids_coords=genes_ids_coords,
-    )
-    # Save stats in coverage objects
-    genes_coverage_stats: List[GeneCoverage] = []
-    for nr_gene, gene in enumerate(genes):
-        gene_coverage = GeneCoverage(
-            **{
-                "ensembl_gene_id": gene.ensembl_id,
-                "hgnc_id": gene.hgnc_id,
-                "hgnc_symbol": gene.hgnc_symbol,
-                "interval_type": IntervalType.GENES,
-                "mean_coverage": genes_coverage[nr_gene],
-                "completeness": genes_coverage_completeness[gene.ensembl_id],
-                "inner_intervals": [],
-            }
-        )
-        genes_coverage_stats.append(gene_coverage)
-    return genes_coverage_stats
-
-
-def get_d4tools_sample_interval_coverage(
+def get_report_sample_interval_coverage(
     db: Session,
     d4_file_path: str,
     genes: List[SQLGene],
@@ -215,30 +175,33 @@ def get_d4tools_sample_interval_coverage(
     completeness_thresholds: List[Optional[int]],
     transcript_tags: Optional[List[TranscriptTag]] = [],
 ) -> List[GeneCoverage]:
-    """Return coverage and coverage completeness over genes transcripts or exons."""
-
+    """Return interval coverage stats for genomic intervals using d4tools."""
     if not genes:
         return []
-
-    # Compute intervals coverage
-    sql_intervals: List[Union[SQLTranscript, SQLExon]] = get_gene_intervals(
-        db=db,
-        build=genes[0].build,
-        interval_type=interval_type,
-        ensembl_ids=None,
-        hgnc_ids=None,
-        hgnc_symbols=None,
-        ensembl_gene_ids=[gene.ensembl_id for gene in genes],
-        limit=None,
-        transcript_tags=transcript_tags,
-    )
+    if interval_type == SQLGene:
+        sql_intervals: List[SQLGene] = genes
+    else:
+        sql_intervals: List[Union[SQLTranscript, SQLExon]] = get_gene_intervals(
+            db=db,
+            build=genes[0].build,
+            interval_type=interval_type,
+            ensembl_ids=None,
+            hgnc_ids=None,
+            hgnc_symbols=None,
+            ensembl_gene_ids=[gene.ensembl_id for gene in genes],
+            limit=None,
+            transcript_tags=transcript_tags,
+        )
     intervals_coords: List[str] = [
         f"{interval.chromosome}\t{interval.start}\t{interval.stop}"
         for interval in sql_intervals
     ]
+
+    # Compute intervals coverage
     intervals_coverage: List[float] = get_d4tools_intervals_mean_coverage(
         d4_file_path=d4_file_path, intervals=intervals_coords
     )
+
     # Compute intervals coverage completeness
     interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]] = [
         (interval.ensembl_id, (interval.chromosome, interval.start, interval.stop))
@@ -251,6 +214,7 @@ def get_d4tools_sample_interval_coverage(
             interval_ids_coords=interval_ids_coords,
         )
     )
+
     # Save stats in coverage objects
     genes_coverage_stats: List[GeneCoverage] = []
     thresholds_dict = {threshold: [] for threshold in completeness_thresholds}
@@ -267,40 +231,55 @@ def get_d4tools_sample_interval_coverage(
     for interval_nr, interval in enumerate(sql_intervals):
 
         interval_ensembl_id: str = interval.ensembl_id
+
         if interval_ensembl_id in inner_intervals_ensembl_ids:
             continue
 
-        interval_ensembl_gene: str = interval.ensembl_gene_id
+        if interval_ensembl_id.startswith("ENSG"):  # Gene interval
+            genes_stats[interval_ensembl_id]["mean_coverage"] = intervals_coverage[
+                interval_nr
+            ]
+            for threshold in completeness_thresholds:
+                genes_stats[interval_ensembl_id]["completeness"][threshold] = (
+                    intervals_coverage_completeness[interval_ensembl_id][threshold]
+                )
 
-        genes_stats[interval_ensembl_gene]["mean_coverage"].append(
-            intervals_coverage[interval_nr]
-        )
-        for threshold in completeness_thresholds:
-            genes_stats[interval_ensembl_gene]["completeness"][threshold].append(
-                intervals_coverage_completeness[interval_ensembl_id][threshold]
+        else:  # Other interval type
+            genes_stats[interval.ensembl_gene_id]["mean_coverage"].append(
+                intervals_coverage[interval_nr]
             )
 
-        genes_stats[interval_ensembl_gene]["inner_intervals"].append(
-            IntervalCoverage(
-                **{
-                    "interval_type": interval_type.__tablename__,
-                    "interval_id": interval.ensembl_id,
-                    "mean_coverage": intervals_coverage[interval_nr],
-                    "completeness": intervals_coverage_completeness[
-                        interval_ensembl_id
-                    ],
-                }
+            for threshold in completeness_thresholds:
+                genes_stats[interval.ensembl_gene_id]["completeness"][threshold].append(
+                    intervals_coverage_completeness[interval_ensembl_id][threshold]
+                )
+
+            genes_stats[interval.ensembl_gene_id]["inner_intervals"].append(
+                IntervalCoverage(
+                    **{
+                        "interval_type": interval_type.__tablename__,
+                        "interval_id": interval_ensembl_id,
+                        "mean_coverage": intervals_coverage[interval_nr],
+                        "completeness": intervals_coverage_completeness[
+                            interval_ensembl_id
+                        ],
+                    }
+                )
             )
-        )
-        inner_intervals_ensembl_ids.add(interval_ensembl_id)
+            inner_intervals_ensembl_ids.add(interval_ensembl_id)
 
     for gene in genes:
-
-        gene_mean_coverage = mean(genes_stats[gene.ensembl_id]["mean_coverage"])
+        mean_cov: Union[float, List[float]] = genes_stats[gene.ensembl_id][
+            "mean_coverage"
+        ]
+        gene_mean_coverage = mean(mean_cov) if isinstance(mean_cov, list) else mean_cov
         gene_cov_completenes = {}
         for threshold in completeness_thresholds:
-            gene_cov_completenes[threshold] = mean(
-                genes_stats[gene.ensembl_id]["completeness"][threshold]
+            completeness: Union[float, List[float]] = genes_stats[gene.ensembl_id][
+                "completeness"
+            ][threshold]
+            gene_cov_completenes[threshold] = (
+                mean(completeness) if isinstance(completeness, list) else completeness
             )
 
         gene_coverage = GeneCoverage(
