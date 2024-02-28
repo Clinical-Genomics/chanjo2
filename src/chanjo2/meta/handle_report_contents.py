@@ -8,11 +8,7 @@ from sqlalchemy.orm import Session
 
 from chanjo2.crud.intervals import get_genes, get_hgnc_gene
 from chanjo2.crud.samples import get_sample
-from chanjo2.meta.handle_d4 import (
-    get_d4tools_sample_genes_coverage,
-    get_d4tools_sample_interval_coverage,
-    get_samples_sex_metrics,
-)
+from chanjo2.meta.handle_d4 import get_sample_interval_coverage, get_samples_sex_metrics
 from chanjo2.models import SQLExon, SQLGene, SQLSample, SQLTranscript
 from chanjo2.models.pydantic_models import (
     GeneCoverage,
@@ -70,7 +66,9 @@ def get_report_data(
     """Return the information that will be displayed in the coverage report or in the genes overview report.."""
 
     set_samples_coverage_files(session=session, samples=query.samples)
-
+    samples_d4_files: List[Tuple[str, D4File]] = [
+        (sample.name, D4File(sample.coverage_file_path)) for sample in query.samples
+    ]
     genes: List[SQLGene] = get_genes(
         db=session,
         build=query.build,
@@ -80,27 +78,17 @@ def get_report_data(
         limit=None,
     )
 
-    if query.interval_type == IntervalType.GENES.value:
-        samples_coverage_stats: Dict[str, List[GeneCoverage]] = {
-            sample.name: get_d4tools_sample_genes_coverage(
-                d4_file_path=sample.coverage_file_path,
-                genes=genes,
-                completeness_thresholds=query.completeness_thresholds,
-            )
-            for sample in query.samples
-        }
-    else:
-        samples_coverage_stats: Dict[str, List[GeneCoverage]] = {
-            sample.name: get_d4tools_sample_interval_coverage(
-                db=session,
-                d4_file_path=sample.coverage_file_path,
-                genes=genes,
-                interval_type=INTERVAL_TYPE_SQL_TYPE[query.interval_type],
-                completeness_thresholds=query.completeness_thresholds,
-                transcript_tags=["refseq_mrna"],
-            )
-            for sample in query.samples
-        }
+    samples_coverage_stats: Dict[str, List[GeneCoverage]] = {
+        sample: get_sample_interval_coverage(
+            db=session,
+            d4_file=d4_file,
+            genes=genes,
+            interval_type=INTERVAL_TYPE_SQL_TYPE[query.interval_type],
+            completeness_thresholds=query.completeness_thresholds,
+            transcript_tags=["refseq_mrna"],
+        )
+        for sample, d4_file in samples_d4_files
+    }
 
     data: Dict = {
         "levels": get_ordered_levels(threshold_levels=query.completeness_thresholds),
@@ -217,29 +205,20 @@ def get_report_completeness_rows(
     completeness_rows: List[str, Dict[str, float]] = []
 
     for sample, interval_stats in samples_coverage_stats.items():
-        sample_stats: Dict[str, List[float]] = {"mean_coverage": []}
+        sample_stats: Dict[str, List[float]] = {
+            "mean_coverage": [interval.mean_coverage for interval in interval_stats]
+        }
         for level in levels:
-            sample_stats[f"completeness_{level}"]: List[float] = []
-
-        for interval in interval_stats:
-            sample_stats["mean_coverage"].append(interval.mean_coverage)
-            for level in levels:
-                sample_stats[f"completeness_{level}"].append(
-                    interval.completeness[level]
-                )
+            sample_stats[f"completeness_{level}"]: List[float] = [
+                interval.completeness[level] for interval in interval_stats
+            ]
 
         completeness_row: Dict[str, float] = {}
         for completeness_key, completeness_values in sample_stats.items():
+            column_value = mean(completeness_values) if completeness_values else 0
             if completeness_key != "mean_coverage":
-                completeness_row[completeness_key] = (
-                    round((mean(completeness_values) * 100), 2)
-                    if completeness_values
-                    else 0
-                )
-            else:  # Do not return percentage for mean coverage
-                completeness_row[completeness_key] = (
-                    round((mean(completeness_values)), 2) if completeness_values else 0
-                )
+                column_value = column_value * 100
+            completeness_row[completeness_key] = round(column_value or 0, 2)
 
         completeness_rows.append((sample, completeness_row))
 
