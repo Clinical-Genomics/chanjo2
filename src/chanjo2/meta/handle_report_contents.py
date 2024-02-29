@@ -95,8 +95,8 @@ def get_report_data(query: ReportQuery, session: Session) -> Dict:
         "default_level_completeness_rows": [],
     }
 
-    samples_coverage_stats: Dict[str, List[GeneCoverage]] = {
-        sample.name: get_report_sample_interval_coverage(
+    for sample in query.samples:
+        get_report_sample_interval_coverage(
             db=session,
             d4_file_path=sample.coverage_file_path,
             sample_name=sample.name,
@@ -107,8 +107,6 @@ def get_report_data(query: ReportQuery, session: Session) -> Dict:
             report_data=data,
             transcript_tags=["refseq_mrna"],
         )
-        for sample in query.samples
-    }
 
     # Add coverage_report - specific data
     data["sex_rows"] = get_report_sex_rows(samples=query.samples)
