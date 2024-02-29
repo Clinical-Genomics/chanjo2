@@ -29,9 +29,7 @@ async def demo_report(request: Request, db: Session = Depends(get_session)):
     """Return a demo coverage report over a list of genes for a list of samples."""
 
     report_query = ReportQuery(**DEMO_COVERAGE_QUERY_DATA)
-    report_content: Dict = get_report_data(
-        query=report_query, session=db, is_overview_report=False
-    )
+    report_content: Dict = get_report_data(query=report_query, session=db)
     return templates.TemplateResponse(
         "report.html",
         {
@@ -54,9 +52,7 @@ async def report(
     request: Request, report_query: ReportQuery, db: Session = Depends(get_session)
 ):
     """Return a coverage report over a list of genes for a list of samples."""
-    report_content: Dict = get_report_data(
-        query=report_query, session=db, is_overview_report=False
-    )
+    report_content: Dict = get_report_data(query=report_query, session=db)
     return templates.TemplateResponse(
         "report.html",
         {

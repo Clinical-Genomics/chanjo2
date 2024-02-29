@@ -64,9 +64,7 @@ def _serialize_sample(sample: ReportQuerySample) -> Dict[str, str]:
     }
 
 
-def get_report_data(
-    query: ReportQuery, session: Session, is_overview_report: bool
-) -> Dict:
+def get_report_data(query: ReportQuery, session: Session) -> Dict:
     """Return the information that will be displayed in the coverage report or in the genes overview report.."""
 
     set_samples_coverage_files(session=session, samples=query.samples)
