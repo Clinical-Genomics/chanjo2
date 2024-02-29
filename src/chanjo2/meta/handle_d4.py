@@ -177,7 +177,7 @@ def get_report_sample_interval_coverage(
     default_threshold: int,
     report_data: dict,
     transcript_tags: Optional[List[TranscriptTag]] = [],
-) -> List[GeneCoverage]:
+):
     """Return interval coverage stats for genomic intervals using d4tools."""
 
     gene_ids_mapping: Dict[str, Dict] = {
