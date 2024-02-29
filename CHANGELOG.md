@@ -8,10 +8,10 @@
 - `coverage.d4_interval_coverage` is using direct calls to d4tools to retrieve stats over an entire chromosome or a genomic interval
 - Reformat report sample' sex rows and coverage.get_samples_predicted_sex endpoint to use d4tools and not pyd4 for evaluating sample sex
 - Dockerized chanjo2 uses pyd4 v0.3.9 already provided in the Docker base image
-- pyd4 lib must be installed separately when chanjo2 is installed installed locally - Docs updated accordingly
 ### Fixed
 -  `coverage.d4_interval_coverage` endpoint crashing trying to computer coverage completeness over an entire chromosome
 - Samples mean coverage values a hundredfold higher on coverage reports
+- Install software packages using poetry v<1.8 to avoid problems installing pyd4 (pyd4 not supporting PEP 517 builds)
 
 ## [1.4]
 ### Changed

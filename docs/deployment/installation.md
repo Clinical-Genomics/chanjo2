@@ -20,11 +20,8 @@ And install the software with poetry:
 poetry install
 ```
 
-Install the pyd4 library using pip (installation via poetry currently fails with an error. See [this issue](https://github.com/Clinical-Genomics/chanjo2/issues/233) for details)
+If you encounter any difficulties installing the pyd4 library due to its lack of support for PEP 517 builds, simply retry the aforementioned step using a version of poetry that is less than 1.8.
 
-```
-pip install setuptools-rust pyd4
-```
 
 You can run a demo instance of the web server by typing:
 
