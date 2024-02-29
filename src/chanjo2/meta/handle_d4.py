@@ -7,7 +7,7 @@ from typing import Dict, List, Optional, Tuple, Union
 from pyd4 import D4File
 from sqlalchemy.orm import Session
 
-from chanjo2.crud.intervals import get_gene_intervals
+from chanjo2.crud.intervals import get_gene_intervals, set_sql_intervals
 from chanjo2.meta.handle_completeness_tasks import coverage_completeness_multitasker
 from chanjo2.models import SQLExon, SQLGene, SQLTranscript
 from chanjo2.models.pydantic_models import (
@@ -178,7 +178,7 @@ def get_report_sample_interval_coverage(
     report_data: dict,
     transcript_tags: Optional[List[TranscriptTag]] = [],
 ):
-    """Return interval coverage stats for genomic intervals using d4tools."""
+    """Compute stats to populate a coverage report and coverage overview for one sample."""
 
     gene_ids_mapping: Dict[str, Dict] = {
         gene.ensembl_id: {"hgnc_id": gene.hgnc_id, "hgnc_symbol": gene.hgnc_symbol}
@@ -187,20 +187,10 @@ def get_report_sample_interval_coverage(
     if not gene_ids_mapping:
         return
 
-    if interval_type == SQLGene:
-        sql_intervals: List[SQLGene] = genes
-    else:
-        sql_intervals: List[Union[SQLTranscript, SQLExon]] = get_gene_intervals(
-            db=db,
-            build=genes[0].build,
-            interval_type=interval_type,
-            ensembl_ids=None,
-            hgnc_ids=None,
-            hgnc_symbols=None,
-            ensembl_gene_ids=[gene.ensembl_id for gene in genes],
-            limit=None,
-            transcript_tags=transcript_tags,
-        )
+    sql_intervals = set_sql_intervals(
+        db=db, interval_type=interval_type, genes=genes, transcript_tags=transcript_tags
+    )
+
     intervals_coords: List[str] = [
         f"{interval.chromosome}\t{interval.start}\t{interval.stop}"
         for interval in sql_intervals
