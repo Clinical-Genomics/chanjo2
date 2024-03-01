@@ -19,7 +19,7 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /home/worker/app
 COPY --chown=worker:worker . /home/worker/app
 
-RUN pip install poetry
+RUN pip install 'poetry<1.8'
 RUN poetry config virtualenvs.create false
 RUN poetry install --no-interaction
 
