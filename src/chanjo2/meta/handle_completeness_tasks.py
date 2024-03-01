@@ -1,15 +1,14 @@
 import logging
 import subprocess
-import tempfile
 from multiprocessing import Manager, Pool
 from typing import Dict, List, Tuple
 
 LOG = logging.getLogger("uvicorn.access")
-INTERVAL_CHUNKS = 250
+INTERVAL_CHUNKS = 50
 CHROM_INDEX = 0
 START_INDEX = 1
 STOP_INDEX = 2
-STATS_MEAN_COVERAGE_INDEX = 3
+STATS_COVERAGE_INDEX = 3
 
 
 def get_d4tools_coverage_completeness(
@@ -19,48 +18,29 @@ def get_d4tools_coverage_completeness(
     interval_ids_coords: List[Tuple[str, tuple]],
 ):
     """Return the coverage completeness for the specified intervals of a d4 file."""
+    for interval_id, coords in interval_ids_coords:
 
-    for interval_id, interval_coords in interval_ids_coords:
+        bedgraph_coverage_contents: List[str] = subprocess.check_output(
+            ["d4tools", "view", d4_file_path, f"{coords[0]}:{coords[1]}-{coords[2]}"],
+            text=True,
+        ).splitlines()
 
-        # Create a temporary minified bedgraph file with the lines containing this specific genomic interval
-        tmp_stats_file = tempfile.NamedTemporaryFile()
-        with open(tmp_stats_file.name, "w") as stats_file:
-            d4tools_view_cmd = subprocess.Popen(
-                [
-                    "d4tools",
-                    "view",
-                    d4_file_path,
-                    f"{interval_coords[CHROM_INDEX]}:{interval_coords[START_INDEX]}-{interval_coords[STOP_INDEX]}",
-                ],
-                stdout=stats_file,
+        bedgraph_stats = [line.split("\t") for line in bedgraph_coverage_contents]
+
+        thresholds_dict = {}
+        for threshold in thresholds:
+            nr_bases_covered_above_threshold = 0
+
+            for chrom_stats in bedgraph_stats:
+                if int(chrom_stats[STATS_COVERAGE_INDEX]) >= threshold:
+                    nr_bases_covered_above_threshold += int(
+                        chrom_stats[STOP_INDEX]
+                    ) - int(chrom_stats[START_INDEX])
+
+            # Compute the fraction of bases covered above threshold
+            thresholds_dict[threshold] = nr_bases_covered_above_threshold / (
+                coords[STOP_INDEX] - coords[START_INDEX]
             )
-            d4tools_view_cmd.wait()
-
-            thresholds_dict = {}
-            threshold_index = 0
-            while threshold_index < len(thresholds):
-                # Collect the size of the intervals for each line with coverage above this threshold
-
-                filter_lines_above_threshold: str = (
-                    f"awk '{{ if ($4 >= {thresholds[threshold_index]} ) {{ print $3-$2; }} }}' {tmp_stats_file.name}"
-                )
-                intervals_above_threshold_sizes = subprocess.check_output(
-                    [filter_lines_above_threshold], shell=True, text=True
-                )
-
-                nr_bases_covered_above_threshold: int = sum(
-                    [int(size) for size in intervals_above_threshold_sizes.splitlines()]
-                )
-
-                # Compute the fraction of bases covered above threshold
-                thresholds_dict[thresholds[threshold_index]] = (
-                    nr_bases_covered_above_threshold
-                    / (interval_coords[STOP_INDEX] - interval_coords[START_INDEX])
-                )
-
-                threshold_index += 1
-                stats_file.flush()
-                stats_file.seek(0)
 
         return_dict[interval_id] = thresholds_dict
 
