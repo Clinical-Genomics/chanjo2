@@ -36,8 +36,6 @@ def get_d4tools_coverage_completeness(
             )
             d4tools_view_cmd.wait()
 
-            LOG.warning(f"d4tools_view_cmd:{d4tools_view_cmd}")
-
             thresholds_dict = {}
             threshold_index = 0
             while threshold_index < len(thresholds):
@@ -48,10 +46,6 @@ def get_d4tools_coverage_completeness(
                 )
                 intervals_above_threshold_sizes = subprocess.check_output(
                     [filter_lines_above_threshold], shell=True, text=True
-                )
-
-                LOG.warning(
-                    f"intervals_above_threshold_sizes:{intervals_above_threshold_sizes}"
                 )
 
                 nr_bases_covered_above_threshold: int = sum(
@@ -69,6 +63,7 @@ def get_d4tools_coverage_completeness(
                 stats_file.seek(0)
 
         return_dict[interval_id] = thresholds_dict
+        LOG.warning(f"Return dict: {return_dict}")
 
 
 def coverage_completeness_multitasker(
