@@ -79,12 +79,17 @@ def coverage_completeness_multitasker(
         interval_ids_coords[chunk_index : chunk_index + INTERVAL_CHUNKS]
         for chunk_index in range(0, len(interval_ids_coords), INTERVAL_CHUNKS)
     ]
+
     tasks_params = [
         (d4_file_path, thresholds, return_dict, intervals)
         for intervals in split_intervals
     ]
 
+    LOG.warning(f"multitasker task params:{tasks_params}")
+
     with Pool() as pool:
         pool.starmap(get_d4tools_coverage_completeness, tasks_params)
+
+    LOG.warning(f"Return dict: {return_dict}")
 
     return return_dict
