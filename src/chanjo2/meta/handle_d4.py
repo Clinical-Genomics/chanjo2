@@ -184,12 +184,17 @@ def get_report_sample_interval_coverage(
         gene.ensembl_id: {"hgnc_id": gene.hgnc_id, "hgnc_symbol": gene.hgnc_symbol}
         for gene in genes
     }
+
+    LOG.warning("AFTER GENE IDS MAPPING")
+
     if not gene_ids_mapping:
         return
 
     sql_intervals = set_sql_intervals(
         db=db, interval_type=interval_type, genes=genes, transcript_tags=transcript_tags
     )
+
+    LOG.warning("AFTER set_sql_intervals")
 
     intervals_coords: List[str] = [
         f"{interval.chromosome}\t{interval.start}\t{interval.stop}"
@@ -201,6 +206,8 @@ def get_report_sample_interval_coverage(
         d4_file_path=d4_file_path, intervals=intervals_coords
     )
     completeness_row_dict: dict = {"mean_coverage": mean(intervals_coverage)}
+
+    LOG.warning("AFTER completeness_row_dict")
 
     # Compute intervals coverage completeness
     interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]] = [
@@ -214,6 +221,8 @@ def get_report_sample_interval_coverage(
             interval_ids_coords=interval_ids_coords,
         )
     )
+
+    LOG.warning("AFTER intervals_coverage_completeness")
 
     interval_ids = set()
     thresholds_dict = {threshold: [] for threshold in completeness_thresholds}
@@ -257,6 +266,8 @@ def get_report_sample_interval_coverage(
 
         interval_ids.add(interval.ensembl_id)
 
+    LOG.warning("AFTER big loop")
+
     for threshold in completeness_thresholds:
         completeness_row_dict[f"completeness_{threshold}"] = round(
             mean(thresholds_dict[threshold]) * 100, 2
@@ -278,6 +289,7 @@ def get_report_sample_interval_coverage(
             genes_covered_under_custom_threshold,
         )
     )
+    LOG.warning("END of get_intervals_completeness")
 
 
 def get_sample_interval_coverage(
