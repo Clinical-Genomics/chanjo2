@@ -185,16 +185,12 @@ def get_report_sample_interval_coverage(
         for gene in genes
     }
 
-    LOG.warning("AFTER GENE IDS MAPPING")
-
     if not gene_ids_mapping:
         return
 
     sql_intervals = set_sql_intervals(
         db=db, interval_type=interval_type, genes=genes, transcript_tags=transcript_tags
     )
-
-    LOG.warning("AFTER set_sql_intervals")
 
     intervals_coords: List[str] = [
         f"{interval.chromosome}\t{interval.start}\t{interval.stop}"
@@ -206,8 +202,6 @@ def get_report_sample_interval_coverage(
         d4_file_path=d4_file_path, intervals=intervals_coords
     )
     completeness_row_dict: dict = {"mean_coverage": mean(intervals_coverage)}
-
-    LOG.warning("AFTER completeness_row_dict")
 
     # Compute intervals coverage completeness
     interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]] = [

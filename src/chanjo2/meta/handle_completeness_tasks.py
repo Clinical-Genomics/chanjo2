@@ -36,6 +36,8 @@ def get_d4tools_coverage_completeness(
             )
             d4tools_view_cmd.wait()
 
+            LOG.warning(f"d4tools_view_cmd:{d4tools_view_cmd}")
+
             thresholds_dict = {}
             threshold_index = 0
             while threshold_index < len(thresholds):
@@ -46,6 +48,10 @@ def get_d4tools_coverage_completeness(
                 )
                 intervals_above_threshold_sizes = subprocess.check_output(
                     [filter_lines_above_threshold], shell=True, text=True
+                )
+
+                LOG.warning(
+                    f"intervals_above_threshold_sizes:{intervals_above_threshold_sizes}"
                 )
 
                 nr_bases_covered_above_threshold: int = sum(
@@ -84,8 +90,6 @@ def coverage_completeness_multitasker(
         (d4_file_path, thresholds, return_dict, intervals)
         for intervals in split_intervals
     ]
-
-    LOG.warning(f"multitasker task params:{tasks_params}")
 
     with Pool() as pool:
         pool.starmap(get_d4tools_coverage_completeness, tasks_params)
