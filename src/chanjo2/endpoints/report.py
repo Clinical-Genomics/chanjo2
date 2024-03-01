@@ -1,4 +1,5 @@
 import logging
+import time
 from os import path
 from typing import Dict
 
@@ -52,7 +53,10 @@ async def report(
     request: Request, report_query: ReportQuery, db: Session = Depends(get_session)
 ):
     """Return a coverage report over a list of genes for a list of samples."""
+
+    start_time = time.time()
     report_content: Dict = get_report_data(query=report_query, session=db)
+    LOG.debug(f"Time to compute stats: {time.time() - start_time} seconds.")
     return templates.TemplateResponse(
         "report.html",
         {
