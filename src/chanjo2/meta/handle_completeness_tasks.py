@@ -63,7 +63,6 @@ def get_d4tools_coverage_completeness(
                 stats_file.seek(0)
 
         return_dict[interval_id] = thresholds_dict
-        LOG.warning(f"Return dict: {return_dict}")
 
 
 def coverage_completeness_multitasker(
@@ -86,9 +85,12 @@ def coverage_completeness_multitasker(
         for intervals in split_intervals
     ]
 
-    with Pool() as pool:
-        pool.starmap(get_d4tools_coverage_completeness, tasks_params)
+    pool = Pool()
+    pool.starmap_async(
+        get_d4tools_coverage_completeness, [task for task in tasks_params]
+    )
 
-    LOG.warning(f"Return dict: {return_dict}")
+    pool.close()
+    pool.join()
 
     return return_dict
