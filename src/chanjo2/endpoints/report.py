@@ -56,7 +56,7 @@ async def report(
 
     start_time = time.time()
     report_content: Dict = get_report_data(query=report_query, session=db)
-    LOG.debug(f"Time to compute stats: {time.time() - start_time} seconds.")
+    LOG.warning(f"Time to compute stats: {time.time() - start_time} seconds.")
     return templates.TemplateResponse(
         "report.html",
         {
