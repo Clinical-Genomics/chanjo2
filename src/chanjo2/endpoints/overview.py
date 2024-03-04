@@ -34,9 +34,7 @@ async def demo_overview(request: Request, db: Session = Depends(get_session)):
     """Return a demo genes overview page over a list of genes for a list of samples."""
 
     overview_query = ReportQuery(**DEMO_COVERAGE_QUERY_DATA)
-    overview_content: dict = get_report_data(
-        query=overview_query, session=db, is_overview_report=True
-    )
+    overview_content: dict = get_report_data(query=overview_query, session=db)
     return templates.TemplateResponse(
         "overview.html",
         {
@@ -54,9 +52,7 @@ async def overview(
 ):
     """Return the genes overview page over a list of genes for a list of samples."""
 
-    overview_content: dict = get_report_data(
-        query=report_query, session=db, is_overview_report=True
-    )
+    overview_content: dict = get_report_data(query=report_query, session=db)
     return templates.TemplateResponse(
         "overview.html",
         {

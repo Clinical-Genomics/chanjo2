@@ -134,6 +134,30 @@ def _filter_transcripts_by_tag(
     return transcripts
 
 
+def set_sql_intervals(
+    db: Session,
+    interval_type: Union[SQLExon, SQLGene, SQLTranscript],
+    genes: List[SQLGene],
+    transcript_tags=Optional[List[TranscriptTag]],
+) -> List[Union[SQLGene, SQLTranscript, SQLExon]]:
+    """If SQL intervals are genes return them as they are, otherwise return genes, transcripts or exons."""
+    if interval_type == SQLGene:
+        sql_intervals: List[SQLGene] = genes
+    else:
+        sql_intervals: List[Union[SQLTranscript, SQLExon]] = get_gene_intervals(
+            db=db,
+            build=genes[0].build,
+            interval_type=interval_type,
+            ensembl_ids=None,
+            hgnc_ids=None,
+            hgnc_symbols=None,
+            ensembl_gene_ids=[gene.ensembl_id for gene in genes],
+            limit=None,
+            transcript_tags=transcript_tags,
+        )
+    return sql_intervals
+
+
 def get_gene_intervals(
     db: Session,
     build: Builds,
