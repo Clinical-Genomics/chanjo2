@@ -2,6 +2,7 @@
 ### Added
 - `coverage.d4_intervals_coverage` responses contain also interval name as provided in bed file
 - `coverage.d4_interval_coverage` responses now returns also the genomic region used to compute the stats on
+- Test for modified function collecting coverage report data
 ### Changed
 - Speed up response by `coverage.d4_intervals_coverage` by replacing pyd4 lib with direct calls d4tools and multiprocessing
 - Removed 2 redundant functions in `meta.handle.bed.py`
