@@ -55,8 +55,8 @@ async def report(
     """Return a coverage report over a list of genes for a list of samples."""
 
     start_time = time.time()
-    report_content: Dict = get_report_data(query=report_query, session=db)
-    LOG.warning(f"Time to compute stats: {time.time() - start_time} seconds.")
+    report_content: dict = get_report_data(query=report_query, session=db)
+    LOG.degub(f"Time to compute stats: {time.time() - start_time} seconds.")
     return templates.TemplateResponse(
         "report.html",
         {
