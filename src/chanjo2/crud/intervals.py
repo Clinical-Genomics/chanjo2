@@ -140,7 +140,7 @@ def set_sql_intervals(
     genes: List[SQLGene],
     transcript_tags=Optional[List[TranscriptTag]],
 ) -> List[Union[SQLGene, SQLTranscript, SQLExon]]:
-    """If SQL intervals are genes return them as they are, otherwise return genes' transcripts or exons."""
+    """If SQL intervals are genes return them as they are, otherwise return genes, transcripts or exons."""
     if interval_type == SQLGene:
         sql_intervals: List[SQLGene] = genes
     else:
