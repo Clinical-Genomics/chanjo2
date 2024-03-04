@@ -216,8 +216,6 @@ def get_report_sample_interval_coverage(
         )
     )
 
-    LOG.warning("AFTER intervals_coverage_completeness")
-
     interval_ids = set()
     thresholds_dict = {threshold: [] for threshold in completeness_thresholds}
     incomplete_coverages_rows: List[Tuple[int, str, str, str, float]] = []
@@ -260,8 +258,6 @@ def get_report_sample_interval_coverage(
 
         interval_ids.add(interval.ensembl_id)
 
-    LOG.warning("AFTER big loop")
-
     for threshold in completeness_thresholds:
         completeness_row_dict[f"completeness_{threshold}"] = round(
             mean(thresholds_dict[threshold]) * 100, 2
@@ -283,7 +279,6 @@ def get_report_sample_interval_coverage(
             genes_covered_under_custom_threshold,
         )
     )
-    LOG.warning("END of get_intervals_completeness")
 
 
 def get_sample_interval_coverage(
