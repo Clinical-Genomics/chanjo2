@@ -1,7 +1,6 @@
 import logging
 from collections import OrderedDict
-from statistics import mean
-from typing import Dict, List, Optional, Set, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 from pyd4 import D4File
 from sqlalchemy.orm import Session
@@ -21,6 +20,7 @@ from chanjo2.models.pydantic_models import (
     ReportQuery,
     ReportQuerySample,
     SampleSexRow,
+    TranscriptTag,
 )
 
 LOG = logging.getLogger("uvicorn.access")
@@ -105,7 +105,7 @@ def get_report_data(query: ReportQuery, session: Session) -> Dict:
             completeness_thresholds=query.completeness_thresholds,
             default_threshold=query.default_level,
             report_data=data,
-            transcript_tags=["refseq_mrna"],
+            transcript_tags=[TranscriptTag.REFSEQ_MRNA],
         )
 
     # Add coverage_report - specific data
