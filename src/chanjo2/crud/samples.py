@@ -54,10 +54,10 @@ def get_sample(db: Session, sample_name: str) -> SQLSample:
 
 def get_samples_coverage_file(
     db: Session, samples: Optional[List[str]], case: Optional[str]
-) -> Union[List[Tuple[str, D4File]]]:
-    """Return a list of sample names with relative D4 coverage files."""
+) -> List[Tuple[str, str]]:
+    """Return a list of sample names with relative path to D4 coverage files."""
 
-    samples_d4_files: List[Tuple[str, D4File]] = []
+    samples_d4_files: List[Tuple[str, str]] = []
     sql_samples: List[SQLSample] = (
         get_samples_by_name(db=db, sample_names=samples)
         if samples
@@ -69,17 +69,8 @@ def get_samples_coverage_file(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=SAMPLE_NOT_FOUND,
         )
-    for sqlsample in sql_samples:
-        try:
-            d4_file: D4File = get_d4_file(
-                coverage_file_path=sqlsample.coverage_file_path
-            )
-            samples_d4_files.append((sqlsample.name, d4_file))
-        except Exception:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=WRONG_COVERAGE_FILE_MSG,
-            )
+    for sql_sample in sql_samples:
+        samples_d4_files.append((sql_sample.name, sql_sample.coverage_file_path))
 
     return samples_d4_files
 

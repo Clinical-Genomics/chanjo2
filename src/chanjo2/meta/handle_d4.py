@@ -283,7 +283,7 @@ def get_report_sample_interval_coverage(
 
 def get_sample_interval_coverage(
     db: Session,
-    d4_file: D4File,
+    d4_file: str,
     genes: List[SQLGene],
     interval_type: Union[SQLGene, SQLTranscript, SQLExon],
     completeness_thresholds: List[Optional[int]],

@@ -155,7 +155,7 @@ async def samples_genes_coverage(
 ):
     """Returns coverage over a list of genes (entire gene) for a given list of samples in the database."""
 
-    samples_d4_files: Tuple[str, D4File] = get_samples_coverage_file(
+    samples_d4_files: Tuple[str, str] = get_samples_coverage_file(
         db=db, samples=query.samples, case=query.case
     )
 
@@ -189,7 +189,7 @@ async def samples_transcripts_coverage(
 ):
     """Returns coverage over a list of genes (transcripts intervals only) for a given list of samples in the database."""
 
-    samples_d4_files: Tuple[str, D4File] = get_samples_coverage_file(
+    samples_d4_files: Tuple[str, str] = get_samples_coverage_file(
         db=db, samples=query.samples, case=query.case
     )
 
@@ -222,7 +222,7 @@ async def samples_exons_coverage(
 ):
     """Returns coverage over a list of genes (exons intervals only) for a given list of samples in the database."""
 
-    samples_d4_files: Tuple[str, D4File] = get_samples_coverage_file(
+    samples_d4_files: Tuple[str, str] = get_samples_coverage_file(
         db=db, samples=query.samples, case=query.case
     )
 
