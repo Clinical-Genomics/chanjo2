@@ -5,7 +5,6 @@ from typing import Dict, List, Optional, Tuple
 
 import validators
 from fastapi import APIRouter, Depends, HTTPException, status
-from pyd4 import D4File
 from sqlalchemy.orm import Session
 
 from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
@@ -171,12 +170,12 @@ async def samples_genes_coverage(
     return {
         sample: get_sample_interval_coverage(
             db=db,
-            d4_file=d4_file,
+            d4_file_path=d4_file_path,
             genes=genes,
             interval_type=SQLGene,
             completeness_thresholds=query.completeness_thresholds,
         )
-        for sample, d4_file in samples_d4_files
+        for sample, d4_file_path in samples_d4_files
     }
 
 
@@ -205,12 +204,12 @@ async def samples_transcripts_coverage(
     return {
         sample: get_sample_interval_coverage(
             db=db,
-            d4_file=d4_file,
+            d4_file_path=d4_file_path,
             genes=genes,
             interval_type=SQLTranscript,
             completeness_thresholds=query.completeness_thresholds,
         )
-        for sample, d4_file in samples_d4_files
+        for sample, d4_file_path in samples_d4_files
     }
 
 
@@ -238,10 +237,10 @@ async def samples_exons_coverage(
     return {
         sample: get_sample_interval_coverage(
             db=db,
-            d4_file=d4_file,
+            d4_file_path=d4_file_path,
             genes=genes,
             interval_type=SQLExon,
             completeness_thresholds=query.completeness_thresholds,
         )
-        for sample, d4_file in samples_d4_files
+        for sample, d4_file_path in samples_d4_files
     }
