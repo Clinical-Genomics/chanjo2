@@ -25,13 +25,6 @@ STOP_INDEX = 2
 STATS_MEAN_COVERAGE_INDEX = 3
 
 
-def set_interval(
-    chrom: str, start: Optional[int] = None, end: Optional[int] = None
-) -> Tuple[str, Optional[int], Optional[int]]:
-    """Create the interval tuple used by the pyd4 utility."""
-    return (chrom, start, end) if start and end else chrom
-
-
 def get_d4_file(coverage_file_path: str) -> D4File:
     """Create a D4 file from a file path/URL."""
     return D4File(coverage_file_path)
@@ -68,37 +61,6 @@ def get_d4tools_intervals_mean_coverage(
     return get_d4tools_intervals_coverage(
         d4_file_path=d4_file_path, bed_file_path=tmp_bed_file.name
     )
-
-
-def get_intervals_mean_coverage(
-    d4_file: D4File, intervals: List[Tuple[str, int, int]]
-) -> List[float]:
-    """Return the mean value over a list of intervals of a d4 file."""
-    return d4_file.mean(intervals)
-
-
-def intervals_coverage(
-    d4_file: D4File,
-    intervals: List[Tuple[str, int, int]],
-    completeness_thresholds: Optional[List[int]],
-) -> List[IntervalCoverage]:
-    """Return coverage over a list of intervals."""
-    intervals_cov: List[IntervalCoverage] = []
-    for interval in intervals:
-        intervals_cov.append(
-            IntervalCoverage(
-                chromosome=interval[0],
-                start=interval[1],
-                end=interval[2],
-                mean_coverage=d4_file.mean(interval),
-                completeness=get_intervals_completeness(
-                    d4_file=d4_file,
-                    intervals=[interval],
-                    completeness_thresholds=completeness_thresholds,
-                ),
-            )
-        )
-    return intervals_cov
 
 
 def get_d4tools_intervals_coverage(
@@ -363,7 +325,7 @@ def get_sample_interval_coverage(
                 interval_coverage = IntervalCoverage(
                     **{
                         "interval_type": interval_type.__tablename__,
-                        "interval_id": _get_interval_id(sql_interval=interval),
+                        "interval_id": interval.ensembl_id,
                         "mean_coverage": mean(
                             get_d4tools_intervals_mean_coverage(
                                 d4_file_path=d4_file_path,
@@ -402,19 +364,6 @@ def get_sample_interval_coverage(
         genes_coverage_stats.append(gene_coverage)
 
     return genes_coverage_stats
-
-
-def _get_interval_id(sql_interval: Union[SQLTranscript, SQLExon]) -> str:
-    """Returns an Ensembl ID for an exon or several joined IDs (Ensembl, Mane or RefSeq) for a transcript."""
-
-    interval_ids = []
-    interval_as_dict = sql_interval.__dict__
-    for field in [member.value for member in TranscriptTag]:
-        transcript_tag = interval_as_dict.get(field)
-        if transcript_tag:
-            interval_ids.append(transcript_tag)
-
-    return ", ".join(interval_ids) or sql_interval.ensembl_id
 
 
 def predict_sex(x_cov: float, y_cov: float) -> str:
