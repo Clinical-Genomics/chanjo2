@@ -14,6 +14,7 @@
 -  `coverage.d4_interval_coverage` endpoint crashing trying to computer coverage completeness over an entire chromosome
 - Samples mean coverage values a hundredfold higher on coverage reports
 - Install software packages using poetry v<1.8 to avoid problems installing pyd4 (pyd4 not supporting PEP 517 builds)
+- Typo in report template with unclosed span/div causing cramped genes not found message
 
 ## [1.4]
 ### Changed
