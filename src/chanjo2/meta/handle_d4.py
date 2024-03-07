@@ -140,7 +140,7 @@ def get_report_sample_interval_coverage(
     if not gene_ids_mapping:
         return
 
-    sql_intervals = set_sql_intervals(
+    sql_intervals: List[Union[SQLGene, SQLTranscript, SQLExon]] = set_sql_intervals(
         db=db, interval_type=interval_type, genes=genes, transcript_tags=transcript_tags
     )
 
@@ -247,7 +247,7 @@ def get_sample_interval_coverage(
 
     genes_coverage_stats: List[GeneCoverage] = []
 
-    sql_intervals = set_sql_intervals(
+    sql_intervals: List[Union[SQLGene, SQLTranscript, SQLExon]] = set_sql_intervals(
         db=db, interval_type=interval_type, genes=genes, transcript_tags=transcript_tags
     )
     interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]] = [
