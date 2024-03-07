@@ -1,11 +1,10 @@
 import logging
 import time
 from os.path import isfile
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
 
 import validators
 from fastapi import APIRouter, Depends, HTTPException, status
-from pyd4 import D4File
 from sqlalchemy.orm import Session
 
 from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
@@ -155,7 +154,7 @@ async def samples_genes_coverage(
 ):
     """Returns coverage over a list of genes (entire gene) for a given list of samples in the database."""
 
-    samples_d4_files: Tuple[str, D4File] = get_samples_coverage_file(
+    samples_d4_files: Tuple[str, str] = get_samples_coverage_file(
         db=db, samples=query.samples, case=query.case
     )
 
@@ -171,12 +170,12 @@ async def samples_genes_coverage(
     return {
         sample: get_sample_interval_coverage(
             db=db,
-            d4_file=d4_file,
+            d4_file_path=d4_file_path,
             genes=genes,
             interval_type=SQLGene,
             completeness_thresholds=query.completeness_thresholds,
         )
-        for sample, d4_file in samples_d4_files
+        for sample, d4_file_path in samples_d4_files
     }
 
 
@@ -189,7 +188,7 @@ async def samples_transcripts_coverage(
 ):
     """Returns coverage over a list of genes (transcripts intervals only) for a given list of samples in the database."""
 
-    samples_d4_files: Tuple[str, D4File] = get_samples_coverage_file(
+    samples_d4_files: Tuple[str, str] = get_samples_coverage_file(
         db=db, samples=query.samples, case=query.case
     )
 
@@ -205,12 +204,12 @@ async def samples_transcripts_coverage(
     return {
         sample: get_sample_interval_coverage(
             db=db,
-            d4_file=d4_file,
+            d4_file_path=d4_file_path,
             genes=genes,
             interval_type=SQLTranscript,
             completeness_thresholds=query.completeness_thresholds,
         )
-        for sample, d4_file in samples_d4_files
+        for sample, d4_file_path in samples_d4_files
     }
 
 
@@ -222,7 +221,7 @@ async def samples_exons_coverage(
 ):
     """Returns coverage over a list of genes (exons intervals only) for a given list of samples in the database."""
 
-    samples_d4_files: Tuple[str, D4File] = get_samples_coverage_file(
+    samples_d4_files: Tuple[str, str] = get_samples_coverage_file(
         db=db, samples=query.samples, case=query.case
     )
 
@@ -238,10 +237,10 @@ async def samples_exons_coverage(
     return {
         sample: get_sample_interval_coverage(
             db=db,
-            d4_file=d4_file,
+            d4_file_path=d4_file_path,
             genes=genes,
             interval_type=SQLExon,
             completeness_thresholds=query.completeness_thresholds,
         )
-        for sample, d4_file in samples_d4_files
+        for sample, d4_file_path in samples_d4_files
     }
