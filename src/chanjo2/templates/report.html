@@ -7,7 +7,7 @@
 {% macro errors_block() %}
 	{% for error_description, error_content in errors %}
 		{% if error_content %}
-			<span class="alert alert-danger">{{error_description}}: {{error_content|join(", ")}}</span>
+			<div class="alert alert-danger">{{error_description}}: {{error_content|join(", ")}}</div>
 		{% endif %}
 	{% endfor %}
 {% endmacro %}
