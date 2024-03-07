@@ -10,9 +10,10 @@ services:
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE_NAME}
+      - MYSQL_HOST_PORT=3307
       - MARIADB_RANDOM_ROOT_PASSWORD=T
     healthcheck: # Wait for the service to be ready before accepting incoming connections
-      test: "mysql --user=${MYSQL_USER} --password=${MYSQL_PASSWORD} --execute \"SHOW DATABASES;\""
+      test: "mariadb --user=${MYSQL_USER} --password=${MYSQL_PASSWORD} --execute \"SHOW DATABASES;\""
       timeout: 10s
       retries: 20
     volumes:
