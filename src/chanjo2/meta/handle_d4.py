@@ -250,7 +250,6 @@ def get_sample_interval_coverage(
     sql_intervals = set_sql_intervals(
         db=db, interval_type=interval_type, genes=genes, transcript_tags=transcript_tags
     )
-    # Compute intervals coverage completeness
     interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]] = [
         (interval.ensembl_id, (interval.chromosome, interval.start, interval.stop))
         for interval in sql_intervals
