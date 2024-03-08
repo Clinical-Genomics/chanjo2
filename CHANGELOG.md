@@ -13,12 +13,15 @@
 - Renamed `handle_tasks.py` to `handle_completeness_tasks.py`
 - Refactored coverage endpoints `samples_genes_coverage`, `samples_transcripts_coverage` and `samples_exons_coverage` to use calls to d4tools instead of the pyd4 library
 - Speed up coverage report creation by collecting SQL intervals before looping through samples stats
+- Refactored gene overview to use d4tools instead of pyd4 lib to compute gene-level intervals stats
+- Removed pyd4 lib and all remaining code which was still using it
 ### Fixed
 -  `coverage.d4_interval_coverage` endpoint crashing trying to computer coverage completeness over an entire chromosome
 - Samples mean coverage values a hundredfold higher on coverage reports
 - Install software packages using poetry v<1.8 to avoid problems installing pyd4 (pyd4 not supporting PEP 517 builds)
 - Typo in report template with unclosed span/div causing cramped genes not found message
 - Mariadb container not passing healthcheck when runned from demo docker-compose file
+- Fixed an error on gene overview that made the coverage seem 100-folds higher
 
 ## [1.4]
 ### Changed

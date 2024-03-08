@@ -1,7 +1,4 @@
-from pyd4 import D4File
-
-from chanjo2.constants import DEFAULT_COMPLETENESS_LEVELS
-from chanjo2.meta.handle_d4 import get_d4_file, get_intervals_completeness, predict_sex
+from chanjo2.meta.handle_d4 import predict_sex
 from chanjo2.models.pydantic_models import Sex
 
 
@@ -24,39 +21,3 @@ def test_predict_sex_unknown():
     # GIVEN a coverage of chromosome X equal to 0
     # THEN the predicted sex should be unknown
     assert predict_sex(x_cov=0, y_cov=6.605) == Sex.UNKNOWN
-
-
-def test_get_intervals_completeness_no_thresholds(real_coverage_path, bed_interval):
-    """Test the get_intervals_completeness function when no coverage thresholds are specified."""
-    # GIVEN a real d4 file
-    d4_file: D4File = get_d4_file(real_coverage_path)
-
-    # WHEN the get_intervals_completeness is invoked without completeness_thresholds values
-    completeness_stats: Optional[dict] = get_intervals_completeness(
-        d4_file=d4_file, intervals=[bed_interval], completeness_thresholds=None
-    )
-
-    # THEN it should return None
-    assert completeness_stats is None
-
-
-def test_get_intervals_completeness(real_coverage_path, bed_interval):
-    """Test the function that returns coverage completeness over a d4 file for a list of intervals and a list of coverage thresholds."""
-
-    # GIVEN a real d4 file
-    d4_file: D4File = get_d4_file(real_coverage_path)
-
-    # WHEN the get_intervals_completeness is invoked with all expected parameters
-    completeness_stats: Dict[int, Decimal] = get_intervals_completeness(
-        d4_file=d4_file,
-        intervals=[bed_interval],
-        completeness_thresholds=DEFAULT_COMPLETENESS_LEVELS,
-    )
-    # THEN it should return a dictionary
-    assert isinstance(completeness_stats, dict)
-
-    # CONTAINING stats for all the provided coverage thresholds
-    for level in DEFAULT_COMPLETENESS_LEVELS:
-        assert completeness_stats[level] == 0 or isinstance(
-            completeness_stats[level], float
-        )
