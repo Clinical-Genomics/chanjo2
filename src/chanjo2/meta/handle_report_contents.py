@@ -2,7 +2,6 @@ import logging
 from collections import OrderedDict
 from typing import Dict, List, Optional, Tuple, Union
 
-from pyd4 import D4File
 from sqlalchemy.orm import Session
 
 from chanjo2.crud.intervals import get_genes, get_hgnc_gene, set_sql_intervals
