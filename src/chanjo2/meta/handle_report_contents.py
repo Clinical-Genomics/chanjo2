@@ -203,10 +203,6 @@ def get_gene_overview_coverage_stats(form_data: GeneReportForm, session: Session
 
     set_samples_coverage_files(session=session, samples=form_data.samples)
 
-    samples_d4_files: List[Tuple[str, D4File]] = [
-        (sample.name, D4File(sample.coverage_file_path)) for sample in form_data.samples
-    ]
-
     gene: SQLGene = get_hgnc_gene(
         build=form_data.build, hgnc_id=form_data.hgnc_gene_id, db=session
     )
@@ -215,14 +211,14 @@ def get_gene_overview_coverage_stats(form_data: GeneReportForm, session: Session
     gene_stats["gene"] = gene
 
     samples_coverage_stats: Dict[str, List[GeneCoverage]] = {
-        sample: get_sample_interval_coverage(
+        sample.name: get_sample_interval_coverage(
             db=session,
-            d4_file=d4_file,
+            d4_file_path=sample.coverage_file_path,
             genes=[gene],
             interval_type=INTERVAL_TYPE_SQL_TYPE[form_data.interval_type],
             completeness_thresholds=form_data.completeness_thresholds,
         )
-        for sample, d4_file in samples_d4_files
+        for sample in form_data.samples
     }
     gene_stats["samples_coverage_stats_by_interval"] = (
         get_gene_coverage_stats_by_interval(coverage_by_sample=samples_coverage_stats)
