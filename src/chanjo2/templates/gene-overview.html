@@ -13,7 +13,7 @@
 			</div>
 			<div class="table-responsive">
 				<table class="table table-bordered">
-					<caption>Coverage overview over gene {{ gene.hgnc_symbol or gene.hgnc_id }}</caption>
+					<caption>Coverage overview over gene {{ gene.hgnc_symbol or gene.hgnc_id }} - {{interval_id}}</caption>
 					<thead>
 						<th>Sample</th>
 						<th>Mean coverage</th>
@@ -24,7 +24,7 @@
 					<tbody>
 					{% for sample_stats in samples_stats %}
 						<td>{{ sample_stats[0] }}</td>
-						<td>{{ (sample_stats[1] * 100)|round(2) }}</td>
+						<td>{{ sample_stats[1]|round(2) }}</td>
 						{% for level, _ in levels.items() %}
 							<td>{{ (sample_stats[2][level] * 100)|round(2) }}</td>
 						{% endfor %}
