@@ -13,6 +13,7 @@
 - Refactored coverage endpoints `samples_genes_coverage`, `samples_transcripts_coverage` and `samples_exons_coverage` to use calls to d4tools instead of the pyd4 library
 - Speed up coverage report creation by collecting SQL intervals before looping through samples stats
 - Refactored gene overview to use d4tools instead of pyd4 lib to compute gene-level intervals stats
+- Removed pyd4 lib and all remaining code which was still using it
 ### Fixed
 -  `coverage.d4_interval_coverage` endpoint crashing trying to computer coverage completeness over an entire chromosome
 - Samples mean coverage values a hundredfold higher on coverage reports
