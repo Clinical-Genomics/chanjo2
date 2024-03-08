@@ -11,6 +11,7 @@
 - Refactored code to create coverage report and genes overview report to be faster by using d4tools calls and multiprocessing
 - Renamed `handle_tasks.py` to `handle_completeness_tasks.py`
 - Refactored coverage endpoints `samples_genes_coverage`, `samples_transcripts_coverage` and `samples_exons_coverage` to use calls to d4tools instead of the pyd4 library
+- Speed up coverage report creation by collecting SQL intervals before looping through samples stats
 ### Fixed
 -  `coverage.d4_interval_coverage` endpoint crashing trying to computer coverage completeness over an entire chromosome
 - Samples mean coverage values a hundredfold higher on coverage reports

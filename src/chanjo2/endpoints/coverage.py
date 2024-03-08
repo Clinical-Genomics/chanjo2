@@ -1,7 +1,7 @@
 import logging
 import time
 from os.path import isfile
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
 
 import validators
 from fastapi import APIRouter, Depends, HTTPException, status

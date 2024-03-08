@@ -5,7 +5,7 @@ from typing import Dict, List, Optional, Tuple, Union
 from pyd4 import D4File
 from sqlalchemy.orm import Session
 
-from chanjo2.crud.intervals import get_genes, get_hgnc_gene
+from chanjo2.crud.intervals import get_genes, get_hgnc_gene, set_sql_intervals
 from chanjo2.crud.samples import get_sample
 from chanjo2.meta.handle_d4 import (
     get_report_sample_interval_coverage,
@@ -95,19 +95,6 @@ def get_report_data(query: ReportQuery, session: Session) -> Dict:
         "default_level_completeness_rows": [],
     }
 
-    for sample in query.samples:
-        get_report_sample_interval_coverage(
-            db=session,
-            d4_file_path=sample.coverage_file_path,
-            sample_name=sample.name,
-            genes=genes,
-            interval_type=INTERVAL_TYPE_SQL_TYPE[query.interval_type],
-            completeness_thresholds=query.completeness_thresholds,
-            default_threshold=query.default_level,
-            report_data=data,
-            transcript_tags=[TranscriptTag.REFSEQ_MRNA],
-        )
-
     # Add coverage_report - specific data
     data["sex_rows"] = get_report_sex_rows(samples=query.samples)
 
@@ -119,6 +106,38 @@ def get_report_data(query: ReportQuery, session: Session) -> Dict:
             hgnc_symbols=query.hgnc_gene_symbols,
         )
     ]
+
+    gene_ids_mapping: Dict[str, dict] = {
+        gene.ensembl_id: {"hgnc_id": gene.hgnc_id, "hgnc_symbol": gene.hgnc_symbol}
+        for gene in genes
+    }
+
+    if not gene_ids_mapping:
+        return data
+
+    sql_intervals = set_sql_intervals(
+        db=session,
+        interval_type=INTERVAL_TYPE_SQL_TYPE[query.interval_type],
+        genes=genes,
+        transcript_tags=[TranscriptTag.REFSEQ_MRNA],
+    )
+
+    intervals_coords: List[str] = [
+        f"{interval.chromosome}\t{interval.start}\t{interval.stop}"
+        for interval in sql_intervals
+    ]
+
+    for sample in query.samples:
+        get_report_sample_interval_coverage(
+            d4_file_path=sample.coverage_file_path,
+            sample_name=sample.name,
+            gene_ids_mapping=gene_ids_mapping,
+            sql_intervals=sql_intervals,
+            intervals_coords=intervals_coords,
+            completeness_thresholds=query.completeness_thresholds,
+            default_threshold=query.default_level,
+            report_data=data,
+        )
     return data
 
 
