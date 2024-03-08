@@ -17,6 +17,7 @@
 - Samples mean coverage values a hundredfold higher on coverage reports
 - Install software packages using poetry v<1.8 to avoid problems installing pyd4 (pyd4 not supporting PEP 517 builds)
 - Typo in report template with unclosed span/div causing cramped genes not found message
+- Mariadb container not passing healthcheck when runned from demo docker-compose file
 
 ## [1.4]
 ### Changed
