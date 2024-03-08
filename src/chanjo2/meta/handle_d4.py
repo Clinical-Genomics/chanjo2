@@ -120,34 +120,16 @@ def get_intervals_completeness(
 
 
 def get_report_sample_interval_coverage(
-    db: Session,
     d4_file_path: str,
     sample_name: str,
-    genes: List[SQLGene],
-    interval_type: Union[SQLGene, SQLTranscript, SQLExon],
+    gene_ids_mapping: Dict[str, dict],
+    sql_intervals: List[Union[SQLGene, SQLTranscript, SQLExon]],
+    intervals_coords: List[str],
     completeness_thresholds: List[Optional[int]],
     default_threshold: int,
     report_data: dict,
-    transcript_tags: Optional[List[TranscriptTag]] = [],
 ):
     """Compute stats to populate a coverage report and coverage overview for one sample."""
-
-    gene_ids_mapping: Dict[str, Dict] = {
-        gene.ensembl_id: {"hgnc_id": gene.hgnc_id, "hgnc_symbol": gene.hgnc_symbol}
-        for gene in genes
-    }
-
-    if not gene_ids_mapping:
-        return
-
-    sql_intervals: List[Union[SQLGene, SQLTranscript, SQLExon]] = set_sql_intervals(
-        db=db, interval_type=interval_type, genes=genes, transcript_tags=transcript_tags
-    )
-
-    intervals_coords: List[str] = [
-        f"{interval.chromosome}\t{interval.start}\t{interval.stop}"
-        for interval in sql_intervals
-    ]
 
     # Compute intervals coverage
     intervals_coverage: List[float] = get_d4tools_intervals_mean_coverage(
