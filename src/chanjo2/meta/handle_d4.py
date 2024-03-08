@@ -4,7 +4,6 @@ import tempfile
 from statistics import mean
 from typing import Dict, List, Optional, Tuple, Union
 
-from pyd4 import D4File
 from sqlalchemy.orm import Session
 
 from chanjo2.crud.intervals import get_gene_intervals, set_sql_intervals
@@ -23,11 +22,6 @@ CHROM_INDEX = 0
 START_INDEX = 1
 STOP_INDEX = 2
 STATS_MEAN_COVERAGE_INDEX = 3
-
-
-def get_d4_file(coverage_file_path: str) -> D4File:
-    """Create a D4 file from a file path/URL."""
-    return D4File(coverage_file_path)
 
 
 def get_d4tools_chromosome_mean_coverage(
@@ -76,47 +70,6 @@ def get_d4tools_intervals_coverage(
         float(line.rstrip().split("\t")[3])
         for line in d4tools_stats_mean_cmd.splitlines()
     ]
-
-
-def get_intervals_completeness(
-    d4_file: D4File,
-    intervals: List[Tuple[str, int, int]],
-    completeness_thresholds: Optional[List[int]],
-) -> Optional[Dict[int, float]]:
-    """Compute coverage completeness over threshold values for a list of intervals."""
-
-    if not completeness_thresholds:
-        return None
-
-    total_region_length: int = 0
-    nr_complete_bases_by_threshold: List[int] = [0 for _ in completeness_thresholds]
-
-    for interval in intervals:
-        chrom: str = interval[0]
-        start: int = interval[1]
-        stop: int = interval[2]
-
-        total_region_length += stop - start
-
-        for _, _, d4_tracks_base_coverage in d4_file.enumerate_values(
-            chrom, start, stop
-        ):  # _ and _ -> interval chromosome and start position
-            for index, threshold in enumerate(completeness_thresholds):
-                if (
-                    d4_tracks_base_coverage[0] >= threshold
-                ):  # d4_tracks_base_coverage[0] is the coverage depth for the first track in the d4 file (float)
-                    nr_complete_bases_by_threshold[index] += 1
-
-    completeness_values: Dict[int, float] = {}
-
-    for index, threshold in enumerate(completeness_thresholds):
-        completeness_values[threshold] = (
-            float(nr_complete_bases_by_threshold[index] / total_region_length)
-            if nr_complete_bases_by_threshold[index]
-            else 0
-        )
-
-    return completeness_values
 
 
 def get_report_sample_interval_coverage(
