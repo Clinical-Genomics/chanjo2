@@ -22,6 +22,7 @@
 - Typo in report template with unclosed span/div causing cramped genes not found message
 - Mariadb container not passing healthcheck when runned from demo docker-compose file
 - Fixed an error on gene overview that made the coverage seem 100-folds higher
+- Return error when genes are not provided in the request form to create a coverage report
 
 ## [1.4]
 ### Changed

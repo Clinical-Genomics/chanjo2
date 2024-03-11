@@ -7,7 +7,7 @@ from fastapi.testclient import TestClient
 
 from chanjo2.constants import (
     AMBIGUOUS_SAMPLES_INPUT,
-    MULTIPLE_GENE_LISTS_NOT_SUPPORTED_MSG,
+    GENE_LISTS_NOT_SUPPORTED_MSG,
     WRONG_BED_FILE_MSG,
     WRONG_COVERAGE_FILE_MSG,
 )
@@ -243,7 +243,7 @@ def test_samples_coverage_multiple_genes_lists(
     # AND a meaningful message
     result = response.json()
 
-    assert MULTIPLE_GENE_LISTS_NOT_SUPPORTED_MSG in result["detail"][0]["msg"]
+    assert GENE_LISTS_NOT_SUPPORTED_MSG in result["detail"][0]["msg"]
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
