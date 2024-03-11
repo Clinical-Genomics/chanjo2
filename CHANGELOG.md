@@ -8,7 +8,6 @@
 - Removed 2 redundant functions in `meta.handle.bed.py`
 - `coverage.d4_interval_coverage` is using direct calls to d4tools to retrieve stats over an entire chromosome or a genomic interval
 - Reformat report sample' sex rows and coverage.get_samples_predicted_sex endpoint to use d4tools and not pyd4 for evaluating sample sex
-- Dockerized chanjo2 uses pyd4 v0.3.9 already provided in the Docker base image
 - Refactored code to create coverage report and genes overview report to be faster by using d4tools calls and multiprocessing
 - Renamed `handle_tasks.py` to `handle_completeness_tasks.py`
 - Refactored coverage endpoints `samples_genes_coverage`, `samples_transcripts_coverage` and `samples_exons_coverage` to use calls to d4tools instead of the pyd4 library
