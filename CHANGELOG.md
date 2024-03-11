@@ -1,4 +1,4 @@
-## [unreleased]
+## [1.5]
 ### Added
 - `coverage.d4_intervals_coverage` responses contain also interval name as provided in bed file
 - `coverage.d4_interval_coverage` responses now returns also the genomic region used to compute the stats on
