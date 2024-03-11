@@ -23,7 +23,7 @@ def test_demo_report(client: TestClient, endpoints: Type):
 
 
 def test_report_request_no_genes(client: TestClient, endpoints: Type):
-    """Test error handling when user tries to create a coverage report without roviding a list of genes."""
+    """Test error handling when user tries to create a coverage report without providing a list of genes."""
 
     # GIVEN a request without a list of genes of interest
     REPORT_QUERY_NO_GENES: dict = deepcopy(DEMO_COVERAGE_QUERY_DATA)
