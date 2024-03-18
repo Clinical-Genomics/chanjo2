@@ -12,7 +12,7 @@ from pydantic_settings import SettingsConfigDict
 from chanjo2.constants import (
     AMBIGUOUS_SAMPLES_INPUT,
     DEFAULT_COMPLETENESS_LEVELS,
-    MULTIPLE_GENE_LISTS_NOT_SUPPORTED_MSG,
+    GENE_LISTS_NOT_SUPPORTED_MSG,
     WRONG_COVERAGE_FILE_MSG,
 )
 
@@ -197,7 +197,7 @@ class SampleGeneIntervalQuery(BaseModel):
             if gene_list:
                 nr_provided_gene_lists += 1
         if nr_provided_gene_lists != 1:
-            raise ValueError(MULTIPLE_GENE_LISTS_NOT_SUPPORTED_MSG)
+            raise ValueError(GENE_LISTS_NOT_SUPPORTED_MSG)
         return values
 
     @model_validator(mode="before")
@@ -237,6 +237,20 @@ class ReportQuery(BaseModel):
         if isinstance(sample_list, str):
             return json.loads(sample_list.replace("'", '"'))
         return sample_list
+
+    @model_validator(mode="before")
+    def check_genes_lists(cls, values: dict):
+        nr_provided_gene_lists: int = 0
+        for gene_list in [
+            values.get("ensembl_gene_ids"),
+            values.get("hgnc_gene_ids"),
+            values.get("hgnc_gene_symbols"),
+        ]:
+            if gene_list:
+                nr_provided_gene_lists += 1
+        if nr_provided_gene_lists != 1:
+            raise ValueError(GENE_LISTS_NOT_SUPPORTED_MSG)
+        return values
 
 
 class GeneReportForm(BaseModel):
