@@ -12,7 +12,7 @@ WRONG_COVERAGE_FILE_MSG: str = (
 )
 WRONG_BED_FILE_MSG: str = "Provided intervals files is not a valid BED file"
 MULTIPLE_PARAMS_NOT_SUPPORTED_MSG = "Interval query contains too many filter parameters. Please specify genome build and max one type of filter."
-MULTIPLE_GENE_LISTS_NOT_SUPPORTED_MSG = (
+GENE_LISTS_NOT_SUPPORTED_MSG = (
     "Please provide either Ensembl gene IDs, HGNC gene IDS or HGNC gene symbols."
 )
 AMBIGUOUS_SAMPLES_INPUT = "Please provide either a name of a case or a list of samples."
