@@ -1,3 +1,7 @@
+## [unreleased]
+### Fixed
+- Avoid MySQLdb.OperationalError `Server has gone away` by modifying by setting `pool_pre_ping=True` when creating the engine
+
 ## [1.5]
 ### Added
 - `coverage.d4_intervals_coverage` responses contain also interval name as provided in bed file

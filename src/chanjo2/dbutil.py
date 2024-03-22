@@ -30,7 +30,7 @@ else:
         host = ":".join([host_name, port_no])
 
     mysql_url = f"mysql://{db_user}:{db_password}@{host}/{db_name}"
-    engine = create_engine(mysql_url, echo=True, future=True)
+    engine = create_engine(mysql_url, echo=True, future=True, pool_pre_ping=True)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, future=True)
 Base = declarative_base()
