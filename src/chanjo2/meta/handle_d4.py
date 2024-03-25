@@ -84,6 +84,9 @@ def get_report_sample_interval_coverage(
 ):
     """Compute stats to populate a coverage report and coverage overview for one sample."""
 
+    if not intervals_coords:
+        return
+
     # Compute intervals coverage
     intervals_coverage: List[float] = get_d4tools_intervals_mean_coverage(
         d4_file_path=d4_file_path, intervals=intervals_coords
