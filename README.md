@@ -185,7 +185,7 @@ Chanjo2 can be directly used to create the same types of report produced by [cha
 
 Given a running demo instance of chanjo2, with gene genes and transcripts from genome build GRCh37 loaded in the database, an example of the coverage report based on PanelAPP gene panel described is provided by this demo report endpoint: http://0.0.0.0:8000/report/demo:
 
-<img width="816" alt="image" src="https://github.com/Clinical-Genomics/chanjo2/assets/28093618/dfeb0db8-a5ed-4a2e-9e65-ad2fa34b9816">
+<img width="924" alt="image" src="https://github.com/Clinical-Genomics/chanjo2/assets/28093618/02fcfcc8-94ce-4344-bc02-fae4609810cb">
 
 Similarly, an example report containing an overview of the genes with partial coverage at the given coverage thresholds is provided by the demo overview endpoint:
 

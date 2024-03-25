@@ -2,7 +2,7 @@
 
 An example of this report is shown by the demo report endpoint: http://0.0.0.0:8000/report/demo (requires all genes and gene transcripts in build GRCh37 loaded into the database).
 
-<img width="816" alt="image" src="https://github.com/Clinical-Genomics/chanjo2/assets/28093618/dfeb0db8-a5ed-4a2e-9e65-ad2fa34b9816">
+<img width="924" alt="image" src="https://github.com/Clinical-Genomics/chanjo2/assets/28093618/02fcfcc8-94ce-4344-bc02-fae4609810cb">
 
 The statistics from the report above are computed using the transcripts intervals present in the provided genes.
 
