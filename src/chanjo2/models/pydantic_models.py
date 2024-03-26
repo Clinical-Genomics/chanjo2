@@ -274,7 +274,7 @@ class GeneReportForm(BaseModel):
 
     @field_validator("interval_type", mode="before")
     def interval_type_validator(cls, interval_type: IntervalType):
-        """Make sure that Gene stats are including transcript data even if"""
+        """Make sure that Gene stats are including transcript data even if it's a WGS analysis."""
         if interval_type == IntervalType.GENES:
             return IntervalType.TRANSCRIPTS
         return interval_type
