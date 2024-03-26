@@ -272,6 +272,13 @@ class GeneReportForm(BaseModel):
         thresholds: List[str] = completeness_thresholds.split(",")
         return [int(threshold.strip()) for threshold in thresholds]
 
+    @field_validator("interval_type", mode="before")
+    def interval_type_validator(cls, interval_type: IntervalType) -> IntervalType:
+        """Make sure that gene stats include transcript data even if it's a WGS analysis."""
+        if interval_type == IntervalType.GENES:
+            return IntervalType.TRANSCRIPTS
+        return interval_type
+
 
 class SampleSexRow(BaseModel):
     sample: str
