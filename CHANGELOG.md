@@ -2,7 +2,6 @@
 ### Fixed
 - Avoid MySQLdb.OperationalError `Server has gone away` by modifying by setting `pool_pre_ping=True` when creating the engine
 - Coverage report screenshot displayed on README page and on the documenattion to reflect true statistics from the demo samples
-- Coverage overview over a gene should return transcript statistics if D4 file contains WGS data
 
 ## [1.5]
 ### Added
