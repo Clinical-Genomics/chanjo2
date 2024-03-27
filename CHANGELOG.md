@@ -1,4 +1,4 @@
-## [unreleased]
+## [1.5.1]
 ### Fixed
 - Avoid MySQLdb.OperationalError `Server has gone away` by modifying by setting `pool_pre_ping=True` when creating the engine
 - Coverage report screenshot displayed on README page and on the documenattion to reflect true statistics from the demo samples
