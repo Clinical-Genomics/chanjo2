@@ -136,7 +136,7 @@ def get_report_data(
             sql_intervals=sql_intervals,
             intervals_coords=intervals_coords,
             completeness_thresholds=(
-                query.default_level if is_overview else query.completeness_thresholds
+                [query.default_level] if is_overview else query.completeness_thresholds
             ),
             default_threshold=query.default_level,
             report_data=data,
