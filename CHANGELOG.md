@@ -1,3 +1,7 @@
+## [unreleased]
+### Fixed
+- Faster genes overview report loading
+
 ## [1.5.1]
 ### Fixed
 - Avoid MySQLdb.OperationalError `Server has gone away` by modifying by setting `pool_pre_ping=True` when creating the engine
