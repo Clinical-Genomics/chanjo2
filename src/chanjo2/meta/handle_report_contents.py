@@ -63,7 +63,9 @@ def _serialize_sample(sample: ReportQuerySample) -> Dict[str, str]:
     }
 
 
-def get_report_data(query: ReportQuery, session: Session) -> Dict:
+def get_report_data(
+    query: ReportQuery, session: Session, is_overview: Optional[boolean] = False
+) -> Dict:
     """Return the information that will be displayed in the coverage report or in the genes overview report.."""
 
     set_samples_coverage_files(session=session, samples=query.samples)
@@ -133,7 +135,9 @@ def get_report_data(query: ReportQuery, session: Session) -> Dict:
             gene_ids_mapping=gene_ids_mapping,
             sql_intervals=sql_intervals,
             intervals_coords=intervals_coords,
-            completeness_thresholds=query.completeness_thresholds,
+            completeness_thresholds=(
+                query.default_level if is_overview else query.completeness_thresholds
+            ),
             default_threshold=query.default_level,
             report_data=data,
         )
