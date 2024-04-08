@@ -10,10 +10,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install d4tools
-        uses: actions-rs/install@v0.1
+        uses: baptiste0928/cargo-install@v3
         with:
           crate: d4tools
-          version: latest
 
       - name: Set up python
         id: setup-python

@@ -1,6 +1,7 @@
 ## [unreleased]
 ### Fixed
 - Faster genes overview report loading
+- Cargo install of d4tools in GitHub action
 
 ## [1.5.1]
 ### Fixed
