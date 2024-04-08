@@ -1,4 +1,4 @@
-## [unreleased]
+## [1.5.2]
 ### Fixed
 - Faster genes overview report loading
 
