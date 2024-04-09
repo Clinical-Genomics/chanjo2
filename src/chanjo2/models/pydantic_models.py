@@ -232,6 +232,13 @@ class ReportQuery(BaseModel):
     case_display_name: Optional[str] = None
     samples: List[ReportQuerySample]
 
+    @model_validator(mode='before')
+    @classmethod
+    def validate_to_json(cls, value):
+        if isinstance(value, str):
+            return cls(**json.loads(value))
+        return value
+
     @field_validator("samples", mode="before")
     def samples_validator(cls, sample_list):
         if isinstance(sample_list, str):

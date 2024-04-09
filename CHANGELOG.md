@@ -1,4 +1,6 @@
 ## [unreleased]
+### Added
+- Coverage report and gene coverage overview accept also requests with application/x-www-form-urlencoded data
 ### Fixed
 - Faster genes overview report loading
 
