@@ -1,12 +1,8 @@
 ## [unreleased]
 ### Added
-- Coverage report and gene coverage overview accept also requests with application/x-www-form-urlencoded data
+- Coverage report and genes coverage overview endpoints now accept also requests with application/x-www-form-urlencoded data
 ### Fixed
 - Faster genes overview report loading
-
-## [unreleased]
-### Added
-- Coverage report and genes coverage overview endpoints now accept also requests with application/x-www-form-urlencoded data
 
 ## [1.5.1]
 ### Fixed
