@@ -1,6 +1,5 @@
 import json
 import logging
-from ast import literal_eval
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
@@ -235,20 +234,20 @@ class ReportQuery(BaseModel):
     samples: List[ReportQuerySample]
 
     @staticmethod
-    def format_list(str_list):
-        if isinstance(str_list, str):
-            return literal_eval(str_list)
+    def format_list(str_list: str, cast_type: Union[int, str]):
+        if str_list and isinstance(str_list, str):
+            return list([cast_type(item) for item in str_list.split(",")])
 
     @classmethod
     def as_form(
         cls,
         build: str = Form(...),
-        completeness_thresholds: Union[list, str] = Form(
-            str(DEFAULT_COMPLETENESS_LEVELS)
+        completeness_thresholds: Optional[str] = Form(
+            ",".join([str(num) for num in DEFAULT_COMPLETENESS_LEVELS])
         ),
-        ensembl_gene_ids: Union[list, str] = Form(None),
-        hgnc_gene_ids: Union[list, str] = Form(None),
-        hgnc_gene_symbols: Union[list, str] = Form(None),
+        ensembl_gene_ids: Optional[str] = Form(None),
+        hgnc_gene_ids: Optional[str] = Form(None),
+        hgnc_gene_symbols: Optional[str] = Form(None),
         interval_type: str = Form(...),
         default_level: int = Form(...),
         panel_name: Optional[str] = Form(...),
@@ -257,10 +256,10 @@ class ReportQuery(BaseModel):
     ):
         return cls(
             build=build,
-            completeness_thresholds=cls.format_list(completeness_thresholds),
-            ensembl_gene_ids=cls.format_list(ensembl_gene_ids),
-            hgnc_gene_ids=cls.format_list(hgnc_gene_ids),
-            hgnc_gene_symbols=cls.format_list(hgnc_gene_symbols),
+            completeness_thresholds=cls.format_list(completeness_thresholds, int),
+            ensembl_gene_ids=cls.format_list(ensembl_gene_ids, str),
+            hgnc_gene_ids=cls.format_list(hgnc_gene_ids, int),
+            hgnc_gene_symbols=cls.format_list(hgnc_gene_symbols, str),
             interval_type=interval_type,
             default_level=default_level,
             panel_name=panel_name,
