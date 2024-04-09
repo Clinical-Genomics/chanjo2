@@ -50,7 +50,9 @@ async def demo_overview(request: Request, db: Session = Depends(get_session)):
 
 @router.post("/overview", response_class=HTMLResponse)
 async def overview(
-    request: Request, report_query: ReportQuery, db: Session = Depends(get_session)
+    request: Request,
+    report_query: ReportQuery = Depends(ReportQuery.as_form),
+    db: Session = Depends(get_session),
 ):
     """Return the genes overview page over a list of genes for a list of samples."""
 

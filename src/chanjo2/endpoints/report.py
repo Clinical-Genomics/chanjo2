@@ -50,7 +50,9 @@ async def demo_report(request: Request, db: Session = Depends(get_session)):
 
 @router.post("/report", response_class=HTMLResponse)
 async def report(
-    request: Request, report_query: ReportQuery, db: Session = Depends(get_session)
+    request: Request,
+    report_query: ReportQuery = Depends(ReportQuery.as_form),
+    db: Session = Depends(get_session),
 ):
     """Return a coverage report over a list of genes for a list of samples."""
 

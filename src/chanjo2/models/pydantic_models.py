@@ -1,11 +1,13 @@
 import json
 import logging
+from ast import literal_eval
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 import validators
+from fastapi import Form
 from pydantic import BaseModel, Field, field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
 
@@ -231,6 +233,40 @@ class ReportQuery(BaseModel):
     panel_name: Optional[str] = "Custom panel"
     case_display_name: Optional[str] = None
     samples: List[ReportQuerySample]
+
+    @staticmethod
+    def format_list(str_list):
+        if isinstance(str_list, str):
+            return literal_eval(str_list)
+
+    @classmethod
+    def as_form(
+        cls,
+        build: str = Form(...),
+        completeness_thresholds: Union[list, str] = Form(
+            str(DEFAULT_COMPLETENESS_LEVELS)
+        ),
+        ensembl_gene_ids: Union[list, str] = Form(None),
+        hgnc_gene_ids: Union[list, str] = Form(None),
+        hgnc_gene_symbols: Union[list, str] = Form(None),
+        interval_type: str = Form(...),
+        default_level: int = Form(...),
+        panel_name: Optional[str] = Form(...),
+        case_display_name: Optional[str] = Form(...),
+        samples: str = Form(...),
+    ):
+        return cls(
+            build=build,
+            completeness_thresholds=cls.format_list(completeness_thresholds),
+            ensembl_gene_ids=cls.format_list(ensembl_gene_ids),
+            hgnc_gene_ids=cls.format_list(hgnc_gene_ids),
+            hgnc_gene_symbols=cls.format_list(hgnc_gene_symbols),
+            interval_type=interval_type,
+            default_level=default_level,
+            panel_name=panel_name,
+            case_display_name=case_display_name,
+            samples=samples,
+        )
 
     @field_validator("samples", mode="before")
     def samples_validator(cls, sample_list):
