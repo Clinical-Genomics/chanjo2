@@ -9,17 +9,6 @@ jobs:
       - name: Check out git repository
         uses: actions/checkout@v4
 
-      - name: Install htslib (linux)
-        if: runner.os == 'Linux'
-        run: |
-          cd
-          git clone --recursive https://github.com/samtools/htslib.git
-          cd htslib && git checkout 1.11 && autoheader && autoconf && ./configure --enable-libcurl
-          sudo make -j 4 install
-          sudo ldconfig
-          #echo "::set-env name=LD_LIBRARY_PATH::${LD_LIBRARY_PATH}:${HOME}/htslib"
-          #ls -lh $HOME/htslib/*.so
-
       - name: Install d4tools
         run: |
           git clone https://github.com/38/d4-format
@@ -29,6 +18,7 @@ jobs:
           sudo cp target/release/libd4binding.* /usr/local/lib
           sudo cp d4binding/include/d4.h /usr/local/include/
           sudo ldconfig || true
+          echo 'd4tools --help'
 
       - name: Set up python
         id: setup-python
