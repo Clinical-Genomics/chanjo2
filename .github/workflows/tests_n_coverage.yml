@@ -10,15 +10,15 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install d4tools
-          run: |
-            #export HTSLIB=system
-            git clone https://github.com/38/d4-format
-            echo 'location' >> ~/.curlrc # https://github.com/38/d4-format/pull/77#issuecomment-2044438359
-            cd d4-format
-            cargo build --release --all-features --package=d4binding
-            sudo cp target/release/libd4binding.* /usr/local/lib
-            sudo cp d4binding/include/d4.h /usr/local/include/
-            sudo ldconfig || true
+        run: |
+          #export HTSLIB=system
+          git clone https://github.com/38/d4-format
+          echo 'location' >> ~/.curlrc # https://github.com/38/d4-format/pull/77#issuecomment-2044438359
+          cd d4-format
+          cargo build --release --all-features --package=d4binding
+          sudo cp target/release/libd4binding.* /usr/local/lib
+          sudo cp d4binding/include/d4.h /usr/local/include/
+          sudo ldconfig || true
 
       - name: Set up python
         id: setup-python
