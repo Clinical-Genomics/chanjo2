@@ -3,6 +3,7 @@
 - Coverage report and genes coverage overview endpoints now accept also requests with application/x-www-form-urlencoded data
 ### Fixed
 - Faster genes overview report loading
+- Broken GitHub action due to d4tools failing to install using cargo
 
 ## [1.5.1]
 ### Fixed
