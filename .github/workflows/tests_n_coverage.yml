@@ -9,11 +9,14 @@ jobs:
       - name: Check out git repository
         uses: actions/checkout@v4
 
+      - name: Workaround for installing d4tools
+        run: |
+          echo 'location' >> ~/.curlrc # https://github.com/38/d4-format/pull/77#issuecomment-2044438359
+
       - name: Install d4tools
-        uses: actions-rs/install@v0.1
+        uses: baptiste0928/cargo-install@v3
         with:
           crate: d4tools
-          version: latest
 
       - name: Set up python
         id: setup-python
