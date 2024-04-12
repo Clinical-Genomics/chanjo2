@@ -239,17 +239,11 @@ class ReportQuery(BaseModel):
         return cls(
             build=form_data.get("build"),
             completeness_thresholds=[
-                int(threshold) for threshold in form_data.getlist("hgnc_gene_ids")
+                int(threshold) for threshold in form_data.get("completeness_thresholds")
             ],
-            ensembl_gene_ids=[
-                ensembl_id for ensembl_id in form_data.getlist("ensembl_gene_ids")
-            ],
-            hgnc_gene_ids=[
-                int(hgnc_id) for hgnc_id in form_data.getlist("hgnc_gene_ids")
-            ],
-            hgnc_gene_symbols=[
-                gene_symbol for gene_symbol in form_data.getlist("hgnc_gene_symbols")
-            ],
+            ensembl_gene_ids=form_data.get("ensembl_gene_ids"),
+            hgnc_gene_ids=[int(hgnc_id) for hgnc_id in form_data.get("hgnc_gene_ids")],
+            hgnc_gene_symbols=form_data.get("hgnc_gene_symbols"),
             interval_type=form_data.get("interval_type"),
             default_level=form_data.get("default_level"),
             panel_name=form_data.get("panel_name"),

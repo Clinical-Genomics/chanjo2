@@ -2,7 +2,7 @@ from typing import Dict
 
 from importlib_resources import files
 
-from chanjo2.constants import BUILD_37
+from chanjo2.constants import BUILD_37, DEFAULT_COMPLETENESS_LEVELS
 
 BASE_PATH: str = "chanjo2.demo"
 
@@ -57,5 +57,8 @@ DEMO_COVERAGE_QUERY_FORM = {
     "ensembl_gene_ids": [],
     "hgnc_gene_ids": [],
     "hgnc_gene_symbols": ",".join(DEMO_HGNC_GENE_SYMBOLS),
-    "default_level": '20',
+    "default_level": "20",
+    "completeness_thresholds": ",".join(
+        [str(threshold) for threshold in DEFAULT_COMPLETENESS_LEVELS]
+    ),
 }
