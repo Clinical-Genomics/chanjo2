@@ -247,12 +247,12 @@ class ReportQuery(BaseModel):
 
     @classmethod
     def as_form(cls, form_data: FormData) -> "ReportQuery":
-        LOG.warning(form_data.get("hgnc_gene_symbols"))
         return cls(
             build=form_data.get("build"),
             completeness_thresholds=cls.fix_string_list_values(
                 string_list=form_data.get("completeness_thresholds"), items_format=int
-            ),
+            )
+            or DEFAULT_COMPLETENESS_LEVELS,
             ensembl_gene_ids=cls.fix_string_list_values(
                 string_list=form_data.get("ensembl_gene_ids"), items_format=str
             ),
