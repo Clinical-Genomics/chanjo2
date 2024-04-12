@@ -1,10 +1,9 @@
-import ast
 import json
 import logging
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 import validators
 from pydantic import BaseModel, Field, field_validator, model_validator
@@ -234,16 +233,35 @@ class ReportQuery(BaseModel):
     case_display_name: Optional[str] = None
     samples: List[ReportQuerySample]
 
+    @staticmethod
+    def fix_string_list_values(
+        string_list: Optional[str], items_format: Union[str, int]
+    ) -> Optional[List[Union[str, int]]]:
+        """Helper function that formats list of strings or integers passed by a form as comma separated values."""
+        if string_list is None:
+            return
+        if items_format == str:
+            return [item.strip() for item in string_list.split(",")]
+        else:
+            return [int(item.strip()) for item in string_list.split(",")]
+
     @classmethod
     def as_form(cls, form_data: FormData) -> "ReportQuery":
+        LOG.warning(form_data.get("hgnc_gene_symbols"))
         return cls(
             build=form_data.get("build"),
-            completeness_thresholds=[
-                int(threshold) for threshold in form_data.get("completeness_thresholds")
-            ],
-            ensembl_gene_ids=form_data.get("ensembl_gene_ids"),
-            hgnc_gene_ids=[int(hgnc_id) for hgnc_id in form_data.get("hgnc_gene_ids")],
-            hgnc_gene_symbols=form_data.get("hgnc_gene_symbols"),
+            completeness_thresholds=cls.fix_string_list_values(
+                string_list=form_data.get("completeness_thresholds"), items_format=int
+            ),
+            ensembl_gene_ids=cls.fix_string_list_values(
+                string_list=form_data.get("ensembl_gene_ids"), items_format=str
+            ),
+            hgnc_gene_ids=cls.fix_string_list_values(
+                string_list=form_data.get("hgnc_gene_ids"), items_format=int
+            ),
+            hgnc_gene_symbols=cls.fix_string_list_values(
+                string_list=form_data.get("hgnc_gene_symbols"), items_format=str
+            ),
             interval_type=form_data.get("interval_type"),
             default_level=form_data.get("default_level"),
             panel_name=form_data.get("panel_name"),
