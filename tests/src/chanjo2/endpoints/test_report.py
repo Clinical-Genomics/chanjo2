@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 from requests.models import Response
 
 from chanjo2.constants import GENE_LISTS_NOT_SUPPORTED_MSG
-from chanjo2.demo import DEMO_COVERAGE_QUERY_DATA
+from chanjo2.demo import DEMO_COVERAGE_QUERY_DATA, DEMO_COVERAGE_QUERY_FORM
 
 
 def test_demo_report(client: TestClient, endpoints: Type):
@@ -63,7 +63,7 @@ def test_report_form_data(client: TestClient, endpoints: Type):
     # GIVEN a query with application/x-www-form-urlencoded data to the report endpoint
     response: Response = client.post(
         endpoints.REPORT,
-        data=DEMO_COVERAGE_QUERY_DATA,
+        data=DEMO_COVERAGE_QUERY_FORM,
         headers={"Content-Type": "application/x-www-form-urlencoded"},
     )
     # Then the request should be successful

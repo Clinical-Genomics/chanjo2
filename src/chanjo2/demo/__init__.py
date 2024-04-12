@@ -25,8 +25,9 @@ DEMO_SAMPLE: Dict[str, str] = {
 
 HTTP_SERVER_D4_file = "https://d4-format-testing.s3.us-west-1.amazonaws.com/hg002.d4"
 DEMO_HGNC_GENE_SYMBOLS = ["MTHFR", "DHFR", "FOLR1", "SLC46A1", "LAMA1", "PIPPI6"]
+ANALYSIS_DATE = "2023-04-23T10:20:30.400+02:30"
 
-# Data for generating a demo coverage report
+# JSON Data for generating a demo coverage report
 DEMO_COVERAGE_QUERY_DATA = {
     "build": BUILD_37,
     "samples": [
@@ -34,7 +35,7 @@ DEMO_COVERAGE_QUERY_DATA = {
             "name": DEMO_SAMPLE["name"],
             "case_name": DEMO_CASE["name"],
             "coverage_file_path": d4_demo_path,
-            "analysis_date": "2023-04-23T10:20:30.400+02:30",
+            "analysis_date": ANALYSIS_DATE,
         }
     ],
     "case_display_name": "643594",
@@ -43,5 +44,18 @@ DEMO_COVERAGE_QUERY_DATA = {
     "ensembl_gene_ids": [],
     "hgnc_gene_ids": [],
     "hgnc_gene_symbols": DEMO_HGNC_GENE_SYMBOLS,
+    "default_level": 20,
+}
+
+# HTTP FORM-like data for generating a demo coverage report
+DEMO_COVERAGE_QUERY_FORM = {
+    "build": BUILD_37,
+    "samples": f"[{{'name': '{DEMO_SAMPLE['name']}', 'coverage_file_path': '{d4_demo_path}', 'case_name': '{DEMO_CASE['name']}', 'analysis_date': '{ANALYSIS_DATE}'}}]",
+    "case_display_name": DEMO_CASE["name"],
+    "gene_panel": "A test Panel 1.0",
+    "interval_type": "transcripts",
+    "ensembl_gene_ids": [],
+    "hgnc_gene_ids": [],
+    "hgnc_gene_symbols": ",".join(DEMO_HGNC_GENE_SYMBOLS),
     "default_level": 20,
 }

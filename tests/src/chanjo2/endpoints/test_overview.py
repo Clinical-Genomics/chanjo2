@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 from requests.models import Response
 
 from chanjo2.constants import BUILD_37, DEFAULT_COMPLETENESS_LEVELS
-from chanjo2.demo import DEMO_COVERAGE_QUERY_DATA
+from chanjo2.demo import DEMO_COVERAGE_QUERY_DATA, DEMO_COVERAGE_QUERY_FORM
 
 
 def test_demo_overview(client: TestClient, endpoints: Type):
@@ -44,7 +44,7 @@ def test_overview_form_data(client: TestClient, endpoints: Type):
     # GIVEN a query with application/x-www-form-urlencoded data to the genes coverage overview endpoint
     response: Response = client.post(
         endpoints.OVERVIEW,
-        data=DEMO_COVERAGE_QUERY_DATA,
+        data=DEMO_COVERAGE_QUERY_FORM,
         headers={"Content-Type": "application/x-www-form-urlencoded"},
     )
     # Then the request should be successful

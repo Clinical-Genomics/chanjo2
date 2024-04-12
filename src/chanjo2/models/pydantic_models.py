@@ -246,10 +246,7 @@ class ReportQuery(BaseModel):
             default_level=form_data.get("default_level"),
             panel_name=form_data.get("panel_name"),
             case_display_name=form_data.get("case_display_name"),
-            samples=[
-                ast.literal_eval(string_sample)
-                for string_sample in form_data.getlist("samples")
-            ],
+            samples=form_data.get("samples"),
         )
 
     @field_validator("samples", mode="before")
