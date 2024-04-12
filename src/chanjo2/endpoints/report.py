@@ -60,11 +60,10 @@ async def report(
     request_headers: str = request.headers.get("Content-Type")
 
     try:
-        LOG.warning("JSON")
         if request_headers == "application/json":
             report_query = ReportQuery(**await request.json())
         else:
-            LOG.warning("FORM")
+            LOG.warning(await request.form())
             report_query = ReportQuery.as_form(await request.form())
     except ValidationError as ve:
         raise HTTPException(
