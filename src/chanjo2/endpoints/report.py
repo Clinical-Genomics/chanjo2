@@ -61,9 +61,9 @@ async def report(
 
     try:
         if request_headers == "application/json":
-            report_query: dict = ReportQuery(**await request.json())
+            report_query = ReportQuery(**await request.json())
         else:
-            report_query: dict = ReportQuery.as_form(await request.form())
+            report_query = ReportQuery.as_form(await request.form())
     except ValidationError as ve:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,

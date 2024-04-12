@@ -58,9 +58,9 @@ async def overview(
     request_headers: str = request.headers.get("Content-Type")
     try:
         if request_headers == "application/json":
-            overview_query: dict = ReportQuery(**await request.json())
+            overview_query = ReportQuery(**await request.json())
         else:
-            overview_query: dict = ReportQuery.as_form(await request.form())
+            overview_query = ReportQuery.as_form(await request.form())
 
     except ValidationError as ve:
         raise HTTPException(
