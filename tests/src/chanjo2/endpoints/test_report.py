@@ -61,7 +61,6 @@ def test_report_form_data(client: TestClient, endpoints: Type):
     """Test the coverage report endpoint by providing application/x-www-form-urlencoded data in a POST request."""
 
     # GIVEN a query with application/x-www-form-urlencoded data to the report endpoint
-    # GIVEN a query with json data to the report endpoint
     response: Response = client.post(
         endpoints.REPORT,
         data=DEMO_COVERAGE_QUERY_DATA,
