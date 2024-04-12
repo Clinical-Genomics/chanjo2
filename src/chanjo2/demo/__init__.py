@@ -57,5 +57,5 @@ DEMO_COVERAGE_QUERY_FORM = {
     "ensembl_gene_ids": [],
     "hgnc_gene_ids": [],
     "hgnc_gene_symbols": ",".join(DEMO_HGNC_GENE_SYMBOLS),
-    "default_level": 20,
+    "default_level": '20',
 }
