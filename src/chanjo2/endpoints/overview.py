@@ -1,10 +1,11 @@
 import logging
 from os import path
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from pydantic_core._pydantic_core import ValidationError
 from sqlalchemy.orm import Session
 from starlette.datastructures import FormData
 
@@ -51,13 +52,24 @@ async def demo_overview(request: Request, db: Session = Depends(get_session)):
 @router.post("/overview", response_class=HTMLResponse)
 async def overview(
     request: Request,
-    report_query: ReportQuery = Depends(ReportQuery.as_form),
     db: Session = Depends(get_session),
 ):
     """Return the genes overview page over a list of genes for a list of samples."""
+    request_headers: str = request.headers.get("Content-Type")
+    try:
+        if request_headers == "application/json":
+            overview_query: dict = ReportQuery(**await request.json())
+        else:
+            overview_query: dict = ReportQuery.as_form(await request.form())
+
+    except ValidationError as ve:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=ve.json(),
+        )
 
     overview_content: dict = get_report_data(
-        query=report_query, session=db, is_overview=True
+        query=overview_query, session=db, is_overview=True
     )
     return templates.TemplateResponse(
         "overview.html",

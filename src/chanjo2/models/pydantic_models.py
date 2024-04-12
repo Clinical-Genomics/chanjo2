@@ -1,14 +1,15 @@
+import ast
 import json
 import logging
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 import validators
-from fastapi import Form
 from pydantic import BaseModel, Field, field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
+from starlette.datastructures import FormData
 
 from chanjo2.constants import (
     AMBIGUOUS_SAMPLES_INPUT,
@@ -233,38 +234,22 @@ class ReportQuery(BaseModel):
     case_display_name: Optional[str] = None
     samples: List[ReportQuerySample]
 
-    @staticmethod
-    def format_list(str_list: str, cast_type: Union[int, str]):
-        if str_list and isinstance(str_list, str):
-            return list([cast_type(item) for item in str_list.split(",")])
-
     @classmethod
-    def as_form(
-        cls,
-        build: str = Form(...),
-        completeness_thresholds: Optional[str] = Form(
-            ",".join([str(num) for num in DEFAULT_COMPLETENESS_LEVELS])
-        ),
-        ensembl_gene_ids: Optional[str] = Form(None),
-        hgnc_gene_ids: Optional[str] = Form(None),
-        hgnc_gene_symbols: Optional[str] = Form(None),
-        interval_type: str = Form(...),
-        default_level: int = Form(...),
-        panel_name: Optional[str] = Form(...),
-        case_display_name: Optional[str] = Form(...),
-        samples: str = Form(...),
-    ):
+    def as_form(cls, form_data: FormData) -> "ReportQuery":
         return cls(
-            build=build,
-            completeness_thresholds=cls.format_list(completeness_thresholds, int),
-            ensembl_gene_ids=cls.format_list(ensembl_gene_ids, str),
-            hgnc_gene_ids=cls.format_list(hgnc_gene_ids, int),
-            hgnc_gene_symbols=cls.format_list(hgnc_gene_symbols, str),
-            interval_type=interval_type,
-            default_level=default_level,
-            panel_name=panel_name,
-            case_display_name=case_display_name,
-            samples=samples,
+            build=form_data.get("build"),
+            completeness_thresholds=form_data.getlist("completeness_thresholds"),
+            ensembl_gene_ids=form_data.getlist("ensembl_gene_ids"),
+            hgnc_gene_ids=form_data.getlist("hgnc_gene_ids"),
+            hgnc_gene_symbols=form_data.getlist("hgnc_gene_symbols"),
+            interval_type=form_data.get("interval_type"),
+            default_level=form_data.get("default_level"),
+            panel_name=form_data.get("panel_name"),
+            case_display_name=form_data.get("case_display_name"),
+            samples=[
+                ast.literal_eval(string_sample)
+                for string_sample in form_data.getlist("samples")
+            ],
         )
 
     @field_validator("samples", mode="before")
