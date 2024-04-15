@@ -10,7 +10,6 @@
 - Coverage report screenshot displayed on README page and on the documenattion to reflect true statistics from the demo samples
 - Coverage report/overview page crashing when transcripts or exons intervals are required only genes are loaded
 - Coverage overview over a gene should return transcript statistics if D4 file contains WGS data
-- Codecov 
 
 ## [1.5]
 ### Added
