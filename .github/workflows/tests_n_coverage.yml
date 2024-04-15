@@ -55,12 +55,10 @@ jobs:
           poetry run pytest --cov=./ --cov-report=xml
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v3
         with:
           flags: unittests
           files: ./coverage.xml
           name: codecov-umbrella
           fail_ci_if_error: true
           verbose: true
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
