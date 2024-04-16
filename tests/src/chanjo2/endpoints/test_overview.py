@@ -1,3 +1,4 @@
+import json
 from typing import Dict, List, Type
 
 from fastapi import status
@@ -5,7 +6,7 @@ from fastapi.testclient import TestClient
 from requests.models import Response
 
 from chanjo2.constants import BUILD_37, DEFAULT_COMPLETENESS_LEVELS
-from chanjo2.demo import DEMO_COVERAGE_QUERY_DATA
+from chanjo2.demo import DEMO_COVERAGE_QUERY_DATA, DEMO_COVERAGE_QUERY_FORM
 
 
 def test_demo_overview(client: TestClient, endpoints: Type):
@@ -22,7 +23,7 @@ def test_demo_overview(client: TestClient, endpoints: Type):
 
 
 def test_overview_json_data(client: TestClient, endpoints: Type):
-    """Test the endpoint that creates the genes coverage overview page by providing json data in POST request."""
+    """Test the endpoint that creates the genes coverage overview page by providing json data in the POST request."""
 
     # GIVEN a query with json data to the genes coverage overview endpoint
     response: Response = client.post(
@@ -30,6 +31,22 @@ def test_overview_json_data(client: TestClient, endpoints: Type):
         json=DEMO_COVERAGE_QUERY_DATA,
     )
 
+    # Then the request should be successful
+    assert response.status_code == status.HTTP_200_OK
+
+    # And return an HTML page
+    assert response.template.name == "overview.html"
+
+
+def test_overview_form_data(client: TestClient, endpoints: Type):
+    """Test the endpoint that creates the genes coverage overview page by providing application/x-www-form-urlencoded data in the POST request."""
+
+    # GIVEN a query with application/x-www-form-urlencoded data to the genes coverage overview endpoint
+    response: Response = client.post(
+        endpoints.OVERVIEW,
+        data=DEMO_COVERAGE_QUERY_FORM,
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+    )
     # Then the request should be successful
     assert response.status_code == status.HTTP_200_OK
 

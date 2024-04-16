@@ -3,9 +3,10 @@ import time
 from os import path
 from typing import Dict
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from pydantic_core._pydantic_core import ValidationError
 from sqlalchemy.orm import Session
 
 from chanjo2.dbutil import get_session
@@ -50,11 +51,25 @@ async def demo_report(request: Request, db: Session = Depends(get_session)):
 
 @router.post("/report", response_class=HTMLResponse)
 async def report(
-    request: Request, report_query: ReportQuery, db: Session = Depends(get_session)
+    request: Request,
+    db: Session = Depends(get_session),
 ):
     """Return a coverage report over a list of genes for a list of samples."""
 
     start_time = time.time()
+    request_headers: str = request.headers.get("Content-Type")
+
+    try:
+        if request_headers == "application/json":
+            report_query = ReportQuery(**await request.json())
+        else:
+            report_query = ReportQuery.as_form(await request.form())
+    except ValidationError as ve:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=ve.json(),
+        )
+
     report_content: dict = get_report_data(query=report_query, session=db)
     LOG.debug(f"Time to compute stats: {time.time() - start_time} seconds.")
     return templates.TemplateResponse(
