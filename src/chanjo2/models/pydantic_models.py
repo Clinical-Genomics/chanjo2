@@ -3,11 +3,12 @@ import logging
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 import validators
 from pydantic import BaseModel, Field, field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
+from starlette.datastructures import FormData
 
 from chanjo2.constants import (
     AMBIGUOUS_SAMPLES_INPUT,
@@ -231,6 +232,44 @@ class ReportQuery(BaseModel):
     panel_name: Optional[str] = "Custom panel"
     case_display_name: Optional[str] = None
     samples: List[ReportQuerySample]
+
+    @staticmethod
+    def comma_sep_values_to_list(
+        comma_sep_values: Optional[str], items_format: Union[str, int]
+    ) -> Optional[List[Union[str, int]]]:
+        """Helper function that formats list of strings or integers passed by a form as comma separated values."""
+        if comma_sep_values is None:
+            return
+        if items_format == str:
+            return [item.strip() for item in comma_sep_values.split(",")]
+        else:
+            return [int(item.strip()) for item in comma_sep_values.split(",")]
+
+    @classmethod
+    def as_form(cls, form_data: FormData) -> "ReportQuery":
+        report_query = cls(
+            build=form_data.get("build"),
+            completeness_thresholds=cls.comma_sep_values_to_list(
+                comma_sep_values=form_data.get("completeness_thresholds"),
+                items_format=int,
+            )
+            or DEFAULT_COMPLETENESS_LEVELS,
+            ensembl_gene_ids=cls.comma_sep_values_to_list(
+                comma_sep_values=form_data.get("ensembl_gene_ids"), items_format=str
+            ),
+            hgnc_gene_ids=cls.comma_sep_values_to_list(
+                comma_sep_values=form_data.get("hgnc_gene_ids"), items_format=int
+            ),
+            hgnc_gene_symbols=cls.comma_sep_values_to_list(
+                comma_sep_values=form_data.get("hgnc_gene_symbols"), items_format=str
+            ),
+            interval_type=form_data.get("interval_type"),
+            default_level=form_data.get("default_level"),
+            panel_name=form_data.get("panel_name"),
+            case_display_name=form_data.get("case_display_name"),
+            samples=form_data.get("samples"),
+        )
+        return report_query
 
     @field_validator("samples", mode="before")
     def samples_validator(cls, sample_list):
