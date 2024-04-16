@@ -235,7 +235,7 @@ class ReportQuery(BaseModel):
 
     @staticmethod
     def fix_string_list_values(
-        string_list: Optional[str], items_format: Union[str, int]
+        comma_sep_values: Optional[str], items_format: Union[str, int]
     ) -> Optional[List[Union[str, int]]]:
         """Helper function that formats list of strings or integers passed by a form as comma separated values."""
         if string_list is None:
