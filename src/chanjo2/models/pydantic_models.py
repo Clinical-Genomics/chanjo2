@@ -234,33 +234,34 @@ class ReportQuery(BaseModel):
     samples: List[ReportQuerySample]
 
     @staticmethod
-    def fix_string_list_values(
+    def comma_sep_values_to_list(
         comma_sep_values: Optional[str], items_format: Union[str, int]
     ) -> Optional[List[Union[str, int]]]:
         """Helper function that formats list of strings or integers passed by a form as comma separated values."""
-        if string_list is None:
+        if comma_sep_values is None:
             return
         if items_format == str:
-            return [item.strip() for item in string_list.split(",")]
+            return [item.strip() for item in comma_sep_values.split(",")]
         else:
-            return [int(item.strip()) for item in string_list.split(",")]
+            return [int(item.strip()) for item in comma_sep_values.split(",")]
 
     @classmethod
     def as_form(cls, form_data: FormData) -> "ReportQuery":
-        return cls(
+        report_query = cls(
             build=form_data.get("build"),
-            completeness_thresholds=cls.fix_string_list_values(
-                string_list=form_data.get("completeness_thresholds"), items_format=int
+            completeness_thresholds=cls.comma_sep_values_to_list(
+                comma_sep_values=form_data.get("completeness_thresholds"),
+                items_format=int,
             )
             or DEFAULT_COMPLETENESS_LEVELS,
-            ensembl_gene_ids=cls.fix_string_list_values(
-                string_list=form_data.get("ensembl_gene_ids"), items_format=str
+            ensembl_gene_ids=cls.comma_sep_values_to_list(
+                comma_sep_values=form_data.get("ensembl_gene_ids"), items_format=str
             ),
-            hgnc_gene_ids=cls.fix_string_list_values(
-                string_list=form_data.get("hgnc_gene_ids"), items_format=int
+            hgnc_gene_ids=cls.comma_sep_values_to_list(
+                comma_sep_values=form_data.get("hgnc_gene_ids"), items_format=int
             ),
-            hgnc_gene_symbols=cls.fix_string_list_values(
-                string_list=form_data.get("hgnc_gene_symbols"), items_format=str
+            hgnc_gene_symbols=cls.comma_sep_values_to_list(
+                comma_sep_values=form_data.get("hgnc_gene_symbols"), items_format=str
             ),
             interval_type=form_data.get("interval_type"),
             default_level=form_data.get("default_level"),
@@ -268,6 +269,7 @@ class ReportQuery(BaseModel):
             case_display_name=form_data.get("case_display_name"),
             samples=form_data.get("samples"),
         )
+        return report_query
 
     @field_validator("samples", mode="before")
     def samples_validator(cls, sample_list):
