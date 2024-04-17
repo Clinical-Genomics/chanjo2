@@ -108,7 +108,6 @@
 		function updateOverview(customLevel)
 		{
 			document.getElementById("defaultLevel").value = customLevel;
-			var theForm = document.getElementById("geneStatsForm");
 			theForm.action = '/overview';
 			theForm.submit();
 		}
@@ -116,7 +115,6 @@
 		function getGeneStatsPage(hgncId)
 		{
 			event.preventDefault();
-			var theForm = document.getElementById("geneStatsForm");
 			var geneInput = document.createElement("input");
 			geneInput.setAttribute("type", "hidden");
 			geneInput.setAttribute("name", "hgnc_gene_id");
