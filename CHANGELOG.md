@@ -1,6 +1,8 @@
 ## [unreleased]
 ### Added
 - Coverage report and genes coverage overview endpoints now accept also requests with application/x-www-form-urlencoded data
+### Changed
+- Templates form submit data as application/x-www-form-urlencoded without having to transform it into json
 ### Fixed
 - Faster genes overview report loading
 - Broken GitHub action due to d4tools failing to install using cargo
