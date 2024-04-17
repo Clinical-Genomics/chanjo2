@@ -264,62 +264,6 @@
 				}
 			}
 		}
-
-		// Extracts the content of the body element of an HTML page as a string
-		function updatedReportBody(html)
-		{
-			return /<body.*?>([\s\S]*)<\/body>/.exec(html)[1];
-		}
-
-		// Returns the list of HGNC genes present in the user query as a sring as a list of integers
-		function getFormGeneIDsAsList()
-		{
-			let geneIdsTypes = [null, null, null]; // [Ensembl_ids_list, HGNC_ids_list, HGNC_symbols_list];
-			let formGeneIds = document.getElementById('gene_ids').value.replace(/\s/g, '').split(",");
-			if (!isNaN(formGeneIds[0])) {
-				geneIdsTypes[1] = formGeneIds.map(Number);
-			}
-			else if (formGeneIds[0].startsWith('ENSG')){
-				geneIdsTypes[0] = formGeneIds;
-			}
-			else{
-				geneIdsTypes[2] = formGeneIds;
-			}
-			return geneIdsTypes;
-		}
-
-		function submitAsJson()
-		{
-			event.preventDefault();
-			let geneIds = getFormGeneIDsAsList();
-			let formDict = {
-				'build' : '{{ extras.build }}',
-				'completeness_thresholds' : {{ extras.completeness_thresholds }},
-				'ensembl_gene_ids': geneIds[0],
-				'hgnc_gene_ids' : geneIds[1],
-				'hgnc_gene_symbols' : geneIds[2],
-				'interval_type' : '{{ extras.interval_type }}',
-				'panel_name' : document.getElementById("panel_name").value,
-				'default_level' : document.getElementById("default_level").value,
-				'case_display_name' : '{{ extras.case_name }}',
-				'samples' : {{ extras.samples|safe }},
-			}
-
-			fetch('/report', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify(formDict)
-				})
-				.then(resp => resp.text())
-				.then(html => {
-					document.body.innerHTML = updatedReportBody(html);
-				})
-				.catch(error => {
-					console.error(error);
-			});
-		}
 	</script>
 
 {% endblock %}
