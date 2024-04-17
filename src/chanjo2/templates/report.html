@@ -32,7 +32,7 @@
 					  <label class="form-label">Completeness cutoff</label>
 					  <select class="form-control" name="default_level" id="default_level">
 						{% for level, _ in levels.items() %}
-						  <option value="{{ level }}" {% if level == extras.level %} selected {% endif %}>{{ level }}x</option>
+						  <option value="{{ level }}" {% if level == extras.default_level %} selected {% endif %}>{{ level }}x</option>
 						{% endfor %}
 					  </select>
 					</div>
