@@ -23,6 +23,7 @@
     <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
 		<div class="accordion-body">
 			<!-- hidden fields passed from previous query -->
+			<form name="customizeForm" action="{{url_for('report')}}" method="post"
 			<input type="hidden" id="build" name="build" value="{{extras.build}}">
 			<input type="hidden" id="interval_type" name="interval_type" value="{{extras.interval_type}}">
 			  <div>
@@ -50,7 +51,7 @@
 				  <div><input class="form-control" type="text" name="gene_ids" id ="gene_ids" value="{{ extras.hgnc_gene_ids|join(', ') }}" placeholder="ADK,GIT"></div>
 				</div>
 				<div class="col-4 offset-1 mt-2">
-				  <button class="btn btn-primary mt-4" type="button" onclick="submitAsJson();">Update</button>
+				  <button class="btn btn-primary mt-4" type="submit">Update</button>
 				</div>
 			</div>
 
