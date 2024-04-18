@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
@@ -18,6 +19,13 @@ from chanjo2.constants import (
 )
 
 LOG = logging.getLogger("uvicorn.access")
+
+
+def default_report_coverage_levels() -> List[int]:
+    """Sets the coverage thresholds to be used for report metrics whenever a request doesn't contain 'completeness_thresholds' values."""
+    if os.getenv("REPORT_COVERAGE_LEVELS"):
+        return json.loads(os.getenv("REPORT_COVERAGE_LEVELS"))
+    return DEFAULT_COMPLETENESS_LEVELS
 
 
 class Builds(str, Enum):
@@ -223,7 +231,7 @@ class ReportQuerySample(BaseModel):
 
 class ReportQuery(BaseModel):
     build: Builds
-    completeness_thresholds: Optional[List[int]] = DEFAULT_COMPLETENESS_LEVELS
+    completeness_thresholds: Optional[List[int]] = default_report_coverage_levels()
     ensembl_gene_ids: Optional[List[str]] = None
     hgnc_gene_ids: Optional[List[int]] = None
     hgnc_gene_symbols: Optional[List[str]] = None
@@ -253,7 +261,7 @@ class ReportQuery(BaseModel):
                 comma_sep_values=form_data.get("completeness_thresholds"),
                 items_format=int,
             )
-            or DEFAULT_COMPLETENESS_LEVELS,
+            or default_report_coverage_levels(),
             ensembl_gene_ids=cls.comma_sep_values_to_list(
                 comma_sep_values=form_data.get("ensembl_gene_ids"), items_format=str
             ),
@@ -294,7 +302,7 @@ class ReportQuery(BaseModel):
 
 class GeneReportForm(BaseModel):
     build: Builds
-    completeness_thresholds: Optional[List[int]] = DEFAULT_COMPLETENESS_LEVELS
+    completeness_thresholds: Optional[List[int]] = default_report_coverage_levels()
     hgnc_gene_id: int
     default_level: int = 10
     samples: List[ReportQuerySample]
