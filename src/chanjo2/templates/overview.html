@@ -11,7 +11,7 @@
     <ul class="navbar-nav">
 		{% for level_id, _ in levels.items() %}
 			<li class="nav-item">
-				<a class="nav-link {% if level_id == extras.default_level %}active{% endif %}" href="#" onclick="updateOverview({{level_id}});">Completeness {{ level_id }}x</a>
+				<a class="nav-link {% if level_id == extras.default_level %}active{% endif %}" href="#" onclick="return updateOverview({{level_id}});">Completeness {{ level_id }}x</a>
 			</li>
 		{% endfor%}
     </ul>
@@ -23,10 +23,13 @@
 {% macro incompletely_covered_intervals(active_level) %}
  <form id="geneStatsForm" action="{{url_for('gene_overview')}}" method="post">
 	 <input type="hidden" name="build" value="{{extras.build}}"/>
-	 <input type="hidden" name="default_level" value="{{extras.default_level}}"/>
+	 <input type="hidden" name="default_level" id="defaultLevel" value="{{extras.default_level}}"/>
 	 <input type="hidden" name="completeness_thresholds" value="{{extras.completeness_thresholds|join(',')}}"/>
 	 <input type="hidden" name="samples" value="{{extras.samples|safe}}"/>
 	 <input type="hidden" name="interval_type" value="{{extras.interval_type}}"/>
+	 {% if extras.hgnc_gene_ids %} <!-- genes should be loaded in database -->
+	 	<input type="hidden" name="hgnc_gene_ids" value="{{extras.hgnc_gene_ids|join(',')}}"/>
+	 {% endif %}
 </form>
 	<div class="row">
 		<div class="col-md-12">
@@ -100,45 +103,18 @@
 {% block js_code %}
 	{{ super() }}
 	<script>
-
-		// Extracts the content of the body element of an HTML page as a string
-		function updatedReportBody(html)
-		{
-			return /<body.*?>([\s\S]*)<\/body>/.exec(html)[1];
-		}
+		let theForm = document.getElementById("geneStatsForm");
 
 		function updateOverview(customLevel)
 		{
-			let formDict = {
-				'build' : '{{ extras.build }}',
-				'completeness_thresholds' : {{ extras.completeness_thresholds }},
-				'hgnc_gene_ids' : {{ extras.hgnc_gene_ids }},
-				'interval_type' : '{{ extras.interval_type }}',
-				'default_level' : customLevel,
-				'samples' : {{ extras.samples|safe }},
-			}
-
-			fetch('/overview', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify(formDict)
-				})
-				.then(resp => resp.text())
-				.then(html => {
-					document.body.innerHTML = updatedReportBody(html);
-				})
-				.catch(error => {
-					console.error(error);
-			});
+			document.getElementById("defaultLevel").value = customLevel;
+			theForm.action = '/overview';
+			theForm.submit();
 		}
-
 
 		function getGeneStatsPage(hgncId)
 		{
 			event.preventDefault();
-			var theForm = document.getElementById("geneStatsForm");
 			var geneInput = document.createElement("input");
 			geneInput.setAttribute("type", "hidden");
 			geneInput.setAttribute("name", "hgnc_gene_id");
