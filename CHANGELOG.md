@@ -1,6 +1,7 @@
 ## [1.6]
 ### Added
 - Coverage report and genes coverage overview endpoints now accept also requests with application/x-www-form-urlencoded data
+- Allow system admin to customise coverage levels to be used in reports' metrics by editing the REPORT_COVERAGE_LEVELS in .env file
 ### Changed
 - Templates form submit data as application/x-www-form-urlencoded without having to transform it into json
 ### Fixed
