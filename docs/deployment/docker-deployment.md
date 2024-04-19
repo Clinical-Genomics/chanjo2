@@ -66,3 +66,28 @@ docker run -d --rm -v $(pwd)/.env:/home/worker/app/.env  -p 8000:8000 --expose 8
 
 [docker-hub-chanjo2]: https://hub.docker.com/repository/docker/clinicalgenomics/chanjo2/general
 [dockerfile-link]: https://github.com/Clinical-Genomics/chanjo2/blob/main/Dockerfile
+
+#### Customising the coverage levels used to create coverage reports and genes overview reports
+
+When generating coverage and genes overview reports, the metrics showcased in these documents are calculated across various coverage levels, such as 10x, 20x, and 50x.
+These specific coverage levels can be directly specified in queries to the `/report` and `/overview` endpoints using the `completeness_thresholds parameter`, which accepts a list of integers. 
+For detailed instructions, please refer to the [coverage-reports documentation](../usage/coverage-reports.md).
+Alternatively, you can define these coverage levels in the .env file by adding the following line:
+
+```
+REPORT_COVERAGE_LEVELS=[100,150,,..]
+```
+
+If the `REPORT_COVERAGE_LEVELS` parameter is not present in the .env file and a request does not include a completeness_thresholds value, the report metrics will **default to the following coverage level values: [10, 15, 20, 50, 100]**.
+
+It's important to note that if coverage level values are provided through multiple methods as described above, the application will prioritize them in the following order:
+
+1. Values specified in the user's request
+2. Values included in the .env file
+3. Default coverage level values
+
+Furthermore, it's worth considering that the more coverage levels provided, the longer it will take for the report pages to load.
+
+
+
+
