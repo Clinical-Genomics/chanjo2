@@ -87,7 +87,3 @@ It's important to note that if coverage level values are provided through multip
 3. Default coverage level values
 
 Furthermore, it's worth considering that the more coverage levels provided, the longer it will take for the report pages to load.
-
-
-
-
