@@ -4,6 +4,7 @@
 - Allow system admin to customise coverage levels to be used in reports' metrics by editing the REPORT_COVERAGE_LEVELS in .env file
 ### Changed
 - Templates form submit data as application/x-www-form-urlencoded without having to transform it into json
+- Customize form on report page now accepts genes as Ensembl IDs or HGNC symbols
 ### Fixed
 - Faster genes overview report loading
 - Broken GitHub action due to d4tools failing to install using cargo
