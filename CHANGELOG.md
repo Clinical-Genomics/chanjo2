@@ -5,6 +5,7 @@
 - Documentation on how to change app's default coverage level values to be used when creating the reports
 ### Changed
 - Templates form submit data as application/x-www-form-urlencoded without having to transform it into json
+- Customize form on report page now accepts genes as Ensembl IDs or HGNC symbols
 ### Fixed
 - Faster genes overview report loading
 - Broken GitHub action due to d4tools failing to install using cargo

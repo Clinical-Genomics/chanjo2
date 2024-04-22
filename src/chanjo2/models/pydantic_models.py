@@ -253,31 +253,50 @@ class ReportQuery(BaseModel):
         else:
             return [int(item.strip()) for item in comma_sep_values.split(",")]
 
+    @staticmethod
+    def set_query_genes(form_data: FormData):
+        """Helper function that collects form data from report page requests and sets the right gene IDs/values in the query."""
+        query_genes = {
+            "ensembl_gene_ids": [],
+            "hgnc_gene_ids": [],
+            "hgnc_gene_symbols": [],
+        }
+
+        for gene_ids_key in query_genes.keys():
+            if bool(form_data.get(gene_ids_key)) is False:
+                continue
+            id_values: List[Union[str, int]] = [
+                item.strip() for item in form_data.get(gene_ids_key).split(",")
+            ]
+            for value in id_values:
+                if value.isdigit():
+                    query_genes["hgnc_gene_ids"].append(value)
+                elif value.startswith("ENSG"):
+                    query_genes["ensembl_gene_ids"].append(value)
+                else:
+                    query_genes["hgnc_gene_symbols"].append(value)
+        return query_genes
+
     @classmethod
     def as_form(cls, form_data: FormData) -> "ReportQuery":
-        report_query = cls(
-            build=form_data.get("build"),
-            completeness_thresholds=cls.comma_sep_values_to_list(
+        query_genes: dict = cls.set_query_genes(form_data)
+        report_query: dict = {
+            "build": form_data.get("build"),
+            "completeness_thresholds": cls.comma_sep_values_to_list(
                 comma_sep_values=form_data.get("completeness_thresholds"),
                 items_format=int,
             )
             or default_report_coverage_levels(),
-            ensembl_gene_ids=cls.comma_sep_values_to_list(
-                comma_sep_values=form_data.get("ensembl_gene_ids"), items_format=str
-            ),
-            hgnc_gene_ids=cls.comma_sep_values_to_list(
-                comma_sep_values=form_data.get("hgnc_gene_ids"), items_format=int
-            ),
-            hgnc_gene_symbols=cls.comma_sep_values_to_list(
-                comma_sep_values=form_data.get("hgnc_gene_symbols"), items_format=str
-            ),
-            interval_type=form_data.get("interval_type"),
-            default_level=form_data.get("default_level"),
-            panel_name=form_data.get("panel_name"),
-            case_display_name=form_data.get("case_display_name"),
-            samples=form_data.get("samples"),
-        )
-        return report_query
+            "ensembl_gene_ids": query_genes["ensembl_gene_ids"],
+            "hgnc_gene_ids": query_genes["hgnc_gene_ids"],
+            "hgnc_gene_symbols": query_genes["hgnc_gene_symbols"],
+            "interval_type": form_data.get("interval_type"),
+            "default_level": form_data.get("default_level"),
+            "panel_name": form_data.get("panel_name"),
+            "case_display_name": form_data.get("case_display_name"),
+            "samples": form_data.get("samples"),
+        }
+        return cls(**report_query)
 
     @field_validator("samples", mode="before")
     def samples_validator(cls, sample_list):
