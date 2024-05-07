@@ -1,5 +1,6 @@
 ## [unreleased]
 ### Fixed
+- Position of `Show genes` checkbox on report page
 - Updating gene panel name using the web form on report page
 
 ## [1.6]
