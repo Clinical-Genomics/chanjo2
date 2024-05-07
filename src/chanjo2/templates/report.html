@@ -125,8 +125,10 @@
 
 {% macro default_level_metrics() %}
 <div>
-	 <span><label class="control-label">Show genes</label></span>
-	 <span><input type="checkbox" name="show_genes" onclick="toggle_visibility(['incompletelyCoveredGenesHeader', 'incompletelyCoveredGenesCell']);"></span>
+	<label>
+		Show genes
+		<input type="checkbox" name="show_genes" style="vertical-align:middle;" onclick="toggle_visibility(['incompletelyCoveredGenesHeader', 'incompletelyCoveredGenesCell']);">
+	</label>
 </div>
 <table class="table table-bordered table-hover">
 	 <caption>Genes/Transcripts/Exons coverage at default coverage threshold</caption>
