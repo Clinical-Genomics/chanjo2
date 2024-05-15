@@ -86,7 +86,10 @@ def get_report_data(
             "default_level": query.default_level,
             "interval_type": query.interval_type.value,
             "case_name": query.case_display_name,
-            "hgnc_gene_ids": [gene.hgnc_id for gene in genes],
+            "hgnc_gene_ids": [gene.hgnc_id for gene in genes]
+            or query.hgnc_gene_ids
+            or query.hgnc_gene_symbols
+            or query.ensembl_gene_ids,
             "build": query.build.value,
             "completeness_thresholds": query.completeness_thresholds,
             "samples": [_serialize_sample(sample) for sample in query.samples],
