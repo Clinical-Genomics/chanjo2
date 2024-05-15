@@ -1,6 +1,7 @@
 ## [unreleased]
 ### Fixed
 - Position of `Show genes` checkbox on report page
+- Temporary fix to the #78 bug in d4tools which returns too high coverage in regions read from a bed file
 
 ## [1.6]
 ### Added

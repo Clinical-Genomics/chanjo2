@@ -62,10 +62,19 @@ def get_d4tools_intervals_coverage(
 ) -> List[float]:
     """Return the coverage for intervals of a d4 file that are found in a bed file."""
 
+    # This is a workaround to fix the following issue -> https://github.com/38/d4-format/issues/78
+    # revert to this code as soon as the bug on d4tools is fixed
+    """
     d4tools_stats_mean_cmd: str = subprocess.check_output(
         ["d4tools", "stat", "--region", bed_file_path, d4_file_path, "--stat", "mean"],
         text=True,
     )
+    """
+    cmd = f"for interval in {bed_file_path}; do d4tools stat --region $interval {d4_file_path}; done"
+    d4tools_stats_mean_cmd = subprocess.run(
+        cmd, shell=True, check=True, text=True, capture_output=True
+    ).stdout
+
     return [
         float(line.rstrip().split("\t")[3])
         for line in d4tools_stats_mean_cmd.splitlines()
