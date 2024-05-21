@@ -58,7 +58,7 @@ def get_d4tools_intervals_mean_coverage(
     return intervals_stats
 
 
-def get_d4tools_intervals_coverage(d4_file_path: str, interval: str) -> float:
+def get_d4tools_intervals_coverage(d4_file_path: str, interval: str) -> Optional[float]:
     """Return the coverage for one interval of a d4 file."""
 
     # This is a workaround to fix the following issue -> https://github.com/38/d4-format/issues/78
