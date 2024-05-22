@@ -62,7 +62,7 @@ def get_d4tools_intervals_coverage(d4_file_path: str, interval: str) -> Optional
     """Return the coverage for one interval of a d4 file."""
 
     # This is a workaround to fix the following issue -> https://github.com/38/d4-format/issues/78
-    cmd = f'd4tools stat -s median {d4_file_path} -r <(echo -e "{interval}")'
+    cmd = f'd4tools stat -s mean {d4_file_path} -r <(echo -e "{interval}")'
 
     p_out, p_err = subprocess.Popen(
         cmd,
