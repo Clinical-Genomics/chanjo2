@@ -73,11 +73,9 @@ def get_d4tools_intervals_coverage(
 
 
 def get_d4tols_bed_line_coverage(d4_file_path: str, interval: str):
-    """Return the coverage for one line of a bed file."""
-
-    # This is a workaround to fix the following issue -> https://github.com/38/d4-format/issues/78
-    cmd = f'd4tools stat -s mean {d4_file_path} -r <(echo -e "{interval}")'
-
+    """Return the coverage for one line of a bed file.
+    This is a workaround to fix the following issue -> https://github.com/38/d4-format/issues/78
+    """
     p_out, p_err = subprocess.Popen(
         cmd,
         shell=True,
@@ -108,6 +106,8 @@ def get_report_sample_interval_coverage(
         return
 
     # Compute intervals coverage
+    # This function is instead meant to invoke get_d4tools_intervals_mean_coverage
+    # This is a workaround to fix the following issue -> https://github.com/38/d4-format/issues/78
     intervals_coverage: List[float] = get_d4tols_bed_line_coverage(
         d4_file_path=d4_file_path, intervals=intervals_coords
     )
