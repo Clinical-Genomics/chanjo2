@@ -108,7 +108,7 @@ def get_report_sample_interval_coverage(
         return
 
     # Compute intervals coverage
-    intervals_coverage: List[float] = get_d4tools_intervals_mean_coverage(
+    intervals_coverage: List[float] = get_d4tols_bed_line_coverage(
         d4_file_path=d4_file_path, intervals=intervals_coords
     )
     completeness_row_dict: dict = {"mean_coverage": mean(intervals_coverage)}
