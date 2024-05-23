@@ -1,5 +1,6 @@
 import logging
 import subprocess
+import tempfile
 from statistics import mean
 from typing import Dict, List, Optional, Tuple, Union
 
@@ -46,20 +47,33 @@ def get_d4tools_intervals_mean_coverage(
     d4_file_path: str, intervals: List[str]
 ) -> List[float]:
     """Return the mean value over a list of intervals of a d4 file."""
-    intervals_stats: List[float] = []
-    for interval in intervals:
-        interval_stat: Optional[float] = intervals_stats.append(
-            get_d4tools_intervals_coverage(
-                d4_file_path=d4_file_path, interval=interval.rstrip()
-            )
-        )
-        if interval_stat:
-            intervals_stats.append(interval_stat)
-    return intervals_stats
+
+    tmp_bed_file = tempfile.NamedTemporaryFile()
+    with open(tmp_bed_file.name, "w") as bed_file:
+        bed_file.write("\n".join(intervals))
+
+    return get_d4tools_intervals_coverage(
+        d4_file_path=d4_file_path, bed_file_path=tmp_bed_file.name
+    )
 
 
-def get_d4tools_intervals_coverage(d4_file_path: str, interval: str) -> Optional[float]:
-    """Return the coverage for one interval of a d4 file."""
+def get_d4tools_intervals_coverage(
+    d4_file_path: str, bed_file_path: str
+) -> List[float]:
+    """Return the coverage for intervals of a d4 file that are found in a bed file."""
+
+    d4tools_stats_mean_cmd: str = subprocess.check_output(
+        ["d4tools", "stat", "--region", bed_file_path, d4_file_path, "--stat", "mean"],
+        text=True,
+    )
+    return [
+        float(line.rstrip().split("\t")[3])
+        for line in d4tools_stats_mean_cmd.splitlines()
+    ]
+
+
+def get_d4tols_bed_line_coverage(d4_file_path: str, interval: str):
+    """Return the coverage for one line of a bed file."""
 
     # This is a workaround to fix the following issue -> https://github.com/38/d4-format/issues/78
     cmd = f'd4tools stat -s mean {d4_file_path} -r <(echo -e "{interval}")'
