@@ -72,6 +72,29 @@ def get_d4tools_intervals_coverage(
     ]
 
 
+def get_d4tools_bed_lines_coverage(
+    d4_file_path: str, intervals: List[str]
+) -> List[float]:
+    """Return the coverage for one line of a bed file.
+    This is a workaround to fix the following issue -> https://github.com/38/d4-format/issues/78
+    """
+    intervals_coverage: List[float] = []
+    for interval in intervals:
+        cmd = f'd4tools stat -s mean {d4_file_path} -r <(echo -e "{interval}")'
+        p_out, p_err = subprocess.Popen(
+            cmd,
+            shell=True,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            executable="/bin/bash",
+        ).communicate()
+        if p_err:
+            continue
+        intervals_coverage.append(float(p_out.split("\t")[3]))
+    return intervals_coverage
+
+
 def get_report_sample_interval_coverage(
     d4_file_path: str,
     sample_name: str,
@@ -88,7 +111,8 @@ def get_report_sample_interval_coverage(
         return
 
     # Compute intervals coverage
-    intervals_coverage: List[float] = get_d4tools_intervals_mean_coverage(
+    # This is a workaround to fix the following issue -> https: // github.com / 38 / d4 - format / issues / 78
+    intervals_coverage: List[float] = get_d4tools_bed_lines_coverage(
         d4_file_path=d4_file_path, intervals=intervals_coords
     )
     completeness_row_dict: dict = {"mean_coverage": mean(intervals_coverage)}

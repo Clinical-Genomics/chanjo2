@@ -4,6 +4,7 @@
 ### Fixed
 - Position of `Show genes` checkbox on report page
 - Updating gene panel name using the web form on report page
+- Workaround for https://github.com/38/d4-format/issues/78 -> compute mean coverage by running d4tools stat over single intervals
 
 ## [1.6]
 ### Added
