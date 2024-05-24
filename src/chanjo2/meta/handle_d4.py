@@ -72,7 +72,7 @@ def get_d4tools_intervals_coverage(
     ]
 
 
-def get_d4tols_bed_line_coverage(
+def get_d4tools_bed_line_coverage(
     d4_file_path: str, intervals: List[str]
 ) -> List[float]:
     """Return the coverage for one line of a bed file.
@@ -113,7 +113,7 @@ def get_report_sample_interval_coverage(
     # Compute intervals coverage
     # This function is instead meant to invoke get_d4tools_intervals_mean_coverage
     # This is a workaround to fix the following issue -> https://github.com/38/d4-format/issues/78
-    intervals_coverage: List[float] = get_d4tols_bed_line_coverage(
+    intervals_coverage: List[float] = get_d4tools_bed_line_coverage(
         d4_file_path=d4_file_path, intervals=intervals_coords
     )
     completeness_row_dict: dict = {"mean_coverage": mean(intervals_coverage)}
