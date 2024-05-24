@@ -75,7 +75,7 @@ def get_d4tools_intervals_coverage(
 def get_d4tools_bed_lines_coverage(
     d4_file_path: str, intervals: List[str]
 ) -> List[float]:
-    """Return the coverage for one line of a bed file.
+    """Return the coverage over each line of a bed file as a list of floating point numbers.
     This is a workaround to fix the following issue -> https://github.com/38/d4-format/issues/78
     """
     intervals_coverage: List[float] = []
