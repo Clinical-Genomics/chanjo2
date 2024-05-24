@@ -4,7 +4,6 @@
 ### Fixed
 - Position of `Show genes` checkbox on report page
 - Updating gene panel name using the web form on report page
-- Workaround for https://github.com/38/d4-format/issues/78 -> run d4tool stat for each single region
 
 ## [1.6]
 ### Added
