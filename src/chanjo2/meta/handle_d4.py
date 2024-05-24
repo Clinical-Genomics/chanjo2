@@ -43,9 +43,7 @@ def get_d4tools_chromosome_mean_coverage(
     return chromosomes_coverage
 
 
-def get_d4tools_intervals_mean_coverage(
-    d4_file_path: str, intervals: List[str]
-) -> List[float]:
+def get_d4tools_intervals_mean_coverage(d4_file_path: str, intervals: List[str]) -> List[float]:
     """Return the mean value over a list of intervals of a d4 file."""
 
     tmp_bed_file = tempfile.NamedTemporaryFile()
@@ -57,19 +55,35 @@ def get_d4tools_intervals_mean_coverage(
     )
 
 
-def get_d4tools_intervals_coverage(
-    d4_file_path: str, bed_file_path: str
-) -> List[float]:
+def get_d4tools_intervals_coverage(d4_file_path: str, bed_file_path: str) -> List[float]:
     """Return the coverage for intervals of a d4 file that are found in a bed file."""
 
     d4tools_stats_mean_cmd: str = subprocess.check_output(
         ["d4tools", "stat", "--region", bed_file_path, d4_file_path, "--stat", "mean"],
         text=True,
     )
-    return [
-        float(line.rstrip().split("\t")[3])
-        for line in d4tools_stats_mean_cmd.splitlines()
-    ]
+    return [float(line.rstrip().split("\t")[3]) for line in d4tools_stats_mean_cmd.splitlines()]
+
+
+def get_d4tools_bed_lines_coverage(d4_file_path: str, intervals: List[str]) -> List[float]:
+    """Return the coverage for one line of a bed file.
+    This is a workaround to fix the following issue -> https://github.com/38/d4-format/issues/78
+    """
+    intervals_coverage: List[float] = []
+    for interval in intervals:
+        cmd = f'd4tools stat -s mean {d4_file_path} -r <(echo -e "{interval}")'
+        p_out, p_err = subprocess.Popen(
+            cmd,
+            shell=True,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            executable="/bin/bash",
+        ).communicate()
+        if p_err:
+            continue
+        intervals_coverage.append(float(p_out.split("\t")[3]))
+    return intervals_coverage
 
 
 def get_report_sample_interval_coverage(
@@ -88,7 +102,8 @@ def get_report_sample_interval_coverage(
         return
 
     # Compute intervals coverage
-    intervals_coverage: List[float] = get_d4tools_intervals_mean_coverage(
+    # This is a workaround to fix the following issue -> https: // github.com / 38 / d4 - format / issues / 78
+    intervals_coverage: List[float] = get_d4tools_bed_lines_coverage(
         d4_file_path=d4_file_path, intervals=intervals_coords
     )
     completeness_row_dict: dict = {"mean_coverage": mean(intervals_coverage)}
@@ -98,12 +113,10 @@ def get_report_sample_interval_coverage(
         (interval.ensembl_id, (interval.chromosome, interval.start, interval.stop))
         for interval in sql_intervals
     ]
-    intervals_coverage_completeness: Dict[str, dict] = (
-        coverage_completeness_multitasker(
-            d4_file_path=d4_file_path,
-            thresholds=completeness_thresholds,
-            interval_ids_coords=interval_ids_coords,
-        )
+    intervals_coverage_completeness: Dict[str, dict] = coverage_completeness_multitasker(
+        d4_file_path=d4_file_path,
+        thresholds=completeness_thresholds,
+        interval_ids_coords=interval_ids_coords,
     )
 
     interval_ids = set()
@@ -129,12 +142,8 @@ def get_report_sample_interval_coverage(
                     if interval.ensembl_id.startswith("ENSG")
                     else interval.ensembl_gene_id
                 )
-                interval_hgnc_id: int = gene_ids_mapping[interval_ensembl_gene][
-                    "hgnc_id"
-                ]
-                interval_hgnc_symbol: str = gene_ids_mapping[interval_ensembl_gene][
-                    "hgnc_symbol"
-                ]
+                interval_hgnc_id: int = gene_ids_mapping[interval_ensembl_gene]["hgnc_id"]
+                interval_hgnc_symbol: str = gene_ids_mapping[interval_ensembl_gene]["hgnc_symbol"]
                 genes_covered_under_custom_threshold.add(interval_hgnc_symbol)
                 incomplete_coverages_rows.append(
                     (
@@ -156,9 +165,7 @@ def get_report_sample_interval_coverage(
     report_data["completeness_rows"].append((sample_name, completeness_row_dict))
     report_data["incomplete_coverage_rows"] += incomplete_coverages_rows
     fully_covered_intervals_percent = round(
-        100
-        * (len(interval_ids) - nr_intervals_covered_under_custom_threshold)
-        / len(interval_ids),
+        100 * (len(interval_ids) - nr_intervals_covered_under_custom_threshold) / len(interval_ids),
         2,
     )
     report_data["default_level_completeness_rows"].append(
@@ -192,12 +199,10 @@ def get_sample_interval_coverage(
         (interval.ensembl_id, (interval.chromosome, interval.start, interval.stop))
         for interval in sql_intervals
     ]
-    intervals_coverage_completeness: Dict[str, dict] = (
-        coverage_completeness_multitasker(
-            d4_file_path=d4_file_path,
-            thresholds=completeness_thresholds,
-            interval_ids_coords=interval_ids_coords,
-        )
+    intervals_coverage_completeness: Dict[str, dict] = coverage_completeness_multitasker(
+        d4_file_path=d4_file_path,
+        thresholds=completeness_thresholds,
+        interval_ids_coords=interval_ids_coords,
     )
 
     # Create GeneCoverage objects
@@ -222,9 +227,7 @@ def get_sample_interval_coverage(
                     intervals=[f"{gene.chromosome}\t{gene.start}\t{gene.stop}"],
                 )
             )
-            gene_coverage.completeness = intervals_coverage_completeness.get(
-                gene.ensembl_id, {}
-            )
+            gene_coverage.completeness = intervals_coverage_completeness.get(gene.ensembl_id, {})
 
         else:  # Retrieve transcripts or exons for this gene
 
@@ -271,24 +274,18 @@ def get_sample_interval_coverage(
                                 ],
                             )
                         ),
-                        "completeness": intervals_coverage_completeness[
-                            interval.ensembl_id
-                        ],
+                        "completeness": intervals_coverage_completeness[interval.ensembl_id],
                     }
                 )
 
                 gene_coverage.inner_intervals.append(interval_coverage)
                 inner_intervals_ensembl_ids.add(interval.ensembl_id)
 
-            gene_intervals_mean_coverage: List[float] = (
-                get_d4tools_intervals_mean_coverage(
-                    d4_file_path=d4_file_path, intervals=intervals_bed_coords
-                )
+            gene_intervals_mean_coverage: List[float] = get_d4tools_intervals_mean_coverage(
+                d4_file_path=d4_file_path, intervals=intervals_bed_coords
             )
             gene_coverage.mean_coverage = (
-                mean(gene_intervals_mean_coverage)
-                if gene_intervals_mean_coverage
-                else 0
+                mean(gene_intervals_mean_coverage) if gene_intervals_mean_coverage else 0
             )
 
             for threshold in completeness_thresholds:
