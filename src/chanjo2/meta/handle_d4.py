@@ -111,7 +111,7 @@ def get_report_sample_interval_coverage(
         return
 
     # Compute intervals coverage
-    # This is a workaround to fix the following issue -> https: // github.com / 38 / d4 - format / issues / 78
+    # This is a workaround to fix the following issue -> https://github.com/38/d4-format/issues/78
     intervals_coverage: List[float] = get_d4tools_bed_lines_coverage(
         d4_file_path=d4_file_path, intervals=intervals_coords
     )
