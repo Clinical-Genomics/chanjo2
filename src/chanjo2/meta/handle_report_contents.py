@@ -127,7 +127,7 @@ def get_report_data(
     )
 
     intervals_coords: List[str] = [
-        f"{interval.chromosome}\t{interval.start}\t{interval.stop}"
+        f"{interval.chromosome}:{interval.start}-{interval.stop}"
         for interval in sql_intervals
     ]
 
