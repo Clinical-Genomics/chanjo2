@@ -92,7 +92,7 @@ def get_d4tols_bed_line_coverage(
         if p_err:
             continue
         intervals_coverage.append(float(p_out.split("\t")[3]))
-        return intervals_coverage
+    return intervals_coverage
 
 
 def get_report_sample_interval_coverage(
