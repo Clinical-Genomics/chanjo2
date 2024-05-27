@@ -3,11 +3,14 @@ FROM clinicalgenomics/python3.11-venv-d4tools:1.0
 LABEL about.home="https://github.com/Clinical-Genomics/chanjo2"
 LABEL about.license="MIT License (MIT)"
 
+user root
+
 # Install base dependencies
 RUN apt-get update && \
      apt-get -y upgrade && \
      apt-get -y install --no-install-recommends default-libmysqlclient-dev && \
      apt-get clean
+    
 
 # make sure all messages always reach console
 ENV PYTHONUNBUFFERED=1
