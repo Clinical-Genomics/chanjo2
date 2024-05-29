@@ -1,6 +1,8 @@
 ## [unreleased]
 ### Added
 - An environment.yml with the minimum supported python version (3.8) and the installed libs
+### Changed
+- pyd4 library no longer available in chanjo2 Docker image
 ### Fixed
 - Position of `Show genes` checkbox on report page
 - Updating gene panel name using the web form on report page
