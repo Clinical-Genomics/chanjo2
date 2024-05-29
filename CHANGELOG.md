@@ -1,4 +1,4 @@
-## [unreleased]
+## [1.7]
 ### Added
 - An environment.yml with the minimum supported python version (3.8) and the installed libs
 ### Changed
