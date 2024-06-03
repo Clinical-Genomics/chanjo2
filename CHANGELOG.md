@@ -1,4 +1,6 @@
 ## [unreleased]
+### Changed
+- Updated PR template
 ### Fixed
 - Updated version of external images used in GitHub actions
 
