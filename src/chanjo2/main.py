@@ -23,6 +23,15 @@ APP_ROUTER_TAGS: List[Tuple] = [
     (overview.router, "overview"),
 ]
 
+# Configure logging
+console_formatter = uvicorn.logging.ColourizedFormatter(
+    "{levelprefix} {asctime} : {message}", style="{", use_colors=True
+)
+if LOG.handlers:
+    LOG.handlers[0].setFormatter(console_formatter)
+else:
+    logging.basicConfig()
+
 
 def create_db_and_tables():
     Base.metadata.create_all(engine)
@@ -56,15 +65,6 @@ for router, tag in APP_ROUTER_TAGS:
 
 
 async def startup_db():
-    # Configure logging
-    console_formatter = uvicorn.logging.ColourizedFormatter(
-        "{levelprefix} {asctime} : {message}", style="{", use_colors=True
-    )
-    if LOG.handlers:
-        LOG.handlers[0].setFormatter(console_formatter)
-    else:
-        logging.basicConfig()
-
     # Create database tables
     create_db_and_tables()
 
