@@ -1,6 +1,7 @@
 ## [unreleased]
 ### CHanged
 - Updated PR template
+- Generalised issue templates to make them more user-friendly for people outside our organisation
 - Moved logging setup out of app lifespan and db initialisation logic
 ### Fixed
 - Updated version of external images used in GitHub actions
