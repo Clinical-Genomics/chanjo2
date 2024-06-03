@@ -1,6 +1,6 @@
 ## [unreleased]
 ### Fixed
-- Updated version of external containers used in GitHub actions
+- Updated version of external images used in GitHub actions
 
 ## [1.7]
 ### Added
