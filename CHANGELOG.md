@@ -1,5 +1,6 @@
 ## [unreleased]
 ### Changed
+- Updated PR template
 - Generalised issue templates to make them more user-friendly for people outside our organisation
 ### Fixed
 - Updated version of external images used in GitHub actions
