@@ -1,6 +1,6 @@
 ## [unreleased]
 ### CHanged
-- Moved logging setup out of app lifespan and db initialization logic
+- Moved logging setup out of app lifespan and db initialisation logic
 ### Fixed
 - Updated version of external images used in GitHub actions
 
