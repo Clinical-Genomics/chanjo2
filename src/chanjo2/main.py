@@ -1,19 +1,17 @@
-import logging
 import os
 from contextlib import asynccontextmanager
 from typing import List, Tuple
 
-import uvicorn
 from fastapi import FastAPI, status
 from fastapi.staticfiles import StaticFiles
 
 from chanjo2 import __version__
 from chanjo2.dbutil import engine
 from chanjo2.endpoints import cases, coverage, intervals, overview, report, samples
+from chanjo2.logger import LOG
 from chanjo2.models.sql_models import Base
 from chanjo2.populate_demo import load_demo_data
 
-LOG = logging.getLogger("uvicorn.access")
 APP_ROUTER_TAGS: List[Tuple] = [
     (intervals.router, "intervals"),
     (coverage.router, "coverage"),
@@ -56,15 +54,6 @@ for router, tag in APP_ROUTER_TAGS:
 
 
 async def startup_db():
-    # Configure logging
-    console_formatter = uvicorn.logging.ColourizedFormatter(
-        "{levelprefix} {asctime} : {message}", style="{", use_colors=True
-    )
-    if LOG.handlers:
-        LOG.handlers[0].setFormatter(console_formatter)
-    else:
-        logging.basicConfig()
-
     # Create database tables
     create_db_and_tables()
 
