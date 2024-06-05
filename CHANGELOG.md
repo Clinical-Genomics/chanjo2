@@ -1,5 +1,7 @@
 ## [unreleased]
-### CHanged
+### Added
+-  `cryptography` lib dependency
+### Changed
 - Updated PR template
 - Generalised issue templates to make them more user-friendly for people outside our organisation
 - Moved logging setup out of app lifespan and db initialisation logic
@@ -32,7 +34,7 @@
 ## [1.5.1]
 ### Fixed
 - Avoid MySQLdb.OperationalError `Server has gone away` by modifying by setting `pool_pre_ping=True` when creating the engine
-- Coverage report screenshot displayed on README page and on the documenattion to reflect true statistics from the demo samples
+- Coverage report screenshot displayed on README page and on the documentation to reflect true statistics from the demo samples
 - Coverage report/overview page crashing when transcripts or exons intervals are required only genes are loaded
 - Coverage overview over a gene should return transcript statistics if D4 file contains WGS data
 
