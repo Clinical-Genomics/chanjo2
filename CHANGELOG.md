@@ -1,4 +1,4 @@
-## [unreleased]
+## [1.8]
 ### Added
 -  `cryptography` lib dependency
 ### Changed
