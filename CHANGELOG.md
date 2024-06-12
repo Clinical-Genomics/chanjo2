@@ -1,3 +1,7 @@
+## [unreleased]
+### Fixed
+- Updated dependencies to address dependabot's security alerts
+
 ## [1.8]
 ### Added
 -  `cryptography` lib dependency
