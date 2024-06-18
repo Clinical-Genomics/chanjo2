@@ -17,7 +17,7 @@ from chanjo2.models.pydantic_models import (
     TranscriptTag,
 )
 
-LOG = logging.getLogger("uvicorn.access")
+LOG = logging.getLogger(__name__)
 CHROM_INDEX = 0
 START_INDEX = 1
 STOP_INDEX = 2

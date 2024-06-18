@@ -1,3 +1,4 @@
+import logging
 import os
 from contextlib import asynccontextmanager
 from typing import List, Tuple
@@ -20,6 +21,7 @@ APP_ROUTER_TAGS: List[Tuple] = [
     (report.router, "report"),
     (overview.router, "overview"),
 ]
+LOG = logging.getLogger(__name__)
 
 
 def create_db_and_tables():

@@ -2,7 +2,7 @@ import logging
 
 import uvicorn
 
-LOG = logging.getLogger("uvicorn.access")
+LOG = logging.getLogger(__name__)
 
 
 console_formatter = uvicorn.logging.ColourizedFormatter(

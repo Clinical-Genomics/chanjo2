@@ -17,7 +17,7 @@ from chanjo2.meta.handle_report_contents import (
 )
 from chanjo2.models.pydantic_models import GeneCoverage, GeneReportForm, ReportQuery
 
-LOG = logging.getLogger("uvicorn.access")
+LOG = logging.getLogger(__name__)
 
 
 def get_templates_path() -> str:

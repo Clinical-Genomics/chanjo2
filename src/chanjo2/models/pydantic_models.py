@@ -18,7 +18,7 @@ from chanjo2.constants import (
     WRONG_COVERAGE_FILE_MSG,
 )
 
-LOG = logging.getLogger("uvicorn.access")
+LOG = logging.getLogger(__name__)
 
 
 def default_report_coverage_levels() -> List[int]:

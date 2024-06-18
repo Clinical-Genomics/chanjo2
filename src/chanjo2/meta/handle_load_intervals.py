@@ -28,7 +28,7 @@ from chanjo2.models.pydantic_models import (
     TranscriptBase,
 )
 
-LOG = logging.getLogger("uvicorn.access")
+LOG = logging.getLogger(__name__)
 MAX_NR_OF_RECORDS = 10_000
 END_OF_PARSED_FILE: str = "[success]"
 
