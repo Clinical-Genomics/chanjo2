@@ -1,6 +1,7 @@
 ## [unreleased]
 ### Fixed
 - Updated dependencies to address dependabot's security alerts
+- Use a base image containing d4tools 0.3.10 in Dockerfile
 
 ## [1.8]
 ### Added
