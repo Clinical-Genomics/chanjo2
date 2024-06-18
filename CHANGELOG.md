@@ -1,4 +1,6 @@
 ## [unreleased]
+### Changed
+- GitHub tests action to use d4tools 0.3.10
 ### Fixed
 - Updated dependencies to address dependabot's security alerts
 
