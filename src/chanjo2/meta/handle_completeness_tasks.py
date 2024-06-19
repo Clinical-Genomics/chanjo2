@@ -1,9 +1,7 @@
-import logging
 import subprocess
 from multiprocessing import Manager, Pool
 from typing import Dict, List, Tuple
 
-LOG = logging.getLogger(__name__)
 INTERVAL_CHUNKS = 50
 CHROM_INDEX = 0
 START_INDEX = 1
