@@ -9,10 +9,11 @@ from fastapi.staticfiles import StaticFiles
 from chanjo2 import __version__
 from chanjo2.dbutil import engine
 from chanjo2.endpoints import cases, coverage, intervals, overview, report, samples
-from chanjo2.logger import LOG
+from chanjo2.logger import configure_log
 from chanjo2.models.sql_models import Base
 from chanjo2.populate_demo import load_demo_data
 
+LOG = logging.getLogger(__name__)
 APP_ROUTER_TAGS: List[Tuple] = [
     (intervals.router, "intervals"),
     (coverage.router, "coverage"),
@@ -21,7 +22,6 @@ APP_ROUTER_TAGS: List[Tuple] = [
     (report.router, "report"),
     (overview.router, "overview"),
 ]
-LOG = logging.getLogger(__name__)
 
 
 def create_db_and_tables():
@@ -30,6 +30,7 @@ def create_db_and_tables():
 
 @asynccontextmanager
 async def lifespan(app_: FastAPI):
+    configure_log()
     LOG.info("Starting up...")
     await startup_db()
     yield
