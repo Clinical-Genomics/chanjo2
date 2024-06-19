@@ -1,4 +1,6 @@
 ## [unreleased]
+### Added
+- Condensed `/coverage/d4/genes/summary` for condensed stats over a gene list
 ### Fixed
 - Updated dependencies to address dependabot's security alerts
 - Use a base image containing d4tools 0.3.10 in Dockerfile

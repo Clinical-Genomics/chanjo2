@@ -25,6 +25,7 @@ DEMO_SAMPLE: Dict[str, str] = {
 
 HTTP_SERVER_D4_file = "https://d4-format-testing.s3.us-west-1.amazonaws.com/hg002.d4"
 DEMO_HGNC_GENE_SYMBOLS = ["MTHFR", "DHFR", "FOLR1", "SLC46A1", "LAMA1", "PIPPI6"]
+DEMO_HGNC_IDS = [7436, 2861, 3791, 30521]
 ANALYSIS_DATE = "2023-04-23T10:20:30.400+02:30"
 
 # JSON Data for generating a demo coverage report

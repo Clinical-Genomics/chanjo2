@@ -11,7 +11,7 @@ from chanjo2.constants import (
     WRONG_BED_FILE_MSG,
     WRONG_COVERAGE_FILE_MSG,
 )
-from chanjo2.demo import gene_panel_path
+from chanjo2.demo import BUILD_37, DEMO_HGNC_IDS, gene_panel_path
 from chanjo2.models.pydantic_models import Builds, GeneCoverage, IntervalCoverage, Sex
 from chanjo2.populate_demo import DEMO_CASE, DEMO_SAMPLE
 
@@ -171,6 +171,40 @@ def test_d4_intervals_coverage(
         # And coverage completeness for each of the specified thresholds
         for cov_threshold in COVERAGE_COMPLETENESS_THRESHOLDS:
             assert coverage_data.completeness[str(cov_threshold)] > 0
+
+
+def test_d4_genes_coverage_summary(
+    mocker,
+    real_coverage_path: str,
+    client: TestClient,
+    endpoints: Type,
+    demo_sql_genes: List[dict],
+):
+    """Test the function that returns condensed stats containing only sample's mean coverage and completeness above a default threshold."""
+    assert demo_sql_genes
+    # GIVEN a patched response from GENES
+    mocker.patch(
+        "chanjo2.endpoints.coverage.set_sql_intervals", return_value=demo_sql_genes
+    )
+
+    query = {
+        "build": BUILD_37,
+        "samples": [
+            {"name": DEMO_SAMPLE["name"], "coverage_file_path": real_coverage_path}
+        ],
+        "hgnc_gene_ids": DEMO_HGNC_IDS,
+        "coverage_threshold": 10,
+        "interval_type": "genes",
+    }
+    # GIVEN a query to the d4_genes_coverage_summary endpoint with the expected query
+    response = client.post("/coverage/d4/genes/summary", json=query)
+
+    # THEN the request should be successful
+    assert response.status_code == status.HTTP_200_OK
+    condensed_summary = response.json()
+    # And return the expected data
+    assert condensed_summary[DEMO_SAMPLE["name"]]["coverage_completeness"] > 0
+    assert condensed_summary[DEMO_SAMPLE["name"]]["mean_coverage"] > 0
 
 
 def test_get_samples_predicted_sex(
