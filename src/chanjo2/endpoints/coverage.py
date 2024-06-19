@@ -34,7 +34,7 @@ from chanjo2.models.pydantic_models import (
 )
 
 router = APIRouter()
-LOG = logging.getLogger("uvicorn.access")
+LOG = logging.getLogger(__name__)
 
 
 @router.post("/coverage/d4/interval/", response_model=IntervalCoverage)

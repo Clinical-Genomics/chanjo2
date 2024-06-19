@@ -1,5 +1,4 @@
 import json
-import logging
 import os
 from datetime import datetime
 from enum import Enum
@@ -17,8 +16,6 @@ from chanjo2.constants import (
     GENE_LISTS_NOT_SUPPORTED_MSG,
     WRONG_COVERAGE_FILE_MSG,
 )
-
-LOG = logging.getLogger("uvicorn.access")
 
 
 def default_report_coverage_levels() -> List[int]:
