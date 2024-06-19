@@ -1,4 +1,3 @@
-import logging
 from collections import OrderedDict
 from typing import Dict, List, Optional, Tuple, Union
 
@@ -21,8 +20,6 @@ from chanjo2.models.pydantic_models import (
     SampleSexRow,
     TranscriptTag,
 )
-
-LOG = logging.getLogger(__name__)
 
 INTERVAL_TYPE_SQL_TYPE: Dict[IntervalType, Union[SQLGene, SQLTranscript, SQLExon]] = {
     IntervalType.GENES: SQLGene,
