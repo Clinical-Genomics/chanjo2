@@ -148,7 +148,7 @@ curl -X 'POST' \
   "build": "GRCh37",
   "samples": [
     {
-      "name": "Sample_Name",
+      "name": "TestSample",
       "coverage_file_path": "<path-to-d4-file.d4>"
     }
   ],
