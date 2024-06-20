@@ -1,4 +1,4 @@
-## [unreleased]
+## [1.9]
 ### Added
 - Condensed `/coverage/d4/genes/summary` for condensed stats over a gene list
 - Documentation for new coverage summary endpoint
