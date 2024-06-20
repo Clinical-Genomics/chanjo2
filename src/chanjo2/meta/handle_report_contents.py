@@ -27,7 +27,6 @@ INTERVAL_TYPE_SQL_TYPE: Dict[IntervalType, Union[SQLGene, SQLTranscript, SQLExon
     IntervalType.EXONS: SQLExon,
 }
 
-
 #### Functions used by all reports ####
 
 
