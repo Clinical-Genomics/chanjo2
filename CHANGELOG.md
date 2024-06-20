@@ -1,6 +1,7 @@
 ## [unreleased]
 ### Added
 - Condensed `/coverage/d4/genes/summary` for condensed stats over a gene list
+- Documentation for new coverage summary endpoint
 ### Changed
 - GitHub tests action to use d4tools 0.3.10
 ### Fixed

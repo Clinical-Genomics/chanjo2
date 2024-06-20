@@ -130,6 +130,42 @@ And it would return the following result:
 ]
 ```
 
+### Condensed summary stats for one or more samples over a list of HGNC IDs
+
+To obtain condensed statistics for one or more samples, use the `/coverage/d4/genes/summary` endpoint. 
+Send a request with a list of HGNC gene IDs, the path to the d4 files for the samples, and the coverage threshold for computing coverage completeness. 
+The endpoint will return the average coverage and coverage completeness for all the genes included in the query.
+You need to provide a parameter `interval_type` to specify whether the statistics should be computed over entire genes, gene transcripts, or exons.
+
+#### Request example:
+
+``` shell
+curl -X 'POST' \
+  'https://chanjo2-stage.scilifelab.se/coverage/d4/genes/summary' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "build": "GRCh37",
+  "samples": [
+    {
+      "name": "Sample_Name",
+      "coverage_file_path": "<path-to-d4-file.d4>"
+    }
+  ],
+  "hgnc_gene_ids": [
+    2861, 3791, 6481, 7436, 30521
+  ],
+  "coverage_threshold": 10,
+  "interval_type": "genes"
+}'
+```
+
+#### Response from chanjo2:
+
+``` shell
+{"TestSample":{"mean_coverage":54.38,"coverage_completeness_percent":33.03}}
+```
+
 ### Case and samples coverage queries
 
 Genes, transcripts and exons coverage data can be computed by sending POST requests to their relative endpoints:
@@ -150,7 +186,7 @@ These endpoints are very similar and accept the following parameters:
 
 While the only required parameter is "build", <strong>it is necessary to specify a list of genes</strong> (either ensembl_gene_ids, hgnc_gene_ids or hgnc_gene_symbols) and either <strong>a case or a list of samples</strong>.
 
-### Coverage and coverage completeness query esamples
+### Coverage and coverage completeness query examples
 
 - Given all samples from case "internal_id", retrieve mean coverage and coverage completeness with threshold 30, 20 on the genes from the Cerebral folate deficiency PanelAPP panel (*DHFR, FOLR1, MTHFR, SLC46A1*):
 
