@@ -14,7 +14,7 @@ from chanjo2.models.pydantic_models import (
     TranscriptTag,
 )
 
-LOG = logging.getLogger("uvicorn.access")
+LOG = logging.getLogger(__name__)
 
 
 def delete_intervals_for_build(

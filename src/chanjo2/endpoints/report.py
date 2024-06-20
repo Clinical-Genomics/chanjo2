@@ -21,7 +21,7 @@ def get_templates_path() -> str:
     return path.join(APP_ROOT, "templates")
 
 
-LOG = logging.getLogger("uvicorn.access")
+LOG = logging.getLogger(__name__)
 templates: Jinja2Templates = Jinja2Templates(directory=get_templates_path())
 router = APIRouter()
 

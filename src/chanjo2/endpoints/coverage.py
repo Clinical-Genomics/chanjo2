@@ -1,6 +1,7 @@
 import logging
 import time
 from os.path import isfile
+from statistics import mean
 from typing import Dict, List, Tuple
 
 import validators
@@ -8,7 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
-from chanjo2.crud.intervals import get_genes
+from chanjo2.crud.intervals import get_genes, set_sql_intervals
 from chanjo2.crud.samples import get_samples_coverage_file
 from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import bed_file_interval_id_coords
@@ -23,18 +24,21 @@ from chanjo2.meta.handle_d4 import (
     get_sample_interval_coverage,
     get_samples_sex_metrics,
 )
+from chanjo2.meta.handle_report_contents import INTERVAL_TYPE_SQL_TYPE
 from chanjo2.models import SQLExon, SQLGene, SQLTranscript
 from chanjo2.models.pydantic_models import (
+    CoverageSummaryQuery,
     FileCoverageIntervalsFileQuery,
     FileCoverageQuery,
     GeneCoverage,
     IntervalCoverage,
     IntervalType,
     SampleGeneIntervalQuery,
+    TranscriptTag,
 )
 
 router = APIRouter()
-LOG = logging.getLogger("uvicorn.access")
+LOG = logging.getLogger(__name__)
 
 
 @router.post("/coverage/d4/interval/", response_model=IntervalCoverage)
@@ -130,6 +134,68 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
     )
 
     return results
+
+
+@router.post("/coverage/d4/genes/summary", response_model=Dict)
+def d4_genes_condensed_summary(
+    query: CoverageSummaryQuery, db: Session = Depends(get_session)
+):
+    """Returning condensed summary containing only sample's mean coverage and completeness above a default threshold."""
+
+    condensed_stats = {}
+    genes: List[SQLGene] = get_genes(
+        db=db,
+        build=query.build,
+        ensembl_ids=None,
+        hgnc_ids=query.hgnc_gene_ids,
+        hgnc_symbols=None,
+        limit=None,
+    )
+
+    sql_intervals = set_sql_intervals(
+        db=db,
+        interval_type=INTERVAL_TYPE_SQL_TYPE[query.interval_type],
+        genes=genes,
+        transcript_tags=[TranscriptTag.REFSEQ_MRNA],
+    )
+
+    for sample in query.samples:
+        # Compute mean coverage over genomic intervals
+        coverage_intervals: List[str] = [
+            f"{interval.chromosome}\t{interval.start}\t{interval.stop}"
+            for interval in sql_intervals
+        ]
+        genes_mean_coverage: List[float] = get_d4tools_intervals_mean_coverage(
+            d4_file_path=sample.coverage_file_path, intervals=coverage_intervals
+        )
+        # Compute coverage completeness over genomic intervals
+        interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]] = [
+            (interval.ensembl_id, (interval.chromosome, interval.start, interval.stop))
+            for interval in sql_intervals
+        ]
+        genes_coverage_completeness: Dict[str, dict] = (
+            coverage_completeness_multitasker(
+                d4_file_path=sample.coverage_file_path,
+                thresholds=[query.coverage_threshold],
+                interval_ids_coords=interval_ids_coords,
+            )
+        )
+        genes_coverage_completeness_values: List[float] = [
+            value[query.coverage_threshold] * 100
+            for value in genes_coverage_completeness.values()
+        ]
+        condensed_stats[sample.name] = {
+            "mean_coverage": (
+                round(mean(genes_mean_coverage), 2) if genes_mean_coverage else "NA"
+            ),
+            "coverage_completeness_percent": (
+                round(mean(genes_coverage_completeness_values), 2)
+                if genes_coverage_completeness_values
+                else "NA"
+            ),
+        }
+
+    return condensed_stats
 
 
 @router.get("/coverage/samples/predicted_sex", response_model=Dict)

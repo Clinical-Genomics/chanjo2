@@ -13,6 +13,7 @@ from chanjo2.demo import d4_demo_path, gene_panel_path
 from chanjo2.main import Base, app, engine
 from chanjo2.meta.handle_bed import bed_file_interval_id_coords
 from chanjo2.models import sql_models
+from chanjo2.models.sql_models import Gene as SQLGene
 
 TEST_DB = "sqlite:///./test.db"
 CASE_NAME = "123"
@@ -60,6 +61,7 @@ class Endpoints(str):
     EXONS = "/intervals/exons"
     INTERVAL_COVERAGE = "/coverage/d4/interval/"
     INTERVALS_FILE_COVERAGE = "/coverage/d4/interval_file/"
+    GENES_COVERAGE_SUMMARY = "/coverage/d4/genes/summary"
     GET_SAMPLES_PREDICTED_SEX = "/coverage/samples/predicted_sex"
     SAMPLE_GENES_COVERAGE = "/coverage/samples/genes_coverage"
     SAMPLE_TRANSCRIPTS_COVERAGE = "/coverage/samples/transcripts_coverage"
@@ -148,6 +150,38 @@ def demo_genes_37(demo_session) -> List[sql_models.Gene]:
         hgnc_symbols=GENOMIC_IDS_37["hgnc_symbols"],
         limit=None,
     )
+
+
+@pytest.fixture(name="demo_sql_genes")
+def demo_sql_genes() -> List[SQLGene]:
+    """Return the 4 demo genes present in the demo gene panel as SQLGenes."""
+    gene_dicts = [
+        {
+            "ensembl_id": "ENSG00000228716",
+            "chromosome": "5",
+            "start": 79922047,
+            "stop": 79950802,
+        },
+        {
+            "ensembl_id": "ENSG00000110195",
+            "chromosome": "11",
+            "start": 71900602,
+            "stop": 71907345,
+        },
+        {
+            "ensembl_id": "ENSG00000177000",
+            "chromosome": "1",
+            "start": 11845780,
+            "stop": 11866977,
+        },
+        {
+            "ensembl_id": "ENSG00000076351",
+            "chromosome": "17",
+            "start": 26721661,
+            "stop": 26734215,
+        },
+    ]
+    return [SQLGene(**gene) for gene in gene_dicts]
 
 
 @pytest.fixture(name="raw_case")

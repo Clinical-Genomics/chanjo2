@@ -1,4 +1,3 @@
-import logging
 from collections import OrderedDict
 from typing import Dict, List, Optional, Tuple, Union
 
@@ -22,14 +21,11 @@ from chanjo2.models.pydantic_models import (
     TranscriptTag,
 )
 
-LOG = logging.getLogger("uvicorn.access")
-
 INTERVAL_TYPE_SQL_TYPE: Dict[IntervalType, Union[SQLGene, SQLTranscript, SQLExon]] = {
     IntervalType.GENES: SQLGene,
     IntervalType.TRANSCRIPTS: SQLTranscript,
     IntervalType.EXONS: SQLExon,
 }
-
 
 #### Functions used by all reports ####
 

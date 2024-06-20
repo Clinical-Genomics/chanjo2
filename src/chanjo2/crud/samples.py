@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Tuple
 
 from fastapi import HTTPException, status
 from sqlalchemy import delete

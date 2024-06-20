@@ -1,5 +1,4 @@
 import json
-import logging
 import os
 from datetime import datetime
 from enum import Enum
@@ -7,7 +6,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
 import validators
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, Field, FilePath, field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
 from starlette.datastructures import FormData
 
@@ -17,8 +16,6 @@ from chanjo2.constants import (
     GENE_LISTS_NOT_SUPPORTED_MSG,
     WRONG_COVERAGE_FILE_MSG,
 )
-
-LOG = logging.getLogger("uvicorn.access")
 
 
 def default_report_coverage_levels() -> List[int]:
@@ -220,6 +217,19 @@ class SampleGeneIntervalQuery(BaseModel):
 
 
 ## Coverage and  overview report - related models ###
+
+
+class CoverageSummaryQuerySample(BaseModel):
+    name: str
+    coverage_file_path: str
+
+
+class CoverageSummaryQuery(BaseModel):
+    build: Builds
+    samples: List[CoverageSummaryQuerySample]
+    hgnc_gene_ids: List[int]
+    coverage_threshold: int
+    interval_type: IntervalType
 
 
 class ReportQuerySample(BaseModel):

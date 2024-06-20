@@ -1,8 +1,11 @@
 ## [unreleased]
+### Added
+- Condensed `/coverage/d4/genes/summary` for condensed stats over a gene list
 ### Changed
 - GitHub tests action to use d4tools 0.3.10
 ### Fixed
 - Updated dependencies to address dependabot's security alerts
+- Use a base image containing d4tools 0.3.10 in Dockerfile
 
 ## [1.8]
 ### Added
@@ -11,6 +14,7 @@
 - Updated PR template
 - Generalised issue templates to make them more user-friendly for people outside our organisation
 - Moved logging setup out of app lifespan and db initialisation logic
+- Switch to __main__ logger and removed unused logger from multiprocessing code
 ### Fixed
 - Updated version of external images used in GitHub actions
 
