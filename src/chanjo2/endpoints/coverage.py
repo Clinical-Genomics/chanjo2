@@ -185,9 +185,11 @@ def d4_genes_condensed_summary(
             for value in genes_coverage_completeness.values()
         ]
         condensed_stats[sample.name] = {
-            "mean_coverage": mean(genes_mean_coverage) if genes_mean_coverage else "NA",
-            "coverage_completeness": (
-                mean(genes_coverage_completeness_values)
+            "mean_coverage": (
+                round(mean(genes_mean_coverage), 2) if genes_mean_coverage else "NA"
+            ),
+            "coverage_completeness_percent": (
+                round(mean(genes_coverage_completeness_values), 2)
                 if genes_coverage_completeness_values
                 else "NA"
             ),
