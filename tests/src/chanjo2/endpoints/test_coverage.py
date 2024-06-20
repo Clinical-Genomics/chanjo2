@@ -203,7 +203,7 @@ def test_d4_genes_coverage_summary(
     assert response.status_code == status.HTTP_200_OK
     condensed_summary = response.json()
     # And return the expected data
-    assert condensed_summary[DEMO_SAMPLE["name"]]["coverage_completeness"] > 0
+    assert condensed_summary[DEMO_SAMPLE["name"]]["coverage_completeness_percent"] > 0
     assert condensed_summary[DEMO_SAMPLE["name"]]["mean_coverage"] > 0
 
 
