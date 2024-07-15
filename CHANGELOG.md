@@ -1,3 +1,7 @@
+## [unreleased]
+### Added
+- Improve report explanation to better interpret average coverage and coverage completeness stats shown on the coverage report
+
 ## [1.9]
 ### Added
 - Condensed `/coverage/d4/genes/summary` for condensed stats over a gene list
