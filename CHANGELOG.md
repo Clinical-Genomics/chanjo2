@@ -1,6 +1,7 @@
 ## [unreleased]
 ### Added
 - Improve report explanation to better interpret average coverage and coverage completeness stats shown on the coverage report
+- Check that provided d4 files when running queries using `/coverage/d4/genes/summary` endpoint are valid, with test
 
 ## [1.9]
 ### Added
