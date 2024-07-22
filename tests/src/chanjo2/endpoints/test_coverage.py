@@ -4,6 +4,7 @@ from typing import Dict, List, Type
 import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
+from pytest_mock.plugin import MockerFixture
 
 from chanjo2.constants import (
     AMBIGUOUS_SAMPLES_INPUT,
@@ -173,15 +174,44 @@ def test_d4_intervals_coverage(
             assert coverage_data.completeness[str(cov_threshold)] > 0
 
 
+def test_d4_genes_coverage_summary_wrong_d4_file_path(
+    mocker: MockerFixture,
+    mock_coverage_file: str,
+    client: TestClient,
+    endpoints: Type,
+    demo_sql_genes: List[dict],
+):
+    """Tests Test the function that returns condensed stats when the path to at least one of the provided d4 files is wrong."""
+
+    # GIVEN a patched response from GENES
+    mocker.patch(
+        "chanjo2.endpoints.coverage.set_sql_intervals", return_value=demo_sql_genes
+    )
+    # WHERE the path to the coverage file doesn't correspond to a real file
+    query = {
+        "build": BUILD_37,
+        "samples": [
+            {"name": DEMO_SAMPLE["name"], "coverage_file_path": mock_coverage_file}
+        ],
+        "hgnc_gene_ids": DEMO_HGNC_IDS,
+        "coverage_threshold": 10,
+        "interval_type": "genes",
+    }
+    # GIVEN a query to the d4_genes_coverage_summary endpoint with the expected query
+    response = client.post("/coverage/d4/genes/summary", json=query)
+    # THEN the request to the d4_genes_coverage_summary should return 404 error:
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
 def test_d4_genes_coverage_summary(
-    mocker,
+    mocker: MockerFixture,
     real_coverage_path: str,
     client: TestClient,
     endpoints: Type,
     demo_sql_genes: List[dict],
 ):
     """Test the function that returns condensed stats containing only sample's mean coverage and completeness above a default threshold."""
-    assert demo_sql_genes
+
     # GIVEN a patched response from GENES
     mocker.patch(
         "chanjo2.endpoints.coverage.set_sql_intervals", return_value=demo_sql_genes

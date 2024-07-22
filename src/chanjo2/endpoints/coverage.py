@@ -160,6 +160,13 @@ def d4_genes_condensed_summary(
     )
 
     for sample in query.samples:
+        # Make sure path to d4 files provided in the query exists
+        if isfile(sample.coverage_file_path) is False:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=WRONG_COVERAGE_FILE_MSG,
+            )
+
         # Compute mean coverage over genomic intervals
         coverage_intervals: List[str] = [
             f"{interval.chromosome}\t{interval.start}\t{interval.stop}"
