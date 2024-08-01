@@ -16,11 +16,6 @@ from chanjo2.models import sql_models
 from chanjo2.models.sql_models import Gene as SQLGene
 
 TEST_DB = "sqlite:///./test.db"
-CASE_NAME = "123"
-CASE_DISPLAY_NAME = "case_123"
-SAMPLE_NAME = "abc"
-SAMPLE_DISPLAY_NAME = "sample_abc"
-SAMPLE_TRACK_NAME: str = SAMPLE_NAME
 COVERAGE_FILE = "a_file.d4"
 BED_FILE = "a_file.bed"
 REMOTE_COVERAGE_FILE = "https://a_remote_host/a_file.d4"
@@ -47,10 +42,6 @@ TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engin
 class Endpoints(str):
     """Contains all the app endpoints used in testing."""
 
-    CASES = "/cases/"
-    CASES_DELETE = "/cases/delete/"
-    SAMPLES = "/samples/"
-    SAMPLES_DELETE = "/samples/delete/"
     INTERVAL = "/intervals/interval/"
     INTERVALS = "/intervals/"
     LOAD_GENES = "/intervals/load/genes/"
@@ -63,9 +54,6 @@ class Endpoints(str):
     INTERVALS_FILE_COVERAGE = "/coverage/d4/interval_file/"
     GENES_COVERAGE_SUMMARY = "/coverage/d4/genes/summary"
     GET_SAMPLES_PREDICTED_SEX = "/coverage/samples/predicted_sex"
-    SAMPLE_GENES_COVERAGE = "/coverage/samples/genes_coverage"
-    SAMPLE_TRANSCRIPTS_COVERAGE = "/coverage/samples/transcripts_coverage"
-    SAMPLE_EXONS_COVERAGE = "/coverage/samples/exons_coverage"
     REPORT_DEMO = "/report/demo/"
     REPORT = "/report"
     GENE_OVERVIEW = "/gene_overview"

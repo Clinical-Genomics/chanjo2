@@ -119,10 +119,7 @@ def test_d4_intervals_coverage_d4_not_found(
 
 
 def test_d4_intervals_coverage_malformed_bed_file(
-    real_coverage_path: str,
-    client: TestClient,
-    endpoints: Type,
-    real_d4_query: Dict[str, str],
+    real_coverage_path: str, client: TestClient, endpoints: Type
 ):
     """Test the function that returns the coverage over multiple intervals of a d4 file.
     Testing with a BED file that is not correctly formatted."""
@@ -147,7 +144,6 @@ def test_d4_intervals_coverage(
     real_coverage_path: str,
     client: TestClient,
     endpoints: Type,
-    real_d4_query: Dict[str, str],
 ):
     """Test the function that returns the coverage over multiple intervals of a d4 file."""
 

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from sqlalchemy import Column, DateTime, Enum, ForeignKey, Index, Integer, String, Table
+from sqlalchemy import Column, Enum, ForeignKey, Index, Integer, String
 from sqlalchemy.orm import relationship
 
 from chanjo2.dbutil import Base

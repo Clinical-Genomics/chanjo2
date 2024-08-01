@@ -2,20 +2,12 @@ import json
 import os
 from datetime import datetime
 from enum import Enum
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union
 
-import validators
-from pydantic import BaseModel, Field, FilePath, field_validator, model_validator
-from pydantic_settings import SettingsConfigDict
+from pydantic import BaseModel, Field, field_validator, model_validator
 from starlette.datastructures import FormData
 
-from chanjo2.constants import (
-    AMBIGUOUS_SAMPLES_INPUT,
-    DEFAULT_COMPLETENESS_LEVELS,
-    GENE_LISTS_NOT_SUPPORTED_MSG,
-    WRONG_COVERAGE_FILE_MSG,
-)
+from chanjo2.constants import DEFAULT_COMPLETENESS_LEVELS, GENE_LISTS_NOT_SUPPORTED_MSG
 
 
 def default_report_coverage_levels() -> List[int]:
