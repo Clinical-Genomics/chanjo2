@@ -184,40 +184,6 @@ def demo_sql_genes() -> List[SQLGene]:
     return [SQLGene(**gene) for gene in gene_dicts]
 
 
-@pytest.fixture(name="raw_case")
-def raw_case() -> Dict[str, str]:
-    """Returns a dictionary corresponding to a case record."""
-    return {"name": CASE_NAME, "display_name": CASE_DISPLAY_NAME}
-
-
-@pytest.fixture(name="raw_sample")
-def raw_sample(raw_case) -> Dict[str, str]:
-    """Returns a dictionary used to create a sample in the database."""
-    return {
-        "name": SAMPLE_NAME,
-        "display_name": SAMPLE_DISPLAY_NAME,
-        "track_name": SAMPLE_TRACK_NAME,
-        "case_name": raw_case["name"],
-    }
-
-
-@pytest.fixture(name="db_case")
-def db_case(raw_case) -> sql_models.Case:
-    """Returns an object corresponding to a sql_models.Case."""
-    return sql_models.Case(name=raw_case["name"], display_name=raw_case["display_name"])
-
-
-@pytest.fixture(name="db_sample")
-def db_sample(raw_case, raw_sample, coverage_path) -> sql_models.Sample:
-    """Returns an object corresponding to a sql_models.Sample."""
-    return sql_models.Sample(
-        name=raw_sample["name"],
-        display_name=raw_sample["display_name"],
-        case_id=1,
-        coverage_file_path=str(coverage_path),
-    )
-
-
 @pytest.fixture(name="mock_coverage_file")
 def mock_coverage_file() -> str:
     """Returns the name of a mock coverage file."""
