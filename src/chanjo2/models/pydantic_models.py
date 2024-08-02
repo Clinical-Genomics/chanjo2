@@ -241,7 +241,7 @@ class ReportQuerySample(BaseModel):
 
 class ReportQuery(BaseModel):
     build: Builds
-    completeness_thresholds: Optional[List[int]]
+    completeness_thresholds: Optional[List[int]] = default_report_coverage_levels()
     ensembl_gene_ids: Optional[List[str]] = None
     hgnc_gene_ids: Optional[List[int]] = None
     hgnc_gene_symbols: Optional[List[str]] = None
