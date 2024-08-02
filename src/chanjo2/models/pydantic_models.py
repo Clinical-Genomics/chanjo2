@@ -241,7 +241,7 @@ class ReportQuerySample(BaseModel):
 
 class ReportQuery(BaseModel):
     build: Builds
-    completeness_thresholds: Optional[List[int]] = default_report_coverage_levels()
+    completeness_thresholds: Optional[List[int]]
     ensembl_gene_ids: Optional[List[str]] = None
     hgnc_gene_ids: Optional[List[int]] = None
     hgnc_gene_symbols: Optional[List[str]] = None
@@ -304,7 +304,9 @@ class ReportQuery(BaseModel):
             "hgnc_gene_ids": query_genes["hgnc_gene_ids"],
             "hgnc_gene_symbols": query_genes["hgnc_gene_symbols"],
             "interval_type": form_data.get("interval_type"),
-            "default_level": form_data.get("default_level"),
+            "default_level": (
+                form_data.get("default_level") if form_data.get("default_level") else 10
+            ),
             "panel_name": form_data.get("panel_name"),
             "case_display_name": form_data.get("case_display_name"),
             "samples": form_data.get("samples"),
