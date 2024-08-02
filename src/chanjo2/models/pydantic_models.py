@@ -247,7 +247,7 @@ class ReportQuery(BaseModel):
     hgnc_gene_symbols: Optional[List[str]] = None
     interval_type: IntervalType
     default_level: int = 10
-    panel_name: Optional[str] = "Custom panel"
+    panel_name: Optional[str] = None
     case_display_name: Optional[str] = None
     samples: List[ReportQuerySample]
 
@@ -292,11 +292,14 @@ class ReportQuery(BaseModel):
         query_genes: dict = cls.set_query_genes(form_data)
         report_query: dict = {
             "build": form_data.get("build"),
-            "completeness_thresholds": cls.comma_sep_values_to_list(
-                comma_sep_values=form_data.get("completeness_thresholds"),
-                items_format=int,
-            )
-            or default_report_coverage_levels(),
+            "completeness_thresholds": (
+                cls.comma_sep_values_to_list(
+                    comma_sep_values=form_data.get("completeness_thresholds"),
+                    items_format=int,
+                )
+                if form_data.get("completeness_thresholds")
+                else default_report_coverage_levels()
+            ),
             "ensembl_gene_ids": query_genes["ensembl_gene_ids"],
             "hgnc_gene_ids": query_genes["hgnc_gene_ids"],
             "hgnc_gene_symbols": query_genes["hgnc_gene_symbols"],

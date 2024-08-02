@@ -1,18 +1,19 @@
 import logging
 import time
 from os import path
-from typing import Dict
+from typing import Dict, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from pydantic_core._pydantic_core import ValidationError
 from sqlalchemy.orm import Session
+from typing_extensions import Annotated
 
 from chanjo2.dbutil import get_session
-from chanjo2.demo import DEMO_COVERAGE_QUERY_DATA
+from chanjo2.demo import DEMO_COVERAGE_QUERY_FORM
 from chanjo2.meta.handle_report_contents import get_report_data
-from chanjo2.models.pydantic_models import ReportQuery
+from chanjo2.models.pydantic_models import Builds, IntervalType, ReportQuery
 
 
 def get_templates_path() -> str:
@@ -30,7 +31,7 @@ router = APIRouter()
 async def demo_report(request: Request, db: Session = Depends(get_session)):
     """Return a demo coverage report over a list of genes for a list of samples."""
 
-    report_query = ReportQuery(**DEMO_COVERAGE_QUERY_DATA)
+    report_query = ReportQuery.as_form(DEMO_COVERAGE_QUERY_FORM)
     report_content: Dict = get_report_data(query=report_query, session=db)
     return templates.TemplateResponse(
         request=request,
@@ -52,18 +53,25 @@ async def demo_report(request: Request, db: Session = Depends(get_session)):
 @router.post("/report", response_class=HTMLResponse)
 async def report(
     request: Request,
+    build: Builds = Form(...),
+    samples: str = Form(...),
+    interval_type: IntervalType = Form(...),
+    completeness_thresholds: Optional[str] = Form(None),
+    ensembl_gene_ids: Optional[str] = Form(None),
+    hgnc_gene_ids: Optional[str] = Form(None),
+    hgnc_gene_symbols: Optional[str] = Form(None),
+    case_display_name: Optional[str] = Form(None),
+    panel_name: Optional[str] = Form("Custom panel"),
+    default_level: Optional[int] = Form(10),
     db: Session = Depends(get_session),
 ):
     """Return a coverage report over a list of genes for a list of samples."""
 
     start_time = time.time()
-    request_headers: str = request.headers.get("Content-Type")
-
+    form_data = await request.form()
+    LOG.error(form_data)
     try:
-        if request_headers == "application/json":
-            report_query = ReportQuery(**await request.json())
-        else:
-            report_query = ReportQuery.as_form(await request.form())
+        report_query = ReportQuery.as_form(form_data)
     except ValidationError as ve:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
