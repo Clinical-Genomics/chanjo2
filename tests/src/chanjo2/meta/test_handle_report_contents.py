@@ -3,8 +3,10 @@ from typing import List, Tuple
 from sqlalchemy.orm import sessionmaker
 
 from chanjo2.demo import DEMO_COVERAGE_QUERY_DATA
-from chanjo2.meta.handle_report_contents import (get_missing_genes_from_db,
-                                                 get_report_data)
+from chanjo2.meta.handle_report_contents import (
+    get_missing_genes_from_db,
+    get_report_data,
+)
 from chanjo2.models import SQLGene
 from chanjo2.models.pydantic_models import ReportQuery
 
