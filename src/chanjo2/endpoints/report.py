@@ -68,10 +68,8 @@ async def report(
     """Return a coverage report over a list of genes for a list of samples."""
 
     start_time = time.time()
-    form_data = await request.form()
-    LOG.error(form_data)
     try:
-        report_query = ReportQuery.as_form(form_data)
+        report_query = ReportQuery.as_form(await request.form())
     except ValidationError as ve:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
