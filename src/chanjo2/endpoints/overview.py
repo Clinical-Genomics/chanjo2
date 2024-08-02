@@ -36,9 +36,9 @@ async def demo_overview(request: Request, db: Session = Depends(get_session)):
         query=overview_query, session=db, is_overview=True
     )
     return templates.TemplateResponse(
-        "overview.html",
-        {
-            "request": request,
+        request=request,
+        name="overview.html",
+        context={
             "extras": overview_content["extras"],
             "levels": overview_content["levels"],
             "incomplete_coverage_rows": overview_content["incomplete_coverage_rows"],
@@ -69,9 +69,9 @@ async def overview(
         query=overview_query, session=db, is_overview=True
     )
     return templates.TemplateResponse(
-        "overview.html",
-        {
-            "request": request,
+        request=request,
+        name="overview.html",
+        context={
             "extras": overview_content["extras"],
             "levels": overview_content["levels"],
             "incomplete_coverage_rows": overview_content["incomplete_coverage_rows"],
@@ -94,9 +94,9 @@ async def gene_overview(
     )
 
     return templates.TemplateResponse(
-        "gene-overview.html",
-        {
-            "request": request,
+        request=request,
+        name="gene-overview.html",
+        context={
             "interval_type": gene_overview_content["interval_type"],
             "gene": gene_overview_content.get("gene"),
             "interval_coverage_stats": gene_overview_content.get(

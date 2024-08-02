@@ -33,9 +33,9 @@ async def demo_report(request: Request, db: Session = Depends(get_session)):
     report_query = ReportQuery(**DEMO_COVERAGE_QUERY_DATA)
     report_content: Dict = get_report_data(query=report_query, session=db)
     return templates.TemplateResponse(
-        "report.html",
-        {
-            "request": request,
+        request=request,
+        name="report.html",
+        context={
             "levels": report_content["levels"],
             "extras": report_content["extras"],
             "sex_rows": report_content["sex_rows"],
@@ -73,9 +73,9 @@ async def report(
     report_content: dict = get_report_data(query=report_query, session=db)
     LOG.debug(f"Time to compute stats: {time.time() - start_time} seconds.")
     return templates.TemplateResponse(
-        "report.html",
-        {
-            "request": request,
+        request=request,
+        name="report.html",
+        context={
             "levels": report_content["levels"],
             "extras": report_content["extras"],
             "sex_rows": report_content["sex_rows"],
