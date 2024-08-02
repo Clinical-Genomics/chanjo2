@@ -8,8 +8,8 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from pydantic_core._pydantic_core import ValidationError
 from sqlalchemy.orm import Session
-from typing_extensions import Annotated
 
+from chanjo2.constants import DEFAULT_COVERAGE_LEVEL
 from chanjo2.dbutil import get_session
 from chanjo2.demo import DEMO_COVERAGE_QUERY_FORM
 from chanjo2.meta.handle_report_contents import get_report_data
@@ -62,7 +62,7 @@ async def report(
     hgnc_gene_symbols: Optional[str] = Form(None),
     case_display_name: Optional[str] = Form(None),
     panel_name: Optional[str] = Form("Custom panel"),
-    default_level: Optional[int] = Form(10),
+    default_level: Optional[int] = Form(DEFAULT_COVERAGE_LEVEL),
     db: Session = Depends(get_session),
 ):
     """Return a coverage report over a list of genes for a list of samples."""
