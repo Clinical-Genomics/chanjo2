@@ -49,7 +49,7 @@ def test_get_report_data(demo_session: sessionmaker):
     """Test the function that collects the deta required for creating a coverage/overview report."""
 
     # GIVEN a user query containing the expected parameters
-    query = ReportQuery.parse_obj(DEMO_COVERAGE_QUERY_DATA)
+    query = ReportQuery.model_validate(DEMO_COVERAGE_QUERY_DATA)
     report_data: dict = get_report_data(query=query, session=demo_session)
 
     # THEN get_report_data should return a dictionary with the expected report info

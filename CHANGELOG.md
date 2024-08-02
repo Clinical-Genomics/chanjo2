@@ -6,6 +6,7 @@
 - Check that provided d4 files when running queries using `/coverage/d4/genes/summary` endpoint are valid, with test
 ### Changed
 - How parameters are passed to starlette.templating since it was raising a deprecation warning.
+- Replaced deprecated Pydantic `parse_obj` method with `model_validate`
 
 ## [1.9]
 ### Added
