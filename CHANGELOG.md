@@ -5,6 +5,7 @@
 ### Changed
 - How parameters are passed to starlette.templating since it was raising a deprecation warning.
 - Replaced deprecated Pydantic `parse_obj` method with `model_validate`
+- Report endpoint accepts only POST requests with form data now (application/x-www-form-urlencoded) - no json
 
 ## [1.9]
 ### Added
