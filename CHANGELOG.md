@@ -1,4 +1,6 @@
 ## [unreleased]
+### Changed
+- Do not use stored cases/samples any more and run stats exclusively on d4 files paths provided by the user in real time
 ### Added
 - Improve report explanation to better interpret average coverage and coverage completeness stats shown on the coverage report
 - Check that provided d4 files when running queries using `/coverage/d4/genes/summary` endpoint are valid, with test

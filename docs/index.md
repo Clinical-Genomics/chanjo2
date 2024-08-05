@@ -36,7 +36,6 @@ The coverage computation on a file hosted on a remote server, will be consistent
 
 When chanjo2 is launched and runs as a REST server, it is offering many additional features, including:
 
-* `The possibility to store samples with associated d4 files in a SQL-based database` so that coverage info can be retrieved for sample and groupd of sample (cases).
 * `Support for calculating coverage and coverage completeness over genes, transcripts and exons for different genome builds`
 * Chanjo2 server can be either installed on a virtual environment using [poetry][python-poetry] of directly launched using [Docker][docker]
 

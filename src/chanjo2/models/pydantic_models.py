@@ -2,20 +2,15 @@ import json
 import os
 from datetime import datetime
 from enum import Enum
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union
 
-import validators
-from pydantic import BaseModel, Field, FilePath, field_validator, model_validator
-from pydantic_settings import SettingsConfigDict
+from pydantic import BaseModel, Field, field_validator, model_validator
 from starlette.datastructures import FormData
 
 from chanjo2.constants import (
-    AMBIGUOUS_SAMPLES_INPUT,
     DEFAULT_COMPLETENESS_LEVELS,
     DEFAULT_COVERAGE_LEVEL,
     GENE_LISTS_NOT_SUPPORTED_MSG,
-    WRONG_COVERAGE_FILE_MSG,
 )
 
 
@@ -54,45 +49,6 @@ class Sex(str, Enum):
     FEMALE = "female"
     MALE = "male"
     UNKNOWN = "unknown"
-
-
-class CaseBase(BaseModel):
-    display_name: Optional[str] = None
-    name: str
-
-
-class CaseCreate(CaseBase):
-    pass
-
-
-class SampleBase(BaseModel):
-    coverage_file_path: str
-    display_name: str
-    track_name: str
-    name: str
-
-    @field_validator("coverage_file_path", mode="before")
-    def validate_coverage_path(cls, value: str) -> Any:
-        if not Path(value).is_file() and not validators.url(value):
-            raise ValueError(WRONG_COVERAGE_FILE_MSG)
-
-        return value
-
-
-class SampleCreate(SampleBase):
-    case_name: str
-
-
-class Sample(SampleBase):
-    created_at: datetime
-    id: int
-    model_config = SettingsConfigDict(from_attributes=True)
-
-
-class Case(CaseBase):
-    id: int
-    samples: List = []
-    model_config = SettingsConfigDict(from_attributes=True)
 
 
 class IntervalBase(BaseModel):
@@ -182,39 +138,6 @@ class FileCoverageQuery(FileCoverageBaseQuery):
 class FileCoverageIntervalsFileQuery(FileCoverageBaseQuery):
     intervals_bed_path: str
     completeness_thresholds: Optional[List[int]] = []
-
-
-class SampleGeneIntervalQuery(BaseModel):
-    build: Builds
-    completeness_thresholds: Optional[List[int]] = []
-    ensembl_gene_ids: Optional[List[str]] = None
-    hgnc_gene_ids: Optional[List[int]] = None
-    hgnc_gene_symbols: Optional[List[str]] = None
-    samples: Optional[List[str]] = None
-    case: Optional[str] = None
-
-    @model_validator(mode="before")
-    def check_genes_lists(cls, values: dict):
-        nr_provided_gene_lists: int = 0
-        for gene_list in [
-            values.get("ensembl_gene_ids"),
-            values.get("hgnc_gene_ids"),
-            values.get("hgnc_gene_symbols"),
-        ]:
-            if gene_list:
-                nr_provided_gene_lists += 1
-        if nr_provided_gene_lists != 1:
-            raise ValueError(GENE_LISTS_NOT_SUPPORTED_MSG)
-        return values
-
-    @model_validator(mode="before")
-    def check_sample_input(cls, values: dict):
-        case = values.get("case")
-        samples = values.get("samples")
-        if case and samples:
-            raise ValueError(AMBIGUOUS_SAMPLES_INPUT)
-
-        return values
 
 
 ## Coverage and  overview report - related models ###

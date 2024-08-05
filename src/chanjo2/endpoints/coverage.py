@@ -10,7 +10,6 @@ from sqlalchemy.orm import Session
 
 from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
 from chanjo2.crud.intervals import get_genes, set_sql_intervals
-from chanjo2.crud.samples import get_samples_coverage_file
 from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import bed_file_interval_id_coords
 from chanjo2.meta.handle_completeness_tasks import (
@@ -21,19 +20,16 @@ from chanjo2.meta.handle_d4 import (
     get_d4tools_chromosome_mean_coverage,
     get_d4tools_intervals_coverage,
     get_d4tools_intervals_mean_coverage,
-    get_sample_interval_coverage,
     get_samples_sex_metrics,
 )
 from chanjo2.meta.handle_report_contents import INTERVAL_TYPE_SQL_TYPE
-from chanjo2.models import SQLExon, SQLGene, SQLTranscript
+from chanjo2.models import SQLGene
 from chanjo2.models.pydantic_models import (
     CoverageSummaryQuery,
     FileCoverageIntervalsFileQuery,
     FileCoverageQuery,
-    GeneCoverage,
     IntervalCoverage,
     IntervalType,
-    SampleGeneIntervalQuery,
     TranscriptTag,
 )
 
@@ -217,103 +213,3 @@ async def get_samples_predicted_sex(coverage_file_path: str):
             detail=WRONG_COVERAGE_FILE_MSG,
         )
     return get_samples_sex_metrics(d4_file_path=coverage_file_path)
-
-
-@router.post(
-    "/coverage/samples/genes_coverage", response_model=Dict[str, List[GeneCoverage]]
-)
-async def samples_genes_coverage(
-    query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
-):
-    """Returns coverage over a list of genes (entire gene) for a given list of samples in the database."""
-
-    samples_d4_files: Tuple[str, str] = get_samples_coverage_file(
-        db=db, samples=query.samples, case=query.case
-    )
-
-    genes: List[SQLGene] = get_genes(
-        db=db,
-        build=query.build,
-        ensembl_ids=query.ensembl_gene_ids,
-        hgnc_ids=query.hgnc_gene_ids,
-        hgnc_symbols=query.hgnc_gene_symbols,
-        limit=None,
-    )
-
-    return {
-        sample: get_sample_interval_coverage(
-            db=db,
-            d4_file_path=d4_file_path,
-            genes=genes,
-            interval_type=SQLGene,
-            completeness_thresholds=query.completeness_thresholds,
-        )
-        for sample, d4_file_path in samples_d4_files
-    }
-
-
-@router.post(
-    "/coverage/samples/transcripts_coverage",
-    response_model=Dict[str, List[GeneCoverage]],
-)
-async def samples_transcripts_coverage(
-    query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
-):
-    """Returns coverage over a list of genes (transcripts intervals only) for a given list of samples in the database."""
-
-    samples_d4_files: Tuple[str, str] = get_samples_coverage_file(
-        db=db, samples=query.samples, case=query.case
-    )
-
-    genes: List[SQLGene] = get_genes(
-        db=db,
-        build=query.build,
-        ensembl_ids=query.ensembl_gene_ids,
-        hgnc_ids=query.hgnc_gene_ids,
-        hgnc_symbols=query.hgnc_gene_symbols,
-        limit=None,
-    )
-
-    return {
-        sample: get_sample_interval_coverage(
-            db=db,
-            d4_file_path=d4_file_path,
-            genes=genes,
-            interval_type=SQLTranscript,
-            completeness_thresholds=query.completeness_thresholds,
-        )
-        for sample, d4_file_path in samples_d4_files
-    }
-
-
-@router.post(
-    "/coverage/samples/exons_coverage", response_model=Dict[str, List[GeneCoverage]]
-)
-async def samples_exons_coverage(
-    query: SampleGeneIntervalQuery, db: Session = Depends(get_session)
-):
-    """Returns coverage over a list of genes (exons intervals only) for a given list of samples in the database."""
-
-    samples_d4_files: Tuple[str, str] = get_samples_coverage_file(
-        db=db, samples=query.samples, case=query.case
-    )
-
-    genes: List[SQLGene] = get_genes(
-        db=db,
-        build=query.build,
-        ensembl_ids=query.ensembl_gene_ids,
-        hgnc_ids=query.hgnc_gene_ids,
-        hgnc_symbols=query.hgnc_gene_symbols,
-        limit=None,
-    )
-
-    return {
-        sample: get_sample_interval_coverage(
-            db=db,
-            d4_file_path=d4_file_path,
-            genes=genes,
-            interval_type=SQLExon,
-            completeness_thresholds=query.completeness_thresholds,
-        )
-        for sample, d4_file_path in samples_d4_files
-    }

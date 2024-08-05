@@ -5,7 +5,7 @@ from sqlalchemy import create_engine, inspect
 from chanjo2 import __version__
 from chanjo2.dbutil import DEMO_CONNECT_ARGS
 
-DB_TABLES = ["cases", "intervals", "samples", "genes"]
+DB_TABLES = ["intervals", "genes"]
 
 
 def test_heartbeat(client: TestClient):

@@ -1,7 +1,6 @@
 ## Coverage queries on d4 files or data contained in the database
 
 Chanjo2 can be used to quickly access average coverage depth statistics for an interval from a list of genomic intervals on a custom d4 coverage file.
-Additionally, samples stored in the database contain the location of d4 files on disk or on a remote server. For this reason, it is possible to retrieve coverage statistics relative to one or more samples by specifying their name (or the case name).
 
 ### Coverage completeness
 
@@ -164,86 +163,6 @@ curl -X 'POST' \
 
 ``` shell
 {"TestSample":{"mean_coverage":54.38,"coverage_completeness_percent":33.03}}
-```
-
-### Case and samples coverage queries
-
-Genes, transcripts and exons coverage data can be computed by sending POST requests to their relative endpoints:
-
-* `/coverage/samples/genes_coverage` 
-* `/coverage/samples/transcripts_coverage` 
-* `/coverage/samples/exons_coverage` 
-
-These endpoints are very similar and accept the following parameters:
-
-- <strong>build</strong> (required) # genome build (GRCh37 or GRCh38)
-- <strong>completeness_thresholds</strong> # Threshold values for computing coverage completeness. Example [50, 30, 10]
-- <strong>ensembl_gene_ids</strong> # List of Ensembl gene IDs. Example: ["ENSG00000101680", "ENSG00000196569"]
-- <strong>hgnc_gene_ids</strong> # List of HGNC gene IDs. Example: [6481, 6482]
-- <strong>hgnc_gene_symbols</strong> # List of HGNC gene symbols. Example: ["LAMA1", "LAMA2"]
-- <strong>samples</strong> # List containing name of samples stored in the database. Example: ["sample1". "sample2", ..]
-- <strong>case</strong> # name of a case containing one or more samples stored in the database
-
-While the only required parameter is "build", <strong>it is necessary to specify a list of genes</strong> (either ensembl_gene_ids, hgnc_gene_ids or hgnc_gene_symbols) and either <strong>a case or a list of samples</strong>.
-
-### Coverage and coverage completeness query examples
-
-- Given all samples from case "internal_id", retrieve mean coverage and coverage completeness with threshold 30, 20 on the genes from the Cerebral folate deficiency PanelAPP panel (*DHFR, FOLR1, MTHFR, SLC46A1*):
-
-``` shell
-curl -X 'POST' \
-  'http://localhost:8000/coverage/samples/genes_coverage' \
-  -H 'accept: application/json' \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "build": "GRCh37",
-  "completeness_thresholds": [
-    30, 20
-  ],
-  "hgnc_gene_symbols": [
-    "DH?FR", "FOLR1", "MTHFR", "SLC46A1"
-  ],
-  "case": "internal_id"
-}'
-```
-
-
-- Given two samples named sample1 and sample2. Calculate mean coverage and coverage completeness over the transcripts of the ATM gene (described by its Ensembl ID)
-
-``` shell
-curl -X 'POST' \
-  'http://localhost:8000/coverage/samples/transcripts_coverage' \
-  -H 'accept: application/json' \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "build": "GRCh37",
-  "completeness_thresholds": [
-    50, 30
-  ],
-  "ensembl_gene_ids": [
-    "ENSG00000149311"
-  ],
-  "samples": ["sample1", "sample2"]
-}'
-```
-
-- Evaluate mean coverage and coverage completeness over the exons of genes *LAMA1* and *LAMA2* (described by HGNC IDs):
-
-``` shell
-curl -X 'POST' \
-  'http://localhost:8000/coverage/samples/exons_coverage' \
-  -H 'accept: application/json' \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "build": "GRCh37",
-  "completeness_thresholds": [
-    100, 75, 50
-  ],
-  "hgnc_gene_ids": [
-    6481, 6482
-  ],
-  "samples": ["sample1", "sample2"]
-}'
 ```
 
 

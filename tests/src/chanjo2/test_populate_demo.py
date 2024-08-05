@@ -1,10 +1,8 @@
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import sessionmaker
 
-from chanjo2.crud.cases import get_cases
 from chanjo2.crud.intervals import get_gene_intervals, get_genes
-from chanjo2.crud.samples import get_samples
-from chanjo2.models import SQLCase, SQLExon, SQLGene, SQLSample, SQLTranscript
+from chanjo2.models import SQLExon, SQLGene, SQLTranscript
 from chanjo2.models.pydantic_models import Builds
 
 
@@ -13,13 +11,6 @@ def test_load_demo_data(demo_client: TestClient, demo_session: sessionmaker):
 
     # WHEN the app is launched
     with demo_client:
-        # THEN database should contain a case
-        cases: List[SQLCase] = get_cases(db=demo_session)
-        assert isinstance(cases[0], SQLCase)
-
-        # THEN database should contain samples
-        samples: List[SQLSample] = get_samples(db=demo_session)
-        assert isinstance(samples[0], SQLSample)
 
         # THEN for each genome build
         for build in Builds.get_enum_values():
