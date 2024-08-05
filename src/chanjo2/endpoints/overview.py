@@ -1,20 +1,29 @@
 from os import path
+from typing import Dict, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from pydantic_core._pydantic_core import ValidationError
 from sqlalchemy.orm import Session
 from starlette.datastructures import FormData
+from typing_extensions import Annotated
 
+from chanjo2.constants import DEFAULT_COVERAGE_LEVEL
 from chanjo2.dbutil import get_session
-from chanjo2.demo import DEMO_COVERAGE_QUERY_DATA
+from chanjo2.demo import DEMO_COVERAGE_QUERY_FORM
 from chanjo2.meta.handle_report_contents import (
     get_gene_overview_coverage_stats,
     get_report_data,
 )
-from chanjo2.models.pydantic_models import GeneCoverage, GeneReportForm, ReportQuery
+from chanjo2.models.pydantic_models import (
+    Builds,
+    GeneCoverage,
+    GeneReportForm,
+    IntervalType,
+    ReportQuery,
+)
 
 
 def get_templates_path() -> str:
@@ -31,7 +40,7 @@ router = APIRouter()
 async def demo_overview(request: Request, db: Session = Depends(get_session)):
     """Return a demo genes overview page over a list of genes for a list of samples."""
 
-    overview_query = ReportQuery(**DEMO_COVERAGE_QUERY_DATA)
+    overview_query = ReportQuery.as_form(DEMO_COVERAGE_QUERY_FORM)
     overview_content: dict = get_report_data(
         query=overview_query, session=db, is_overview=True
     )
@@ -49,15 +58,19 @@ async def demo_overview(request: Request, db: Session = Depends(get_session)):
 @router.post("/overview", response_class=HTMLResponse)
 async def overview(
     request: Request,
+    build=Annotated[Builds, Form(...)],
+    samples=Annotated[str, Form(...)],
+    interval_type=Annotated[IntervalType, Form(...)],
+    completeness_thresholds=Annotated[Optional[str], Form(None)],
+    ensembl_gene_ids=Annotated[Optional[str], Form(None)],
+    hgnc_gene_ids=Annotated[Optional[str], Form(None)],
+    hgnc_gene_symbols=Annotated[Optional[str], Form(None)],
+    default_level=Annotated[Optional[int], Form(DEFAULT_COVERAGE_LEVEL)],
     db: Session = Depends(get_session),
 ):
     """Return the genes overview page over a list of genes for a list of samples."""
-    request_headers: str = request.headers.get("Content-Type")
     try:
-        if request_headers == "application/json":
-            overview_query = ReportQuery(**await request.json())
-        else:
-            overview_query = ReportQuery.as_form(await request.form())
+        overview_query = ReportQuery.as_form(await request.form())
 
     except ValidationError as ve:
         raise HTTPException(
