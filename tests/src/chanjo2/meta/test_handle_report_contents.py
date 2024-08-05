@@ -2,7 +2,7 @@ from typing import List, Tuple
 
 from sqlalchemy.orm import sessionmaker
 
-from chanjo2.demo import DEMO_COVERAGE_QUERY_DATA
+from chanjo2.demo import DEMO_COVERAGE_QUERY_FORM
 from chanjo2.meta.handle_report_contents import (
     get_missing_genes_from_db,
     get_report_data,
@@ -37,7 +37,7 @@ def test_get_missing_genes_from_db(
     # WHEN coverage query contains gene symbols that are not present in the database
     missing_gene_error: Tuple[str, List[Union[int, str]]] = get_missing_genes_from_db(
         sql_genes=demo_genes_37,
-        hgnc_symbols=DEMO_COVERAGE_QUERY_DATA["hgnc_gene_symbols"],
+        hgnc_symbols=DEMO_COVERAGE_QUERY_FORM["hgnc_gene_symbols"],
     )
 
     # THEN the get_missing_genes_from_db function should return the expected error, containing description and missing IDs
@@ -49,7 +49,7 @@ def test_get_report_data(demo_session: sessionmaker):
     """Test the function that collects the deta required for creating a coverage/overview report."""
 
     # GIVEN a user query containing the expected parameters
-    query = ReportQuery.model_validate(DEMO_COVERAGE_QUERY_DATA)
+    query = ReportQuery.as_form(DEMO_COVERAGE_QUERY_FORM)
     report_data: dict = get_report_data(query=query, session=demo_session)
 
     # THEN get_report_data should return a dictionary with the expected report info
