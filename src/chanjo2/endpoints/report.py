@@ -8,6 +8,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from pydantic_core._pydantic_core import ValidationError
 from sqlalchemy.orm import Session
+from typing_extensions import Annotated
 
 from chanjo2.constants import DEFAULT_COVERAGE_LEVEL
 from chanjo2.dbutil import get_session
@@ -53,16 +54,16 @@ async def demo_report(request: Request, db: Session = Depends(get_session)):
 @router.post("/report", response_class=HTMLResponse)
 async def report(
     request: Request,
-    build: Builds = Form(...),
-    samples: str = Form(...),
-    interval_type: IntervalType = Form(...),
-    completeness_thresholds: Optional[str] = Form(None),
-    ensembl_gene_ids: Optional[str] = Form(None),
-    hgnc_gene_ids: Optional[str] = Form(None),
-    hgnc_gene_symbols: Optional[str] = Form(None),
-    case_display_name: Optional[str] = Form(None),
-    panel_name: Optional[str] = Form("Custom panel"),
-    default_level: Optional[int] = Form(DEFAULT_COVERAGE_LEVEL),
+    build=Annotated[Builds, Form(...)],
+    samples=Annotated[str, Form(...)],
+    interval_type=Annotated[IntervalType, Form(...)],
+    completeness_thresholds=Annotated[Optional[str], Form(None)],
+    ensembl_gene_ids=Annotated[Optional[str], Form(None)],
+    hgnc_gene_ids=Annotated[Optional[str], Form(None)],
+    hgnc_gene_symbols=Annotated[Optional[str], Form(None)],
+    case_display_name=Annotated[Optional[str], Form(None)],
+    panel_name=Annotated[Optional[str], Form("Custom panel")],
+    default_level=Annotated[Optional[int], Form(DEFAULT_COVERAGE_LEVEL)],
     db: Session = Depends(get_session),
 ):
     """Return a coverage report over a list of genes for a list of samples."""
