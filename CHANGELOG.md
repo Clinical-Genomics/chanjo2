@@ -6,7 +6,6 @@
 - How parameters are passed to starlette.templating since it was raising a deprecation warning.
 - Replaced deprecated Pydantic `parse_obj` method with `model_validate`
 - Report and genes overview endpoints accept only POST requests with form data now (application/x-www-form-urlencoded) - no json
-- Sort alphabetically the list genes that are incompletely covered on report page
 
 ## [1.9]
 ### Added
