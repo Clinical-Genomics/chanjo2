@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 from requests.models import Response
 
 from chanjo2.constants import GENE_LISTS_NOT_SUPPORTED_MSG
-from chanjo2.demo import DEMO_COVERAGE_QUERY_DATA, DEMO_COVERAGE_QUERY_FORM
+from chanjo2.demo import DEMO_COVERAGE_QUERY_FORM
 
 
 def test_demo_report(client: TestClient, endpoints: Type):

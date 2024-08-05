@@ -1,4 +1,3 @@
-import json
 from typing import Dict, List, Type
 
 from fastapi import status
@@ -6,7 +5,7 @@ from fastapi.testclient import TestClient
 from requests.models import Response
 
 from chanjo2.constants import BUILD_37, DEFAULT_COMPLETENESS_LEVELS
-from chanjo2.demo import DEMO_COVERAGE_QUERY_DATA, DEMO_COVERAGE_QUERY_FORM
+from chanjo2.demo import DEMO_COVERAGE_QUERY_FORM
 
 
 def test_demo_overview(client: TestClient, endpoints: Type):
@@ -14,22 +13,6 @@ def test_demo_overview(client: TestClient, endpoints: Type):
 
     # GIVEN a query to the demo genes coverage overview endpoint
     response: Response = client.get(endpoints.OVERVIEW_DEMO)
-
-    # Then the request should be successful
-    assert response.status_code == status.HTTP_200_OK
-
-    # And return an HTML page
-    assert response.template.name == "overview.html"
-
-
-def test_overview_json_data(client: TestClient, endpoints: Type):
-    """Test the endpoint that creates the genes coverage overview page by providing json data in the POST request."""
-
-    # GIVEN a query with json data to the genes coverage overview endpoint
-    response: Response = client.post(
-        endpoints.OVERVIEW,
-        json=DEMO_COVERAGE_QUERY_DATA,
-    )
 
     # Then the request should be successful
     assert response.status_code == status.HTTP_200_OK
@@ -65,7 +48,7 @@ def test_gene_overview(
         "completeness_thresholds": DEFAULT_COMPLETENESS_LEVELS,
         "hgnc_gene_id": genomic_ids_per_build[BUILD_37]["hgnc_ids"][0],
         "default_level": 10,
-        "samples": str(DEMO_COVERAGE_QUERY_DATA["samples"]),
+        "samples": str(DEMO_COVERAGE_QUERY_FORM["samples"]),
         "interval_type": "transcripts",
     }
 
