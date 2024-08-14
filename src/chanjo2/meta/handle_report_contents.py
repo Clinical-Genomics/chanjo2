@@ -122,8 +122,8 @@ def get_report_data(
         transcript_tags=[TranscriptTag.REFSEQ_MRNA],
     )
 
-    intervals_coords: List[str] = [
-        f"{interval.chromosome}\t{interval.start}\t{interval.stop}"
+    bed_lines: List[str] = [
+        f"{interval.chromosome}\t{interval.start}\t{interval.stop}\t{interval.ensembl_gene_id or interval.ensembl_id}"
         for interval in sql_intervals
     ]
 
@@ -132,8 +132,7 @@ def get_report_data(
             d4_file_path=sample.coverage_file_path,
             sample_name=sample.name,
             gene_ids_mapping=gene_ids_mapping,
-            sql_intervals=sql_intervals,
-            intervals_coords=intervals_coords,
+            bed_lines=bed_lines,
             completeness_thresholds=(
                 [query.default_level] if is_overview else query.completeness_thresholds
             ),

@@ -1,3 +1,4 @@
+import logging
 import subprocess
 import tempfile
 from statistics import mean
@@ -20,6 +21,8 @@ CHROM_INDEX = 0
 START_INDEX = 1
 STOP_INDEX = 2
 STATS_MEAN_COVERAGE_INDEX = 3
+
+LOG = logging.getLogger(__name__)
 
 
 def get_d4tools_chromosome_mean_coverage(
@@ -64,45 +67,110 @@ def get_d4tools_intervals_coverage(
         ["d4tools", "stat", "--region", bed_file_path, d4_file_path, "--stat", "mean"],
         text=True,
     )
+
     return [
         float(line.rstrip().split("\t")[3])
         for line in d4tools_stats_mean_cmd.splitlines()
     ]
 
 
+def get_d4tools_intervals_completeness(
+    d4_file_path: str, bed_file_path: str, completeness_thresholds: List[int]
+) -> List[Dict]:
+    """Return coverage completeness over all intervals of a bed file."""
+    covered_threshold_stats = []
+    d4tools_stats_perc_cov: str = subprocess.check_output(
+        [
+            "d4tools",
+            "stat",
+            "-s",
+            f"perc_cov={','.join(str(threshold) for threshold in completeness_thresholds)}",
+            "--region",
+            bed_file_path,
+            d4_file_path,
+        ],
+        text=True,
+    )
+    for line in d4tools_stats_perc_cov.splitlines():
+        stats_dict: Dict = dict(
+            (
+                zip(
+                    completeness_thresholds,
+                    [float(stat) for stat in line.rstrip().split("\t")[3:]],
+                )
+            )
+        )
+        covered_threshold_stats.append(stats_dict)
+
+    return covered_threshold_stats
+
+
 def get_report_sample_interval_coverage(
     d4_file_path: str,
     sample_name: str,
     gene_ids_mapping: Dict[str, dict],
-    sql_intervals: List[Union[SQLGene, SQLTranscript, SQLExon]],
-    intervals_coords: List[str],
+    bed_lines: List[str],
     completeness_thresholds: List[Optional[int]],
     default_threshold: int,
     report_data: dict,
 ) -> None:
     """Compute stats to populate a coverage report and coverage overview for one sample."""
 
+    intervals_bed = tempfile.NamedTemporaryFile()
+    with open(intervals_bed.name, "w") as bed_file:
+        bed_file.write("\n".join(bed_lines))
+
+    # Compute intervals coverage
+    intervals_coverage: List[float] = get_d4tools_intervals_coverage(
+        d4_file_path=d4_file_path, bed_file_path=intervals_bed.name
+    )
+
+    # Compute intervals completeness
+    intervals_completeness: List[Dict] = get_d4tools_intervals_completeness(
+        d4_file_path=d4_file_path,
+        bed_file_path=intervals_bed.name,
+        completeness_thresholds=completeness_thresholds,
+    )
+
+    if len(bed_lines) != len(intervals_coverage) != len(intervals_completeness):
+        LOG.error(
+            "Something went wrong when computing intervals coverage and completeness"
+        )
+        return
+
+    for ensembl_gene, gene_mapping in gene_ids_mapping.items():
+        gene_mapping["coverage"] = []
+        gene_mapping["completeness"] = {
+            threshold: [] for threshold in completeness_thresholds
+        }
+
+    LOG.warning(gene_ids_mapping)
+
+    for line_nr, line in enumerate(bed_lines):
+        ensembl_gene = line.rstrip().split("\t")[3]
+        gene_ids_mapping[ensembl_gene]["coverage"].append(intervals_coverage[line_nr])
+
+        for threshold in completeness_thresholds:
+            gene_ids_mapping[ensembl_gene]["completeness"][threshold] = (
+                intervals_completeness[line_nr][threshold]
+            )
+
+    LOG.warning(gene_ids_mapping)
+
+    """
+       
+        ensembl_gene =
+    for interval in sql_intervals
+
     if not intervals_coords:
         return
 
-    # Compute intervals coverage
-    intervals_coverage: List[float] = get_d4tools_intervals_mean_coverage(
-        d4_file_path=d4_file_path, intervals=intervals_coords
-    )
-    completeness_row_dict: dict = {"mean_coverage": mean(intervals_coverage)}
+    
 
-    # Compute intervals coverage completeness
-    interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]] = [
-        (interval.ensembl_id, (interval.chromosome, interval.start, interval.stop))
-        for interval in sql_intervals
-    ]
-    intervals_coverage_completeness: Dict[str, dict] = (
-        coverage_completeness_multitasker(
-            d4_file_path=d4_file_path,
-            thresholds=completeness_thresholds,
-            interval_ids_coords=interval_ids_coords,
-        )
-    )
+
+    
+
+    intervals_completeness = get_d4tools_intervals_completeness()
 
     interval_ids = set()
     thresholds_dict = {threshold: [] for threshold in completeness_thresholds}
@@ -167,6 +235,7 @@ def get_report_sample_interval_coverage(
             genes_covered_under_custom_threshold,
         )
     )
+    """
 
 
 def get_sample_interval_coverage(
