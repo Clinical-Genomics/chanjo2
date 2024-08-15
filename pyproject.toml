@@ -25,9 +25,7 @@ fastapi = "0.111"
 python-multipart = "^0.0.9"
 schug = "1.6.0"
 certifi = "^2024.7.4"
-
-[tool.poetry.dev-dependencies]
-pytest = "^6.2.5"
+pytest = "7.4.4"
 
 [tool.poetry.extras]
 m1 = ["pyd4"]
