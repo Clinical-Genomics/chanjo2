@@ -16,11 +16,6 @@ from chanjo2.models import sql_models
 from chanjo2.models.sql_models import Gene as SQLGene
 
 TEST_DB = "sqlite:///./test.db"
-CASE_NAME = "123"
-CASE_DISPLAY_NAME = "case_123"
-SAMPLE_NAME = "abc"
-SAMPLE_DISPLAY_NAME = "sample_abc"
-SAMPLE_TRACK_NAME: str = SAMPLE_NAME
 COVERAGE_FILE = "a_file.d4"
 BED_FILE = "a_file.bed"
 REMOTE_COVERAGE_FILE = "https://a_remote_host/a_file.d4"
@@ -47,10 +42,6 @@ TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engin
 class Endpoints(str):
     """Contains all the app endpoints used in testing."""
 
-    CASES = "/cases/"
-    CASES_DELETE = "/cases/delete/"
-    SAMPLES = "/samples/"
-    SAMPLES_DELETE = "/samples/delete/"
     INTERVAL = "/intervals/interval/"
     INTERVALS = "/intervals/"
     LOAD_GENES = "/intervals/load/genes/"
@@ -63,9 +54,6 @@ class Endpoints(str):
     INTERVALS_FILE_COVERAGE = "/coverage/d4/interval_file/"
     GENES_COVERAGE_SUMMARY = "/coverage/d4/genes/summary"
     GET_SAMPLES_PREDICTED_SEX = "/coverage/samples/predicted_sex"
-    SAMPLE_GENES_COVERAGE = "/coverage/samples/genes_coverage"
-    SAMPLE_TRANSCRIPTS_COVERAGE = "/coverage/samples/transcripts_coverage"
-    SAMPLE_EXONS_COVERAGE = "/coverage/samples/exons_coverage"
     REPORT_DEMO = "/report/demo/"
     REPORT = "/report"
     GENE_OVERVIEW = "/gene_overview"
@@ -182,40 +170,6 @@ def demo_sql_genes() -> List[SQLGene]:
         },
     ]
     return [SQLGene(**gene) for gene in gene_dicts]
-
-
-@pytest.fixture(name="raw_case")
-def raw_case() -> Dict[str, str]:
-    """Returns a dictionary corresponding to a case record."""
-    return {"name": CASE_NAME, "display_name": CASE_DISPLAY_NAME}
-
-
-@pytest.fixture(name="raw_sample")
-def raw_sample(raw_case) -> Dict[str, str]:
-    """Returns a dictionary used to create a sample in the database."""
-    return {
-        "name": SAMPLE_NAME,
-        "display_name": SAMPLE_DISPLAY_NAME,
-        "track_name": SAMPLE_TRACK_NAME,
-        "case_name": raw_case["name"],
-    }
-
-
-@pytest.fixture(name="db_case")
-def db_case(raw_case) -> sql_models.Case:
-    """Returns an object corresponding to a sql_models.Case."""
-    return sql_models.Case(name=raw_case["name"], display_name=raw_case["display_name"])
-
-
-@pytest.fixture(name="db_sample")
-def db_sample(raw_case, raw_sample, coverage_path) -> sql_models.Sample:
-    """Returns an object corresponding to a sql_models.Sample."""
-    return sql_models.Sample(
-        name=raw_sample["name"],
-        display_name=raw_sample["display_name"],
-        case_id=1,
-        coverage_file_path=str(coverage_path),
-    )
 
 
 @pytest.fixture(name="mock_coverage_file")

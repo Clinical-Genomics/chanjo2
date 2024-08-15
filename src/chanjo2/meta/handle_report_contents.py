@@ -4,13 +4,12 @@ from typing import Dict, List, Optional, Tuple, Union
 from sqlalchemy.orm import Session
 
 from chanjo2.crud.intervals import get_genes, get_hgnc_gene, set_sql_intervals
-from chanjo2.crud.samples import get_sample
 from chanjo2.meta.handle_d4 import (
     get_report_sample_interval_coverage,
     get_sample_interval_coverage,
     get_samples_sex_metrics,
 )
-from chanjo2.models import SQLExon, SQLGene, SQLSample, SQLTranscript
+from chanjo2.models import SQLExon, SQLGene, SQLTranscript
 from chanjo2.models.pydantic_models import (
     GeneCoverage,
     GeneReportForm,
