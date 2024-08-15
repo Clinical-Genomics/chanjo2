@@ -10,6 +10,7 @@
 - Use new percent coverage option from d4tools to compute coverage completeness
 ### Fixed
 - Updated dependencies including `certifi` to address dependabot alert
+- Update pytest to v.7.4.4 to address a `ReDoS` vulnerability
 
 ## [1.9]
 ### Added
