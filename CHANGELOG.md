@@ -8,6 +8,8 @@
 - Report and genes overview endpoints accept only POST requests with form data now (application/x-www-form-urlencoded) - no json
 - Sort alphabetically the list genes that are incompletely covered on report page
 - Use new percent coverage option from d4tools to compute coverage completeness
+### Fixed
+- Updated dependencies including `certifi` to address dependabot alert
 
 ## [1.9]
 ### Added
