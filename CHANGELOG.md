@@ -9,6 +9,7 @@
 - Sort alphabetically the list genes that are incompletely covered on report page
 ### Fixed
 - Updated dependencies including `certifi` to address dependabot alert
+- Update pytest to address a `ReDoS` vulnerability
 
 ## [1.9]
 ### Added
