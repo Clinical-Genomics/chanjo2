@@ -7,11 +7,15 @@ from typing import Dict, List, Optional, Tuple, Union
 from sqlalchemy.orm import Session
 
 from chanjo2.crud.intervals import get_gene_intervals, set_sql_intervals
-from chanjo2.meta.handle_completeness_tasks import \
-    coverage_completeness_multitasker
+from chanjo2.meta.handle_completeness_tasks import coverage_completeness_multitasker
 from chanjo2.models import SQLExon, SQLGene, SQLTranscript
-from chanjo2.models.pydantic_models import (GeneCoverage, IntervalCoverage,
-                                            IntervalType, Sex, TranscriptTag)
+from chanjo2.models.pydantic_models import (
+    GeneCoverage,
+    IntervalCoverage,
+    IntervalType,
+    Sex,
+    TranscriptTag,
+)
 
 CHROM_INDEX = 0
 START_INDEX = 1
@@ -292,12 +296,12 @@ def get_sample_interval_coverage(
                 gene_coverage.inner_intervals.append(interval_coverage)
                 inner_intervals_ensembl_ids.add(ensembl_id)
 
-        gene_coverage.mean_coverage = mean(mean_intervals_coverage)
-        for threshold in completeness_thresholds:
-            mean_intervals_completeness[threshold] = mean(
-                mean_intervals_completeness[threshold]
-            )
-        gene_coverage.completeness = mean_intervals_completeness
+            gene_coverage.mean_coverage = mean(mean_intervals_coverage)
+            for threshold in completeness_thresholds:
+                mean_intervals_completeness[threshold] = mean(
+                    mean_intervals_completeness[threshold]
+                )
+            gene_coverage.completeness = mean_intervals_completeness
         genes_coverage_stats.append(gene_coverage)
 
     return genes_coverage_stats
