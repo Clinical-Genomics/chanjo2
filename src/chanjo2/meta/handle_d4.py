@@ -245,7 +245,7 @@ def get_sample_interval_coverage(
         intervals_completeness
     ):
         LOG.error("Mismatch in the number of intervals for coverage and completeness")
-        return
+        return []
 
     # Create GeneCoverage objects
     for gene in genes:
