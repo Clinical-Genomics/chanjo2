@@ -171,7 +171,6 @@ def d4_genes_condensed_summary(
         genes_mean_coverage: List[float] = get_d4tools_intervals_mean_coverage(
             d4_file_path=sample.coverage_file_path, intervals=coverage_intervals
         )
-        LOG.warning(round(mean(genes_mean_coverage), 2))
         # Compute coverage completeness over genomic intervals
         interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]] = [
             (interval.ensembl_id, (interval.chromosome, interval.start, interval.stop))
