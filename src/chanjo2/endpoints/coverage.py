@@ -22,7 +22,7 @@ from chanjo2.meta.handle_d4 import (
     get_d4tools_intervals_mean_coverage,
     get_samples_sex_metrics,
 )
-from chanjo2.meta.handle_report_contents import INTERVAL_TYPE_SQL_TYPE
+from chanjo2.meta.handle_report_contents import INTERVAL_TYPE_SQL_TYPE, get_mean
 from chanjo2.models import SQLGene
 from chanjo2.models.pydantic_models import (
     CoverageSummaryQuery,
@@ -171,6 +171,7 @@ def d4_genes_condensed_summary(
         genes_mean_coverage: List[float] = get_d4tools_intervals_mean_coverage(
             d4_file_path=sample.coverage_file_path, intervals=coverage_intervals
         )
+        LOG.warning(round(mean(genes_mean_coverage), 2))
         # Compute coverage completeness over genomic intervals
         interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]] = [
             (interval.ensembl_id, (interval.chromosome, interval.start, interval.stop))
@@ -187,10 +188,9 @@ def d4_genes_condensed_summary(
             value[query.coverage_threshold] * 100
             for value in genes_coverage_completeness.values()
         ]
+
         condensed_stats[sample.name] = {
-            "mean_coverage": (
-                round(mean(genes_mean_coverage), 2) if genes_mean_coverage else "NA"
-            ),
+            "mean_coverage": get_mean(float_list=genes_mean_coverage),
             "coverage_completeness_percent": (
                 round(mean(genes_coverage_completeness_values), 2)
                 if genes_coverage_completeness_values
