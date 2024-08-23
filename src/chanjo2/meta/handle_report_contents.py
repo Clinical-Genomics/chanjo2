@@ -37,7 +37,9 @@ def get_mean(float_list: List[float], round_by: int = 2) -> Union[float, str]:
     else:
         mean_value = "NA"
 
-    return mean_value if str(mean_value).isdigit() else str(mean_value)
+    return (
+        mean_value if str(mean_value).replace(".", "", 1).isdigit() else str(mean_value)
+    )
 
 
 def get_ordered_levels(threshold_levels: List[int]) -> OrderedDict:
