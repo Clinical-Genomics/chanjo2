@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from statistics import mean
 from typing import Dict, List, Optional, Tuple, Union
 
 from sqlalchemy.orm import Session
@@ -27,6 +28,16 @@ INTERVAL_TYPE_SQL_TYPE: Dict[IntervalType, Union[SQLGene, SQLTranscript, SQLExon
 }
 
 #### Functions used by all reports ####
+
+
+def get_mean(float_list: List[float], round_by: int = 2) -> Union[float, str]:
+    """Return the mean value from a list of floating point numbers, or a string when the value can't be converted to number."""
+    if float_list:
+        mean_value = round(mean(float_list), round_by)
+    else:
+        mean_value = "NA"
+
+    return mean_value if str(mean_value).split(".")[0].isdigit() else str(mean_value)
 
 
 def get_ordered_levels(threshold_levels: List[int]) -> OrderedDict:
