@@ -229,7 +229,7 @@ def test_d4_genes_coverage_summary(
     condensed_summary = response.json()
     # And return the expected data
     assert condensed_summary[DEMO_SAMPLE["name"]]["coverage_completeness_percent"] > 0
-    assert condensed_summary[DEMO_SAMPLE["name"]]["mean_coverage"] > 0
+    assert condensed_summary[DEMO_SAMPLE["name"]]["mean_coverage"] == "whatsthis"
 
 
 def test_get_samples_predicted_sex(
