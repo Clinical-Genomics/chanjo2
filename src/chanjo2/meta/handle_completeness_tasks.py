@@ -50,7 +50,7 @@ def get_d4tools_intervals_completeness(
     d4_file_path: str, bed_file_path: str, completeness_thresholds: List[int]
 ) -> List[Dict]:
     """Return coverage completeness over all intervals of a bed file using the perc_cov d4tools command."""
-    covered_threshold_stats = []
+    threshold_stats = []
     d4tools_stats_perc_cov: str = subprocess.check_output(
         [
             "d4tools",
@@ -72,9 +72,9 @@ def get_d4tools_intervals_completeness(
                 )
             )
         )
-        covered_threshold_stats.append(stats_dict)
+        threshold_stats.append(stats_dict)
 
-    return covered_threshold_stats
+    return threshold_stats
 
 
 def coverage_completeness_multitasker(
