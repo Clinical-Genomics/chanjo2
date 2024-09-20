@@ -200,8 +200,6 @@ def get_sample_interval_coverage(
         )
     )
 
-    LOG
-
     # Create GeneCoverage objects
     for gene in genes:
         gene_coverage = GeneCoverage(

@@ -49,7 +49,7 @@ def get_d4tools_coverage_completeness(
 def get_d4tools_intervals_completeness(
     d4_file_path: str, bed_file_path: str, completeness_thresholds: List[int]
 ) -> List[Dict]:
-    """Return coverage completeness over all intervals of a bed file."""
+    """Return coverage completeness over all intervals of a bed file using the perc_cov d4tools command."""
     covered_threshold_stats = []
     d4tools_stats_perc_cov: str = subprocess.check_output(
         [
@@ -82,9 +82,9 @@ def coverage_completeness_multitasker(
     thresholds: List[int],
     interval_ids_coords: List[Tuple[str, tuple]],
 ) -> Dict[str, dict]:
-    """Compute coverage and completeness over the given intervals of a d4 file using multiprocessing."""
+    """Compute coverage and completeness over the given intervals of a d4 file."""
 
-    return_dict: Dict[str:dict] = {}
+    interval_id_completeness_stats: Dict[str:dict] = {}
 
     bed_lines = [
         f"{coords[CHROM_INDEX]}\t{coords[START_INDEX]}\t{coords[STOP_INDEX]}"
@@ -101,6 +101,8 @@ def coverage_completeness_multitasker(
         )
 
     for index, interval_id_coord in enumerate(interval_ids_coords):
-        return_dict[interval_id_coord[0]] = intervals_completeness[index]
+        interval_id_completeness_stats[interval_id_coord[0]] = intervals_completeness[
+            index
+        ]
 
-    return return_dict
+    return interval_id_completeness_stats
