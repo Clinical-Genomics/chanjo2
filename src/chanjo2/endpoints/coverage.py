@@ -62,6 +62,7 @@ def d4_interval_coverage(query: FileCoverageQuery):
     mean_coverage: float = get_d4tools_intervals_mean_coverage(
         d4_file_path=query.coverage_file_path, intervals=[interval]
     )[0]
+
     completeness_stats = coverage_completeness_multitasker(
         d4_file_path=query.coverage_file_path,
         interval_ids_coords=[(interval, (query.chromosome, query.start, query.end))],
