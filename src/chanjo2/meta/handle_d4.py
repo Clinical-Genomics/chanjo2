@@ -1,4 +1,3 @@
-import logging
 import subprocess
 import tempfile
 from statistics import mean
@@ -21,7 +20,6 @@ CHROM_INDEX = 0
 START_INDEX = 1
 STOP_INDEX = 2
 STATS_MEAN_COVERAGE_INDEX = 3
-LOG = logging.getLogger(__name__)
 
 
 def get_d4tools_chromosome_mean_coverage(

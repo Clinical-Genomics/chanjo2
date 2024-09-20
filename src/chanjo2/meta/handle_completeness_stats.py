@@ -1,14 +1,10 @@
-import logging
 import subprocess
 import tempfile
 from typing import Dict, List, Tuple
 
-INTERVAL_CHUNKS = 50
 CHROM_INDEX = 0
 START_INDEX = 1
 STOP_INDEX = 2
-STATS_COVERAGE_INDEX = 3
-LOG = logging.getLogger(__name__)
 
 
 def get_d4tools_intervals_completeness(
