@@ -26,6 +26,7 @@ python-multipart = "^0.0.9"
 schug = "1.6.0"
 certifi = "^2024.7.4"
 pytest = "7.4.4"
+coloredlogs = "^15.0.1"
 
 [tool.poetry.extras]
 m1 = ["pyd4"]
