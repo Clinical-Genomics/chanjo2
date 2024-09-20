@@ -1,5 +1,6 @@
+import logging
 import subprocess
-from multiprocessing import Manager, Pool
+import tempfile
 from typing import Dict, List, Tuple
 
 INTERVAL_CHUNKS = 50
@@ -7,6 +8,7 @@ CHROM_INDEX = 0
 START_INDEX = 1
 STOP_INDEX = 2
 STATS_COVERAGE_INDEX = 3
+LOG = logging.getLogger(__name__)
 
 
 def get_d4tools_coverage_completeness(
@@ -16,6 +18,7 @@ def get_d4tools_coverage_completeness(
     interval_ids_coords: List[Tuple[str, tuple]],
 ):
     """Return the coverage completeness for the specified intervals of a d4 file."""
+
     for interval_id, coords in interval_ids_coords:
 
         bedgraph_coverage_contents: List[str] = subprocess.check_output(
@@ -43,6 +46,37 @@ def get_d4tools_coverage_completeness(
         return_dict[interval_id] = thresholds_dict
 
 
+def get_d4tools_intervals_completeness(
+    d4_file_path: str, bed_file_path: str, completeness_thresholds: List[int]
+) -> List[Dict]:
+    """Return coverage completeness over all intervals of a bed file."""
+    covered_threshold_stats = []
+    d4tools_stats_perc_cov: str = subprocess.check_output(
+        [
+            "d4tools",
+            "stat",
+            "-s",
+            f"perc_cov={','.join(str(threshold) for threshold in completeness_thresholds)}",
+            "--region",
+            bed_file_path,
+            d4_file_path,
+        ],
+        text=True,
+    )
+    for line in d4tools_stats_perc_cov.splitlines():
+        stats_dict: Dict = dict(
+            (
+                zip(
+                    completeness_thresholds,
+                    [float(stat) for stat in line.rstrip().split("\t")[3:]],
+                )
+            )
+        )
+        covered_threshold_stats.append(stats_dict)
+
+    return covered_threshold_stats
+
+
 def coverage_completeness_multitasker(
     d4_file_path: str,
     thresholds: List[int],
@@ -50,25 +84,23 @@ def coverage_completeness_multitasker(
 ) -> Dict[str, dict]:
     """Compute coverage and completeness over the given intervals of a d4 file using multiprocessing."""
 
-    manager = Manager()
-    return_dict = manager.dict()  # Used for storing results from the separate processes
+    return_dict: Dict[str:dict] = {}
 
-    split_intervals: List[List[Tuple[str, Tuple[str, int, int]]]] = [
-        interval_ids_coords[chunk_index : chunk_index + INTERVAL_CHUNKS]
-        for chunk_index in range(0, len(interval_ids_coords), INTERVAL_CHUNKS)
+    bed_lines = [
+        f"{coords[CHROM_INDEX]}\t{coords[START_INDEX]}\t{coords[STOP_INDEX]}"
+        for _, coords in interval_ids_coords
     ]
+    # Write genomic intervals to a temporary file
+    with tempfile.NamedTemporaryFile(mode="w") as intervals_bed:
+        intervals_bed.write("\n".join(bed_lines))
+        intervals_bed.flush()
+        intervals_completeness = get_d4tools_intervals_completeness(
+            d4_file_path=d4_file_path,
+            bed_file_path=intervals_bed.name,
+            completeness_thresholds=thresholds,
+        )
 
-    tasks_params = [
-        (d4_file_path, thresholds, return_dict, intervals)
-        for intervals in split_intervals
-    ]
-
-    pool = Pool()
-    pool.starmap_async(
-        get_d4tools_coverage_completeness, [task for task in tasks_params]
-    )
-
-    pool.close()
-    pool.join()
+    for index, interval_id_coord in enumerate(interval_ids_coords):
+        return_dict[interval_id_coord[0]] = intervals_completeness[index]
 
     return return_dict
