@@ -12,7 +12,7 @@ from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
 from chanjo2.crud.intervals import get_genes, set_sql_intervals
 from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import bed_file_interval_id_coords
-from chanjo2.meta.handle_completeness_tasks import coverage_completeness_multitasker
+from chanjo2.meta.handle_completeness_stats import get_completeness_stats
 from chanjo2.meta.handle_d4 import (
     get_d4tools_chromosome_mean_coverage,
     get_d4tools_intervals_coverage,
@@ -63,7 +63,7 @@ def d4_interval_coverage(query: FileCoverageQuery):
         d4_file_path=query.coverage_file_path, intervals=[interval]
     )[0]
 
-    completeness_stats = coverage_completeness_multitasker(
+    completeness_stats = get_completeness_stats(
         d4_file_path=query.coverage_file_path,
         interval_ids_coords=[(interval, (query.chromosome, query.start, query.end))],
         thresholds=query.completeness_thresholds,
@@ -103,12 +103,10 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
     intervals_coverage: List[float] = get_d4tools_intervals_coverage(
         d4_file_path=query.coverage_file_path, bed_file_path=query.intervals_bed_path
     )
-    intervals_completeness: Dict[str, Dict[int, float]] = (
-        coverage_completeness_multitasker(
-            d4_file_path=query.coverage_file_path,
-            thresholds=query.completeness_thresholds,
-            interval_ids_coords=interval_id_coords,
-        )
+    intervals_completeness: Dict[str, Dict[int, float]] = get_completeness_stats(
+        d4_file_path=query.coverage_file_path,
+        thresholds=query.completeness_thresholds,
+        interval_ids_coords=interval_id_coords,
     )
 
     results: List[IntervalCoverage] = []
@@ -172,12 +170,10 @@ def d4_genes_condensed_summary(
             (interval.ensembl_id, (interval.chromosome, interval.start, interval.stop))
             for interval in sql_intervals
         ]
-        genes_coverage_completeness: Dict[str, dict] = (
-            coverage_completeness_multitasker(
-                d4_file_path=sample.coverage_file_path,
-                thresholds=[query.coverage_threshold],
-                interval_ids_coords=interval_ids_coords,
-            )
+        genes_coverage_completeness: Dict[str, dict] = get_completeness_stats(
+            d4_file_path=sample.coverage_file_path,
+            thresholds=[query.coverage_threshold],
+            interval_ids_coords=interval_ids_coords,
         )
         genes_coverage_completeness_values: List[float] = [
             value[query.coverage_threshold] * 100

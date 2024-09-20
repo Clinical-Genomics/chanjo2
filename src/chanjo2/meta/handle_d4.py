@@ -7,7 +7,7 @@ from typing import Dict, List, Optional, Tuple, Union
 from sqlalchemy.orm import Session
 
 from chanjo2.crud.intervals import get_gene_intervals, set_sql_intervals
-from chanjo2.meta.handle_completeness_tasks import coverage_completeness_multitasker
+from chanjo2.meta.handle_completeness_stats import get_completeness_stats
 from chanjo2.models import SQLExon, SQLGene, SQLTranscript
 from chanjo2.models.pydantic_models import (
     GeneCoverage,
@@ -98,12 +98,10 @@ def get_report_sample_interval_coverage(
         (interval.ensembl_id, (interval.chromosome, interval.start, interval.stop))
         for interval in sql_intervals
     ]
-    intervals_coverage_completeness: Dict[str, dict] = (
-        coverage_completeness_multitasker(
-            d4_file_path=d4_file_path,
-            thresholds=completeness_thresholds,
-            interval_ids_coords=interval_ids_coords,
-        )
+    intervals_coverage_completeness: Dict[str, dict] = get_completeness_stats(
+        d4_file_path=d4_file_path,
+        thresholds=completeness_thresholds,
+        interval_ids_coords=interval_ids_coords,
     )
 
     interval_ids = set()
@@ -192,12 +190,10 @@ def get_sample_interval_coverage(
         (interval.ensembl_id, (interval.chromosome, interval.start, interval.stop))
         for interval in sql_intervals
     ]
-    intervals_coverage_completeness: Dict[str, dict] = (
-        coverage_completeness_multitasker(
-            d4_file_path=d4_file_path,
-            thresholds=completeness_thresholds,
-            interval_ids_coords=interval_ids_coords,
-        )
+    intervals_coverage_completeness: Dict[str, dict] = get_completeness_stats(
+        d4_file_path=d4_file_path,
+        thresholds=completeness_thresholds,
+        interval_ids_coords=interval_ids_coords,
     )
 
     # Create GeneCoverage objects

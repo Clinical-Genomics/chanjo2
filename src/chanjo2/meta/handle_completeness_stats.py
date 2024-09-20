@@ -42,7 +42,7 @@ def get_d4tools_intervals_completeness(
     return threshold_stats
 
 
-def coverage_completeness_multitasker(
+def get_completeness_stats(
     d4_file_path: str,
     thresholds: List[int],
     interval_ids_coords: List[Tuple[str, tuple]],
