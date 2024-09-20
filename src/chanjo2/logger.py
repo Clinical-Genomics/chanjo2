@@ -1,16 +1,11 @@
 import logging
 
-import uvicorn
+import coloredlogs
+from fastapi.applications import FastAPI
 
-LOG = logging.getLogger(__name__)
 
-
-def configure_log():
+def configure_log(log: logging.Logger, app: FastAPI):
     """Configure logging."""
-    console_formatter = uvicorn.logging.ColourizedFormatter(
-        "{levelprefix} {asctime} : {message}", style="{", use_colors=True
-    )
-    if LOG.handlers:
-        LOG.handlers[0].setFormatter(console_formatter)
-    else:
-        logging.basicConfig()
+
+    current_log_level = log.getEffectiveLevel()
+    coloredlogs.install(level="DEBUG" if app.debug else current_log_level)
