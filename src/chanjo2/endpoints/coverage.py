@@ -12,10 +12,7 @@ from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
 from chanjo2.crud.intervals import get_genes, set_sql_intervals
 from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import bed_file_interval_id_coords
-from chanjo2.meta.handle_completeness_tasks import (
-    coverage_completeness_multitasker,
-    get_d4tools_coverage_completeness,
-)
+from chanjo2.meta.handle_completeness_tasks import coverage_completeness_multitasker
 from chanjo2.meta.handle_d4 import (
     get_d4tools_chromosome_mean_coverage,
     get_d4tools_intervals_coverage,
@@ -61,21 +58,19 @@ def d4_interval_coverage(query: FileCoverageQuery):
         )
 
     interval += f"\t{query.start}\t{query.end}"
-    completeness_dict = {}
 
     mean_coverage: float = get_d4tools_intervals_mean_coverage(
         d4_file_path=query.coverage_file_path, intervals=[interval]
     )[0]
-    get_d4tools_coverage_completeness(
+    completeness_stats = coverage_completeness_multitasker(
         d4_file_path=query.coverage_file_path,
         interval_ids_coords=[(interval, (query.chromosome, query.start, query.end))],
         thresholds=query.completeness_thresholds,
-        return_dict=completeness_dict,
     )
 
     return IntervalCoverage(
         mean_coverage=mean_coverage,
-        completeness=completeness_dict.get(interval),
+        completeness=completeness_stats,
         interval_id=f"{query.chromosome}:{query.start}-{query.end}",
     )
 

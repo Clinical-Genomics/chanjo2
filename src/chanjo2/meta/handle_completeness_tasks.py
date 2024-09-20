@@ -11,41 +11,6 @@ STATS_COVERAGE_INDEX = 3
 LOG = logging.getLogger(__name__)
 
 
-def get_d4tools_coverage_completeness(
-    d4_file_path: str,
-    thresholds: List[int],
-    return_dict: dict,
-    interval_ids_coords: List[Tuple[str, tuple]],
-):
-    """Return the coverage completeness for the specified intervals of a d4 file."""
-
-    for interval_id, coords in interval_ids_coords:
-
-        bedgraph_coverage_contents: List[str] = subprocess.check_output(
-            ["d4tools", "view", d4_file_path, f"{coords[0]}:{coords[1]}-{coords[2]}"],
-            text=True,
-        ).splitlines()
-
-        bedgraph_stats = [line.split("\t") for line in bedgraph_coverage_contents]
-
-        thresholds_dict = {}
-        for threshold in thresholds:
-            nr_bases_covered_above_threshold = 0
-
-            for chrom_stats in bedgraph_stats:
-                if int(chrom_stats[STATS_COVERAGE_INDEX]) >= threshold:
-                    nr_bases_covered_above_threshold += int(
-                        chrom_stats[STOP_INDEX]
-                    ) - int(chrom_stats[START_INDEX])
-
-            # Compute the fraction of bases covered above threshold
-            thresholds_dict[threshold] = nr_bases_covered_above_threshold / (
-                coords[STOP_INDEX] - coords[START_INDEX]
-            )
-
-        return_dict[interval_id] = thresholds_dict
-
-
 def get_d4tools_intervals_completeness(
     d4_file_path: str, bed_file_path: str, completeness_thresholds: List[int]
 ) -> List[Dict]:
