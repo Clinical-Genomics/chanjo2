@@ -71,7 +71,7 @@ def d4_interval_coverage(query: FileCoverageQuery):
 
     return IntervalCoverage(
         mean_coverage=mean_coverage,
-        completeness=completeness_stats,
+        completeness=completeness_stats[interval],
         interval_id=f"{query.chromosome}:{query.start}-{query.end}",
     )
 
