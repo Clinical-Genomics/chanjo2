@@ -76,14 +76,17 @@ def get_report_data(
 
     set_samples_coverage_files(session=session, samples=query.samples)
 
-    genes: List[SQLGene] = get_genes(
-        db=session,
-        build=query.build,
-        ensembl_ids=query.ensembl_gene_ids,
-        hgnc_ids=query.hgnc_gene_ids,
-        hgnc_symbols=query.hgnc_gene_symbols,
-        limit=None,
-    )
+    if any([query.ensembl_gene_ids, query.hgnc_gene_ids, query.hgnc_gene_symbols]):
+        genes: List[SQLGene] = get_genes(
+            db=session,
+            build=query.build,
+            ensembl_ids=query.ensembl_gene_ids,
+            hgnc_ids=query.hgnc_gene_ids,
+            hgnc_symbols=query.hgnc_gene_symbols,
+            limit=None,
+        )
+    else:
+        genes = []
 
     data: Dict = {
         "levels": get_ordered_levels(threshold_levels=query.completeness_thresholds),
