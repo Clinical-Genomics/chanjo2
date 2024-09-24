@@ -90,8 +90,9 @@ def get_report_sample_interval_coverage(
 ) -> None:
     """Compute stats to populate a coverage report and coverage overview for one sample."""
 
-    intervals_coords = intervals_coords or []
-    completeness_thresholds = completeness_thresholds or []
+    if not intervals_coords:
+        intervals_coords = []
+        completeness_thresholds = []
 
     # Compute intervals coverage
     intervals_coverage: List[float] = get_d4tools_intervals_mean_coverage(
