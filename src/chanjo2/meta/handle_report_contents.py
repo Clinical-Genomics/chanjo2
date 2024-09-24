@@ -122,15 +122,14 @@ def get_report_data(
         for gene in genes
     }
 
-    if not gene_ids_mapping:
-        return data
-
-    sql_intervals = set_sql_intervals(
-        db=session,
-        interval_type=INTERVAL_TYPE_SQL_TYPE[query.interval_type],
-        genes=genes,
-        transcript_tags=[TranscriptTag.REFSEQ_MRNA],
-    )
+    sql_intervals: list = []
+    if gene_ids_mapping:
+        sql_intervals = set_sql_intervals(
+            db=session,
+            interval_type=INTERVAL_TYPE_SQL_TYPE[query.interval_type],
+            genes=genes,
+            transcript_tags=[TranscriptTag.REFSEQ_MRNA],
+        )
 
     intervals_coords: List[str] = [
         f"{interval.chromosome}\t{interval.start}\t{interval.stop}"

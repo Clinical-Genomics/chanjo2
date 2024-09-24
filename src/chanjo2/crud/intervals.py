@@ -78,6 +78,8 @@ def get_genes(
         genes: query.Query = genes.filter(SQLGene.hgnc_id.in_(hgnc_ids))
     elif hgnc_symbols:
         genes: query.Query = genes.filter(SQLGene.hgnc_symbol.in_(hgnc_symbols))
+    else:
+        return []
 
     genes: query.Query = _filter_intervals_by_build(
         intervals=genes, interval_type=SQLGene, build=build
