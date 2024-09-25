@@ -49,6 +49,8 @@ GENES_FILE_HEADER: Dict[str, List[str]] = {
     ],
 }
 
+CHROMOSOMES = [str(i) for i in range(0, 23)] + ["X", "Y", "MT"]
+
 TRANSCRIPTS_FILE_HEADER: Dict[str, List[str]] = {
     BUILD_37: [
         CHROMOSOME_NAME_37,

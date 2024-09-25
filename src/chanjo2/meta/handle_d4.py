@@ -1,3 +1,4 @@
+import logging
 import subprocess
 import tempfile
 from statistics import mean
@@ -5,6 +6,7 @@ from typing import Dict, List, Optional, Tuple, Union
 
 from sqlalchemy.orm import Session
 
+from chanjo2.constants import CHROMOSOMES
 from chanjo2.crud.intervals import get_gene_intervals, set_sql_intervals
 from chanjo2.meta.handle_completeness_stats import get_completeness_stats
 from chanjo2.models import SQLExon, SQLGene, SQLTranscript
@@ -16,6 +18,7 @@ from chanjo2.models.pydantic_models import (
     TranscriptTag,
 )
 
+LOG = logging.getLogger(__name__)
 CHROM_INDEX = 0
 START_INDEX = 1
 STOP_INDEX = 2
@@ -46,13 +49,18 @@ def get_d4tools_intervals_mean_coverage(
 ) -> List[float]:
     """Return the mean value over a list of intervals of a d4 file."""
 
-    tmp_bed_file = tempfile.NamedTemporaryFile()
-    with open(tmp_bed_file.name, "w") as bed_file:
-        bed_file.write("\n".join(intervals))
+    if intervals:
+        tmp_bed_file = tempfile.NamedTemporaryFile()
+        with open(tmp_bed_file.name, "w") as bed_file:
+            bed_file.write("\n".join(intervals))
 
-    return get_d4tools_intervals_coverage(
-        d4_file_path=d4_file_path, bed_file_path=tmp_bed_file.name
+        return get_d4tools_intervals_coverage(
+            d4_file_path=d4_file_path, bed_file_path=tmp_bed_file.name
+        )
+    chromosomes_mean_cov = get_d4tools_chromosome_mean_coverage(
+        d4_file_path=d4_file_path, chromosomes=CHROMOSOMES
     )
+    return [chrom_cov[1] for chrom_cov in chromosomes_mean_cov]
 
 
 def get_d4tools_intervals_coverage(
@@ -83,7 +91,8 @@ def get_report_sample_interval_coverage(
     """Compute stats to populate a coverage report and coverage overview for one sample."""
 
     if not intervals_coords:
-        return
+        intervals_coords = []
+        completeness_thresholds = []
 
     # Compute intervals coverage
     intervals_coverage: List[float] = get_d4tools_intervals_mean_coverage(
@@ -151,20 +160,21 @@ def get_report_sample_interval_coverage(
 
     report_data["completeness_rows"].append((sample_name, completeness_row_dict))
     report_data["incomplete_coverage_rows"] += incomplete_coverages_rows
-    fully_covered_intervals_percent = round(
-        100
-        * (len(interval_ids) - nr_intervals_covered_under_custom_threshold)
-        / len(interval_ids),
-        2,
-    )
-    report_data["default_level_completeness_rows"].append(
-        (
-            sample_name,
-            fully_covered_intervals_percent,
-            f"{nr_intervals_covered_under_custom_threshold}/{len(interval_ids)}",
-            genes_covered_under_custom_threshold,
+    if intervals_coords:
+        fully_covered_intervals_percent = round(
+            100
+            * (len(interval_ids) - nr_intervals_covered_under_custom_threshold)
+            / len(interval_ids),
+            2,
         )
-    )
+        report_data["default_level_completeness_rows"].append(
+            (
+                sample_name,
+                fully_covered_intervals_percent,
+                f"{nr_intervals_covered_under_custom_threshold}/{len(interval_ids)}",
+                genes_covered_under_custom_threshold,
+            )
+        )
 
 
 def get_sample_interval_coverage(

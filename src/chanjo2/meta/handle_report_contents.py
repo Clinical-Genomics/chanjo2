@@ -1,3 +1,4 @@
+import logging
 from collections import OrderedDict
 from statistics import mean
 from typing import Dict, List, Optional, Tuple, Union
@@ -21,6 +22,7 @@ from chanjo2.models.pydantic_models import (
     TranscriptTag,
 )
 
+LOG = logging.getLogger(__name__)
 INTERVAL_TYPE_SQL_TYPE: Dict[IntervalType, Union[SQLGene, SQLTranscript, SQLExon]] = {
     IntervalType.GENES: SQLGene,
     IntervalType.TRANSCRIPTS: SQLTranscript,
@@ -76,14 +78,17 @@ def get_report_data(
 
     set_samples_coverage_files(session=session, samples=query.samples)
 
-    genes: List[SQLGene] = get_genes(
-        db=session,
-        build=query.build,
-        ensembl_ids=query.ensembl_gene_ids,
-        hgnc_ids=query.hgnc_gene_ids,
-        hgnc_symbols=query.hgnc_gene_symbols,
-        limit=None,
-    )
+    if any([query.ensembl_gene_ids, query.hgnc_gene_ids, query.hgnc_gene_symbols]):
+        genes: List[SQLGene] = get_genes(
+            db=session,
+            build=query.build,
+            ensembl_ids=query.ensembl_gene_ids,
+            hgnc_ids=query.hgnc_gene_ids,
+            hgnc_symbols=query.hgnc_gene_symbols,
+            limit=None,
+        )
+    else:
+        genes = []
 
     data: Dict = {
         "levels": get_ordered_levels(threshold_levels=query.completeness_thresholds),
@@ -122,15 +127,14 @@ def get_report_data(
         for gene in genes
     }
 
-    if not gene_ids_mapping:
-        return data
-
-    sql_intervals = set_sql_intervals(
-        db=session,
-        interval_type=INTERVAL_TYPE_SQL_TYPE[query.interval_type],
-        genes=genes,
-        transcript_tags=[TranscriptTag.REFSEQ_MRNA],
-    )
+    sql_intervals: list = []
+    if gene_ids_mapping:
+        sql_intervals = set_sql_intervals(
+            db=session,
+            interval_type=INTERVAL_TYPE_SQL_TYPE[query.interval_type],
+            genes=genes,
+            transcript_tags=[TranscriptTag.REFSEQ_MRNA],
+        )
 
     intervals_coords: List[str] = [
         f"{interval.chromosome}\t{interval.start}\t{interval.stop}"
