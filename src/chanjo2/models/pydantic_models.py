@@ -255,7 +255,7 @@ class ReportQuery(BaseModel):
         ]:
             if gene_list:
                 nr_provided_gene_lists += 1
-        if nr_provided_gene_lists != 1:
+        if nr_provided_gene_lists > 1:
             raise ValueError(GENE_LISTS_NOT_SUPPORTED_MSG)
         return values
 
