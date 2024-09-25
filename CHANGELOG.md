@@ -10,6 +10,8 @@
 - Report and genes overview endpoints accept only POST requests with form data now (application/x-www-form-urlencoded) - no json
 - Sort alphabetically the list genes that are incompletely covered on report page
 - `d4_genes_condensed_summary` coverage endpoint will not convert `nan` or `inf` coverage values to None, but to str(value)
+- Updated the Dockerfile base image so it contains the latest d4tools (master branch)
+- Updated tests workflow to cargo install the latest d4tools from git (master branch)
 - Computing coverage completeness stats using d4tools `perc_cov` stat function(quicker)
 ### Fixed
 - Updated dependencies including `certifi` to address dependabot alert
