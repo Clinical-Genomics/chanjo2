@@ -1,9 +1,7 @@
-import logging
 import subprocess
 import tempfile
 from typing import Dict, List, Tuple
 
-LOG = logging.getLogger(__name__)
 CHROM_INDEX = 0
 START_INDEX = 1
 STOP_INDEX = 2
@@ -50,9 +48,9 @@ def get_completeness_stats(
     interval_ids_coords = sorted(
         interval_ids_coords,
         key=lambda interval_coord: (
-            interval_coord[1][0],
-            interval_coord[1][1],
-            interval_coord[1][2],
+            interval_coord[1][CHROM_INDEX],
+            interval_coord[1][START_INDEX],
+            interval_coord[1][STOP_INDEX],
         ),
     )
     interval_id_completeness_stats: Dict[str:dict] = {}
