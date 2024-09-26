@@ -1,7 +1,9 @@
+import logging
 import subprocess
 import tempfile
 from typing import Dict, List, Tuple
 
+LOG = logging.getLogger(__name__)
 CHROM_INDEX = 0
 START_INDEX = 1
 STOP_INDEX = 2
@@ -45,6 +47,14 @@ def get_completeness_stats(
 ) -> Dict[str, dict]:
     """Compute coverage and completeness over the given intervals of a d4 file."""
 
+    interval_ids_coords = sorted(
+        interval_ids_coords,
+        key=lambda interval_coord: (
+            interval_coord[1][0],
+            interval_coord[1][1],
+            interval_coord[1][2],
+        ),
+    )
     interval_id_completeness_stats: Dict[str:dict] = {}
 
     bed_lines = [
