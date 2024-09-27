@@ -12,6 +12,7 @@
 - `d4_genes_condensed_summary` coverage endpoint will not convert `nan` or `inf` coverage values to None, but to str(value)
 - Updated the Dockerfile base image so it contains the latest d4tools (master branch)
 - Updated tests workflow to cargo install the latest d4tools from git (master branch)
+- Computing coverage completeness stats using d4tools `perc_cov` stat function (much quicker reports)
 ### Fixed
 - Updated dependencies including `certifi` to address dependabot alert
 - Update pytest to v.7.4.4 to address a `ReDoS` vulnerability

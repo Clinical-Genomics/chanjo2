@@ -1,4 +1,3 @@
-import logging
 import subprocess
 import tempfile
 from statistics import mean
@@ -8,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from chanjo2.constants import CHROMOSOMES
 from chanjo2.crud.intervals import get_gene_intervals, set_sql_intervals
-from chanjo2.meta.handle_completeness_tasks import coverage_completeness_multitasker
+from chanjo2.meta.handle_completeness_stats import get_completeness_stats
 from chanjo2.models import SQLExon, SQLGene, SQLTranscript
 from chanjo2.models.pydantic_models import (
     GeneCoverage,
@@ -18,7 +17,6 @@ from chanjo2.models.pydantic_models import (
     TranscriptTag,
 )
 
-LOG = logging.getLogger(__name__)
 CHROM_INDEX = 0
 START_INDEX = 1
 STOP_INDEX = 2
@@ -90,10 +88,6 @@ def get_report_sample_interval_coverage(
 ) -> None:
     """Compute stats to populate a coverage report and coverage overview for one sample."""
 
-    if not intervals_coords:
-        intervals_coords = []
-        completeness_thresholds = []
-
     # Compute intervals coverage
     intervals_coverage: List[float] = get_d4tools_intervals_mean_coverage(
         d4_file_path=d4_file_path, intervals=intervals_coords
@@ -105,12 +99,10 @@ def get_report_sample_interval_coverage(
         (interval.ensembl_id, (interval.chromosome, interval.start, interval.stop))
         for interval in sql_intervals
     ]
-    intervals_coverage_completeness: Dict[str, dict] = (
-        coverage_completeness_multitasker(
-            d4_file_path=d4_file_path,
-            thresholds=completeness_thresholds,
-            interval_ids_coords=interval_ids_coords,
-        )
+    intervals_coverage_completeness: Dict[str, dict] = get_completeness_stats(
+        d4_file_path=d4_file_path,
+        thresholds=completeness_thresholds,
+        interval_ids_coords=interval_ids_coords,
     )
 
     interval_ids = set()
@@ -156,9 +148,10 @@ def get_report_sample_interval_coverage(
         interval_ids.add(interval.ensembl_id)
 
     for threshold in completeness_thresholds:
-        completeness_row_dict[f"completeness_{threshold}"] = round(
-            mean(thresholds_dict[threshold]) * 100, 2
-        )
+        if thresholds_dict[threshold]:
+            completeness_row_dict[f"completeness_{threshold}"] = round(
+                mean(thresholds_dict[threshold]) * 100, 2
+            )
 
     report_data["completeness_rows"].append((sample_name, completeness_row_dict))
     report_data["incomplete_coverage_rows"] += incomplete_coverages_rows
@@ -200,12 +193,10 @@ def get_sample_interval_coverage(
         (interval.ensembl_id, (interval.chromosome, interval.start, interval.stop))
         for interval in sql_intervals
     ]
-    intervals_coverage_completeness: Dict[str, dict] = (
-        coverage_completeness_multitasker(
-            d4_file_path=d4_file_path,
-            thresholds=completeness_thresholds,
-            interval_ids_coords=interval_ids_coords,
-        )
+    intervals_coverage_completeness: Dict[str, dict] = get_completeness_stats(
+        d4_file_path=d4_file_path,
+        thresholds=completeness_thresholds,
+        interval_ids_coords=interval_ids_coords,
     )
 
     # Create GeneCoverage objects
