@@ -21,7 +21,7 @@
 
 
 {% macro incompletely_covered_intervals(active_level) %}
- <form id="geneStatsForm" action="{{url_for('gene_overview')}}" method="post">
+ <form id="geneStatsForm" action="{{url_for('overview')}}" method="post">
 	 <input type="hidden" name="build" value="{{extras.build}}"/>
 	 <input type="hidden" name="default_level" id="defaultLevel" value="{{extras.default_level}}"/>
 	 <input type="hidden" name="completeness_thresholds" value="{{extras.completeness_thresholds|join(',')}}"/>
@@ -108,7 +108,6 @@
 		function updateOverview(customLevel)
 		{
 			document.getElementById("defaultLevel").value = customLevel;
-			theForm.action = '/overview';
 			theForm.submit();
 		}
 

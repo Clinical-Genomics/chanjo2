@@ -18,6 +18,7 @@
 - Updated dependencies including `certifi` to address dependabot alert
 - Update pytest to v.7.4.4 to address a `ReDoS` vulnerability
 - Colored logs
+- Link for switching between coverage thresholds on overview report
 
 ## [1.9]
 ### Added
