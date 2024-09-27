@@ -224,7 +224,7 @@ def get_gene_overview_coverage_stats(form_data: GeneReportForm, session: Session
         db=session,
         interval_type=SQLTranscript,
         genes=[gene],
-        transcript_tags=[TranscriptTag.REFSEQ_MRNA],
+        transcript_tags=[],
     )
     gene_stats["samples_coverage_stats_by_interval"] = get_gene_overview_stats(
         sql_intervals=sql_intervals,
