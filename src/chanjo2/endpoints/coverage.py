@@ -34,9 +34,6 @@ from chanjo2.models.pydantic_models import (
 
 router = APIRouter()
 LOG = logging.getLogger(__name__)
-CHROM_INDEX = 0
-START_INDEX = 1
-STOP_INDEX = 2
 
 
 @router.post("/coverage/d4/interval/", response_model=IntervalCoverage)
