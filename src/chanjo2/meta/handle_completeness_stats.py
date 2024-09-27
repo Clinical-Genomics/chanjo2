@@ -45,14 +45,6 @@ def get_completeness_stats(
 ) -> Dict[str, dict]:
     """Compute coverage and completeness over the given intervals of a d4 file."""
 
-    interval_ids_coords = sorted(
-        interval_ids_coords,
-        key=lambda interval_coord: (
-            interval_coord[1][CHROM_INDEX],
-            interval_coord[1][START_INDEX],
-            interval_coord[1][STOP_INDEX],
-        ),
-    )
     interval_id_completeness_stats: Dict[str:dict] = {}
 
     bed_lines = [

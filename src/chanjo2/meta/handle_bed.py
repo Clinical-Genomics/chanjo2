@@ -1,8 +1,8 @@
 from typing import Iterator, List, Tuple
 
-CHROM_COL = 0
-START_COL = 1
-STOP_COL = 2
+CHROM_INDEX = 0
+START_INDEX = 1
+STOP_INDEX = 2
 
 
 def resource_lines(file_path: str) -> Iterator[str]:
@@ -28,15 +28,29 @@ def bed_file_interval_id_coords(
 
     for interval in bed_file_contents:
         interval_id: str = (
-            "_".join(interval[STOP_COL + 1 : len(interval)])
-            if len(interval) > STOP_COL
-            else f"{CHROM_COL}:{START_COL}-{STOP_COL}"
+            "_".join(interval[STOP_INDEX + 1 : len(interval)])
+            if len(interval) > STOP_INDEX
+            else f"{CHROM_INDEX}:{START_INDEX}-{STOP_INDEX}"
         )
         interval_coords: Tuple[str, int, int] = (
-            interval[CHROM_COL],
-            int(interval[START_COL]),
-            int(interval[STOP_COL]),
+            interval[CHROM_INDEX],
+            int(interval[START_INDEX]),
+            int(interval[STOP_INDEX]),
         )
         interval_id_coords.append((interval_id, interval_coords))
 
     return interval_id_coords
+
+
+def sort_interval_ids_coords(
+    interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]]
+) -> List[Tuple[str, Tuple[str, int, int]]]:
+    """Sort intervals and their IDs by chrom, start and stop positions."""
+    return sorted(
+        interval_ids_coords,
+        key=lambda interval_coord: (
+            interval_coord[1][CHROM_INDEX],
+            interval_coord[1][START_INDEX],
+            interval_coord[1][STOP_INDEX],
+        ),
+    )
