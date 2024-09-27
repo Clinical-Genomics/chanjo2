@@ -1,23 +1,22 @@
+import logging
+import tempfile
 from statistics import mean
 from typing import Dict, List, Optional, Tuple, Union
 
-from sqlalchemy.orm import Session
-
-from chanjo2.crud.intervals import get_gene_intervals, set_sql_intervals
 from chanjo2.meta.handle_bed import sort_interval_ids_coords
-from chanjo2.meta.handle_completeness_stats import get_completeness_stats
+from chanjo2.meta.handle_completeness_stats import (
+    get_completeness_stats,
+    get_d4tools_intervals_completeness,
+)
 from chanjo2.meta.handle_coverage_stats import (
     get_d4tools_chromosome_mean_coverage,
+    get_d4tools_intervals_coverage,
     get_d4tools_intervals_mean_coverage,
 )
 from chanjo2.models import SQLExon, SQLGene, SQLTranscript
-from chanjo2.models.pydantic_models import (
-    GeneCoverage,
-    IntervalCoverage,
-    IntervalType,
-    Sex,
-    TranscriptTag,
-)
+from chanjo2.models.pydantic_models import ReportQuerySample, Sex
+
+LOG = logging.getLogger(__name__)
 
 
 def get_report_sample_interval_coverage(
@@ -119,17 +118,6 @@ def get_report_sample_interval_coverage(
         )
 
 
-def get_gene_overview_stats():
-    """Returns stats to be included in the gene overview page.
-
-    {'ENST00000312293': [('ADM1059A2', 22.47938297241175, {10: 1.0, 15: 0.955, 20: 0.773, 50: 0.0, 100: 0.0})],
-     'ENST00000393681': [('ADM1059A2', 22.548265460030166, {10: 1.0, 15: 0.954, 20: 0.782, 50: 0.0, 100: 0.0})],
-     'ENST00000393679': [('ADM1059A2', 22.953977646285338, {10: 1.0, 15: 0.968, 20: 0.811, 50: 0.0, 100: 0.0})],
-     'ENST00000393676': [('ADM1059A2', 22.817528735632184, {10: 1.0, 15: 0.954, 20: 0.813, 50: 0.0, 100: 0.0})]
-     }
-    """
-
-
 def predict_sex(x_cov: float, y_cov: float) -> str:
     """Return predict sex based on sex chromosomes coverage - this code is taken from the old chanjo."""
     if y_cov == 0:
@@ -160,3 +148,47 @@ def get_samples_sex_metrics(d4_file_path: str) -> Dict:
             x_cov=sex_chroms_coverage[0][1], y_cov=sex_chroms_coverage[1][1]
         ),
     }
+
+
+def get_gene_overview_stats(
+    sql_intervals: List[SQLTranscript],
+    samples: List[ReportQuerySample],
+    completeness_thresholds=List[int],
+):
+    """Returns stats to be included in the gene overview page."""
+    interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]] = [
+        (interval.ensembl_id, (interval.chromosome, interval.start, interval.stop))
+        for interval in sql_intervals
+    ]
+    interval_ids_coords = tuple(
+        set(sort_interval_ids_coords(interval_ids_coords))
+    )  # removes duplicates
+    transcripts_stats = {interval_id: [] for interval_id, _ in interval_ids_coords}
+
+    # crete a temp bed file containing transcripts coordinates
+    bed_lines = [
+        f"{coords[0]}\t{coords[1]}\t{coords[2]}" for _, coords in interval_ids_coords
+    ]
+    temp_bed_file = tempfile.NamedTemporaryFile()
+    with open(temp_bed_file.name, "w") as intervals_bed:
+        intervals_bed.write("\n".join(bed_lines))
+        intervals_bed.flush()
+
+    for sample in samples:
+        transcripts_coverage = get_d4tools_intervals_coverage(
+            d4_file_path=sample.coverage_file_path, bed_file_path=temp_bed_file.name
+        )
+        transcripts_completeness = get_d4tools_intervals_completeness(
+            d4_file_path=sample.coverage_file_path,
+            bed_file_path=temp_bed_file.name,
+            completeness_thresholds=completeness_thresholds,
+        )
+        for idx, transcripts_coords in enumerate(interval_ids_coords):
+            append_tuple = (
+                sample.name,
+                transcripts_coverage[idx],
+                transcripts_completeness[idx],
+            )
+            transcripts_stats[transcripts_coords[0]].append(append_tuple)
+
+    return transcripts_stats

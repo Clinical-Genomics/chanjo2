@@ -222,15 +222,17 @@ def get_gene_overview_coverage_stats(form_data: GeneReportForm, session: Session
     gene_stats["gene"] = gene
     sql_intervals = set_sql_intervals(
         db=session,
-        interval_type=INTERVAL_TYPE_SQL_TYPE[form_data.interval_type],
+        interval_type=SQLTranscript,
         genes=[gene],
         transcript_tags=[TranscriptTag.REFSEQ_MRNA],
     )
-    LOG.error(sql_intervals)
-
+    gene_stats["samples_coverage_stats_by_interval"] = get_gene_overview_stats(
+        sql_intervals=sql_intervals,
+        samples=form_data.samples,
+        completeness_thresholds=form_data.completeness_thresholds,
+    )
     """
-    gene_stats["samples_coverage_stats_by_interval"] = get_gene_overview_stats()
-    sql_intervals: List[Union[SQLGene, SQLTranscript, SQLExon]],
+
 
     
     {'ENST00000312293': [('ADM1059A2', 22.47938297241175, {10: 1.0, 15: 0.955, 20: 0.773, 50: 0.0, 100: 0.0})],
@@ -239,8 +241,5 @@ def get_gene_overview_coverage_stats(form_data: GeneReportForm, session: Session
      'ENST00000393676': [('ADM1059A2', 22.817528735632184, {10: 1.0, 15: 0.954, 20: 0.813, 50: 0.0, 100: 0.0})]
      }
     """
-
-    LOG.warning(gene_stats)
-    LOG.warning(gene_stats["gene"].__dict__)
 
     return gene_stats
