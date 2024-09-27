@@ -14,6 +14,7 @@
 - Updated tests workflow to cargo install the latest d4tools from git (master branch)
 - Computing coverage completeness stats using d4tools `perc_cov` stat function (much quicker reports)
 - Moved functions computing the coverage stats to a separate `meta/handle_coverage_stats.py` module
+- Refactored gene code computing stats for gene overview
 ### Fixed
 - Updated dependencies including `certifi` to address dependabot alert
 - Update pytest to v.7.4.4 to address a `ReDoS` vulnerability
