@@ -231,15 +231,4 @@ def get_gene_overview_coverage_stats(form_data: GeneReportForm, session: Session
         samples=form_data.samples,
         completeness_thresholds=form_data.completeness_thresholds,
     )
-    """
-
-
-    
-    {'ENST00000312293': [('ADM1059A2', 22.47938297241175, {10: 1.0, 15: 0.955, 20: 0.773, 50: 0.0, 100: 0.0})],
-     'ENST00000393681': [('ADM1059A2', 22.548265460030166, {10: 1.0, 15: 0.954, 20: 0.782, 50: 0.0, 100: 0.0})],
-     'ENST00000393679': [('ADM1059A2', 22.953977646285338, {10: 1.0, 15: 0.968, 20: 0.811, 50: 0.0, 100: 0.0})],
-     'ENST00000393676': [('ADM1059A2', 22.817528735632184, {10: 1.0, 15: 0.954, 20: 0.813, 50: 0.0, 100: 0.0})]
-     }
-    """
-
     return gene_stats
