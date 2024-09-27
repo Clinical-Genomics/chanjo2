@@ -47,7 +47,7 @@
 					{% for row in incomplete_coverage_rows %}
 						<tr>
 							<td>
-								<a href="#" onclick="getGeneStatsPage({{row[1]}});" target="_blank" rel="noopener">
+								<a href="#" onclick="getGeneStatsPage({{row[1]}});">
 									{{row[0]}}
 								</a>
 							</td>
@@ -108,7 +108,8 @@
 		function updateOverview(customLevel)
 		{
 			document.getElementById("defaultLevel").value = customLevel;
-			theForm.action = '/overview';
+			theForm.action = '{{url_for("overview")}}';
+			theForm.removeAttribute("target");
 			theForm.submit();
 		}
 
@@ -120,6 +121,8 @@
 			geneInput.setAttribute("name", "hgnc_gene_id");
 			geneInput.setAttribute("value", hgncId);
 			theForm.appendChild(geneInput);
+			theForm.setAttribute("target", "_blank");
+			theForm.setAttribute("rel", "noopener");
 			theForm.submit();
 		}
 	</script>
