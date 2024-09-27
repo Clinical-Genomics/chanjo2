@@ -1,12 +1,14 @@
-from chanjo2.constants import CHROMOSOMES
+import subprocess
 import tempfile
 from typing import List, Tuple
-import subprocess
+
+from chanjo2.constants import CHROMOSOMES
 
 CHROM_INDEX = 0
 START_INDEX = 1
 STOP_INDEX = 2
 STATS_MEAN_COVERAGE_INDEX = 3
+
 
 def get_d4tools_intervals_mean_coverage(
     d4_file_path: str, intervals: List[str]
@@ -59,4 +61,3 @@ def get_d4tools_chromosome_mean_coverage(
                 (stats_data[CHROM_INDEX], float(stats_data[STATS_MEAN_COVERAGE_INDEX]))
             )
     return chromosomes_coverage
-
