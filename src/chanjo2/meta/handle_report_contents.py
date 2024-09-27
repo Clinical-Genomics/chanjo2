@@ -7,8 +7,8 @@ from sqlalchemy.orm import Session
 
 from chanjo2.crud.intervals import get_genes, get_hgnc_gene, set_sql_intervals
 from chanjo2.meta.handle_d4 import (
+    get_gene_overview_stats,
     get_report_sample_interval_coverage,
-    get_sample_interval_coverage,
     get_samples_sex_metrics,
 )
 from chanjo2.models import SQLExon, SQLGene, SQLTranscript
@@ -201,7 +201,7 @@ def get_report_sex_rows(samples: List[ReportQuerySample]) -> List[Dict]:
 
 
 def get_gene_overview_coverage_stats(form_data: GeneReportForm, session: Session):
-    """Returns coverage stats over the intervals sof one gene for one or more samples."""
+    """Returns coverage stats over the intervals of one gene for one or more samples."""
 
     gene_stats = {
         "levels": get_ordered_levels(
@@ -218,49 +218,29 @@ def get_gene_overview_coverage_stats(form_data: GeneReportForm, session: Session
     )
     if gene is None:
         return gene_stats
+
     gene_stats["gene"] = gene
-
-    samples_coverage_stats: Dict[str, List[GeneCoverage]] = {
-        sample.name: get_sample_interval_coverage(
-            db=session,
-            d4_file_path=sample.coverage_file_path,
-            genes=[gene],
-            interval_type=INTERVAL_TYPE_SQL_TYPE[form_data.interval_type],
-            completeness_thresholds=form_data.completeness_thresholds,
-        )
-        for sample in form_data.samples
-    }
-    gene_stats["samples_coverage_stats_by_interval"] = (
-        get_gene_coverage_stats_by_interval(coverage_by_sample=samples_coverage_stats)
+    sql_intervals = set_sql_intervals(
+        db=session,
+        interval_type=INTERVAL_TYPE_SQL_TYPE[form_data.interval_type],
+        genes=[gene],
+        transcript_tags=[TranscriptTag.REFSEQ_MRNA],
     )
+    LOG.error(sql_intervals)
+
+    """
+    gene_stats["samples_coverage_stats_by_interval"] = get_gene_overview_stats()
+    sql_intervals: List[Union[SQLGene, SQLTranscript, SQLExon]],
+
+    
+    {'ENST00000312293': [('ADM1059A2', 22.47938297241175, {10: 1.0, 15: 0.955, 20: 0.773, 50: 0.0, 100: 0.0})],
+     'ENST00000393681': [('ADM1059A2', 22.548265460030166, {10: 1.0, 15: 0.954, 20: 0.782, 50: 0.0, 100: 0.0})],
+     'ENST00000393679': [('ADM1059A2', 22.953977646285338, {10: 1.0, 15: 0.968, 20: 0.811, 50: 0.0, 100: 0.0})],
+     'ENST00000393676': [('ADM1059A2', 22.817528735632184, {10: 1.0, 15: 0.954, 20: 0.813, 50: 0.0, 100: 0.0})]
+     }
+    """
+
+    LOG.warning(gene_stats)
+    LOG.warning(gene_stats["gene"].__dict__)
+
     return gene_stats
-
-
-def get_gene_coverage_stats_by_interval(
-    coverage_by_sample: Dict[str, List[GeneCoverage]]
-) -> Dict[str, List[Tuple]]:
-    """Arrange coverage stats by interval id instead of by sample."""
-
-    intervals_stats: Dict[str, List] = {}
-
-    for sample, stats in coverage_by_sample.items():
-        for gene_interval in stats:
-            for inner_interval in gene_interval.inner_intervals:
-                if inner_interval.interval_id in intervals_stats:
-                    intervals_stats[inner_interval.interval_id].append(
-                        (
-                            sample,
-                            inner_interval.mean_coverage,
-                            inner_interval.completeness,
-                        )
-                    )
-                else:
-                    intervals_stats[inner_interval.interval_id] = [
-                        (
-                            sample,
-                            inner_interval.mean_coverage,
-                            inner_interval.completeness,
-                        )
-                    ]
-
-    return intervals_stats
