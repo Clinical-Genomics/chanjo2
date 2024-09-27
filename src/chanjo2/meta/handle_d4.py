@@ -24,24 +24,34 @@ def get_report_sample_interval_coverage(
     sample_name: str,
     gene_ids_mapping: Dict[str, dict],
     sql_intervals: List[Union[SQLGene, SQLTranscript, SQLExon]],
-    intervals_coords: List[str],
     completeness_thresholds: List[Optional[int]],
     default_threshold: int,
     report_data: dict,
 ) -> None:
     """Compute stats to populate a coverage report and coverage overview for one sample."""
 
-    # Compute intervals coverage
-    intervals_coverage: List[float] = get_d4tools_intervals_mean_coverage(
-        d4_file_path=d4_file_path, intervals=intervals_coords
-    )
-    completeness_row_dict: dict = {"mean_coverage": mean(intervals_coverage)}
-
     # Compute intervals coverage completeness
     interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]] = [
         (interval.ensembl_id, (interval.chromosome, interval.start, interval.stop))
         for interval in sql_intervals
     ]
+
+    interval_ids_coords = sorted(
+        interval_ids_coords,
+        key=lambda interval_coord: (
+            interval_coord[1][CHROM_INDEX],
+            interval_coord[1][START_INDEX],
+            interval_coord[1][STOP_INDEX],
+        ),
+    )
+
+    # Compute intervals coverage
+    intervals_coverage: List[float] = get_d4tools_intervals_mean_coverage(
+        d4_file_path=d4_file_path, interval_ids_coords=interval_ids_coords
+    )
+    completeness_row_dict: dict = {"mean_coverage": mean(intervals_coverage)}
+
+    # Compute intervals coverage completeenss
     intervals_coverage_completeness: Dict[str, dict] = get_completeness_stats(
         d4_file_path=d4_file_path,
         thresholds=completeness_thresholds,
@@ -98,7 +108,7 @@ def get_report_sample_interval_coverage(
 
     report_data["completeness_rows"].append((sample_name, completeness_row_dict))
     report_data["incomplete_coverage_rows"] += incomplete_coverages_rows
-    if intervals_coords:
+    if interval_ids_coords:
         fully_covered_intervals_percent = round(
             100
             * (len(interval_ids) - nr_intervals_covered_under_custom_threshold)

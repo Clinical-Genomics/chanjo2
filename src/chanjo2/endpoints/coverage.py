@@ -32,6 +32,9 @@ from chanjo2.models.pydantic_models import (
 
 router = APIRouter()
 LOG = logging.getLogger(__name__)
+CHROM_INDEX = 0
+START_INDEX = 1
+STOP_INDEX = 2
 
 
 @router.post("/coverage/d4/interval/", response_model=IntervalCoverage)
@@ -57,10 +60,15 @@ def d4_interval_coverage(query: FileCoverageQuery):
             interval_id=interval,
         )
 
-    interval += f"\t{query.start}\t{query.end}"
+    interval_ids_coords = [
+        (
+            f"{query.chromosome}:{query.start}-{query.end}",
+            (query.chromosome, query.start, query.end),
+        )
+    ]
 
     mean_coverage: float = get_d4tools_intervals_mean_coverage(
-        d4_file_path=query.coverage_file_path, intervals=[interval]
+        d4_file_path=query.coverage_file_path, interval_ids_coords=interval_ids_coords
     )[0]
 
     completeness_stats = get_completeness_stats(
@@ -96,21 +104,31 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
             detail=WRONG_BED_FILE_MSG,
         )
 
-    interval_id_coords: List[Tuple[str, Tuple[str, int, int]]] = (
+    interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]] = (
         bed_file_interval_id_coords(file_path=query.intervals_bed_path)
     )
 
-    intervals_coverage: List[float] = get_d4tools_intervals_coverage(
-        d4_file_path=query.coverage_file_path, bed_file_path=query.intervals_bed_path
+    # Sort intervals by chrom, start & stop
+    interval_ids_coords = sorted(
+        interval_ids_coords,
+        key=lambda interval_coord: (
+            interval_coord[1][CHROM_INDEX],
+            interval_coord[1][START_INDEX],
+            interval_coord[1][STOP_INDEX],
+        ),
     )
+    intervals_coverage = get_d4tools_intervals_mean_coverage(
+        d4_file_path=query.coverage_file_path, interval_ids_coords=interval_ids_coords
+    )
+
     intervals_completeness: Dict[str, Dict[int, float]] = get_completeness_stats(
         d4_file_path=query.coverage_file_path,
         thresholds=query.completeness_thresholds,
-        interval_ids_coords=interval_id_coords,
+        interval_ids_coords=interval_ids_coords,
     )
 
     results: List[IntervalCoverage] = []
-    for counter, interval_data in enumerate(interval_id_coords):
+    for counter, interval_data in enumerate(interval_ids_coords):
         interval_coverage = {
             "interval_type": IntervalType.CUSTOM,
             "interval_id": interval_data[0],
@@ -157,19 +175,25 @@ def d4_genes_condensed_summary(
                 detail=WRONG_COVERAGE_FILE_MSG,
             )
 
-        # Compute mean coverage over genomic intervals
-        coverage_intervals: List[str] = [
-            f"{interval.chromosome}\t{interval.start}\t{interval.stop}"
-            for interval in sql_intervals
-        ]
-        genes_mean_coverage: List[float] = get_d4tools_intervals_mean_coverage(
-            d4_file_path=sample.coverage_file_path, intervals=coverage_intervals
-        )
-        # Compute coverage completeness over genomic intervals
         interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]] = [
             (interval.ensembl_id, (interval.chromosome, interval.start, interval.stop))
             for interval in sql_intervals
         ]
+        # Sort intervals by chrom, start & stop
+        interval_ids_coords = sorted(
+            interval_ids_coords,
+            key=lambda interval_coord: (
+                interval_coord[1][CHROM_INDEX],
+                interval_coord[1][START_INDEX],
+                interval_coord[1][STOP_INDEX],
+            ),
+        )
+        # Compute mean coverage over genomic intervals
+        genes_mean_coverage: List[float] = get_d4tools_intervals_mean_coverage(
+            d4_file_path=sample.coverage_file_path,
+            interval_ids_coords=interval_ids_coords,
+        )
+        # Compute coverage completeness over genomic intervals
         genes_coverage_completeness: Dict[str, dict] = get_completeness_stats(
             d4_file_path=sample.coverage_file_path,
             thresholds=[query.coverage_threshold],

@@ -11,18 +11,23 @@ STATS_MEAN_COVERAGE_INDEX = 3
 
 
 def get_d4tools_intervals_mean_coverage(
-    d4_file_path: str, intervals: List[str]
+    d4_file_path: str, interval_ids_coords: List[Tuple[str, tuple]]
 ) -> List[float]:
     """Return the mean value over a list of intervals of a d4 file."""
 
-    if intervals:
-        tmp_bed_file = tempfile.NamedTemporaryFile()
-        with open(tmp_bed_file.name, "w") as bed_file:
-            bed_file.write("\n".join(intervals))
+    if interval_ids_coords:
+        bed_lines = [
+            f"{coords[CHROM_INDEX]}\t{coords[START_INDEX]}\t{coords[STOP_INDEX]}"
+            for _, coords in interval_ids_coords
+        ]
+        # Write genomic intervals to a temporary file
+        with tempfile.NamedTemporaryFile(mode="w") as intervals_bed:
+            intervals_bed.write("\n".join(bed_lines))
+            intervals_bed.flush()
 
-        return get_d4tools_intervals_coverage(
-            d4_file_path=d4_file_path, bed_file_path=tmp_bed_file.name
-        )
+            return get_d4tools_intervals_coverage(
+                d4_file_path=d4_file_path, bed_file_path=intervals_bed.name
+            )
     chromosomes_mean_cov = get_d4tools_chromosome_mean_coverage(
         d4_file_path=d4_file_path, chromosomes=CHROMOSOMES
     )
