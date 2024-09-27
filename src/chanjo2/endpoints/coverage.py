@@ -13,12 +13,12 @@ from chanjo2.crud.intervals import get_genes, set_sql_intervals
 from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import bed_file_interval_id_coords
 from chanjo2.meta.handle_completeness_stats import get_completeness_stats
-from chanjo2.meta.handle_d4 import (
+from chanjo2.meta.handle_coverage_stats import (
     get_d4tools_chromosome_mean_coverage,
     get_d4tools_intervals_coverage,
     get_d4tools_intervals_mean_coverage,
-    get_samples_sex_metrics,
 )
+from chanjo2.meta.handle_d4 import get_samples_sex_metrics
 from chanjo2.meta.handle_report_contents import INTERVAL_TYPE_SQL_TYPE, get_mean
 from chanjo2.models import SQLGene
 from chanjo2.models.pydantic_models import (
