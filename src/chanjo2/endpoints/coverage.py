@@ -11,11 +11,13 @@ from sqlalchemy.orm import Session
 from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
 from chanjo2.crud.intervals import get_genes, set_sql_intervals
 from chanjo2.dbutil import get_session
-from chanjo2.meta.handle_bed import bed_file_interval_id_coords
+from chanjo2.meta.handle_bed import (
+    bed_file_interval_id_coords,
+    sort_interval_ids_coords,
+)
 from chanjo2.meta.handle_completeness_stats import get_completeness_stats
 from chanjo2.meta.handle_coverage_stats import (
     get_d4tools_chromosome_mean_coverage,
-    get_d4tools_intervals_coverage,
     get_d4tools_intervals_mean_coverage,
 )
 from chanjo2.meta.handle_d4 import get_samples_sex_metrics
@@ -108,15 +110,8 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
         bed_file_interval_id_coords(file_path=query.intervals_bed_path)
     )
 
-    # Sort intervals by chrom, start & stop
-    interval_ids_coords = sorted(
-        interval_ids_coords,
-        key=lambda interval_coord: (
-            interval_coord[1][CHROM_INDEX],
-            interval_coord[1][START_INDEX],
-            interval_coord[1][STOP_INDEX],
-        ),
-    )
+    interval_ids_coords = sort_interval_ids_coords(interval_ids_coords)
+
     intervals_coverage = get_d4tools_intervals_mean_coverage(
         d4_file_path=query.coverage_file_path, interval_ids_coords=interval_ids_coords
     )
@@ -180,14 +175,8 @@ def d4_genes_condensed_summary(
             for interval in sql_intervals
         ]
         # Sort intervals by chrom, start & stop
-        interval_ids_coords = sorted(
-            interval_ids_coords,
-            key=lambda interval_coord: (
-                interval_coord[1][CHROM_INDEX],
-                interval_coord[1][START_INDEX],
-                interval_coord[1][STOP_INDEX],
-            ),
-        )
+        interval_ids_coords = sort_interval_ids_coords(interval_ids_coords)
+
         # Compute mean coverage over genomic intervals
         genes_mean_coverage: List[float] = get_d4tools_intervals_mean_coverage(
             d4_file_path=sample.coverage_file_path,

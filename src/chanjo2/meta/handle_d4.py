@@ -4,6 +4,7 @@ from typing import Dict, List, Optional, Tuple, Union
 from sqlalchemy.orm import Session
 
 from chanjo2.crud.intervals import get_gene_intervals, set_sql_intervals
+from chanjo2.meta.handle_bed import sort_interval_ids_coords
 from chanjo2.meta.handle_completeness_stats import get_completeness_stats
 from chanjo2.meta.handle_coverage_stats import (
     get_d4tools_chromosome_mean_coverage,
@@ -28,7 +29,7 @@ def get_report_sample_interval_coverage(
     default_threshold: int,
     report_data: dict,
 ) -> None:
-    """Compute stats to populate a coverage report and coverage overview for one sample."""
+    """Compute stats to populate a coverage report for one sample."""
 
     # Compute intervals coverage completeness
     interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]] = [
@@ -36,14 +37,7 @@ def get_report_sample_interval_coverage(
         for interval in sql_intervals
     ]
 
-    interval_ids_coords = sorted(
-        interval_ids_coords,
-        key=lambda interval_coord: (
-            interval_coord[1][CHROM_INDEX],
-            interval_coord[1][START_INDEX],
-            interval_coord[1][STOP_INDEX],
-        ),
-    )
+    interval_ids_coords = sort_interval_ids_coords(interval_ids_coords)
 
     # Compute intervals coverage
     intervals_coverage: List[float] = get_d4tools_intervals_mean_coverage(
@@ -133,6 +127,7 @@ def get_sample_interval_coverage(
     completeness_thresholds: List[Optional[int]],
     transcript_tags: Optional[List[TranscriptTag]] = [],
 ) -> List[GeneCoverage]:
+    """Compute stats to populate a coverage overview report for one sample."""
 
     if not genes:
         return []
@@ -146,6 +141,8 @@ def get_sample_interval_coverage(
         (interval.ensembl_id, (interval.chromosome, interval.start, interval.stop))
         for interval in sql_intervals
     ]
+    interval_ids_coords = sort_interval_ids_coords(interval_ids_coords)
+
     intervals_coverage_completeness: Dict[str, dict] = get_completeness_stats(
         d4_file_path=d4_file_path,
         thresholds=completeness_thresholds,
