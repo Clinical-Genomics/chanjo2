@@ -19,6 +19,7 @@
 - Update pytest to v.7.4.4 to address a `ReDoS` vulnerability
 - Colored logs
 - Link for switching between coverage thresholds on overview report
+- Gene links in genes overview page open into new tabs
 
 ## [1.9]
 ### Added
