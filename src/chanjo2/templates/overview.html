@@ -109,6 +109,7 @@
 		{
 			document.getElementById("defaultLevel").value = customLevel;
 			theForm.action = '{{url_for("overview")}}';
+			theForm.removeAttribute("target");
 			theForm.submit();
 		}
 
