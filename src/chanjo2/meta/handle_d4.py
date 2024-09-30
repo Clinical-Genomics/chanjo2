@@ -162,7 +162,7 @@ def get_gene_overview_stats(
     ]
     interval_ids_coords = tuple(
         set(sort_interval_ids_coords(interval_ids_coords))
-    )  # removes duplicates
+    )  # removes duplicates and orders intervals by chromosome, start and stop
     transcripts_stats = {interval_id: [] for interval_id, _ in interval_ids_coords}
 
     # crete a temp bed file containing transcripts coordinates
