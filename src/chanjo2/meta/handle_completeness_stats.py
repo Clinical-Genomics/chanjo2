@@ -38,7 +38,7 @@ def get_d4tools_intervals_completeness(
                 )
             )
             threshold_stats.append(stats_dict)
-    except subprocess.CalledProcessError, e:
+    except subprocess.CalledProcessError as e:
         LOG.error(f"d4tools stat -s perc_cov failed with the following error:{e}")
 
     return threshold_stats
