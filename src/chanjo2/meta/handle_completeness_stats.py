@@ -1,4 +1,3 @@
-import logging
 import subprocess
 import tempfile
 from typing import Dict, List, Tuple
@@ -6,7 +5,6 @@ from typing import Dict, List, Tuple
 CHROM_INDEX = 0
 START_INDEX = 1
 STOP_INDEX = 2
-LOG = logging.getLogger(__name__)
 
 
 def get_d4tools_intervals_completeness(
@@ -14,32 +12,28 @@ def get_d4tools_intervals_completeness(
 ) -> List[Dict]:
     """Return coverage completeness over all intervals of a bed file using the perc_cov d4tools command."""
     threshold_stats = []
-    try:
-        d4tools_stats_perc_cov: str = subprocess.check_output(
-            [
-                "d4tools",
-                "stat",
-                "-s",
-                f"perc_cov={','.join(str(threshold) for threshold in completeness_thresholds)}",
-                "--region",
-                bed_file_path,
-                d4_file_path,
-            ],
-            text=True,
-        )
-
-        for line in d4tools_stats_perc_cov.splitlines():
-            stats_dict: Dict = dict(
-                (
-                    zip(
-                        completeness_thresholds,
-                        [float(stat) for stat in line.rstrip().split("\t")[3:]],
-                    )
+    d4tools_stats_perc_cov: str = subprocess.check_output(
+        [
+            "d4tools",
+            "stat",
+            "-s",
+            f"perc_cov={','.join(str(threshold) for threshold in completeness_thresholds)}",
+            "--region",
+            bed_file_path,
+            d4_file_path,
+        ],
+        text=True,
+    )
+    for line in d4tools_stats_perc_cov.splitlines():
+        stats_dict: Dict = dict(
+            (
+                zip(
+                    completeness_thresholds,
+                    [float(stat) for stat in line.rstrip().split("\t")[3:]],
                 )
             )
-            threshold_stats.append(stats_dict)
-    except subprocess.CalledProcessError as e:
-        LOG.error(f"d4tools stat -s perc_cov failed with the following error:{e}")
+        )
+        threshold_stats.append(stats_dict)
 
     return threshold_stats
 
