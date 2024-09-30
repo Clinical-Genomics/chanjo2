@@ -153,7 +153,7 @@ def get_samples_sex_metrics(d4_file_path: str) -> Dict:
 def get_gene_overview_stats(
     sql_intervals: List[SQLTranscript],
     samples: List[ReportQuerySample],
-    completeness_thresholds=List[int],
+    completeness_thresholds: List[int],
 ) -> Dict[str, list]:
     """Returns stats to be included in the gene overview page."""
     interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]] = [
