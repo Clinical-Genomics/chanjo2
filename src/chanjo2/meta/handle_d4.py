@@ -161,8 +161,9 @@ def get_gene_overview_stats(
         for interval in sql_intervals
     ]
     interval_ids_coords = tuple(
-        set(sort_interval_ids_coords(interval_ids_coords))
+        sort_interval_ids_coords(set(interval_ids_coords))
     )  # removes duplicates and orders intervals by chromosome, start and stop
+    LOG.warning(interval_ids_coords)
     transcripts_stats = {interval_id: [] for interval_id, _ in interval_ids_coords}
 
     # create a temp bed file containing transcripts coordinates
