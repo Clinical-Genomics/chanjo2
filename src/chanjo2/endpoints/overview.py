@@ -146,7 +146,7 @@ async def demo_mane_overview(
     )
 
 
-@router.post("/mane_overview/demo", response_class=HTMLResponse)
+@router.post("/mane_overview", response_class=HTMLResponse)
 async def demo_mane_overview(
     request: Request,
     samples=Annotated[str, Form(...)],
@@ -166,6 +166,7 @@ async def demo_mane_overview(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=ve.json(),
         )
+
     overview_query.interval_type = IntervalType.TRANSCRIPTS
     overview_query.build = Builds.build_38
     mane_overview_content = get_mane_overview_coverage_stats(
