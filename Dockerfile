@@ -1,4 +1,4 @@
-FROM clinicalgenomics/python3.11-venv-d4tools:3.0
+FROM clinicalgenomics/python3.11-venv-d4tools:3.0.1
 
 LABEL about.home="https://github.com/Clinical-Genomics/chanjo2"
 LABEL about.license="MIT License (MIT)"
