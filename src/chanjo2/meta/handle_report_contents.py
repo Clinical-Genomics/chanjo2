@@ -250,14 +250,11 @@ def get_mane_overview_coverage_stats(query: ReportQuery, session: Session) -> Di
         )
 
     gene_mappings = {}
-    hgnc_ids = []
     for gene in genes:
         gene_mappings[gene.ensembl_id] = gene
-        hgnc_ids.append(gene.hgnc_id)
 
     mane_stats = {
         "levels": get_ordered_levels(threshold_levels=query.completeness_thresholds),
-        "extras": {"hgnc_gene_ids": hgnc_ids},
         "interval_type": IntervalType.TRANSCRIPTS,
         "samples_coverage_stats_by_interval": {},
     }
