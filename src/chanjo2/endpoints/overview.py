@@ -15,6 +15,7 @@ from chanjo2.dbutil import get_session
 from chanjo2.demo import DEMO_COVERAGE_QUERY_FORM
 from chanjo2.meta.handle_report_contents import (
     get_gene_overview_coverage_stats,
+    get_mane_overview_coverage_stats,
     get_report_data,
 )
 from chanjo2.models.pydantic_models import (
@@ -116,5 +117,36 @@ async def gene_overview(
                 "samples_coverage_stats_by_interval"
             ),
             "levels": gene_overview_content["levels"],
+        },
+    )
+
+
+@router.get("/mane_overview/demo", response_class=HTMLResponse)
+async def demo_mane_overview(
+    request: Request,
+    samples=Annotated[str, Form(...)],
+    completeness_thresholds=Annotated[Optional[str], Form(None)],
+    ensembl_gene_ids=Annotated[Optional[str], Form(None)],
+    hgnc_gene_ids=Annotated[Optional[str], Form(None)],
+    hgnc_gene_symbols=Annotated[Optional[str], Form(None)],
+    default_level=Annotated[Optional[int], Form(DEFAULT_COVERAGE_LEVEL)],
+    db: Session = Depends(get_session),
+):
+    overview_query = ReportQuery.as_form(DEMO_COVERAGE_QUERY_FORM)
+    overview_query.interval_type = IntervalType.TRANSCRIPTS
+    overview_query.build = Builds.build_38
+    mane_overview_content = get_mane_overview_coverage_stats(
+        query=overview_query, session=db
+    )
+
+    return templates.TemplateResponse(
+        request=request,
+        name="mane_overview.html",
+        context={
+            "extras": mane_overview_content.get("extras"),
+            "interval_coverage_stats": mane_overview_content.get(
+                "samples_coverage_stats_by_interval"
+            ),
+            "levels": mane_overview_content["levels"],
         },
     )

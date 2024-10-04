@@ -1,0 +1,67 @@
+{% extends "base-layout.html" %}
+
+{% block css %}
+{{ super() }}
+<style>
+.badge {
+	background-color: black;
+	color: white;
+	padding: 4px 8px;
+	text-align: center;
+	border-radius: 5px;
+	float: right;
+}
+</style>
+{% endblock %}
+
+{% macro mane_stats_macro() %}
+	<br>
+	{% for interval_id, samples_stats in interval_coverage_stats.items() %}
+	<tr>
+        <td class="row">
+            <div class="panel-default">
+				<div class="panel-heading">
+					<strong>Gene {{ samples_stats.gene.hgnc_symbol or samples_stats.gene.hgnc_id }} ({{samples_stats.gene.hgnc_id}})</strong>
+
+					{% if samples_stats.transcript.mane_select %}
+						<span class="badge">MANE Select: {{samples_stats.transcript.mane_select}}</span>
+					{% endif %}
+					{% if samples_stats.transcript.refseq_mane_plus_clinical %}
+						<span class="badge">MANE Plus Clinical:{{samples_stats.transcript.refseq_mane_plus_clinical}}</span>
+					{% endif %}
+
+				</div>
+			</div>
+            <div class="table-responsive">
+				<table class="table table-bordered">
+					<thead>
+						<th>Sample</th>
+						<th>Mean coverage</th>
+						{% for level, _ in levels.items() %}
+							<th>Completeness {{ level }}x [%]</th>
+						{% endfor %}
+					</thead>
+					<tbody>
+                    {% for data in samples_stats.stats %}
+						<td>{{ data[0] }}</td>
+						<td>{{ data[1]|round(2) }}</td>
+						{% for level, _ in levels.items() %}
+							<td>{{ (data[2][level] * 100)|round(2) }}</td>
+						{% endfor %}
+					{% endfor %}
+					</tbody>
+				</table>
+			</div>
+        </td>
+    </tr>
+	<br>
+	{% endfor %}
+{% endmacro %}
+
+{% block title %}
+<title>Chanjo2 MANE transcripts coverage overview</title>
+{% endblock %}
+
+{% block content %}
+{{ mane_stats_macro() }}
+{% endblock %}

@@ -13,7 +13,7 @@ from chanjo2.meta.handle_d4 import (
 )
 from chanjo2.models import SQLExon, SQLGene, SQLTranscript
 from chanjo2.models.pydantic_models import (
-    GeneCoverage,
+    Builds,
     GeneReportForm,
     IntervalType,
     ReportQuery,
@@ -232,3 +232,64 @@ def get_gene_overview_coverage_stats(form_data: GeneReportForm, session: Session
         completeness_thresholds=form_data.completeness_thresholds,
     )
     return gene_stats
+
+
+def get_mane_overview_coverage_stats(query: ReportQuery, session: Session) -> Dict:
+    """Returns coverage stats over the MANE transcripts of a list of genes."""
+
+    set_samples_coverage_files(session=session, samples=query.samples)
+    genes = []
+    if any([query.ensembl_gene_ids, query.hgnc_gene_ids, query.hgnc_gene_symbols]):
+        genes: List[SQLGene] = get_genes(
+            db=session,
+            build=Builds.build_38,
+            ensembl_ids=query.ensembl_gene_ids,
+            hgnc_ids=query.hgnc_gene_ids,
+            hgnc_symbols=query.hgnc_gene_symbols,
+            limit=None,
+        )
+
+    gene_mappings = {}
+    hgnc_ids = []
+    for gene in genes:
+        gene_mappings[gene.ensembl_id] = gene
+        hgnc_ids.append(gene.hgnc_id)
+
+    mane_stats = {
+        "levels": get_ordered_levels(threshold_levels=query.completeness_thresholds),
+        "extras": {"hgnc_gene_ids": hgnc_ids},
+        "interval_type": IntervalType.TRANSCRIPTS,
+        "samples_coverage_stats_by_interval": {},
+    }
+
+    sql_intervals = set_sql_intervals(
+        db=session,
+        interval_type=SQLTranscript,
+        genes=genes,
+        transcript_tags=[
+            TranscriptTag.REFSEQ_MANE_SELECT,
+            TranscriptTag.REFSEQ_MANE_PLUS_CLINICAL,
+        ],
+    )
+
+    mane_samples_coverage_stats_by_interval = get_gene_overview_stats(
+        sql_intervals=sql_intervals,
+        samples=query.samples,
+        completeness_thresholds=query.completeness_thresholds,
+    )
+
+    LOG.warning(mane_samples_coverage_stats_by_interval)
+    for transcript in sql_intervals:
+        mane_stats["samples_coverage_stats_by_interval"][transcript.ensembl_id] = {
+            "gene": {
+                "hgnc_symbol": gene_mappings[transcript.ensembl_gene_id].hgnc_symbol,
+                "hgnc_id": gene_mappings[transcript.ensembl_gene_id].hgnc_id,
+            },
+            "transcript": {
+                "mane_select": transcript.refseq_mane_select,
+                "mane_plus_clinical": transcript.refseq_mane_plus_clinical,
+            },
+            "stats": mane_samples_coverage_stats_by_interval[transcript.ensembl_id],
+        }
+
+    return mane_stats
