@@ -124,6 +124,31 @@ async def gene_overview(
 @router.get("/mane_overview/demo", response_class=HTMLResponse)
 async def demo_mane_overview(
     request: Request,
+    db: Session = Depends(get_session),
+):
+    overview_query = ReportQuery.as_form(DEMO_COVERAGE_QUERY_FORM)
+    overview_query.interval_type = IntervalType.TRANSCRIPTS
+    overview_query.build = Builds.build_38
+    mane_overview_content = get_mane_overview_coverage_stats(
+        query=overview_query, session=db
+    )
+
+    return templates.TemplateResponse(
+        request=request,
+        name="mane_overview.html",
+        context={
+            "extras": mane_overview_content.get("extras"),
+            "interval_coverage_stats": mane_overview_content.get(
+                "samples_coverage_stats_by_interval"
+            ),
+            "levels": mane_overview_content["levels"],
+        },
+    )
+
+
+@router.post("/mane_overview/demo", response_class=HTMLResponse)
+async def demo_mane_overview(
+    request: Request,
     samples=Annotated[str, Form(...)],
     completeness_thresholds=Annotated[Optional[str], Form(None)],
     ensembl_gene_ids=Annotated[Optional[str], Form(None)],
@@ -132,7 +157,15 @@ async def demo_mane_overview(
     default_level=Annotated[Optional[int], Form(DEFAULT_COVERAGE_LEVEL)],
     db: Session = Depends(get_session),
 ):
-    overview_query = ReportQuery.as_form(DEMO_COVERAGE_QUERY_FORM)
+
+    try:
+        overview_query = ReportQuery.as_form(await request.form())
+
+    except ValidationError as ve:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=ve.json(),
+        )
     overview_query.interval_type = IntervalType.TRANSCRIPTS
     overview_query.build = Builds.build_38
     mane_overview_content = get_mane_overview_coverage_stats(

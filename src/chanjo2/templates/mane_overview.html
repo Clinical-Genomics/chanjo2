@@ -15,13 +15,14 @@
 {% endblock %}
 
 {% macro mane_stats_macro() %}
+	<h2>MANE Transcripts coverage report</h2>
 	<br>
 	{% for interval_id, samples_stats in interval_coverage_stats.items() %}
 	<tr>
         <td class="row">
             <div class="panel-default">
 				<div class="panel-heading">
-					<strong>Gene {{ samples_stats.gene.hgnc_symbol or samples_stats.gene.hgnc_id }} ({{samples_stats.gene.hgnc_id}})</strong>
+					<strong>Gene {{ samples_stats.gene.hgnc_symbol or samples_stats.gene.hgnc_id }}</strong>
 
 					{% if samples_stats.transcript.mane_select %}
 						<span class="badge">MANE Select: {{samples_stats.transcript.mane_select}}</span>

@@ -262,15 +262,17 @@ def get_mane_overview_coverage_stats(query: ReportQuery, session: Session) -> Di
         "samples_coverage_stats_by_interval": {},
     }
 
-    sql_intervals = set_sql_intervals(
-        db=session,
-        interval_type=SQLTranscript,
-        genes=genes,
-        transcript_tags=[
-            TranscriptTag.REFSEQ_MANE_SELECT,
-            TranscriptTag.REFSEQ_MANE_PLUS_CLINICAL,
-        ],
-    )
+    sql_intervals = []
+    if genes:
+        sql_intervals = set_sql_intervals(
+            db=session,
+            interval_type=SQLTranscript,
+            genes=genes,
+            transcript_tags=[
+                TranscriptTag.REFSEQ_MANE_SELECT,
+                TranscriptTag.REFSEQ_MANE_PLUS_CLINICAL,
+            ],
+        )
 
     mane_samples_coverage_stats_by_interval = get_gene_overview_stats(
         sql_intervals=sql_intervals,
@@ -278,7 +280,6 @@ def get_mane_overview_coverage_stats(query: ReportQuery, session: Session) -> Di
         completeness_thresholds=query.completeness_thresholds,
     )
 
-    LOG.warning(mane_samples_coverage_stats_by_interval)
     for transcript in sql_intervals:
         mane_stats["samples_coverage_stats_by_interval"][transcript.ensembl_id] = {
             "gene": {
