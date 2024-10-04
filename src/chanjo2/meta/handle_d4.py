@@ -165,7 +165,7 @@ def get_gene_overview_stats(
     )  # removes duplicates and orders intervals by chromosome, start and stop
     transcripts_stats = {interval_id: [] for interval_id, _ in interval_ids_coords}
 
-    # crete a temp bed file containing transcripts coordinates
+    # create a temp bed file containing transcripts coordinates
     bed_lines = [
         f"{coords[0]}\t{coords[1]}\t{coords[2]}" for _, coords in interval_ids_coords
     ]
