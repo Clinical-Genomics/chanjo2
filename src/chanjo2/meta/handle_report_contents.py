@@ -268,7 +268,7 @@ def get_mane_overview_coverage_stats(query: ReportQuery, session: Session) -> Di
             "panel_name": query.panel_name,
         },
         "interval_type": IntervalType.TRANSCRIPTS,
-        "samples_coverage_stats_by_interval": {},
+        "mane_coverage_stats_by_gene": {},
     }
 
     sql_intervals = []
@@ -283,23 +283,26 @@ def get_mane_overview_coverage_stats(query: ReportQuery, session: Session) -> Di
             ],
         )
 
-    mane_samples_coverage_stats_by_interval = get_gene_overview_stats(
+    mane_samples_coverage_stats_by_transcript = get_gene_overview_stats(
         sql_intervals=sql_intervals,
         samples=query.samples,
         completeness_thresholds=query.completeness_thresholds,
     )
 
     for transcript in sql_intervals:
-        mane_stats["samples_coverage_stats_by_interval"][transcript.ensembl_id] = {
+        mane_stats["mane_coverage_stats_by_gene"][
+            gene_mappings[transcript.ensembl_gene_id].hgnc_symbol
+        ] = {
             "gene": {
-                "hgnc_symbol": gene_mappings[transcript.ensembl_gene_id].hgnc_symbol,
                 "hgnc_id": gene_mappings[transcript.ensembl_gene_id].hgnc_id,
+                "ensembl_id": gene_mappings[transcript.ensembl_gene_id].ensembl_id,
             },
             "transcript": {
                 "mane_select": transcript.refseq_mane_select,
                 "mane_plus_clinical": transcript.refseq_mane_plus_clinical,
+                "ensembl_id": transcript.ensembl_id,
             },
-            "stats": mane_samples_coverage_stats_by_interval[transcript.ensembl_id],
+            "stats": mane_samples_coverage_stats_by_transcript[transcript.ensembl_id],
         }
 
     return mane_stats

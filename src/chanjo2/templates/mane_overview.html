@@ -29,21 +29,19 @@
 			<input type="hidden" name="build" value="GRCh38"/>
 			<input type="hidden" name="interval_type" value="transcripts"/>
 			<input type="hidden" name="samples" value="{{extras.samples|safe}}"/>
-			  <div>
-				<div class="form-group">
-				<div class="col-6">
-				  <label class="form-label">Gene panel name to display</label>
-				  <input class="form-control" id="panel_name" name="panel_name" type="text" placeholder="Skeletal dysplasia 3.2" value="{{ extras.panel_name or '' }}">
-				</div>
-			  </div>
-			</div>
 
 			<div class="row">
-				<div class="col-7">
-				  <label class="form-label">Included genes (Comma separated list HGNC IDs, HGNC symbols or Ensembl IDs)</label>
-				  <div><input class="form-control" type="text" name="hgnc_gene_ids" value="{{ extras.hgnc_gene_ids|join(', ') }}" placeholder="17284, 21022,.."></div>
+				<div class="col-6">
+				  <label class="form-label">Included genes (Comma separated list HGNC IDs, HGNC symbols or Ensembl IDs)
+				  <input class="form-control" type="text" name="hgnc_gene_ids" value="{{ extras.hgnc_gene_ids|join(', ') }}" placeholder="17284, 21022,..">
+				  </label>
 				</div>
-				<div class="col-4 offset-1 mt-2">
+				<div class="col-4">
+				  <label class="form-label">Gene panel name to display
+				  <input class="form-control" id="panel_name" name="panel_name" type="text" placeholder="Skeletal dysplasia 3.2" value="{{ extras.panel_name or '' }}">
+				  </label>
+				</div>
+				<div class="col-2">
 				  <button class="btn btn-primary mt-4" type="submit">Update</button>
 				</div>
 			</div>
@@ -58,19 +56,15 @@
 {% macro mane_stats_macro() %}
 	<h2>MANE Transcripts coverage report</h2>
 	{% if extras.panel_name %}
-	  <p>
-		Final coverage metrics were calculated for genes from the clinical panels.
-		Note that <strong>estimations were made regarding coverage and completeness
-		  on the level of {{ extras.interval_type }}</strong>.
-	  </p>
+		<p>Based on gene panel: <strong>{{ extras.panel_name }}</strong></p>
 	{% endif %}
 	<br>
-	{% for interval_id, samples_stats in interval_coverage_stats.items() %}
+	{% for gene_id, samples_stats in mane_coverage_stats_by_gene|dictsort %}
 	<tr>
         <td class="row">
             <div class="panel-default">
 				<div class="panel-heading">
-					<strong>Gene {{ samples_stats.gene.hgnc_symbol or samples_stats.gene.hgnc_id }}</strong>
+					<strong>Gene {{ gene_id or samples_stats.gene.hgnc_id }}</strong>
 
 					{% if samples_stats.transcript.mane_select %}
 						<span class="badge">MANE Select: {{samples_stats.transcript.mane_select}}</span>

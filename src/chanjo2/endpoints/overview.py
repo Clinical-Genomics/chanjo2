@@ -136,13 +136,7 @@ async def demo_mane_overview(
     return templates.TemplateResponse(
         request=request,
         name="mane_overview.html",
-        context={
-            "extras": mane_overview_content.get("extras"),
-            "interval_coverage_stats": mane_overview_content.get(
-                "samples_coverage_stats_by_interval"
-            ),
-            "levels": mane_overview_content["levels"],
-        },
+        context=get_mane_overview_coverage_stats(query=overview_query, session=db),
     )
 
 
@@ -168,20 +162,8 @@ async def mane_overview(
             detail=ve.json(),
         )
 
-    overview_query.interval_type = IntervalType.TRANSCRIPTS
-    overview_query.build = Builds.build_38.value
-    mane_overview_content = get_mane_overview_coverage_stats(
-        query=overview_query, session=db
-    )
-
     return templates.TemplateResponse(
         request=request,
         name="mane_overview.html",
-        context={
-            "extras": mane_overview_content.get("extras"),
-            "interval_coverage_stats": mane_overview_content.get(
-                "samples_coverage_stats_by_interval"
-            ),
-            "levels": mane_overview_content["levels"],
-        },
+        context=get_mane_overview_coverage_stats(query=overview_query, session=db),
     )
