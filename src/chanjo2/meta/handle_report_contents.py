@@ -268,7 +268,7 @@ def get_mane_overview_coverage_stats(query: ReportQuery, session: Session) -> Di
             "panel_name": query.panel_name,
         },
         "interval_type": IntervalType.TRANSCRIPTS,
-        "mane_coverage_stats_by_gene": {},
+        "mane_coverage_stats": [],
     }
 
     sql_intervals = []
@@ -289,20 +289,26 @@ def get_mane_overview_coverage_stats(query: ReportQuery, session: Session) -> Di
         completeness_thresholds=query.completeness_thresholds,
     )
 
+    existing_transcripts = []
+
     for transcript in sql_intervals:
-        mane_stats["mane_coverage_stats_by_gene"][
-            gene_mappings[transcript.ensembl_gene_id].hgnc_symbol
-        ] = {
+        transcript_dict = {
+            "mane_select": transcript.refseq_mane_select,
+            "mane_plus_clinical": transcript.refseq_mane_plus_clinical,
+        }
+        if transcript_dict in existing_transcripts:
+            continue
+
+        existing_transcripts.append(transcript_dict)
+        gene_symbol: str = gene_mappings[transcript.ensembl_gene_id].hgnc_symbol
+        data_dict: dict = {
             "gene": {
                 "hgnc_id": gene_mappings[transcript.ensembl_gene_id].hgnc_id,
                 "ensembl_id": gene_mappings[transcript.ensembl_gene_id].ensembl_id,
             },
-            "transcript": {
-                "mane_select": transcript.refseq_mane_select,
-                "mane_plus_clinical": transcript.refseq_mane_plus_clinical,
-                "ensembl_id": transcript.ensembl_id,
-            },
+            "transcript": transcript_dict,
             "stats": mane_samples_coverage_stats_by_transcript[transcript.ensembl_id],
         }
+        mane_stats["mane_coverage_stats"].append((gene_symbol, data_dict))
 
     return mane_stats

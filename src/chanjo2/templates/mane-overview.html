@@ -59,18 +59,17 @@
 		<p>Based on gene panel: <strong>{{ extras.panel_name }}</strong></p>
 	{% endif %}
 	<br>
-	{% for gene_id, samples_stats in mane_coverage_stats_by_gene|dictsort %}
+	{% for gene_id, samples_stats in mane_coverage_stats %}
 	<tr>
         <td class="row">
             <div class="panel-default">
 				<div class="panel-heading">
 					<strong>Gene {{ gene_id or samples_stats.gene.hgnc_id }}</strong>
-
 					{% if samples_stats.transcript.mane_select %}
 						<span class="badge">MANE Select: {{samples_stats.transcript.mane_select}}</span>
 					{% endif %}
-					{% if samples_stats.transcript.refseq_mane_plus_clinical %}
-						<span class="badge">MANE Plus Clinical:{{samples_stats.transcript.refseq_mane_plus_clinical}}</span>
+					{% if samples_stats.transcript.mane_plus_clinical %}
+						<span class="badge">MANE Plus Clinical:{{samples_stats.transcript.mane_plus_clinical}}</span>
 					{% endif %}
 
 				</div>
