@@ -57,6 +57,13 @@
 
 {% macro mane_stats_macro() %}
 	<h2>MANE Transcripts coverage report</h2>
+	{% if extras.panel_name %}
+	  <p>
+		Final coverage metrics were calculated for genes from the clinical panels.
+		Note that <strong>estimations were made regarding coverage and completeness
+		  on the level of {{ extras.interval_type }}</strong>.
+	  </p>
+	{% endif %}
 	<br>
 	{% for interval_id, samples_stats in interval_coverage_stats.items() %}
 	<tr>

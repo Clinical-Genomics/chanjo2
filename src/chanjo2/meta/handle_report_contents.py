@@ -258,13 +258,14 @@ def get_mane_overview_coverage_stats(query: ReportQuery, session: Session) -> Di
     mane_stats = {
         "levels": get_ordered_levels(threshold_levels=query.completeness_thresholds),
         "extras": {
-            "hgnc_gene_ids": [hgnc_gene_ids]
+            "hgnc_gene_ids": hgnc_gene_ids
             or query.hgnc_gene_ids
             or query.hgnc_gene_symbols
             or query.ensembl_gene_ids,
             "interval_type": query.interval_type.value,
             "completeness_thresholds": query.completeness_thresholds,
             "samples": [_serialize_sample(sample) for sample in query.samples],
+            "panel_name": query.panel_name,
         },
         "interval_type": IntervalType.TRANSCRIPTS,
         "samples_coverage_stats_by_interval": {},
