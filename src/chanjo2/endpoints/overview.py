@@ -126,6 +126,7 @@ async def demo_mane_overview(
     request: Request,
     db: Session = Depends(get_session),
 ):
+    """Returns coverage overview stats for a group of samples over MANE transcripts of a demo list of genes."""
     overview_query = ReportQuery.as_form(DEMO_COVERAGE_QUERY_FORM)
     overview_query.interval_type = IntervalType.TRANSCRIPTS
     overview_query.build = Builds.build_38
@@ -149,7 +150,7 @@ async def mane_overview(
     panel_name=Annotated[Optional[str], Form("Custom panel")],
     db: Session = Depends(get_session),
 ):
-
+    """Returns coverage overview stats for a group of samples over MANE transcripts of a list of genes."""
     try:
         overview_query = ReportQuery.as_form(await request.form())
 
