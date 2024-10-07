@@ -87,7 +87,7 @@
                     {% for data_tuple in samples_stats.stats %}
 						<tr>
 							<td>{{data_tuple[0]}}</td>
-							<td>{{data_tuple[1]}}</td>
+							<td>{{data_tuple[1]|round(2) }}</td>
 							{% for level, _ in levels.items() %}
 								<td>{{ (data_tuple[2][level] * 100)|round(2) }}</td>
 							{% endfor %}
