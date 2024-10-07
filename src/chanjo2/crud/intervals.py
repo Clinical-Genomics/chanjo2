@@ -1,7 +1,7 @@
 import logging
 from typing import List, Optional, Union
 
-from sqlalchemy import delete
+from sqlalchemy import delete, or_
 from sqlalchemy.orm import Session, query
 from sqlalchemy.sql.expression import Delete
 
@@ -127,11 +127,11 @@ def _filter_transcripts_by_tag(
     transcripts: query.Query, transcript_tags: List[TranscriptTag] = []
 ) -> query.Query:
     """Return transcripts which contain one or more RefSeq tag."""
+
+    not_null_filters = []
     for tag in transcript_tags:
-        transcripts: query.Query = transcripts.filter(
-            getattr(SQLTranscript, tag).isnot(None)
-        )
-    return transcripts
+        not_null_filters.append(getattr(SQLTranscript, tag).isnot(None))
+    return transcripts.filter(or_(*not_null_filters))
 
 
 def set_sql_intervals(

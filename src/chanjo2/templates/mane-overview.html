@@ -1,0 +1,114 @@
+{% extends "base-layout.html" %}
+
+{% block css %}
+{{ super() }}
+<style>
+.badge {
+	background-color: black;
+	color: white;
+	padding: 4px 8px;
+	text-align: center;
+	border-radius: 5px;
+	float: right;
+}
+</style>
+{% endblock %}
+
+{% macro report_filters() %}
+<div class="accordion" id="filter-accordion">
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="flush-headingOne">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+       Customize
+      </button>
+    </h2>
+    <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+		<div class="accordion-body">
+			<!-- hidden fields passed from previous query -->
+			<form name="customizeForm" action="{{url_for('mane_overview')}}" method="post">
+			<input type="hidden" name="build" value="GRCh38"/>
+			<input type="hidden" name="interval_type" value="transcripts"/>
+			<input type="hidden" name="samples" value="{{extras.samples|safe}}"/>
+
+			<div class="row">
+				<div class="col-6">
+				  <label class="form-label">Included genes (Comma separated list HGNC IDs, HGNC symbols or Ensembl IDs)
+				  <input class="form-control" type="text" name="hgnc_gene_ids" value="{{ extras.hgnc_gene_ids|join(', ') }}" placeholder="17284, 21022,..">
+				  </label>
+				</div>
+				<div class="col-4">
+				  <label class="form-label">Gene panel name to display
+				  <input class="form-control" id="panel_name" name="panel_name" type="text" placeholder="Skeletal dysplasia 3.2" value="{{ extras.panel_name or '' }}">
+				  </label>
+				</div>
+				<div class="col-2">
+				  <button class="btn btn-primary mt-4" type="submit">Update</button>
+				</div>
+			</div>
+			</form>
+		</div>
+	</div>
+  </div>
+</div>
+{% endmacro %}
+
+
+{% macro mane_stats_macro() %}
+	<h2>MANE Transcripts coverage report</h2>
+	{% if extras.panel_name %}
+		<p>Based on gene panel: <strong>{{ extras.panel_name }}</strong></p>
+	{% endif %}
+	<br>
+	{% for gene_id, samples_stats in mane_coverage_stats|sort(attribute='0') %}
+	<tr>
+        <td class="row">
+            <div class="panel-default">
+				<div class="panel-heading">
+					<strong>Gene {{ gene_id or samples_stats.gene.hgnc_id }}</strong>
+					{% if samples_stats.transcript.mane_select %}
+						<span class="badge">MANE Select: {{samples_stats.transcript.mane_select}}</span>
+					{% endif %}
+					{% if samples_stats.transcript.mane_plus_clinical %}
+						<span class="badge">MANE Plus Clinical: {{samples_stats.transcript.mane_plus_clinical}}</span>
+					{% endif %}
+
+				</div>
+			</div>
+            <div class="table-responsive">
+				<table class="table table-bordered">
+					<thead>
+						<th>Sample</th>
+						<th>Mean coverage</th>
+						{% for level, _ in levels.items() %}
+							<th>Completeness {{ level }}x [%]</th>
+						{% endfor %}
+					</thead>
+					<tbody>
+                    {% for data_tuple in samples_stats.stats %}
+						<tr>
+							<td>{{data_tuple[0]}}</td>
+							<td>{{data_tuple[1]|round(2) }}</td>
+							{% for level, _ in levels.items() %}
+								<td>{{ (data_tuple[2][level] * 100)|round(2) }}</td>
+							{% endfor %}
+						</tr>
+					{% endfor %}
+					</tbody>
+				</table>
+			</div>
+        </td>
+    </tr>
+	<br>
+	{% else %}
+	No MANE transcripts found in database for the provided gene list.
+	{% endfor %}
+{% endmacro %}
+
+{% block title %}
+<title>Chanjo2 MANE transcripts coverage overview</title>
+{% endblock %}
+
+{% block content %}
+{{report_filters() }}
+{{ mane_stats_macro() }}
+{% endblock %}

@@ -13,7 +13,7 @@ from chanjo2.meta.handle_d4 import (
 )
 from chanjo2.models import SQLExon, SQLGene, SQLTranscript
 from chanjo2.models.pydantic_models import (
-    GeneCoverage,
+    Builds,
     GeneReportForm,
     IntervalType,
     ReportQuery,
@@ -232,3 +232,83 @@ def get_gene_overview_coverage_stats(form_data: GeneReportForm, session: Session
         completeness_thresholds=form_data.completeness_thresholds,
     )
     return gene_stats
+
+
+def get_mane_overview_coverage_stats(query: ReportQuery, session: Session) -> Dict:
+    """Returns coverage stats over the MANE transcripts of a list of genes."""
+
+    set_samples_coverage_files(session=session, samples=query.samples)
+    genes = []
+    if any([query.ensembl_gene_ids, query.hgnc_gene_ids, query.hgnc_gene_symbols]):
+        genes: List[SQLGene] = get_genes(
+            db=session,
+            build=Builds.build_38,
+            ensembl_ids=query.ensembl_gene_ids,
+            hgnc_ids=query.hgnc_gene_ids,
+            hgnc_symbols=query.hgnc_gene_symbols,
+            limit=None,
+        )
+
+    gene_mappings = {}
+    hgnc_gene_ids = []
+    for gene in genes:
+        hgnc_gene_ids.append(gene.hgnc_id)
+        gene_mappings[gene.ensembl_id] = gene
+
+    mane_stats = {
+        "levels": get_ordered_levels(threshold_levels=query.completeness_thresholds),
+        "extras": {
+            "hgnc_gene_ids": hgnc_gene_ids
+            or query.hgnc_gene_ids
+            or query.hgnc_gene_symbols
+            or query.ensembl_gene_ids,
+            "interval_type": query.interval_type.value,
+            "completeness_thresholds": query.completeness_thresholds,
+            "samples": [_serialize_sample(sample) for sample in query.samples],
+            "panel_name": query.panel_name,
+        },
+        "interval_type": IntervalType.TRANSCRIPTS,
+        "mane_coverage_stats": [],
+    }
+
+    sql_intervals = []
+    if genes:
+        sql_intervals = set_sql_intervals(
+            db=session,
+            interval_type=SQLTranscript,
+            genes=genes,
+            transcript_tags=[
+                TranscriptTag.REFSEQ_MANE_SELECT,
+                TranscriptTag.REFSEQ_MANE_PLUS_CLINICAL,
+            ],
+        )
+
+    mane_samples_coverage_stats_by_transcript = get_gene_overview_stats(
+        sql_intervals=sql_intervals,
+        samples=query.samples,
+        completeness_thresholds=query.completeness_thresholds,
+    )
+
+    existing_transcripts = []
+
+    for transcript in sql_intervals:
+        transcript_dict = {
+            "mane_select": transcript.refseq_mane_select,
+            "mane_plus_clinical": transcript.refseq_mane_plus_clinical,
+        }
+        if transcript_dict in existing_transcripts:
+            continue
+
+        existing_transcripts.append(transcript_dict)
+        gene_symbol: str = gene_mappings[transcript.ensembl_gene_id].hgnc_symbol
+        data_dict: dict = {
+            "gene": {
+                "hgnc_id": gene_mappings[transcript.ensembl_gene_id].hgnc_id,
+                "ensembl_id": gene_mappings[transcript.ensembl_gene_id].ensembl_id,
+            },
+            "transcript": transcript_dict,
+            "stats": mane_samples_coverage_stats_by_transcript[transcript.ensembl_id],
+        }
+        mane_stats["mane_coverage_stats"].append((gene_symbol, data_dict))
+
+    return mane_stats

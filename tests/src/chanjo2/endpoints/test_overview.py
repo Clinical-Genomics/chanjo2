@@ -4,7 +4,7 @@ from fastapi import status
 from fastapi.testclient import TestClient
 from requests.models import Response
 
-from chanjo2.constants import BUILD_37, DEFAULT_COMPLETENESS_LEVELS
+from chanjo2.constants import BUILD_37, BUILD_38, DEFAULT_COMPLETENESS_LEVELS
 from chanjo2.demo import DEMO_COVERAGE_QUERY_FORM
 
 
@@ -63,3 +63,44 @@ def test_gene_overview(
 
     # And return an HTML page
     assert response.template.name == "gene-overview.html"
+
+
+def test_demo_mane_overview(client: TestClient, endpoints: Type):
+    """Test the endpoint that shows coverage over the MANE transcripts of a list of genes."""
+
+    # GIVEN a query to the demo genes coverage overview endpoint
+    response: Response = client.get(endpoints.MANE_OVERVIEW_DEMO)
+
+    # Then the request should be successful
+    assert response.status_code == status.HTTP_200_OK
+
+    # And return an HTML page
+    assert response.template.name == "mane-overview.html"
+
+
+def test_mane_overview(
+    client: TestClient, endpoints: Type, genomic_ids_per_build: Dict[str, List]
+):
+    """Test the endpoint that shows coverage over the MANE transcripts for a custom list of genes."""
+
+    # GIVEN a POST request containing form data:
+    form_data = {
+        "build": BUILD_38,
+        "completeness_thresholds": DEFAULT_COMPLETENESS_LEVELS,
+        "hgnc_gene_id": genomic_ids_per_build[BUILD_38]["hgnc_ids"],
+        "samples": str(DEMO_COVERAGE_QUERY_FORM["samples"]),
+        "interval_type": "transcripts",
+    }
+
+    # GIVEN a query to the mane overview endpoint
+    response: Response = client.post(
+        endpoints.MANE_OVERVIEW,
+        data=form_data,
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+    )
+
+    # Then the request should be successful
+    assert response.status_code == status.HTTP_200_OK
+
+    # And return an HTML page
+    assert response.template.name == "mane-overview.html"

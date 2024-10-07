@@ -15,6 +15,7 @@ from chanjo2.dbutil import get_session
 from chanjo2.demo import DEMO_COVERAGE_QUERY_FORM
 from chanjo2.meta.handle_report_contents import (
     get_gene_overview_coverage_stats,
+    get_mane_overview_coverage_stats,
     get_report_data,
 )
 from chanjo2.models.pydantic_models import (
@@ -117,4 +118,50 @@ async def gene_overview(
             ),
             "levels": gene_overview_content["levels"],
         },
+    )
+
+
+@router.get("/mane_overview/demo", response_class=HTMLResponse)
+async def demo_mane_overview(
+    request: Request,
+    db: Session = Depends(get_session),
+):
+    """Returns coverage overview stats for a group of samples over MANE transcripts of a demo list of genes."""
+    overview_query = ReportQuery.as_form(DEMO_COVERAGE_QUERY_FORM)
+    overview_query.interval_type = IntervalType.TRANSCRIPTS
+    overview_query.build = Builds.build_38
+
+    return templates.TemplateResponse(
+        request=request,
+        name="mane-overview.html",
+        context=get_mane_overview_coverage_stats(query=overview_query, session=db),
+    )
+
+
+@router.post("/mane_overview", response_class=HTMLResponse)
+async def mane_overview(
+    request: Request,
+    samples=Annotated[str, Form(...)],
+    completeness_thresholds=Annotated[Optional[str], Form(None)],
+    ensembl_gene_ids=Annotated[Optional[str], Form(None)],
+    hgnc_gene_ids=Annotated[Optional[str], Form(None)],
+    hgnc_gene_symbols=Annotated[Optional[str], Form(None)],
+    case_display_name=Annotated[Optional[str], Form(None)],
+    panel_name=Annotated[Optional[str], Form("Custom panel")],
+    db: Session = Depends(get_session),
+):
+    """Returns coverage overview stats for a group of samples over MANE transcripts of a list of genes."""
+    try:
+        overview_query = ReportQuery.as_form(await request.form())
+
+    except ValidationError as ve:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=ve.json(),
+        )
+
+    return templates.TemplateResponse(
+        request=request,
+        name="mane-overview.html",
+        context=get_mane_overview_coverage_stats(query=overview_query, session=db),
     )

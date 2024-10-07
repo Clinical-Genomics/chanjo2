@@ -58,7 +58,9 @@ class Endpoints(str):
     REPORT = "/report"
     GENE_OVERVIEW = "/gene_overview"
     OVERVIEW = "/overview"
-    OVERVIEW_DEMO = "/overview/demo/"
+    OVERVIEW_DEMO = "/overview/demo"
+    MANE_OVERVIEW_DEMO = "/mane_overview/demo"
+    MANE_OVERVIEW = "/mane_overview"
 
 
 @pytest.fixture
