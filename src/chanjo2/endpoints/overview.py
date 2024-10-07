@@ -129,9 +129,6 @@ async def demo_mane_overview(
     overview_query = ReportQuery.as_form(DEMO_COVERAGE_QUERY_FORM)
     overview_query.interval_type = IntervalType.TRANSCRIPTS
     overview_query.build = Builds.build_38
-    mane_overview_content = get_mane_overview_coverage_stats(
-        query=overview_query, session=db
-    )
 
     return templates.TemplateResponse(
         request=request,
