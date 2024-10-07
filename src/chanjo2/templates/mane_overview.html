@@ -14,6 +14,47 @@
 </style>
 {% endblock %}
 
+{% macro report_filters() %}
+<div class="accordion" id="filter-accordion">
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="flush-headingOne">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+       Customize
+      </button>
+    </h2>
+    <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+		<div class="accordion-body">
+			<!-- hidden fields passed from previous query -->
+			<form name="customizeForm" action="{{url_for('mane_overview')}}" method="post">
+			<input type="hidden" name="build" value="GRCh38"/>
+			<input type="hidden" name="interval_type" value="transcripts"/>
+			<input type="hidden" name="samples" value="{{extras.samples|safe}}"/>
+			  <div>
+				<div class="form-group">
+				<div class="col-6">
+				  <label class="form-label">Gene panel name to display</label>
+				  <input class="form-control" id="panel_name" name="panel_name" type="text" placeholder="Skeletal dysplasia 3.2" value="{{ extras.panel_name or '' }}">
+				</div>
+			  </div>
+			</div>
+
+			<div class="row">
+				<div class="col-7">
+				  <label class="form-label">Included genes (Comma separated list HGNC IDs, HGNC symbols or Ensembl IDs)</label>
+				  <div><input class="form-control" type="text" name="hgnc_gene_ids" value="{{ extras.hgnc_gene_ids|join(', ') }}" placeholder="17284, 21022,.."></div>
+				</div>
+				<div class="col-4 offset-1 mt-2">
+				  <button class="btn btn-primary mt-4" type="submit">Update</button>
+				</div>
+			</div>
+			</form>
+		</div>
+	</div>
+  </div>
+</div>
+{% endmacro %}
+
+
 {% macro mane_stats_macro() %}
 	<h2>MANE Transcripts coverage report</h2>
 	<br>
@@ -64,5 +105,6 @@
 {% endblock %}
 
 {% block content %}
+{{report_filters() }}
 {{ mane_stats_macro() }}
 {% endblock %}

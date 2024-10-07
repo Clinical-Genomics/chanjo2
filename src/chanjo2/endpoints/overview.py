@@ -147,14 +147,15 @@ async def demo_mane_overview(
 
 
 @router.post("/mane_overview", response_class=HTMLResponse)
-async def demo_mane_overview(
+async def mane_overview(
     request: Request,
     samples=Annotated[str, Form(...)],
     completeness_thresholds=Annotated[Optional[str], Form(None)],
     ensembl_gene_ids=Annotated[Optional[str], Form(None)],
     hgnc_gene_ids=Annotated[Optional[str], Form(None)],
     hgnc_gene_symbols=Annotated[Optional[str], Form(None)],
-    default_level=Annotated[Optional[int], Form(DEFAULT_COVERAGE_LEVEL)],
+    case_display_name=Annotated[Optional[str], Form(None)],
+    panel_name=Annotated[Optional[str], Form("Custom panel")],
     db: Session = Depends(get_session),
 ):
 
@@ -168,7 +169,7 @@ async def demo_mane_overview(
         )
 
     overview_query.interval_type = IntervalType.TRANSCRIPTS
-    overview_query.build = Builds.build_38
+    overview_query.build = Builds.build_38.value
     mane_overview_content = get_mane_overview_coverage_stats(
         query=overview_query, session=db
     )
