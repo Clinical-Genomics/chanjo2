@@ -132,7 +132,7 @@ async def demo_mane_overview(
 
     return templates.TemplateResponse(
         request=request,
-        name="mane_overview.html",
+        name="mane-overview.html",
         context=get_mane_overview_coverage_stats(query=overview_query, session=db),
     )
 
@@ -161,6 +161,6 @@ async def mane_overview(
 
     return templates.TemplateResponse(
         request=request,
-        name="mane_overview.html",
+        name="mane-overview.html",
         context=get_mane_overview_coverage_stats(query=overview_query, session=db),
     )
