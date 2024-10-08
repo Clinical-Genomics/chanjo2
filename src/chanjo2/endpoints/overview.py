@@ -107,6 +107,8 @@ async def gene_overview(
         get_gene_overview_coverage_stats(form_data=validated_form, session=db)
     )
 
+    print(gene_overview_content)
+
     return templates.TemplateResponse(
         request=request, name="gene-overview.html", context=gene_overview_content
     )

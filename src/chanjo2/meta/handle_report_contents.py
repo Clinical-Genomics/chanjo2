@@ -217,6 +217,7 @@ def get_gene_overview_coverage_stats(form_data: GeneReportForm, session: Session
         build=form_data.build, hgnc_id=form_data.hgnc_gene_id, db=session
     )
     if gene is None:
+        gene_stats["gene"] = {"hgnc_id": form_data.hgnc_gene_id}
         return gene_stats
 
     gene_stats["gene"] = gene

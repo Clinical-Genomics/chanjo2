@@ -58,7 +58,10 @@
 		</td>
 	</tr>
 	<br>
+	{% else %}
+	No intervals found in database for gene {{gene.hgnc_symbol or gene.hgnc_id}}.
 	{% endfor %}
+
 {% endmacro %}
 
 {% block title %}
