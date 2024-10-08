@@ -263,6 +263,7 @@ def get_mane_overview_coverage_stats(query: ReportQuery, session: Session) -> Di
             or query.hgnc_gene_symbols
             or query.ensembl_gene_ids,
             "interval_type": query.interval_type.value,
+            "default_level": query.default_level,
             "completeness_thresholds": query.completeness_thresholds,
             "samples": [_serialize_sample(sample) for sample in query.samples],
             "panel_name": query.panel_name,

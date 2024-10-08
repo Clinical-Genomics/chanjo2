@@ -4,6 +4,7 @@
 - Check that provided d4 files when running queries using `/coverage/d4/genes/summary` endpoint are valid, with test
 - General report with coverage over the entire genome when no genes or genes panels are provided
 - A MANE coverage report, showing coverage and coverage completeness only on MANE transcripts for the provided list of genes
+- Link out from MANE overview to gene overview
 ### Changed
 - Do not use stored cases/samples any more and run stats exclusively on d4 files paths provided by the user in real time
 - How parameters are passed to starlette.templating since it was raising a deprecation warning.

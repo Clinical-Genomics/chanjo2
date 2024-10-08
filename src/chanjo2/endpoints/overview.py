@@ -141,13 +141,14 @@ async def demo_mane_overview(
 @router.post("/mane_overview", response_class=HTMLResponse)
 async def mane_overview(
     request: Request,
+    build=Annotated[Builds, Form(...)],
     samples=Annotated[str, Form(...)],
+    interval_type=Annotated[IntervalType, Form(...)],
     completeness_thresholds=Annotated[Optional[str], Form(None)],
     ensembl_gene_ids=Annotated[Optional[str], Form(None)],
     hgnc_gene_ids=Annotated[Optional[str], Form(None)],
     hgnc_gene_symbols=Annotated[Optional[str], Form(None)],
-    case_display_name=Annotated[Optional[str], Form(None)],
-    panel_name=Annotated[Optional[str], Form("Custom panel")],
+    default_level=Annotated[Optional[int], Form(DEFAULT_COVERAGE_LEVEL)],
     db: Session = Depends(get_session),
 ):
     """Returns coverage overview stats for a group of samples over MANE transcripts of a list of genes."""
