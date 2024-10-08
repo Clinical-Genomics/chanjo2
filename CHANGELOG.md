@@ -23,6 +23,7 @@
 - Colored logs
 - Link for switching between coverage thresholds on overview report
 - Gene links in genes overview page open into new tabs
+- Saving ensembl_transcript_id info on exons database records
 
 ## [1.9]
 ### Added

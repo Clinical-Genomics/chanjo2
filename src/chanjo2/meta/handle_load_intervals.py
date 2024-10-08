@@ -204,7 +204,7 @@ async def update_exons(
         items: List = _replace_empty_cols(line=line, nr_expected_columns=len(header))
 
         try:
-            # Load transcript interval into the database
+            # Load Exon interval into the database
             exon = ExonBase(
                 chromosome=items[0],
                 ensembl_gene_id=items[1],
