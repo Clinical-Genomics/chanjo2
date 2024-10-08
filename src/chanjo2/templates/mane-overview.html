@@ -14,6 +14,12 @@
 </style>
 {% endblock %}
 
+{% block pdf_export %}
+	<div class="collapse navbar-collapse justify-content-end" id="bs-example-navbar-collapse-1">
+		<button class="navbar-brand" onclick="window.focus(); window.print();">Create PDF</button>
+	</div><!-- /.navbar-collapse -->
+{% endblock %}
+
 {% macro report_filters() %}
 <div class="accordion" id="filter-accordion">
   <div class="accordion-item">

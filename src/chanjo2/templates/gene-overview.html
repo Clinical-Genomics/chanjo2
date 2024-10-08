@@ -17,6 +17,12 @@
 </style>
 {% endblock %}
 
+{% block pdf_export %}
+	<div class="collapse navbar-collapse justify-content-end" id="bs-example-navbar-collapse-1">
+		<button class="navbar-brand" onclick="window.focus(); window.print();">Create PDF</button>
+	</div><!-- /.navbar-collapse -->
+{% endblock %}
+
 {% macro gene_stats_macro() %}
 	<h2>Gene: {{ gene.hgnc_symbol or gene.hgnc_id }}</h2>
 	<br>
