@@ -220,12 +220,14 @@ def get_gene_overview_coverage_stats(form_data: GeneReportForm, session: Session
         return gene_stats
 
     gene_stats["gene"] = gene
-    sql_intervals = set_sql_intervals(
+    transcripts_intervals = set_sql_intervals(
         db=session,
         interval_type=SQLTranscript,
         genes=[gene],
         transcript_tags=[],
     )
+    exons_intervals = set_sql_intervals(db=session, interval_type=SQLExon, genes=[gene])
+    sql_intervals = transcripts_intervals + exons_intervals
     gene_stats["samples_coverage_stats_by_interval"] = get_gene_overview_stats(
         sql_intervals=sql_intervals,
         samples=form_data.samples,
