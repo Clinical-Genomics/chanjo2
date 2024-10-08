@@ -126,6 +126,7 @@
 {% endblock %}
 
 {% block js_code %}
+	{{ super() }}
 	<script>
 		let theForm = document.getElementById("maneStatsForm");
 		function getGeneStatsPage(hgncId)
