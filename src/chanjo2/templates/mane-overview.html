@@ -27,6 +27,8 @@
 			<!-- hidden fields passed from previous query -->
 			<form name="customizeForm" action="{{url_for('mane_overview')}}" method="post">
 			<input type="hidden" name="build" value="GRCh38"/>
+			<input type="hidden" name="default_level" id="defaultLevel" value="{{extras.default_level}}"/>
+			<input type="hidden" name="completeness_thresholds" value="{{extras.completeness_thresholds|join(',')}}"/>
 			<input type="hidden" name="interval_type" value="transcripts"/>
 			<input type="hidden" name="samples" value="{{extras.samples|safe}}"/>
 
@@ -59,12 +61,21 @@
 		<p>Based on gene panel: <strong>{{ extras.panel_name }}</strong></p>
 	{% endif %}
 	<br>
+	<form id="maneStatsForm" action="{{url_for('gene_overview')}}" method="post">
+		<input type="hidden" name="build" value="GRCh38"/>
+		<input type="hidden" name="default_level" id="defaultLevel" value="{{extras.default_level}}"/>
+		<input type="hidden" name="completeness_thresholds" value="{{extras.completeness_thresholds|join(',')}}"/>
+		<input type="hidden" name="interval_type" value="transcripts"/>
+		<input type="hidden" name="samples" value="{{extras.samples|safe}}"/>
+
 	{% for gene_id, samples_stats in mane_coverage_stats|sort(attribute='0') %}
 	<tr>
         <td class="row">
             <div class="panel-default">
 				<div class="panel-heading">
-					<strong>Gene {{ gene_id or samples_stats.gene.hgnc_id }}</strong>
+					<strong>Gene <a href="#" onclick="getGeneStatsPage({{samples_stats.gene.hgnc_id}});">
+									{{ gene_id or samples_stats.gene.hgnc_id }}
+								</a></strong>
 					{% if samples_stats.transcript.mane_select %}
 						<span class="badge">MANE Select: {{samples_stats.transcript.mane_select}}</span>
 					{% endif %}
@@ -102,6 +113,7 @@
 	{% else %}
 	No MANE transcripts found in database for the provided gene list.
 	{% endfor %}
+	</form>
 {% endmacro %}
 
 {% block title %}
@@ -112,3 +124,22 @@
 {{report_filters() }}
 {{ mane_stats_macro() }}
 {% endblock %}
+
+{% block js_code %}
+	{{ super() }}
+	<script>
+		let theForm = document.getElementById("maneStatsForm");
+		function getGeneStatsPage(hgncId)
+		{
+			var geneInput = document.createElement("input");
+			geneInput.setAttribute("type", "hidden");
+			geneInput.setAttribute("name", "hgnc_gene_id");
+			geneInput.setAttribute("value", hgncId);
+			theForm.appendChild(geneInput);
+			theForm.setAttribute("target", "_blank");
+			theForm.setAttribute("rel", "noopener");
+			theForm.submit();
+		}
+	</script>
+{% endblock %}
+
