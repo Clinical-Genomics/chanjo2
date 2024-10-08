@@ -244,11 +244,11 @@ def get_gene_overview_coverage_stats(form_data: GeneReportForm, session: Session
                 "mane_plus_clinical": sql_interval.refseq_mane_plus_clinical,
                 "stats": samples_coverage_by_interval[sql_interval.ensembl_id],
             }
-        else:
-            gene_stats["interval_coverage_stats"][sql_interval.ensembl_id] = {
-                "interval_type": "exon",
-                "stats": samples_coverage_by_interval[sql_interval.ensembl_id],
-            }
+            continue
+        gene_stats["interval_coverage_stats"][sql_interval.ensembl_id] = {
+            "interval_type": "exon",
+            "stats": samples_coverage_by_interval[sql_interval.ensembl_id],
+        }
 
     return gene_stats
 
