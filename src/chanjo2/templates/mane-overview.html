@@ -27,6 +27,7 @@
 			<!-- hidden fields passed from previous query -->
 			<form name="customizeForm" action="{{url_for('mane_overview')}}" method="post">
 			<input type="hidden" name="build" value="GRCh38"/>
+			<input type="hidden" name="default_level" id="defaultLevel" value="{{extras.default_level}}"/>
 			<input type="hidden" name="completeness_thresholds" value="{{extras.completeness_thresholds|join(',')}}"/>
 			<input type="hidden" name="interval_type" value="transcripts"/>
 			<input type="hidden" name="samples" value="{{extras.samples|safe}}"/>
@@ -112,6 +113,7 @@
 	{% else %}
 	No MANE transcripts found in database for the provided gene list.
 	{% endfor %}
+	</form>
 {% endmacro %}
 
 {% block title %}

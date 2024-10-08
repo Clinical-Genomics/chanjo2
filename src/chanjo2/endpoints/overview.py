@@ -141,9 +141,9 @@ async def demo_mane_overview(
 @router.post("/mane_overview", response_class=HTMLResponse)
 async def mane_overview(
     request: Request,
-    build=Annotated[Builds, Form(...)],
+    build=Annotated[Builds, Form(Builds.build_38)],
     samples=Annotated[str, Form(...)],
-    interval_type=Annotated[IntervalType, Form(...)],
+    interval_type=Annotated[IntervalType, Form(IntervalType.TRANSCRIPTS)],
     completeness_thresholds=Annotated[Optional[str], Form(None)],
     ensembl_gene_ids=Annotated[Optional[str], Form(None)],
     hgnc_gene_ids=Annotated[Optional[str], Form(None)],
