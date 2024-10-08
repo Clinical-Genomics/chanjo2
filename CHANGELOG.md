@@ -17,6 +17,7 @@
 - Computing coverage completeness stats using d4tools `perc_cov` stat function (much quicker reports)
 - Moved functions computing the coverage stats to a separate `meta/handle_coverage_stats.py` module
 - Refactored code collecting stats shown on gene overview report
+- Gene report to contain both transcripts and exons stats
 ### Fixed
 - Updated dependencies including `certifi` to address dependabot alert
 - Update pytest to v.7.4.4 to address a `ReDoS` vulnerability

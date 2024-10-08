@@ -1,19 +1,42 @@
 {% extends "base-layout.html" %}
 
+{% block css %}
+{{ super() }}
+<style>
+.badge {
+	background-color: black;
+	color: white;
+	padding: 4px 8px;
+	text-align: center;
+	border-radius: 5px;
+	float: right;
+}
+.exon_blue {
+	color: #2874a6;
+}
+</style>
+{% endblock %}
+
 {% macro gene_stats_macro() %}
 	<h2>Gene: {{ gene.hgnc_symbol or gene.hgnc_id }}</h2>
 	<br>
-	{% for interval_id, samples_stats in interval_coverage_stats.items() %}
+	{% for interval_id, interval_features in interval_coverage_stats.items() %}
 	<tr>
 		<td class="row">
 			<div class="panel-default">
-				<div class="panel-heading">
-					{{ interval_type }}: <strong>{{ interval_id }}</strong>
+				<div class="panel-heading {% if interval_features.interval_type == 'exon' %} exon_blue {% endif %}" >
+					{{ interval_features.interval_type|capitalize }} <strong>{{ interval_id }}</strong>
+					{% if interval_features.mane_select %}
+						<span class="badge">MANE Select: {{interval_features.mane_select}}</span>
+					{% endif %}
+					{% if interval_features.mane_plus_clinical %}
+						<span class="badge">MANE Plus Clinical: {{interval_features.mane_plus_clinical}}</span>
+					{% endif %}
 				</div>
 			</div>
 			<div class="table-responsive">
-				<table class="table table-bordered">
-					<caption>Coverage overview over gene {{ gene.hgnc_symbol or gene.hgnc_id }} - {{interval_id}}</caption>
+				<table class="table table-bordered {% if interval_features.interval_type == 'exon' %} exon_blue {% endif %}">
+					<caption>Coverage overview over gene {{ gene.hgnc_symbol or gene.hgnc_id }} - {{ interval_features.interval_type }} {{interval_id}}</caption>
 					<thead>
 						<th>Sample</th>
 						<th>Mean coverage</th>
@@ -22,7 +45,7 @@
 						{% endfor %}
 					</thead>
 					<tbody>
-					{% for sample_stats in samples_stats %}
+					{% for sample_stats in interval_features.stats %}
 						<td>{{ sample_stats[0] }}</td>
 						<td>{{ sample_stats[1]|round(2) }}</td>
 						{% for level, _ in levels.items() %}
