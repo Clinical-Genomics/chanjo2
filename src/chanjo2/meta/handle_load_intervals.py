@@ -204,7 +204,7 @@ async def update_exons(
         items: List = _replace_empty_cols(line=line, nr_expected_columns=len(header))
 
         try:
-            # Load transcript interval into the database
+            # Load Exon interval into the database
             exon = ExonBase(
                 chromosome=items[0],
                 ensembl_gene_id=items[1],
@@ -212,8 +212,10 @@ async def update_exons(
                 ensembl_id=items[3],
                 start=int(items[4]),
                 stop=int(items[5]),
+                rank_in_transcript=int(items[-1]),
                 build=build,
             )
+
             exons_bulk.append(exon)
 
             if len(exons_bulk) > MAX_NR_OF_RECORDS:

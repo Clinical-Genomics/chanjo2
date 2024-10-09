@@ -205,8 +205,10 @@ def create_db_exon(exon: ExonBase) -> SQLExon:
         chromosome=exon.chromosome,
         start=exon.start,
         stop=exon.stop,
+        rank_in_transcript=exon.rank_in_transcript,
         ensembl_id=exon.ensembl_id,
         ensembl_gene_id=exon.ensembl_gene_id,
+        ensembl_transcript_id=exon.ensembl_transcript_id,
         build=exon.build,
     )
 
