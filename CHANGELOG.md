@@ -5,6 +5,7 @@
 - General report with coverage over the entire genome when no genes or genes panels are provided
 - A MANE coverage report, showing coverage and coverage completeness only on MANE transcripts for the provided list of genes
 - Link out from MANE overview to gene overview
+- Save ensembl_transcript_id and exon rank info on exons database records
 ### Changed
 - Do not use stored cases/samples any more and run stats exclusively on d4 files paths provided by the user in real time
 - How parameters are passed to starlette.templating since it was raising a deprecation warning.
@@ -23,7 +24,6 @@
 - Colored logs
 - Link for switching between coverage thresholds on overview report
 - Gene links in genes overview page open into new tabs
-- Saving ensembl_transcript_id info on exons database records
 
 ## [1.9]
 ### Added

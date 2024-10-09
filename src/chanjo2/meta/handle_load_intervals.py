@@ -212,8 +212,12 @@ async def update_exons(
                 ensembl_id=items[3],
                 start=int(items[4]),
                 stop=int(items[5]),
+                rank_in_transcript=int(items[-1]),
                 build=build,
             )
+
+            if exon.rank_in_transcript is None:
+                LOG.warning(exon)
             exons_bulk.append(exon)
 
             if len(exons_bulk) > MAX_NR_OF_RECORDS:

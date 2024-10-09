@@ -82,6 +82,7 @@ class Exon(Base):
     chromosome = Column(String(6), nullable=False)
     start = Column(Integer, nullable=False)
     stop = Column(Integer, nullable=False)
+    rank_in_transcript = Column(Integer, nullable=False)
     ensembl_id = Column(String(24), nullable=False)
     ensembl_transcript_id = Column(String(24), nullable=False, index=True)
     ensembl_gene_id = Column(
