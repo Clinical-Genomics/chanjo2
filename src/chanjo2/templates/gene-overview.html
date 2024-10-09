@@ -89,7 +89,7 @@
 				<div id="flush-collapse_{{transcript_id}}" class="accordion-collapse collapse" aria-labelledby="flush-heading_{{transcript_id}}">
 					<div class="accordion-body">
 						{% if transcript_features.exons %}
-							{% for exon_id, exon_stats in transcript_features.exons|sort(attribute='1.transcript_rank') %}
+							{% for exon_id, exon_stats in transcript_features.exons.items()|sort(attribute='1.transcript_rank') %}
 								{{ one_interval_table(exon_id, exon_stats) }}
 							{% endfor %}
 						{% else %}

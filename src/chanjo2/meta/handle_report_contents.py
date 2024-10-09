@@ -259,7 +259,7 @@ def get_gene_overview_coverage_stats(form_data: GeneReportForm, session: Session
             "exons"
         ][sql_interval.ensembl_id] = {
             "interval_type": "exon",
-            "transcript_rank": sql_interval.rank_in_transcript,
+            "transcript_rank": int(sql_interval.rank_in_transcript),
             "stats": samples_coverage_by_interval[sql_interval.ensembl_id],
             "length": interval_length,
             "coordinates": coords,
