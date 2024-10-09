@@ -5,6 +5,7 @@
 - General report with coverage over the entire genome when no genes or genes panels are provided
 - A MANE coverage report, showing coverage and coverage completeness only on MANE transcripts for the provided list of genes
 - Link out from MANE overview to gene overview
+- Save ensembl_transcript_id and exon rank info on exons database records
 - Display MANE badges on gene overview report
 - `Create PDF` button on MANE overview and gene overview pages
 ### Changed

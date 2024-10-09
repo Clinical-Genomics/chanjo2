@@ -50,7 +50,7 @@ class Transcript(Base):
     chromosome = Column(String(6), nullable=False)
     start = Column(Integer, nullable=False)
     stop = Column(Integer, nullable=False)
-    ensembl_id = Column(String(24), nullable=False)
+    ensembl_id = Column(String(24), nullable=False, index=True)
     refseq_mrna = Column(String(24), nullable=True)
     refseq_mrna_pred = Column(String(24), nullable=True)
     refseq_ncrna = Column(String(24), nullable=True)
@@ -69,7 +69,7 @@ class Transcript(Base):
     )
 
     __table_args__ = (
-        Index("transcript_idx_ensembl_gene_build", "ensembl_gene_id", "build"),
+        Index("ensembl_gene_build_id", "ensembl_gene_id", "build", "ensembl_id"),
     )
 
 
@@ -82,7 +82,9 @@ class Exon(Base):
     chromosome = Column(String(6), nullable=False)
     start = Column(Integer, nullable=False)
     stop = Column(Integer, nullable=False)
+    rank_in_transcript = Column(Integer, nullable=False)
     ensembl_id = Column(String(24), nullable=False)
+    ensembl_transcript_id = Column(String(24), nullable=False, index=True)
     ensembl_gene_id = Column(
         String(24), ForeignKey("genes.ensembl_id"), nullable=False, index=True
     )
@@ -96,5 +98,10 @@ class Exon(Base):
     )
 
     __table_args__ = (
-        Index("exon_idx_ensembl_gene:_build", "ensembl_gene_id", "build"),
+        Index(
+            "exon_idx_ensembl_gene_build_transcript",
+            "ensembl_gene_id",
+            "build",
+            "ensembl_transcript_id",
+        ),
     )

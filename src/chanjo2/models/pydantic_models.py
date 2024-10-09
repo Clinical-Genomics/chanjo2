@@ -104,6 +104,7 @@ class ExonBase(IntervalBase):
     ensembl_id: str
     ensembl_gene_id: str
     ensembl_transcript_id: str
+    rank_in_transcript: int
 
 
 class Exon(IntervalBase):
