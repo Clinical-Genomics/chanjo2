@@ -216,8 +216,6 @@ async def update_exons(
                 build=build,
             )
 
-            if exon.rank_in_transcript is None:
-                LOG.warning(exon)
             exons_bulk.append(exon)
 
             if len(exons_bulk) > MAX_NR_OF_RECORDS:
