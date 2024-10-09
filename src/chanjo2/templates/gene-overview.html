@@ -4,13 +4,13 @@
 {{ super() }}
 <style>
 .badge {
-	background-color: black;
 	color: white;
 	padding: 4px 8px;
 	text-align: center;
 	border-radius: 5px;
 	float: right;
 }
+
 .exon_blue {
 	color: #2874a6;
 }
@@ -23,46 +23,84 @@
 	</div><!-- /.navbar-collapse -->
 {% endblock %}
 
+
+{% macro one_interval_table(interval_id, interval_features) %}
+<tr>
+	<td class="row">
+		<div class="panel-default">
+			<div class="panel-heading {% if interval_features.interval_type == 'exon' %} exon_blue {% endif %}" >
+				{{ interval_features.interval_type|capitalize }} <strong>{{ interval_id }}</strong>
+				<span> - Coordinates:{{interval_features.coordinates}}</span>
+				<span> - size:{{interval_features.length}}</span>
+				{% if interval_features.mane_select %}
+					<span class="badge" style="background-color: black;">MANE Select: {{interval_features.mane_select}}</span>
+				{% endif %}
+				{% if interval_features.mane_plus_clinical %}
+					<span class="badge" style="background-color: black;">MANE Plus Clinical: {{interval_features.mane_plus_clinical}}</span>
+				{% endif %}
+				{% if interval_features.mrna %}
+					<span class="badge" style="background-color: gray;">{{interval_features.mrna}}</span>
+				{% endif %}
+				{% if interval_features.transcript_rank %}
+					<span class="badge" style="background-color: #2874a6">rank: {{interval_features.transcript_rank}}</span>
+				{% endif  %}
+			</div>
+		</div>
+		<div class="table-responsive">
+			<table class="table table-bordered {% if interval_features.interval_type == 'exon' %} exon_blue {% endif %}">
+				<thead>
+					<th>Sample</th>
+					<th>Mean coverage</th>
+					{% for level, _ in levels.items() %}
+						<th>Completeness {{ level }}x [%]</th>
+					{% endfor %}
+				</thead>
+				<tbody>
+				{% for sample_stats in interval_features.stats %}
+					<td>{{ sample_stats[0] }}</td>
+					<td>{{ sample_stats[1]|round(2) }}</td>
+					{% for level, _ in levels.items() %}
+						<td>{{ (sample_stats[2][level] * 100)|round(2) }}</td>
+					{% endfor %}
+				{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</td>
+</tr>
+{% endmacro %}
+
+
 {% macro gene_stats_macro() %}
 	<h2>Gene: {{ gene.hgnc_symbol or gene.hgnc_id }}</h2>
 	<br>
-	{% for interval_id, interval_features in interval_coverage_stats.items() %}
-	<tr>
-		<td class="row">
-			<div class="panel-default">
-				<div class="panel-heading {% if interval_features.interval_type == 'exon' %} exon_blue {% endif %}" >
-					{{ interval_features.interval_type|capitalize }} <strong>{{ interval_id }}</strong>
-					{% if interval_features.mane_select %}
-						<span class="badge">MANE Select: {{interval_features.mane_select}}</span>
-					{% endif %}
-					{% if interval_features.mane_plus_clinical %}
-						<span class="badge">MANE Plus Clinical: {{interval_features.mane_plus_clinical}}</span>
-					{% endif %}
+	{% for transcript_id, transcript_features in transcript_coverage_stats.items() %}
+
+		{{ one_interval_table(transcript_id, transcript_features) }}
+
+		<!-- Show eventual exons stats -->
+		<div class="accordion" id="exons-accordion">
+			<div class="accordion-item">
+				<h2 class="accordion-header" id="flush-heading_{{transcript_id}}">
+					<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse_{{transcript_id}}" aria-expanded="false" aria-controls="flush-collapse_{{transcript_id}}">
+						Exons
+					</button>
+				</h2>
+				<div id="flush-collapse_{{transcript_id}}" class="accordion-collapse collapse" aria-labelledby="flush-heading_{{transcript_id}}">
+					<div class="accordion-body">
+						{% if transcript_features.exons %}
+							{% for exon_id, exon_stats in transcript_features.exons|sort(attribute='1.transcript_rank') %}
+								{{ one_interval_table(exon_id, exon_stats) }}
+							{% endfor %}
+						{% else %}
+						No exons stats available for this transcript
+						{% endif %}
+
+					</div>
 				</div>
-			</div>
-			<div class="table-responsive">
-				<table class="table table-bordered {% if interval_features.interval_type == 'exon' %} exon_blue {% endif %}">
-					<caption>Coverage overview over gene {{ gene.hgnc_symbol or gene.hgnc_id }} - {{ interval_features.interval_type }} {{interval_id}}</caption>
-					<thead>
-						<th>Sample</th>
-						<th>Mean coverage</th>
-						{% for level, _ in levels.items() %}
-							<th>Completeness {{ level }}x [%]</th>
-						{% endfor %}
-					</thead>
-					<tbody>
-					{% for sample_stats in interval_features.stats %}
-						<td>{{ sample_stats[0] }}</td>
-						<td>{{ sample_stats[1]|round(2) }}</td>
-						{% for level, _ in levels.items() %}
-							<td>{{ (sample_stats[2][level] * 100)|round(2) }}</td>
-						{% endfor %}
-					{% endfor %}
-					</tbody>
-				</table>
-			</div>
-		</td>
-	</tr>
+			</div> <!--end of accordion item -->
+		</div> <!-- end of accordion div -->
+	<br>
 	<br>
 	{% else %}
 	No intervals found in database for gene {{gene.hgnc_symbol or gene.hgnc_id}}.

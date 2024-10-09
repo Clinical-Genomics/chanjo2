@@ -208,7 +208,7 @@ def get_gene_overview_coverage_stats(form_data: GeneReportForm, session: Session
             threshold_levels=form_data.completeness_thresholds
         ),
         "interval_type": form_data.interval_type.value,
-        "interval_coverage_stats": {},
+        "transcript_coverage_stats": {},
     }
 
     set_samples_coverage_files(session=session, samples=form_data.samples)
@@ -237,18 +237,38 @@ def get_gene_overview_coverage_stats(form_data: GeneReportForm, session: Session
     )
 
     for sql_interval in sql_intervals:
+        interval_length: int = abs(sql_interval.stop - sql_interval.start)
+        coords: str = (
+            f"{sql_interval.chromosome}:{sql_interval.start}-{sql_interval.stop}"
+        )
+
         if type(sql_interval) == SQLTranscript:
-            gene_stats["interval_coverage_stats"][sql_interval.ensembl_id] = {
+            gene_stats["transcript_coverage_stats"][sql_interval.ensembl_id] = {
                 "interval_type": "transcript",
                 "mane_select": sql_interval.refseq_mane_select,
                 "mane_plus_clinical": sql_interval.refseq_mane_plus_clinical,
+                "mrna": sql_interval.refseq_mrna,
                 "stats": samples_coverage_by_interval[sql_interval.ensembl_id],
+                "length": interval_length,
+                "coordinates": coords,
+                "exons": [],
             }
             continue
-        gene_stats["interval_coverage_stats"][sql_interval.ensembl_id] = {
-            "interval_type": "exon",
-            "stats": samples_coverage_by_interval[sql_interval.ensembl_id],
-        }
+
+        gene_stats["transcript_coverage_stats"][sql_interval.ensembl_transcript_id][
+            "exons"
+        ].append(
+            (
+                sql_interval.ensembl_id,
+                {
+                    "interval_type": "exon",
+                    "transcript_rank": sql_interval.rank_in_transcript,
+                    "stats": samples_coverage_by_interval[sql_interval.ensembl_id],
+                    "length": interval_length,
+                    "coordinates": coords,
+                },
+            )
+        )
 
     return gene_stats
 
