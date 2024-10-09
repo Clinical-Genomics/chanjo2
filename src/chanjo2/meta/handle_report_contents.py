@@ -251,24 +251,19 @@ def get_gene_overview_coverage_stats(form_data: GeneReportForm, session: Session
                 "stats": samples_coverage_by_interval[sql_interval.ensembl_id],
                 "length": interval_length,
                 "coordinates": coords,
-                "exons": [],
+                "exons": {},
             }
             continue
 
         gene_stats["transcript_coverage_stats"][sql_interval.ensembl_transcript_id][
             "exons"
-        ].append(
-            (
-                sql_interval.ensembl_id,
-                {
-                    "interval_type": "exon",
-                    "transcript_rank": sql_interval.rank_in_transcript,
-                    "stats": samples_coverage_by_interval[sql_interval.ensembl_id],
-                    "length": interval_length,
-                    "coordinates": coords,
-                },
-            )
-        )
+        ][sql_interval.ensembl_id] = {
+            "interval_type": "exon",
+            "transcript_rank": sql_interval.rank_in_transcript,
+            "stats": samples_coverage_by_interval[sql_interval.ensembl_id],
+            "length": interval_length,
+            "coordinates": coords,
+        }
 
     return gene_stats
 
