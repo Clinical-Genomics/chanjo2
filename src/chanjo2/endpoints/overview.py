@@ -108,16 +108,7 @@ async def gene_overview(
     )
 
     return templates.TemplateResponse(
-        request=request,
-        name="gene-overview.html",
-        context={
-            "interval_type": gene_overview_content["interval_type"],
-            "gene": gene_overview_content.get("gene"),
-            "interval_coverage_stats": gene_overview_content.get(
-                "samples_coverage_stats_by_interval"
-            ),
-            "levels": gene_overview_content["levels"],
-        },
+        request=request, name="gene-overview.html", context=gene_overview_content
     )
 
 
