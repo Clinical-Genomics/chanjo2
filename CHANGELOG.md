@@ -6,6 +6,8 @@
 - A MANE coverage report, showing coverage and coverage completeness only on MANE transcripts for the provided list of genes
 - Link out from MANE overview to gene overview
 - Save ensembl_transcript_id and exon rank info on exons database records
+- Display MANE badges on gene overview report
+- `Create PDF` button on MANE overview and gene overview pages
 ### Changed
 - Do not use stored cases/samples any more and run stats exclusively on d4 files paths provided by the user in real time
 - How parameters are passed to starlette.templating since it was raising a deprecation warning.
@@ -18,6 +20,7 @@
 - Computing coverage completeness stats using d4tools `perc_cov` stat function (much quicker reports)
 - Moved functions computing the coverage stats to a separate `meta/handle_coverage_stats.py` module
 - Refactored code collecting stats shown on gene overview report
+- Gene report to contain both transcripts and exons stats
 ### Fixed
 - Updated dependencies including `certifi` to address dependabot alert
 - Update pytest to v.7.4.4 to address a `ReDoS` vulnerability
