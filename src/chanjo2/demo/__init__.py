@@ -2,12 +2,12 @@ from typing import Dict
 
 from importlib_resources import files
 
-from chanjo2.constants import BUILD_37, DEFAULT_COMPLETENESS_LEVELS
+from chanjo2.constants import BUILD_37, BUILD_38, DEFAULT_COMPLETENESS_LEVELS
 
 BASE_PATH: str = "chanjo2.demo"
 
 GENE_PANEL_FILE: str = "109_green.bed"
-D4_DEMO_FILE: str = "panelapp_109_example.d4"
+D4_DEMO_FILE: str = "/Users/chiararasi/Documents/work/d4_data/hg002.d4"
 
 # Paths
 gene_panel_path = str(files(BASE_PATH).joinpath(GENE_PANEL_FILE))
@@ -31,7 +31,7 @@ ANALYSIS_DATE = "2023-04-23T10:20:30.400+02:30"
 
 # HTTP FORM-like data for generating a demo coverage report
 DEMO_COVERAGE_QUERY_FORM = {
-    "build": BUILD_37,
+    "build": BUILD_38,
     "samples": f"[{{'name': '{DEMO_SAMPLE['name']}', 'coverage_file_path': '{d4_demo_path}', 'case_name': '{DEMO_CASE['name']}', 'analysis_date': '{ANALYSIS_DATE}'}}]",
     "case_display_name": DEMO_CASE["name"],
     "gene_panel": "A test Panel 1.0",
