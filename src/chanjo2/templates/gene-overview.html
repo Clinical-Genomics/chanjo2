@@ -31,7 +31,7 @@
 			<div class="panel-heading {% if interval_features.interval_type == 'exon' %} exon_blue {% endif %}" >
 				{{ interval_features.interval_type|capitalize }} <strong>{{ interval_id }}</strong>
 				<span> - Coordinates: {{interval_features.coordinates}}</span>
-				<span> - size:{{interval_features.length}}</span>
+				<span> - size: {{interval_features.length}}</span>
 				{% if interval_features.mane_select %}
 					<span class="badge" style="background-color: black;">MANE Select: {{interval_features.mane_select}}</span>
 				{% endif %}
