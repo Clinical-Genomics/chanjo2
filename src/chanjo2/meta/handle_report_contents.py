@@ -208,7 +208,7 @@ def get_gene_overview_coverage_stats(form_data: GeneReportForm, session: Session
             threshold_levels=form_data.completeness_thresholds
         ),
         "interval_type": form_data.interval_type.value,
-        "samples_coverage_stats_by_interval": {},
+        "transcript_coverage_stats": {},
     }
 
     set_samples_coverage_files(session=session, samples=form_data.samples)
@@ -217,20 +217,54 @@ def get_gene_overview_coverage_stats(form_data: GeneReportForm, session: Session
         build=form_data.build, hgnc_id=form_data.hgnc_gene_id, db=session
     )
     if gene is None:
+        gene_stats["gene"] = {"hgnc_id": form_data.hgnc_gene_id}
         return gene_stats
 
     gene_stats["gene"] = gene
-    sql_intervals = set_sql_intervals(
+    transcripts_intervals = set_sql_intervals(
         db=session,
         interval_type=SQLTranscript,
         genes=[gene],
         transcript_tags=[],
     )
-    gene_stats["samples_coverage_stats_by_interval"] = get_gene_overview_stats(
+    exons_intervals = set_sql_intervals(db=session, interval_type=SQLExon, genes=[gene])
+    sql_intervals = transcripts_intervals + exons_intervals
+
+    samples_coverage_by_interval = get_gene_overview_stats(
         sql_intervals=sql_intervals,
         samples=form_data.samples,
         completeness_thresholds=form_data.completeness_thresholds,
     )
+
+    for sql_interval in sql_intervals:
+        interval_length: int = abs(sql_interval.stop - sql_interval.start)
+        coords: str = (
+            f"{sql_interval.chromosome}:{sql_interval.start}-{sql_interval.stop}"
+        )
+
+        if type(sql_interval) == SQLTranscript:
+            gene_stats["transcript_coverage_stats"][sql_interval.ensembl_id] = {
+                "interval_type": "transcript",
+                "mane_select": sql_interval.refseq_mane_select,
+                "mane_plus_clinical": sql_interval.refseq_mane_plus_clinical,
+                "mrna": sql_interval.refseq_mrna,
+                "stats": samples_coverage_by_interval[sql_interval.ensembl_id],
+                "length": interval_length,
+                "coordinates": coords,
+                "exons": {},
+            }
+            continue
+
+        gene_stats["transcript_coverage_stats"][sql_interval.ensembl_transcript_id][
+            "exons"
+        ][sql_interval.ensembl_id] = {
+            "interval_type": "exon",
+            "transcript_rank": int(sql_interval.rank_in_transcript),
+            "stats": samples_coverage_by_interval[sql_interval.ensembl_id],
+            "length": interval_length,
+            "coordinates": coords,
+        }
+
     return gene_stats
 
 
