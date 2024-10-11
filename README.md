@@ -9,7 +9,30 @@
 
 Chanjo2 is <strong>coverage analysis tool for human clinical sequencing data</strong> using the <strong>[d4 (Dense Depth Data Dump) format][d4-article]</strong>. 
 It's implemented in Python [FastAPI][fastapi] and provides API endpoints to communicate with a d4tools software in order to 
-<strong>return coverage and coverage completeness over genomic intervals (genes, transcripts, exons as well as custom intervals)</strong> over d4 files.
+<strong>return reports containing coverage and coverage completeness over genomic intervals (genes, transcripts, exons as well as custom intervals)</strong> over d4 files.
+
+## Coverage and coverage overview reports
+
+Chanjo2 can be directly used to create the same types of report produced by [chanjo-report][chanjo-report] in conjunction with chanjo[chanjo].
+Follow the instructions present in the [documentation pages][github-docs] to learn how to use the report and the overview endpoints to create customised gene coverage report using this software.
+
+Examples of reports available with chanjo2:
+
+### Coverage report
+
+<img width="924" alt="image" src="https://github.com/Clinical-Genomics/chanjo2/assets/28093618/02fcfcc8-94ce-4344-bc02-fae4609810cb">
+
+### Genes coverage overview
+
+<img width="1014" alt="image" src="https://github.com/Clinical-Genomics/chanjo2/assets/28093618/70bfdfb4-2345-47dd-b6e4-f6ea49d43cbc">
+
+### Mane coverage overview
+
+<img width="1278" alt="image" src="https://github.com/user-attachments/assets/44eaa5c0-3777-42d0-8713-c33a2c5108cc">
+
+### Gene overview
+
+<img width="1313" alt="image" src="https://github.com/user-attachments/assets/47e7d4e4-7404-46a3-981a-2dd94677b225">
 
 
 ## Run a software demo containing test data
@@ -50,21 +73,6 @@ The response will return the number of genes inserted in the database:
 ```
 
 To find more information on how to set up a REST server running chanjo2 please visit the software's [documentation pages][github-docs]. Here you'll find also instructions on how to populate the database with custom cases and different genomic intervals.
-
-
-## Coverage report and genes coverage overview
-
-Chanjo2 can be directly used to create the same types of report produced by [chanjo-report][chanjo-report] in conjunction with chanjo[chanjo].
-
-Given a running demo instance of chanjo2, with gene genes and transcripts from genome build GRCh37 loaded in the database, an example of the coverage report based on PanelAPP gene panel described is provided by this demo report endpoint: http://0.0.0.0:8000/report/demo:
-
-<img width="924" alt="image" src="https://github.com/Clinical-Genomics/chanjo2/assets/28093618/02fcfcc8-94ce-4344-bc02-fae4609810cb">
-
-Similarly, an example report containing an overview of the genes with partial coverage at the given coverage thresholds is provided by the demo overview endpoint:
-
-<img width="1014" alt="image" src="https://github.com/Clinical-Genomics/chanjo2/assets/28093618/70bfdfb4-2345-47dd-b6e4-f6ea49d43cbc">
-
-Follow the instructions present in the [documentation pages][github-docs] to learn how to use the report and the overview endpoints to create customised gene coverage report using this software.
 
 
 

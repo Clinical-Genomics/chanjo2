@@ -8,6 +8,7 @@
 - Save ensembl_transcript_id and exon rank info on exons database records
 - Display MANE badges on gene overview report
 - `Create PDF` button on MANE overview and gene overview pages
+- Documentation on how to create MANE overview reports
 ### Changed
 - Do not use stored cases/samples any more and run stats exclusively on d4 files paths provided by the user in real time
 - How parameters are passed to starlette.templating since it was raising a deprecation warning.
