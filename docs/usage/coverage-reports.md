@@ -67,6 +67,15 @@ A demo genes overview report based on genes transcripts from the demo PanelApp g
 To create a custom genes coverage overview report, send a **POST request to the `/overview` endpoint** containing the same request data described above for the `/report` endpoint.
 
 
+# Creating coverage overview over MANE transcripts for a list of genes
+
+<img width="1278" alt="image" src="https://github.com/user-attachments/assets/44eaa5c0-3777-42d0-8713-c33a2c5108cc">
+
+This report contains statistics over all MANE Select and Mane Plus Clinical transcripts for a list of genes provided by the user. 
+
+The **`/mane_overview` endpoint** accepts POST request with the same data described for the 2 reports above.
+
+Note that MANE overview reports are available <ins>only for analyses run with genome build GRCh38</ins>.
 
 
 
