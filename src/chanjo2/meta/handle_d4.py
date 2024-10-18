@@ -86,6 +86,11 @@ def get_report_sample_interval_coverage(
                         interval_hgnc_symbol,
                         interval_hgnc_id,
                         interval.ensembl_id,
+                        {
+                            "mane_select": interval.refseq_mane_select,
+                            "mane_plus_clinical": interval.refseq_mane_plus_clinical,
+                            "mrna": interval.refseq_mane_select,
+                        },
                         sample_name,
                         round(interval_coverage_at_threshold * 100, 2),
                     )

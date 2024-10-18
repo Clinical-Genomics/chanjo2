@@ -2,6 +2,10 @@
 ### Fixed
 - Addressed the `Starlette Denial of service (DoS) via multipart/form-data` by updating starlette library. among others
 
+## [unreleased]
+### Added
+- Refseq transcripts names on coverage overview page
+
 ## [2.0]
 ### Added
 - Improve report explanation to better interpret average coverage and coverage completeness stats shown on the coverage report
