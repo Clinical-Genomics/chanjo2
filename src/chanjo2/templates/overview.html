@@ -2,24 +2,6 @@
 
 {% block css %}
 {{ super() }}
-<style>
-.mane_badge {
-	background-color: black;
-	color: white;
-	padding: 4px 8px;
-	text-align: center;
-	border-radius: 5px;
-	float: right;
-}
-.badge {
-	background-color: lightblue;
-	color: black;
-	padding: 4px 8px;
-	text-align: center;
-	border-radius: 5px;
-	float: right;
-}
-</style>
 {% endblock %}
 
 {% macro completeness_cutoffs() %}
@@ -72,13 +54,13 @@
 							<td>
 								{{ row[2] }} <!-- Ensembl transcript ID -->
 								{% if row[3].mane_select %}
-									<span class="mane_badge">MANE Select: {{row[3].mane_select}}</span>
+									<span class="badge bg-dark">MANE Select: {{row[3].mane_select}}</span>
 								{% endif %}
 								{% if row[3].mane_plus_clinical %}
-									<span class="mane_badge">MANE Plus Clinical: {{row[3].mane_plus_clinical}}</span>
+									<span class="badge bg-dark">MANE Plus Clinical: {{row[3].mane_plus_clinical}}</span>
 								{% endif %}
 								{% if row[3].mrna %}
-									<span class="badge">MANE Plus Clinical: {{row[3].mrna}}</span>
+									<span class="badge bg-secondary">{{row[3].mrna}}</span>
 								{% endif %}
 							</td>
 							<td>{{ row[4] }}</td> <!-- sample name -->
