@@ -2,6 +2,11 @@
 
 {% block css %}
 {{ super() }}
+<style>
+.exon_blue {
+	color: #2874a6;
+}
+</style>
 {% endblock %}
 
 {% block pdf_export %}
@@ -29,7 +34,7 @@
 					<span class="badge bg-secondary float-end ms-1">{{interval_features.mrna}}</span>
 				{% endif %}
 				{% if interval_features.transcript_rank %}
-					<span class="badge bg-primary float-end ms-1">rank: {{interval_features.transcript_rank}}</span>
+					<span class="badge float-end ms-1" style="background-color: #2874a6">rank: {{interval_features.transcript_rank}}</span>
 				{% endif  %}
 			</div>
 		</div>
