@@ -2,19 +2,6 @@
 
 {% block css %}
 {{ super() }}
-<style>
-.badge {
-	color: white;
-	padding: 4px 8px;
-	text-align: center;
-	border-radius: 5px;
-	float: right;
-}
-
-.exon_blue {
-	color: #2874a6;
-}
-</style>
 {% endblock %}
 
 {% block pdf_export %}
@@ -33,16 +20,16 @@
 				<span> - Coordinates: {{interval_features.coordinates}}</span>
 				<span> - size: {{interval_features.length}}</span>
 				{% if interval_features.mane_select %}
-					<span class="badge" style="background-color: black;">MANE Select: {{interval_features.mane_select}}</span>
+					<span class="badge bg-dark float-end ms-1">MANE Select: {{interval_features.mane_select}}</span>
 				{% endif %}
 				{% if interval_features.mane_plus_clinical %}
-					<span class="badge" style="background-color: black;">MANE Plus Clinical: {{interval_features.mane_plus_clinical}}</span>
+					<span class="badge bg-dark float-end ms-1">MANE Plus Clinical: {{interval_features.mane_plus_clinical}}</span>
 				{% endif %}
 				{% if interval_features.mrna %}
-					<span class="badge" style="background-color: gray;">{{interval_features.mrna}}</span>
+					<span class="badge bg-secondary float-end ms-1">{{interval_features.mrna}}</span>
 				{% endif %}
 				{% if interval_features.transcript_rank %}
-					<span class="badge" style="background-color: #2874a6">rank: {{interval_features.transcript_rank}}</span>
+					<span class="badge bg-primary float-end ms-1">rank: {{interval_features.transcript_rank}}</span>
 				{% endif  %}
 			</div>
 		</div>

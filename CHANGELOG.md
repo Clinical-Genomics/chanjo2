@@ -1,6 +1,8 @@
 ## [unreleased]
 ### Added
 - Refseq transcripts names on coverage overview page
+### Changed
+- Replaced custom badges style with Bootstrap 5 badges
 ### Fixed
 - Addressed the `Starlette Denial of service (DoS) via multipart/form-data` by updating starlette library. among others
 
