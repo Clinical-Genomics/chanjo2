@@ -2,6 +2,24 @@
 
 {% block css %}
 {{ super() }}
+<style>
+.mane_badge {
+	background-color: black;
+	color: white;
+	padding: 4px 8px;
+	text-align: center;
+	border-radius: 5px;
+	float: right;
+}
+.badge {
+	background-color: lightblue;
+	color: black;
+	padding: 4px 8px;
+	text-align: center;
+	border-radius: 5px;
+	float: right;
+}
+</style>
 {% endblock %}
 
 {% macro completeness_cutoffs() %}
@@ -39,7 +57,6 @@
 					<tr>
 						<th scope="col">Gene</th>
 						<th scope="col">{{ extras.interval_type }}</th>
-						<th></th>
 						<th scope="col">Sample</th>
 						<th scope="col">Completeness {{ extras.default_level }}x [%]</th>
 					</tr>
@@ -50,12 +67,22 @@
 							<td>
 								<a href="#" onclick="getGeneStatsPage({{row[1]}});">
 									{{row[0]}}
-								</a>
+								</a> <!-- link to gene -->
 							</td>
-							<td>{{ row[2] }}</td>
-							<td>{{ row }}</td>
+							<td>
+								{{ row[2] }} <!-- Ensembl transcript ID -->
+								{% if row[3].mane_select %}
+									<span class="mane_badge">MANE Select: {{row[3].mane_select}}</span>
+								{% endif %}
+								{% if row[3].mane_plus_clinical %}
+									<span class="mane_badge">MANE Plus Clinical: {{row[3].mane_plus_clinical}}</span>
+								{% endif %}
+								{% if row[3].mrna %}
+									<span class="badge">MANE Plus Clinical: {{row[3].mrna}}</span>
+								{% endif %}
+							</td>
 							<td>{{ row[4] }}</td>
-							<td class="text-right">{{ row[4] }}</td>
+							<td class="text-right">{{ row[5] }}</td>
 						</tr>
 					{% else %}
 						<tr>
