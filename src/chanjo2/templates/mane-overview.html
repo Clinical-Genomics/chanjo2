@@ -2,16 +2,6 @@
 
 {% block css %}
 {{ super() }}
-<style>
-.badge {
-	background-color: black;
-	color: white;
-	padding: 4px 8px;
-	text-align: center;
-	border-radius: 5px;
-	float: right;
-}
-</style>
 {% endblock %}
 
 {% block pdf_export %}
@@ -83,10 +73,10 @@
 									{{ gene_id or samples_stats.gene.hgnc_id }}
 								</a></strong>
 					{% if samples_stats.transcript.mane_select %}
-						<span class="badge">MANE Select: {{samples_stats.transcript.mane_select}}</span>
+						<span class="badge bg-dark float-end ms-1">MANE Select: {{samples_stats.transcript.mane_select}}</span>
 					{% endif %}
 					{% if samples_stats.transcript.mane_plus_clinical %}
-						<span class="badge">MANE Plus Clinical: {{samples_stats.transcript.mane_plus_clinical}}</span>
+						<span class="badge bg-dark float-end ms-1">MANE Plus Clinical: {{samples_stats.transcript.mane_plus_clinical}}</span>
 					{% endif %}
 
 				</div>
