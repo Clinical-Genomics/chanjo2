@@ -58,6 +58,7 @@ def get_report_sample_interval_coverage(
     genes_covered_under_custom_threshold = set()
 
     for interval_nr, interval in enumerate(sql_intervals):
+
         if interval.ensembl_id in interval_ids:
             continue
         for threshold in completeness_thresholds:
@@ -90,7 +91,7 @@ def get_report_sample_interval_coverage(
                             {
                                 "mane_select": interval.refseq_mane_select,
                                 "mane_plus_clinical": interval.refseq_mane_plus_clinical,
-                                "mrna": interval.refseq_mane_select,
+                                "mrna": interval.refseq_mrna,
                             }
                             if isinstance(interval, SQLTranscript)
                             else {}
