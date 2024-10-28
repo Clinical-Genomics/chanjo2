@@ -49,11 +49,22 @@
 							<td>
 								<a href="#" onclick="getGeneStatsPage({{row[1]}});">
 									{{row[0]}}
-								</a>
+								</a> <!-- link to gene -->
 							</td>
-							<td>{{ row[2] }}</td>
-							<td>{{ row[3] }}</td>
-							<td class="text-right">{{ row[4] }}</td>
+							<td>
+								{{ row[2] }} <!-- Ensembl ID -->
+								{% if row[3].mane_select %}
+									<span class="badge bg-dark float-end ">MANE Select: {{row[3].mane_select}}</span>
+								{% endif %}
+								{% if row[3].mane_plus_clinical %}
+									<span class="badge bg-dark float-end">MANE Plus Clinical: {{row[3].mane_plus_clinical}}</span>
+								{% endif %}
+								{% if row[3].mrna %}
+									<span class="badge bg-secondary float-end">{{row[3].mrna}}</span>
+								{% endif %}
+							</td>
+							<td>{{ row[4] }}</td> <!-- sample name -->
+							<td class="text-right">{{ row[5] }}</td> <!-- coverage stats -->
 						</tr>
 					{% else %}
 						<tr>

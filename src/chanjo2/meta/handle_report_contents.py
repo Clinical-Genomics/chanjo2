@@ -133,7 +133,11 @@ def get_report_data(
             db=session,
             interval_type=INTERVAL_TYPE_SQL_TYPE[query.interval_type],
             genes=genes,
-            transcript_tags=[TranscriptTag.REFSEQ_MRNA],
+            transcript_tags=[
+                TranscriptTag.REFSEQ_MANE_PLUS_CLINICAL,
+                TranscriptTag.REFSEQ_MANE_SELECT,
+                TranscriptTag.REFSEQ_MRNA,
+            ],
         )
 
     for sample in query.samples:
