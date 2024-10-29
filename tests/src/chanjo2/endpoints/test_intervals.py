@@ -7,7 +7,7 @@ from pytest_mock.plugin import MockerFixture
 
 from chanjo2.constants import MULTIPLE_PARAMS_NOT_SUPPORTED_MSG
 from chanjo2.meta.handle_bed import resource_lines
-from chanjo2.models.pydantic_models import Builds, Exon, Gene, Transcript
+from chanjo2.models.pydantic_models import Builds, ExonBase, GeneBase, TranscriptBase
 from chanjo2.populate_demo import (
     BUILD_EXONS_RESOURCE,
     BUILD_GENES_RESOURCE,
@@ -53,7 +53,7 @@ def test_load_genes(
     # THEN the expected number of genes should be returned
     assert len(result) == nr_genes
     # AND the gene should have the right format
-    assert Gene(**result[0])
+    assert GeneBase(**result[0])
 
 
 @pytest.mark.parametrize("build, path", BUILD_GENES_RESOURCE)
@@ -86,7 +86,7 @@ def test_load_genes_from_file(
     assert len(result) == nr_genes
 
     # THEN the gene should have the right format
-    assert Gene(**result[0])
+    assert GeneBase(**result[0])
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -132,7 +132,7 @@ def test_genes_by_ensembl_ids(
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
     assert len(result) == len(genomic_ids_per_build[build]["ensembl_gene_ids"])
-    assert Gene(**result[0])
+    assert GeneBase(**result[0])
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -155,7 +155,7 @@ def test_genes_by_hgnc_ids(
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
     assert len(result) == len(genomic_ids_per_build[build]["hgnc_ids"])
-    assert Gene(**result[0])
+    assert GeneBase(**result[0])
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -178,7 +178,7 @@ def test_genes_by_hgnc_symbols(
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
     assert len(result) == len(genomic_ids_per_build[build]["hgnc_symbols"])
-    assert Gene(**result[0])
+    assert GeneBase(**result[0])
 
 
 @pytest.mark.parametrize("build, path", BUILD_TRANSCRIPTS_RESOURCE)
@@ -279,7 +279,7 @@ def test_transcripts_no_filters(
     # THEN transcript objects should be returned
     assert response.status_code == status.HTTP_200_OK
     transcripts = response.json()
-    assert Transcript(**transcripts[0])
+    assert TranscriptBase(**transcripts[0])
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -302,7 +302,7 @@ def test_transcripts_by_ensembl_ids(
     # THEN transcript objects should be returned
     assert response.status_code == status.HTTP_200_OK
     transcripts = response.json()
-    assert Transcript(**transcripts[0])
+    assert TranscriptBase(**transcripts[0])
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -325,7 +325,7 @@ def test_transcripts_by_ensembl_gene_ids(
     # THEN transcript objects should be returned
     assert response.status_code == status.HTTP_200_OK
     transcripts = response.json()
-    assert Transcript(**transcripts[0])
+    assert TranscriptBase(**transcripts[0])
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -348,7 +348,7 @@ def test_transcripts_by_hgnc_ids(
     # THEN transcript objects should be returned
     assert response.status_code == status.HTTP_200_OK
     transcripts = response.json()
-    assert Transcript(**transcripts[0])
+    assert TranscriptBase(**transcripts[0])
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -371,7 +371,7 @@ def test_transcripts_by_hgnc_symbols(
     # THEN transcript objects should be returned
     assert response.status_code == status.HTTP_200_OK
     transcripts = response.json()
-    assert Transcript(**transcripts[0])
+    assert TranscriptBase(**transcripts[0])
 
 
 @pytest.mark.parametrize("build, path", BUILD_EXONS_RESOURCE)
@@ -465,7 +465,7 @@ def test_exons_no_filters(
     # THEN exon objects should be returned
     assert response.status_code == status.HTTP_200_OK
     exons = response.json()
-    assert Exon(**exons[0])
+    assert ExonBase(**exons[0])
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -488,7 +488,7 @@ def test_exons_by_ensembl_ids(
     # THEN exon objects should be returned
     assert response.status_code == status.HTTP_200_OK
     exons = response.json()
-    assert Exon(**exons[0])
+    assert ExonBase(**exons[0])
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -511,7 +511,7 @@ def test_exons_by_ensembl_gene_ids(
     # THEN exons objects should be returned
     assert response.status_code == status.HTTP_200_OK
     exons = response.json()
-    assert Exon(**exons[0])
+    assert ExonBase(**exons[0])
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -534,7 +534,7 @@ def test_exons_by_hgnc_ids(
     # THEN exon objects should be returned
     assert response.status_code == status.HTTP_200_OK
     exons = response.json()
-    assert Exon(**exons[0])
+    assert ExonBase(**exons[0])
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -557,4 +557,4 @@ def test_exons_by_hgnc_symbols(
     # THEN exon objects should be returned
     assert response.status_code == status.HTTP_200_OK
     exons = response.json()
-    assert Exon(**exons[0])
+    assert ExonBase(**exons[0])

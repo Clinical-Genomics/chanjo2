@@ -13,14 +13,14 @@ from chanjo2.meta.handle_load_intervals import (
     update_genes,
     update_transcripts,
 )
-from chanjo2.models import SQLExon, SQLTranscript
+from chanjo2.models import SQLExon, SQLGene, SQLTranscript
 from chanjo2.models.pydantic_models import (
     Builds,
-    Exon,
-    Gene,
+    ExonBase,
+    GeneBase,
     GeneIntervalQuery,
     GeneQuery,
-    Transcript,
+    TranscriptBase,
 )
 
 router = APIRouter()
@@ -58,10 +58,8 @@ async def load_genes(
         )
 
 
-@router.post("/intervals/genes")
-async def genes(
-    query: GeneQuery, session: Session = Depends(get_session)
-) -> List[Gene]:
+@router.post("/intervals/genes", response_model=List[GeneBase])
+async def genes(query: GeneQuery, session: Session = Depends(get_session)):
     """Return genes according to query parameters."""
     nr_filters = count_nr_filters(
         filters=[query.ensembl_ids, query.hgnc_ids, query.hgnc_symbols]
@@ -82,7 +80,7 @@ async def genes(
     )
 
 
-@router.post("/intervals/load/transcripts/{build}")
+@router.post("/intervals/load/transcripts/{build}", response_model=List[GeneBase])
 async def load_transcripts(
     build: Builds,
     file_path: Optional[str] = None,
@@ -113,10 +111,10 @@ async def load_transcripts(
         )
 
 
-@router.post("/intervals/transcripts")
+@router.post("/intervals/transcripts", response_model=List[TranscriptBase])
 async def transcripts(
     query: GeneIntervalQuery, session: Session = Depends(get_session)
-) -> List[Transcript]:
+):
     """Return transcripts according to query parameters."""
     nr_filters = count_nr_filters(
         filters=[
@@ -170,10 +168,8 @@ async def load_exons(
         )
 
 
-@router.post("/intervals/exons")
-async def exons(
-    query: GeneIntervalQuery, session: Session = Depends(get_session)
-) -> List[Exon]:
+@router.post("/intervals/exons", response_model=List[ExonBase])
+async def exons(query: GeneIntervalQuery, session: Session = Depends(get_session)):
     """Return exons in the given genome build."""
     nr_filters = count_nr_filters(
         filters=[

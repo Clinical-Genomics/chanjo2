@@ -3,6 +3,7 @@
 - Refseq transcripts names on coverage overview page
 ### Changed
 - Replaced custom badges style with Bootstrap 5 badges
+- Return complete gene, transcripts and exons info in intervals endpoints
 ### Fixed
 - Addressed the `Starlette Denial of service (DoS) via multipart/form-data` by updating starlette library. among others
 
