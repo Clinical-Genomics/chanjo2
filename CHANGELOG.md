@@ -1,4 +1,4 @@
-## [unreleased]
+## [2.1]
 ### Added
 - Refseq transcripts names on coverage overview page
 ### Changed
