@@ -12,10 +12,12 @@ services:
       - MYSQL_DATABASE=${MYSQL_DATABASE_NAME}
       - MYSQL_HOST_PORT=${MYSQL_HOST_PORT}
       - MARIADB_RANDOM_ROOT_PASSWORD=T
-    healthcheck: # Wait for the service to be ready before accepting incoming connections
-      test: "mariadb --user=${MYSQL_USER} --password=${MYSQL_PASSWORD} --execute \"SHOW DATABASES;\""
-      timeout: 10s
-      retries: 20
+    healthcheck:
+      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
     volumes:
       - ${HOST_DATA_VOLUME}:${CONTAINER_DATA_VOLUME}
     networks:

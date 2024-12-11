@@ -1,3 +1,7 @@
+## [unreleased]
+### Fixed
+- The MariaDB healthcheck step in docker-compose-mysql.yml, preventing the demo app to start
+
 ## [2.1]
 ### Added
 - Refseq transcripts names on coverage overview page
