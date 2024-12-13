@@ -1,4 +1,6 @@
 ## [unreleased]
+### Changed
+- Updated several libraries including schug (now v.1.6.2)
 ### Fixed
 - The MariaDB healthcheck step in docker-compose-mysql.yml, preventing the demo app to start
 
