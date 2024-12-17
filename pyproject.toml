@@ -7,7 +7,7 @@ authors = ["northwestwitch <chiara.rasi@scilifelab.se>"]
 [tool.poetry_bumpversion.file."src/chanjo2/__init__.py"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 mysqlclient = "^2.1.0"
 requests = "^2.28.2"
 pytest-cov = "^4.0.0"
@@ -25,7 +25,7 @@ python-multipart = "^0.0.9"
 certifi = "^2024.7.4"
 pytest = "7.4.4"
 coloredlogs = "^15.0.1"
-schug = "^1.6.1"
+schug = "1.7"
 
 [tool.poetry.extras]
 m1 = ["pyd4"]
