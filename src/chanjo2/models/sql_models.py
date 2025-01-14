@@ -54,9 +54,7 @@ class Transcript(Base):
     refseq_ncrna = Column(String(24), nullable=True)
     refseq_mane_select = Column(String(24), nullable=True, index=True)
     refseq_mane_plus_clinical = Column(String(24), nullable=True, index=True)
-    ensembl_gene_id = Column(
-        String(24),nullable=False, index=True
-    )
+    ensembl_gene_id = Column(String(24), nullable=False, index=True)
     build = Column(
         Enum(Builds, values_callable=lambda x: Builds.get_enum_values()), index=True
     )
@@ -78,9 +76,7 @@ class Exon(Base):
     rank_in_transcript = Column(Integer, nullable=False)
     ensembl_id = Column(String(24), nullable=False)
     ensembl_transcript_id = Column(String(24), nullable=False, index=True)
-    ensembl_gene_id = Column(
-        String(24), nullable=False, index=True
-    )
+    ensembl_gene_id = Column(String(24), nullable=False, index=True)
     build = Column(
         Enum(Builds, values_callable=lambda x: Builds.get_enum_values()), index=True
     )
