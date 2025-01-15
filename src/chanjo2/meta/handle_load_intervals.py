@@ -45,7 +45,9 @@ def read_resource_lines(build: Builds, interval_type: IntervalType) -> Iterator[
 
 def _replace_empty_cols(line: str, nr_expected_columns: int) -> List[Union[str, None]]:
     """Split line into columns, replacing empty columns with None values."""
-    cols = [None if cell == "" else cell for cell in line.split("\t")]
+    cols = [
+        None if cell == "" else cell.replace("HGNC:", "") for cell in line.split("\t")
+    ]
 
     # Make sure that expected nr of cols are returned if last cols are blank
     cols += [None] * (nr_expected_columns - len(cols))

@@ -20,7 +20,7 @@ from chanjo2.meta.handle_coverage_stats import (
     get_d4tools_chromosome_mean_coverage,
     get_d4tools_intervals_mean_coverage,
 )
-from chanjo2.meta.handle_d4 import get_samples_sex_metrics
+from chanjo2.meta.handle_d4 import get_samples_sex_metrics, set_interval_ids_coords
 from chanjo2.meta.handle_report_contents import INTERVAL_TYPE_SQL_TYPE, get_mean
 from chanjo2.models import SQLGene
 from chanjo2.models.pydantic_models import (
@@ -167,10 +167,10 @@ def d4_genes_condensed_summary(
                 detail=WRONG_COVERAGE_FILE_MSG,
             )
 
-        interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]] = [
-            (interval.ensembl_id, (interval.chromosome, interval.start, interval.stop))
-            for interval in sql_intervals
-        ]
+        interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]] = (
+            set_interval_ids_coords(sql_intervals=sql_intervals)
+        )
+
         # Sort intervals by chrom, start & stop
         interval_ids_coords = sort_interval_ids_coords(interval_ids_coords)
 

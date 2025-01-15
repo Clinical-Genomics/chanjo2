@@ -19,6 +19,24 @@ from chanjo2.models.pydantic_models import ReportQuerySample, Sex
 LOG = logging.getLogger(__name__)
 
 
+def set_interval_ids_coords(
+    sql_intervals: List[Union[SQLGene, SQLTranscript, SQLExon]]
+) -> List[Tuple[str, Tuple[str, int, int]]]:
+    """Returns tuples with an ensembl_id and coordinates from a list of SQL intervals."""
+
+    if isinstance(sql_intervals[0], SQLGene):
+        return [
+            (ensembl_id, (interval.chromosome, interval.start, interval.stop))
+            for interval in sql_intervals
+            for ensembl_id in interval.ensembl_ids
+        ]
+    else:
+        return [
+            (interval.ensembl_id, (interval.chromosome, interval.start, interval.stop))
+            for interval in sql_intervals
+        ]
+
+
 def get_report_sample_interval_coverage(
     d4_file_path: str,
     sample_name: str,
@@ -31,11 +49,9 @@ def get_report_sample_interval_coverage(
     """Compute stats to populate a coverage report for one sample."""
 
     # Compute intervals coverage completeness
-    interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]] = [
-        (interval.ensembl_id, (interval.chromosome, interval.start, interval.stop))
-        for interval in sql_intervals
-    ]
-
+    interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]] = (
+        set_interval_ids_coords(sql_intervals=sql_intervals)
+    )
     interval_ids_coords = sort_interval_ids_coords(interval_ids_coords)
 
     # Compute intervals coverage
@@ -166,10 +182,9 @@ def get_gene_overview_stats(
     completeness_thresholds: List[int],
 ) -> Dict[str, list]:
     """Returns stats to be included in the gene overview page."""
-    interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]] = [
-        (interval.ensembl_id, (interval.chromosome, interval.start, interval.stop))
-        for interval in sql_intervals
-    ]
+    interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]] = (
+        set_interval_ids_coords(sql_intervals=sql_intervals)
+    )
     interval_ids_coords = tuple(
         sort_interval_ids_coords(set(interval_ids_coords))
     )  # removes duplicates and orders intervals by chromosome, start and stop
