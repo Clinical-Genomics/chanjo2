@@ -147,25 +147,25 @@ def demo_sql_genes() -> List[SQLGene]:
     """Return the 4 demo genes present in the demo gene panel as SQLGenes."""
     gene_dicts = [
         {
-            "ensembl_id": "ENSG00000228716",
+            "ensembl_ids": ["ENSG00000228716"],
             "chromosome": "5",
             "start": 79922047,
             "stop": 79950802,
         },
         {
-            "ensembl_id": "ENSG00000110195",
+            "ensembl_ids": ["ENSG00000110195"],
             "chromosome": "11",
             "start": 71900602,
             "stop": 71907345,
         },
         {
-            "ensembl_id": "ENSG00000177000",
+            "ensembl_ids": ["ENSG00000177000"],
             "chromosome": "1",
             "start": 11845780,
             "stop": 11866977,
         },
         {
-            "ensembl_id": "ENSG00000076351",
+            "ensembl_ids": ["ENSG00000076351"],
             "chromosome": "17",
             "start": 26721661,
             "stop": 26734215,

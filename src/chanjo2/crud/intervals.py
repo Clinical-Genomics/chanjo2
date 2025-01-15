@@ -71,9 +71,8 @@ def get_genes(
 ) -> List[SQLGene]:
     """Return genes according to specified fields."""
     genes: query.Query = db.query(SQLGene)
-
     if ensembl_ids:
-        genes: query.Query = genes.filter(SQLGene.ensembl_id.in_(ensembl_ids))
+        genes: query.Query = genes.filter(SQLGene.ensembl_ids.in_(ensembl_ids))
     elif hgnc_ids:
         genes: query.Query = genes.filter(SQLGene.hgnc_id.in_(hgnc_ids))
     elif hgnc_symbols:

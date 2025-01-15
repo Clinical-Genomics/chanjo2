@@ -63,9 +63,12 @@ class Interval(IntervalBase):
 
 class GeneBase(IntervalBase):
     build: Builds
-    ensembl_id: str
+    ensembl_ids: List[str]
     hgnc_id: Optional[int]
     hgnc_symbol: Optional[str]
+
+    class Config:
+        orm_mode = True
 
 
 class GeneQuery(BaseModel):
