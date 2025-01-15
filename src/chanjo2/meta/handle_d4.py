@@ -24,6 +24,8 @@ def set_interval_ids_coords(
 ) -> List[Tuple[str, Tuple[str, int, int]]]:
     """Returns tuples with an ensembl_id and coordinates from a list of SQL intervals."""
 
+    if not sql_intervals:
+        return []
     if isinstance(sql_intervals[0], SQLGene):
         return [
             (ensembl_id, (interval.chromosome, interval.start, interval.stop))
