@@ -1,7 +1,7 @@
 import logging
 from typing import List, Optional, Union
 
-from sqlalchemy import delete, func, or_, text
+from sqlalchemy import delete, or_, text
 from sqlalchemy.orm import Session, query
 from sqlalchemy.sql.expression import Delete
 
@@ -195,8 +195,8 @@ def get_gene_intervals(
         return [ensembl_id for gene in genes for ensembl_id in gene.ensembl_ids]
 
     if ensembl_ids:
-        intervals = intervals.filter(
-            func.json_contains(SQLGene.ensembl_ids, func.json_array(*ensembl_ids))
+        intervals: query.Query = intervals.filter(
+            interval_type.ensembl_id.in_(ensembl_ids)
         )
     elif hgnc_ids:
         ensembl_gene_ids = get_ensembl_gene_ids_from_gene_filter(
