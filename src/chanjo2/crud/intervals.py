@@ -1,7 +1,7 @@
 import logging
 from typing import List, Optional, Union
 
-from sqlalchemy import delete, func, or_
+from sqlalchemy import delete, func, or_, text
 from sqlalchemy.orm import Session, query
 from sqlalchemy.sql.expression import Delete
 
@@ -72,7 +72,18 @@ def get_genes(
     """Return genes according to specified fields."""
     genes: query.Query = db.query(SQLGene)
     if ensembl_ids:
-        genes: query.Query = genes.filter(SQLGene.ensembl_ids.in_(ensembl_ids))
+        ensembl_ids_placeholder = ", ".join(f"'{e}'" for e in ensembl_ids)
+        genes = genes.filter(
+            text(
+                f"""
+                EXISTS (
+                    SELECT 1
+                    FROM json_each(genes.ensembl_ids)
+                    WHERE value IN ({ensembl_ids_placeholder})
+                )
+                """
+            )
+        )
     elif hgnc_ids:
         genes: query.Query = genes.filter(SQLGene.hgnc_id.in_(hgnc_ids))
     elif hgnc_symbols:
