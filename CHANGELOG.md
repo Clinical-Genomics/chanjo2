@@ -11,6 +11,7 @@
 ### Changed
 - Replaced custom badges style with Bootstrap 5 badges
 - Return complete gene, transcripts and exons info in intervals endpoints
+- Removed the link to the `Cases and samples` section in the documentation sidebar, since the functionality is no longer existing
 ### Fixed
 - Addressed the `Starlette Denial of service (DoS) via multipart/form-data` by updating starlette library. among others
 
