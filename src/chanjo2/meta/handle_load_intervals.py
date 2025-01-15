@@ -158,8 +158,6 @@ async def update_transcripts(
             break
 
         items: List = _replace_empty_cols(line=line, nr_expected_columns=len(header))
-        LOG.warning(header)
-        LOG.warning(items)
 
         try:
             transcript = TranscriptBase(

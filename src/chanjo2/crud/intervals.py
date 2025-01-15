@@ -172,17 +172,17 @@ def get_gene_intervals(
 ) -> List[Union[SQLTranscript, SQLExon]]:
     """Retrieve transcripts or exons from a list of genes."""
 
-    # Start the query for the given interval_type (transcripts or exons)
     intervals = db.query(interval_type).filter(interval_type.build == build)
 
-    # Helper function to get ensembl_gene_ids from either hgnc_ids or hgnc_symbols
-    def get_ensembl_gene_ids_from_gene_filter(filter_value, filter_column):
+    def get_ensembl_gene_ids_from_gene_filter(
+        filter_value: List[Union[str, int]], filter_column: str
+    ) -> List[str]:
+        """Helper function to get ensembl_gene_ids from either hgnc_ids or hgnc_symbols."""
         genes = (
             db.query(SQLGene.ensembl_ids).filter(filter_column.in_(filter_value)).all()
         )
         return [ensembl_id for gene in genes for ensembl_id in gene.ensembl_ids]
 
-    # Handle filtering based on ensembl_ids, ensembl_gene_ids, hgnc_ids, or hgnc_symbols
     if ensembl_ids:
         intervals = intervals.filter(
             func.json_contains(SQLGene.ensembl_ids, func.json_array(*ensembl_ids))
@@ -200,13 +200,11 @@ def get_gene_intervals(
             interval_type.ensembl_gene_id.in_(ensembl_gene_ids)
         )
 
-    # Further filter transcripts by tags if needed
     if interval_type == SQLTranscript and transcript_tags:
         intervals = _filter_transcripts_by_tag(
             transcripts=intervals, transcript_tags=transcript_tags
         )
 
-    # Apply the limit if provided
     if limit:
         return intervals.limit(limit).all()
 
