@@ -180,28 +180,22 @@ def get_gene_intervals(
         genes = (
             db.query(SQLGene.ensembl_ids).filter(filter_column.in_(filter_value)).all()
         )
-        return [gene.ensembl_ids for gene in genes]
+        return [ensembl_id for gene in genes for ensembl_id in gene.ensembl_ids]
 
     # Handle filtering based on ensembl_ids, ensembl_gene_ids, hgnc_ids, or hgnc_symbols
     if ensembl_ids:
         intervals = intervals.filter(
             func.json_contains(SQLGene.ensembl_ids, func.json_array(*ensembl_ids))
         )
-    elif ensembl_gene_ids:
-        intervals = intervals.filter(
-            interval_type.ensembl_gene_id.in_(ensembl_gene_ids)
-        )
     elif hgnc_ids:
         ensembl_gene_ids = get_ensembl_gene_ids_from_gene_filter(
             hgnc_ids, SQLGene.hgnc_id
-        )
-        intervals = intervals.filter(
-            interval_type.ensembl_gene_id.in_(ensembl_gene_ids)
         )
     elif hgnc_symbols:
         ensembl_gene_ids = get_ensembl_gene_ids_from_gene_filter(
             hgnc_symbols, SQLGene.hgnc_symbol
         )
+    if ensembl_gene_ids:
         intervals = intervals.filter(
             interval_type.ensembl_gene_id.in_(ensembl_gene_ids)
         )

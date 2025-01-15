@@ -43,9 +43,13 @@ def read_resource_lines(build: Builds, interval_type: IntervalType) -> Iterator[
     return response.iter_lines(decode_unicode=True)
 
 
-def _replace_empty_cols(line: str) -> List[Union[str, None]]:
+def _replace_empty_cols(line: str, nr_expected_columns: int) -> List[Union[str, None]]:
     """Split line into columns, replacing empty columns with None values."""
-    return [None if cell == "" else cell for cell in line.split("\t")]
+    cols = [None if cell == "" else cell for cell in line.split("\t")]
+
+    # Make sure that expected nr of cols are returned if last cols are blank
+    cols += [None] * (nr_expected_columns - len(cols))
+    return cols
 
 
 async def update_genes(
@@ -93,7 +97,7 @@ async def update_genes(
         if line == END_OF_PARSED_FILE:
             break
 
-        items: List = _replace_empty_cols(line=line)
+        items: List = _replace_empty_cols(line=line, nr_expected_columns=len(header))
 
         try:
             sql_gene = SQLGene(
@@ -151,7 +155,9 @@ async def update_transcripts(
         if line == END_OF_PARSED_FILE:
             break
 
-        items: List = _replace_empty_cols(line=line)
+        items: List = _replace_empty_cols(line=line, nr_expected_columns=len(header))
+        LOG.warning(header)
+        LOG.warning(items)
 
         try:
             transcript = TranscriptBase(
@@ -216,7 +222,7 @@ async def update_exons(
         if line == END_OF_PARSED_FILE:
             break
 
-        items: List = _replace_empty_cols(line=line)
+        items: List = _replace_empty_cols(line=line, nr_expected_columns=len(header))
 
         try:
             # Load Exon interval into the database
