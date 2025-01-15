@@ -6,21 +6,14 @@ from typing import Dict, List, Optional, Tuple, Union
 from sqlalchemy.orm import Session
 
 from chanjo2.crud.intervals import get_genes, get_hgnc_gene, set_sql_intervals
-from chanjo2.meta.handle_d4 import (
-    get_gene_overview_stats,
-    get_report_sample_interval_coverage,
-    get_samples_sex_metrics,
-)
+from chanjo2.meta.handle_d4 import (get_gene_overview_stats,
+                                    get_report_sample_interval_coverage,
+                                    get_samples_sex_metrics)
 from chanjo2.models import SQLExon, SQLGene, SQLTranscript
-from chanjo2.models.pydantic_models import (
-    Builds,
-    GeneReportForm,
-    IntervalType,
-    ReportQuery,
-    ReportQuerySample,
-    SampleSexRow,
-    TranscriptTag,
-)
+from chanjo2.models.pydantic_models import (Builds, GeneReportForm,
+                                            IntervalType, ReportQuery,
+                                            ReportQuerySample, SampleSexRow,
+                                            TranscriptTag)
 
 LOG = logging.getLogger(__name__)
 INTERVAL_TYPE_SQL_TYPE: Dict[IntervalType, Union[SQLGene, SQLTranscript, SQLExon]] = {
@@ -90,6 +83,8 @@ def get_report_data(
     else:
         genes = []
 
+    LOG.warning(f"genes: {genes}")
+
     data: Dict = {
         "levels": get_ordered_levels(threshold_levels=query.completeness_thresholds),
         "extras": {
@@ -123,8 +118,9 @@ def get_report_data(
     ]
 
     gene_ids_mapping: Dict[str, dict] = {
-        gene.ensembl_id: {"hgnc_id": gene.hgnc_id, "hgnc_symbol": gene.hgnc_symbol}
+        ensembl_id: {"hgnc_id": gene.hgnc_id, "hgnc_symbol": gene.hgnc_symbol}
         for gene in genes
+        for ensembl_id in gene.ensembl_ids
     }
 
     sql_intervals: list = []

@@ -6,27 +6,15 @@ from schug.load.biomart import EnsemblBiomartClient
 from schug.models.common import Build as SchugBuild
 from sqlalchemy.orm import Session
 
-from chanjo2.constants import (
-    ENSEMBL_RESOURCE_CLIENT,
-    EXONS_FILE_HEADER,
-    GENES_FILE_HEADER,
-    TRANSCRIPTS_FILE_HEADER,
-)
-from chanjo2.crud.intervals import (
-    bulk_insert_exons,
-    bulk_insert_genes,
-    bulk_insert_transcripts,
-    count_intervals_for_build,
-    delete_intervals_for_build,
-)
+from chanjo2.constants import (ENSEMBL_RESOURCE_CLIENT, EXONS_FILE_HEADER,
+                               GENES_FILE_HEADER, TRANSCRIPTS_FILE_HEADER)
+from chanjo2.crud.intervals import (bulk_insert_exons, bulk_insert_genes,
+                                    bulk_insert_transcripts,
+                                    count_intervals_for_build,
+                                    delete_intervals_for_build)
 from chanjo2.models import SQLExon, SQLGene, SQLTranscript
-from chanjo2.models.pydantic_models import (
-    Builds,
-    ExonBase,
-    GeneBase,
-    IntervalType,
-    TranscriptBase,
-)
+from chanjo2.models.pydantic_models import (Builds, ExonBase, IntervalType,
+                                            TranscriptBase)
 
 LOG = logging.getLogger(__name__)
 MAX_NR_OF_RECORDS = 10_000
@@ -44,7 +32,7 @@ def read_resource_lines(build: Builds, interval_type: IntervalType) -> Iterator[
     return response.iter_lines(decode_unicode=True)
 
 
-def _replace_empty_cols(line: str, nr_expected_columns: int) -> List[Union[str, None]]:
+def _replace_empty_cols(line: str) -> List[Union[str, None]]:
     """Split line into columns, replacing empty columns with None values."""
     return [None if cell == "" else cell for cell in line.split("\t")]
 
@@ -90,12 +78,11 @@ async def update_genes(
 
     genes_bulk: List[SQLGene] = []
 
-    # Loop through the lines and process them
     for line in lines:
         if line == END_OF_PARSED_FILE:
             break
 
-        items: List = _replace_empty_cols(line=line, nr_expected_columns=len(header))
+        items: List = _replace_empty_cols(line=line)
 
         try:
             sql_gene = SQLGene(
@@ -153,7 +140,7 @@ async def update_transcripts(
         if line == END_OF_PARSED_FILE:
             break
 
-        items: List = _replace_empty_cols(line=line, nr_expected_columns=len(header))
+        items: List = _replace_empty_cols(line=line)
 
         try:
             transcript = TranscriptBase(
@@ -218,7 +205,7 @@ async def update_exons(
         if line == END_OF_PARSED_FILE:
             break
 
-        items: List = _replace_empty_cols(line=line, nr_expected_columns=len(header))
+        items: List = _replace_empty_cols(line=line)
 
         try:
             # Load Exon interval into the database
