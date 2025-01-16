@@ -1,7 +1,7 @@
 import logging
 from typing import List, Optional, Union
 
-from sqlalchemy import delete, or_
+from sqlalchemy import delete, or_, text
 from sqlalchemy.orm import Session, query
 from sqlalchemy.sql.expression import Delete
 
@@ -71,9 +71,19 @@ def get_genes(
 ) -> List[SQLGene]:
     """Return genes according to specified fields."""
     genes: query.Query = db.query(SQLGene)
-
     if ensembl_ids:
-        genes: query.Query = genes.filter(SQLGene.ensembl_id.in_(ensembl_ids))
+        ensembl_ids_placeholder = ", ".join(f"'{e}'" for e in ensembl_ids)
+        genes = genes.filter(
+            text(
+                f"""
+                EXISTS (
+                    SELECT 1
+                    FROM json_each(genes.ensembl_ids)
+                    WHERE value IN ({ensembl_ids_placeholder})
+                )
+                """
+            )
+        )
     elif hgnc_ids:
         genes: query.Query = genes.filter(SQLGene.hgnc_id.in_(hgnc_ids))
     elif hgnc_symbols:
@@ -151,7 +161,9 @@ def set_sql_intervals(
             ensembl_ids=None,
             hgnc_ids=None,
             hgnc_symbols=None,
-            ensembl_gene_ids=[gene.ensembl_id for gene in genes],
+            ensembl_gene_ids=[
+                ensembl_id for gene in genes for ensembl_id in gene.ensembl_ids
+            ],
             limit=None,
             transcript_tags=transcript_tags,
         )
@@ -171,26 +183,38 @@ def get_gene_intervals(
 ) -> List[Union[SQLTranscript, SQLExon]]:
     """Retrieve transcripts or exons from a list of genes."""
 
-    intervals: query.Query = db.query(interval_type).join(SQLGene)
+    intervals = db.query(interval_type).filter(interval_type.build == build)
+
+    def get_ensembl_gene_ids_from_gene_filter(
+        filter_value: List[Union[str, int]], filter_column: str
+    ) -> List[str]:
+        """Helper function to get ensembl_gene_ids from either hgnc_ids or hgnc_symbols."""
+        genes = (
+            db.query(SQLGene.ensembl_ids).filter(filter_column.in_(filter_value)).all()
+        )
+        return [ensembl_id for gene in genes for ensembl_id in gene.ensembl_ids]
+
     if ensembl_ids:
         intervals: query.Query = intervals.filter(
             interval_type.ensembl_id.in_(ensembl_ids)
         )
-    elif ensembl_gene_ids:
-        intervals: query.Query = intervals.filter(
+    elif hgnc_ids:
+        ensembl_gene_ids = get_ensembl_gene_ids_from_gene_filter(
+            hgnc_ids, SQLGene.hgnc_id
+        )
+    elif hgnc_symbols:
+        ensembl_gene_ids = get_ensembl_gene_ids_from_gene_filter(
+            hgnc_symbols, SQLGene.hgnc_symbol
+        )
+    if ensembl_gene_ids:
+        intervals = intervals.filter(
             interval_type.ensembl_gene_id.in_(ensembl_gene_ids)
         )
-    elif hgnc_ids:
-        intervals: query.Query = intervals.filter(SQLGene.hgnc_id.in_(hgnc_ids))
-    elif hgnc_symbols:
-        intervals: query.Query = intervals.filter(SQLGene.hgnc_symbol.in_(hgnc_symbols))
 
     if interval_type == SQLTranscript and transcript_tags:
         intervals = _filter_transcripts_by_tag(
             transcripts=intervals, transcript_tags=transcript_tags
         )
-
-    intervals: query.Query = intervals.filter(interval_type.build == build)
 
     if limit:
         return intervals.limit(limit).all()

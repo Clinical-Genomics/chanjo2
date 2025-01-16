@@ -123,8 +123,9 @@ def get_report_data(
     ]
 
     gene_ids_mapping: Dict[str, dict] = {
-        gene.ensembl_id: {"hgnc_id": gene.hgnc_id, "hgnc_symbol": gene.hgnc_symbol}
+        ensembl_id: {"hgnc_id": gene.hgnc_id, "hgnc_symbol": gene.hgnc_symbol}
         for gene in genes
+        for ensembl_id in gene.ensembl_ids
     }
 
     sql_intervals: list = []

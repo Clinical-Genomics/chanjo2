@@ -19,6 +19,26 @@ from chanjo2.models.pydantic_models import ReportQuerySample, Sex
 LOG = logging.getLogger(__name__)
 
 
+def set_interval_ids_coords(
+    sql_intervals: List[Union[SQLGene, SQLTranscript, SQLExon]]
+) -> List[Tuple[str, Tuple[str, int, int]]]:
+    """Returns tuples with an ensembl_id and coordinates from a list of SQL intervals."""
+
+    if not sql_intervals:
+        return []
+    if isinstance(sql_intervals[0], SQLGene):
+        return [
+            (ensembl_id, (interval.chromosome, interval.start, interval.stop))
+            for interval in sql_intervals
+            for ensembl_id in interval.ensembl_ids
+        ]
+    else:
+        return [
+            (interval.ensembl_id, (interval.chromosome, interval.start, interval.stop))
+            for interval in sql_intervals
+        ]
+
+
 def get_report_sample_interval_coverage(
     d4_file_path: str,
     sample_name: str,
@@ -31,11 +51,9 @@ def get_report_sample_interval_coverage(
     """Compute stats to populate a coverage report for one sample."""
 
     # Compute intervals coverage completeness
-    interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]] = [
-        (interval.ensembl_id, (interval.chromosome, interval.start, interval.stop))
-        for interval in sql_intervals
-    ]
-
+    interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]] = (
+        set_interval_ids_coords(sql_intervals=sql_intervals)
+    )
     interval_ids_coords = sort_interval_ids_coords(interval_ids_coords)
 
     # Compute intervals coverage
@@ -57,51 +75,61 @@ def get_report_sample_interval_coverage(
     nr_intervals_covered_under_custom_threshold: int = 0
     genes_covered_under_custom_threshold = set()
 
-    for interval_nr, interval in enumerate(sql_intervals):
+    for interval in sql_intervals:
 
-        if interval.ensembl_id in interval_ids:
-            continue
-        for threshold in completeness_thresholds:
-            interval_coverage_at_threshold: float = intervals_coverage_completeness[
-                interval.ensembl_id
-            ][threshold]
-            thresholds_dict[threshold].append(interval_coverage_at_threshold)
+        if hasattr(interval, "ensembl_ids"):
+            ensembl_ids = interval.ensembl_ids
+        else:
+            ensembl_ids = [interval.ensembl_id]
 
-            # Collect intervals which are not completely covered at the custom threshold
-            if threshold == default_threshold and interval_coverage_at_threshold < 1:
-                nr_intervals_covered_under_custom_threshold += 1
-                interval_ensembl_gene: str = (
-                    interval.ensembl_id
-                    if interval.ensembl_id.startswith("ENSG")
-                    else interval.ensembl_gene_id
-                )
-                interval_hgnc_id: int = gene_ids_mapping[interval_ensembl_gene][
-                    "hgnc_id"
-                ]
-                interval_hgnc_symbol: str = gene_ids_mapping[interval_ensembl_gene][
-                    "hgnc_symbol"
-                ]
-                genes_covered_under_custom_threshold.add(interval_hgnc_symbol)
-                incomplete_coverages_rows.append(
-                    (
-                        interval_hgnc_symbol,
-                        interval_hgnc_id,
-                        interval.ensembl_id,
-                        (
-                            {
-                                "mane_select": interval.refseq_mane_select,
-                                "mane_plus_clinical": interval.refseq_mane_plus_clinical,
-                                "mrna": interval.refseq_mrna,
-                            }
-                            if isinstance(interval, SQLTranscript)
-                            else {}
-                        ),
-                        sample_name,
-                        round(interval_coverage_at_threshold * 100, 2),
+        for ensembl_id in ensembl_ids:
+
+            if ensembl_id in interval_ids:
+                continue
+            for threshold in completeness_thresholds:
+                interval_coverage_at_threshold: float = intervals_coverage_completeness[
+                    ensembl_id
+                ][threshold]
+                thresholds_dict[threshold].append(interval_coverage_at_threshold)
+
+                # Collect intervals which are not completely covered at the custom threshold
+                if (
+                    threshold == default_threshold
+                    and interval_coverage_at_threshold < 1
+                ):
+                    nr_intervals_covered_under_custom_threshold += 1
+                    interval_ensembl_gene: str = (
+                        ensembl_id
+                        if ensembl_id.startswith("ENSG")
+                        else interval.ensembl_gene_id
                     )
-                )
+                    interval_hgnc_id: int = gene_ids_mapping[interval_ensembl_gene][
+                        "hgnc_id"
+                    ]
+                    interval_hgnc_symbol: str = gene_ids_mapping[interval_ensembl_gene][
+                        "hgnc_symbol"
+                    ]
+                    genes_covered_under_custom_threshold.add(interval_hgnc_symbol)
+                    incomplete_coverages_rows.append(
+                        (
+                            interval_hgnc_symbol,
+                            interval_hgnc_id,
+                            ensembl_id,
+                            (
+                                {
+                                    "mane_select": interval.refseq_mane_select,
+                                    "mane_plus_clinical": interval.refseq_mane_plus_clinical,
+                                    "mrna": interval.refseq_mrna,
+                                }
+                                if isinstance(interval, SQLTranscript)
+                                else {}
+                            ),
+                            sample_name,
+                            round(interval_coverage_at_threshold * 100, 2),
+                        )
+                    )
 
-        interval_ids.add(interval.ensembl_id)
+            interval_ids.add(ensembl_id)
 
     for threshold in completeness_thresholds:
         if thresholds_dict[threshold]:
@@ -166,10 +194,9 @@ def get_gene_overview_stats(
     completeness_thresholds: List[int],
 ) -> Dict[str, list]:
     """Returns stats to be included in the gene overview page."""
-    interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]] = [
-        (interval.ensembl_id, (interval.chromosome, interval.start, interval.stop))
-        for interval in sql_intervals
-    ]
+    interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]] = (
+        set_interval_ids_coords(sql_intervals=sql_intervals)
+    )
     interval_ids_coords = tuple(
         sort_interval_ids_coords(set(interval_ids_coords))
     )  # removes duplicates and orders intervals by chromosome, start and stop

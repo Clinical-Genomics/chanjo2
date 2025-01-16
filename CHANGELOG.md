@@ -2,6 +2,7 @@
 ### Changed
 - Updated several libraries including schug (now v.7)
 - Update project's Python version to 3.9
+- Modified the structure of the database table `genes`, converting the `ensembl_id` string field to `ensembl_ids`: an array of strings. This change addresses recent changes in the MySQL: https://bugs.mysql.com/bug.php?id=114838
 ### Fixed
 - The MariaDB healthcheck step in docker-compose-mysql.yml, preventing the demo app to start
 
