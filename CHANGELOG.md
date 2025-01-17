@@ -1,3 +1,7 @@
+## [unreleased]
+### Fixed
+- Updated schug library to v1.8 (contains bug fixes)
+
 ## [3.0]
 ### Changed
 - Updated several libraries including schug (now v.7)
