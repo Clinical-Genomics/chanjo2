@@ -1,4 +1,4 @@
-## [unreleased]
+## [3.0.1]
 ### Fixed
 - Updated schug library to v1.8 (contains bug fixes)
 
