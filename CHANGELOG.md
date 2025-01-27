@@ -1,6 +1,8 @@
 ## [3.0.1]
+### Changed
+- Updated pydantic and fastapi libs
 ### Fixed
-- Updated schug library to v1.8 (contains bug fixes)
+- Updated schug library to v1.9 (contains bug fixes and failed download retry logic)
 
 ## [3.0]
 ### Changed
