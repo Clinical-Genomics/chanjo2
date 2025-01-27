@@ -1401,13 +1401,13 @@ jupyter = ["ipywidgets (>=7.5.1,<9)"]
 
 [[package]]
 name = "schug"
-version = "1.8.0"
+version = "1.9.0"
 description = "Keep track of genes, transcripts and exons from different sources"
 optional = false
 python-versions = "<4.0,>=3.9"
 files = [
-    {file = "schug-1.8.0-py3-none-any.whl", hash = "sha256:19cdaa459b354e6a0c49251b4dc9e4925ac94987ef49a80d64da5b79386635cd"},
-    {file = "schug-1.8.0.tar.gz", hash = "sha256:21913a888bea4134c9b0f1ceb8b4cb85f30166558cab139f5d77bbb18b4d35c5"},
+    {file = "schug-1.9.0-py3-none-any.whl", hash = "sha256:c2dd96f924dd7d17331c4e9efaaa85872e7941627353462f012378159edbac8e"},
+    {file = "schug-1.9.0.tar.gz", hash = "sha256:2bf4acebf250bd6291dc530efeb542d8f7133935432bde32717f024f6dd0731c"},
 ]
 
 [package.dependencies]
@@ -1775,4 +1775,4 @@ m1 = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "4a985f808a32d7b0ba20e55540baecff8f92730cd93508e3a049bc7aa4441eef"
+content-hash = "6c23b99f87d51a8ab5f1801d98f24232da479e3099e337d2172826bced8a2cf3"
