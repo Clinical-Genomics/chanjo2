@@ -1,7 +1,7 @@
-## [unreleased]
+## [3.1]
 ### Changed
 - Updated pydantic and fastapi libs
-- Updated schug library to v1.9 (contains failed download retry logic)
+- Updated schug library to v1.9 (contains failed downloads retry logic)
 
 ## [3.0.1]
 ### Fixed
