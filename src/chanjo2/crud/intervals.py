@@ -42,22 +42,9 @@ def _filter_intervals_by_build(
     return intervals.filter(interval_type.build == build)
 
 
-def create_db_gene(gene: GeneBase) -> SQLGene:
-    """Create and return a SQL gene object."""
-    return SQLGene(
-        build=gene.build.value,
-        chromosome=gene.chromosome,
-        start=gene.start,
-        stop=gene.stop,
-        ensembl_id=gene.ensembl_id,
-        hgnc_symbol=gene.hgnc_symbol,
-        hgnc_id=gene.hgnc_id,
-    )
-
-
-def bulk_insert_genes(db: Session, genes: List[GeneBase]):
+def bulk_insert_genes(db: Session, genes: List[SQLGene]):
     """Bulk insert genes into the database."""
-    db.bulk_save_objects([create_db_gene(gene) for gene in genes])
+    db.bulk_save_objects(genes)
     db.commit()
 
 
@@ -97,29 +84,9 @@ def get_genes(
     return genes.all()
 
 
-def create_db_transcript(transcript: TranscriptBase) -> SQLTranscript:
-    """Create and return a SQL transcript object."""
-
-    return SQLTranscript(
-        chromosome=transcript.chromosome,
-        start=transcript.start,
-        stop=transcript.stop,
-        ensembl_id=transcript.ensembl_id,
-        ensembl_gene_id=transcript.ensembl_gene_id,
-        refseq_mrna=transcript.refseq_mrna,
-        refseq_mrna_pred=transcript.refseq_mrna_pred,
-        refseq_ncrna=transcript.refseq_ncrna,
-        refseq_mane_select=transcript.refseq_mane_select,
-        refseq_mane_plus_clinical=transcript.refseq_mane_plus_clinical,
-        build=transcript.build,
-    )
-
-
 def bulk_insert_transcripts(db: Session, transcripts: List[TranscriptBase]):
     """Bulk insert transcripts into the database."""
-    db.bulk_save_objects(
-        [create_db_transcript(transcript=transcript) for transcript in transcripts]
-    )
+    db.bulk_save_objects(transcripts)
     db.commit()
 
 
@@ -222,22 +189,7 @@ def get_gene_intervals(
     return intervals.all()
 
 
-def create_db_exon(exon: ExonBase) -> SQLExon:
-    """Create and return a SQL exon object."""
-
-    return SQLExon(
-        chromosome=exon.chromosome,
-        start=exon.start,
-        stop=exon.stop,
-        rank_in_transcript=exon.rank_in_transcript,
-        ensembl_id=exon.ensembl_id,
-        ensembl_gene_id=exon.ensembl_gene_id,
-        ensembl_transcript_id=exon.ensembl_transcript_id,
-        build=exon.build,
-    )
-
-
 def bulk_insert_exons(db: Session, exons: List[ExonBase]) -> None:
     """Bulk insert exons into the database."""
-    db.bulk_save_objects([create_db_exon(exon=exon) for exon in exons])
+    db.bulk_save_objects(exons)
     db.commit()

@@ -19,6 +19,7 @@ from chanjo2.crud.intervals import (
     count_intervals_for_build,
     delete_intervals_for_build,
 )
+from chanjo2.meta.handle_bed import resource_lines
 from chanjo2.models import SQLExon, SQLGene, SQLTranscript
 from chanjo2.models.pydantic_models import (
     Builds,
@@ -29,7 +30,39 @@ from chanjo2.models.pydantic_models import (
 
 LOG = logging.getLogger(__name__)
 MAX_NR_OF_RECORDS = 10_000
-END_OF_PARSED_FILE: str = "[success]"
+END_OF_PARSED_FILE = "[success]"
+
+
+def update_interval_table(
+    interval_type: IntervalType,
+    build: Builds,
+    file_path: Optional[str],
+    session: Session,
+) -> None:
+    """This function is runned in background and is responsible for updating a specific interval table of the database."""
+
+    if file_path:
+        interval_lines: Iterator[str] = resource_lines(file_path=file_path)
+    else:
+        print(interval_type.__dict__)
+        interval_lines = read_resource_lines(build=build, interval_type=interval_type)
+
+    if interval_type == IntervalType.GENES:
+        n_loaded_intervals: int = update_genes(
+            build=build, lines=interval_lines, session=session
+        )
+    elif interval_type == IntervalType.TRANSCRIPTS:
+        n_loaded_intervals: int = update_transcripts(
+            build=build, lines=interval_lines, session=session
+        )
+    elif interval_type == IntervalType.EXONS:
+        n_loaded_intervals: int = update_transcripts(
+            build=build, lines=interval_lines, session=session
+        )
+
+    print(
+        f"{n_loaded_intervals} intervals of type {interval_type} loaded into the database"
+    )
 
 
 def read_resource_lines(build: Builds, interval_type: IntervalType) -> Iterator[str]:
@@ -54,35 +87,10 @@ def _replace_empty_cols(line: str, nr_expected_columns: int) -> List[Union[str, 
     return cols
 
 
-async def update_genes(
-    build: Builds, session: Session, lines: Optional[Iterator] = None
-) -> Optional[int]:
-    """Loads genes into the database."""
-
-    def update_or_insert_gene(session, sql_gene):
-        # Try to find the gene in the database
-
-        existing_gene = (
-            session.query(SQLGene)
-            .filter_by(
-                chromosome=sql_gene.chromosome, start=sql_gene.start, stop=sql_gene.stop
-            )
-            .first()
-        )
-
-        if existing_gene:
-            # Gene exists, append the new ensembl_id to the existing ensembl_ids
-            existing_gene.ensembl_ids.append(sql_gene.ensembl_ids[0])
-        else:
-            # Gene does not exist, add a new record
-            session.add(sql_gene)
+def update_genes(build: Builds, session: Session, lines: Iterator = None) -> None:
+    """Loads genes into the database, replacing existing ones."""
 
     LOG.info(f"Loading gene intervals. Genome build --> {build}")
-    if lines is None:
-        lines: Iterator[str] = read_resource_lines(
-            build=build, interval_type=IntervalType.GENES
-        )
-
     header = next(lines).split("\t")
 
     if header != GENES_FILE_HEADER[build]:
@@ -90,39 +98,37 @@ async def update_genes(
             f"Ensembl genes file has an unexpected format:{header}. Expected format: {GENES_FILE_HEADER[build]}"
         )
 
-    for interval_type in [SQLExon, SQLTranscript, SQLGene]:
-        delete_intervals_for_build(db=session, interval_type=interval_type, build=build)
+    # Remove all existing genes for this build
+    delete_intervals_for_build(db=session, interval_type=SQLGene, build=build)
 
     genes_bulk: List[SQLGene] = []
 
     for line in lines:
         if line == END_OF_PARSED_FILE:
             break
-
         items: List = _replace_empty_cols(line=line, nr_expected_columns=len(header))
+        print(items)
 
-        try:
-            sql_gene = SQLGene(
-                build=build,
-                chromosome=items[0],
-                start=int(items[1]),
-                stop=int(items[2]),
-                ensembl_ids=[items[3]],
-                hgnc_symbol=items[4],
-                hgnc_id=items[5],
-            )
+        sql_gene = SQLGene(
+            build=build,
+            chromosome=items[0],
+            start=int(items[1]),
+            stop=int(items[2]),
+            ensembl_ids=[items[3]],
+            hgnc_symbol=items[4],
+            hgnc_id=items[5],
+        )
 
-            update_or_insert_gene(session, sql_gene)  # Update or insert the gene
+        genes_bulk.append(sql_gene)
 
-            if len(genes_bulk) > MAX_NR_OF_RECORDS:
-                bulk_insert_genes(db=session, genes=genes_bulk)
-                genes_bulk = []
+        # Bulk insert when threshold is reached
+        if len(genes_bulk) >= MAX_NR_OF_RECORDS:
+            bulk_insert_genes(db=session, genes=genes_bulk)
+            genes_bulk = []
 
-        except Exception as ex:
-            LOG.error(ex)
-            return
-
-    bulk_insert_genes(db=session, genes=genes_bulk)  # Load the remaining genes
+    # Insert remaining genes
+    if genes_bulk:
+        bulk_insert_genes(db=session, genes=genes_bulk)
 
     nr_loaded_genes: int = count_intervals_for_build(
         db=session, interval_type=SQLGene, build=build
@@ -131,17 +137,12 @@ async def update_genes(
     return nr_loaded_genes
 
 
-async def update_transcripts(
-    build: Builds, session: Session, lines: Optional[Iterator] = None
-) -> Optional[int]:
+def update_transcripts(
+    build: Builds, session: Session, lines: [Iterator] = None
+) -> None:
     """Loads transcripts into the database."""
 
     LOG.info(f"Loading transcript intervals. Genome build --> {build}")
-
-    if lines is None:
-        lines: Iterator[str] = read_resource_lines(
-            build=build, interval_type=IntervalType.TRANSCRIPTS
-        )
 
     header = next(lines).split("\t")
     if header != TRANSCRIPTS_FILE_HEADER[build]:
@@ -154,36 +155,30 @@ async def update_transcripts(
     transcripts_bulk: List[TranscriptBase] = []
 
     for line in lines:
+
         if line == END_OF_PARSED_FILE:
             break
 
         items: List = _replace_empty_cols(line=line, nr_expected_columns=len(header))
 
-        try:
-            transcript = TranscriptBase(
-                chromosome=items[0],
-                ensembl_gene_id=items[1],
-                ensembl_id=items[2],
-                start=int(items[3]),
-                stop=int(items[4]),
-                refseq_mrna=items[5],
-                refseq_mrna_pred=items[6],
-                refseq_ncrna=items[7],
-                refseq_mane_select=items[8] if build == Builds.build_38 else None,
-                refseq_mane_plus_clinical=(
-                    items[9] if build == Builds.build_38 else None
-                ),
-                build=build,
-            )
-            transcripts_bulk.append(transcript)
+        transcript = TranscriptBase(
+            chromosome=items[0],
+            ensembl_gene_id=items[1],
+            ensembl_id=items[2],
+            start=int(items[3]),
+            stop=int(items[4]),
+            refseq_mrna=items[5],
+            refseq_mrna_pred=items[6],
+            refseq_ncrna=items[7],
+            refseq_mane_select=items[8] if build == Builds.build_38 else None,
+            refseq_mane_plus_clinical=(items[9] if build == Builds.build_38 else None),
+            build=build,
+        )
+        transcripts_bulk.append(transcript)
 
-            if len(transcripts_bulk) > MAX_NR_OF_RECORDS:
-                bulk_insert_transcripts(db=session, transcripts=transcripts_bulk)
-                transcripts_bulk = []
-
-        except Exception as ex:
-            LOG.error(ex)
-            return
+        if len(transcripts_bulk) > MAX_NR_OF_RECORDS:
+            bulk_insert_transcripts(db=session, transcripts=transcripts_bulk)
+            transcripts_bulk = []
 
     bulk_insert_transcripts(
         db=session, transcripts=transcripts_bulk
@@ -193,20 +188,14 @@ async def update_transcripts(
         db=session, interval_type=SQLTranscript, build=build
     )
     LOG.info(f"{nr_loaded_transcripts} transcripts loaded into the database.")
-    return nr_loaded_transcripts
 
 
 async def update_exons(
-    build: Builds, session: Session, lines: Optional[Iterator] = None
-) -> Optional[int]:
+    build: Builds, session: Session, lines: [Iterator] = None
+) -> None:
     """Loads exons into the database."""
 
     LOG.info(f"Loading exon intervals. Genome build --> {build}")
-
-    if lines is None:
-        lines: Iterator[str] = read_resource_lines(
-            build=build, interval_type=IntervalType.EXONS
-        )
 
     header = next(lines).split("\t")
     if header != EXONS_FILE_HEADER[build]:
@@ -219,33 +208,24 @@ async def update_exons(
     exons_bulk: List[ExonBase] = []
 
     for line in lines:
-        if line == END_OF_PARSED_FILE:
-            break
-
         items: List = _replace_empty_cols(line=line, nr_expected_columns=len(header))
 
-        try:
-            # Load Exon interval into the database
-            exon = ExonBase(
-                chromosome=items[0],
-                ensembl_gene_id=items[1],
-                ensembl_transcript_id=items[2],
-                ensembl_id=items[3],
-                start=int(items[4]),
-                stop=int(items[5]),
-                rank_in_transcript=int(items[-1]),
-                build=build,
-            )
+        exon = ExonBase(
+            chromosome=items[0],
+            ensembl_gene_id=items[1],
+            ensembl_transcript_id=items[2],
+            ensembl_id=items[3],
+            start=int(items[4]),
+            stop=int(items[5]),
+            rank_in_transcript=int(items[-1]),
+            build=build,
+        )
 
-            exons_bulk.append(exon)
+        exons_bulk.append(exon)
 
-            if len(exons_bulk) > MAX_NR_OF_RECORDS:
-                bulk_insert_exons(db=session, exons=exons_bulk)
-                exons_bulk = []
-
-        except Exception as ex:
-            LOG.error(ex)
-            return
+        if len(exons_bulk) > MAX_NR_OF_RECORDS:
+            bulk_insert_exons(db=session, exons=exons_bulk)
+            exons_bulk = []
 
     bulk_insert_exons(db=session, exons=exons_bulk)  # Load the remaining exons
 
@@ -253,5 +233,3 @@ async def update_exons(
         db=session, interval_type=SQLExon, build=build
     )
     LOG.info(f"{nr_loaded_exons} exons loaded into the database.")
-
-    return nr_loaded_exons
