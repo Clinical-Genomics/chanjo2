@@ -107,7 +107,6 @@ def update_genes(build: Builds, session: Session, lines: Iterator = None) -> Non
         if line == END_OF_PARSED_FILE:
             break
         items: List = _replace_empty_cols(line=line, nr_expected_columns=len(header))
-        print(items)
 
         sql_gene = SQLGene(
             build=build,
@@ -134,7 +133,6 @@ def update_genes(build: Builds, session: Session, lines: Iterator = None) -> Non
         db=session, interval_type=SQLGene, build=build
     )
     LOG.info(f"{nr_loaded_genes} genes loaded into the database.")
-    return nr_loaded_genes
 
 
 def update_transcripts(
