@@ -48,21 +48,11 @@ def update_interval_table(
         interval_lines = read_resource_lines(build=build, interval_type=interval_type)
 
     if interval_type == IntervalType.GENES:
-        n_loaded_intervals: int = update_genes(
-            build=build, lines=interval_lines, session=session
-        )
+        update_genes(build=build, lines=interval_lines, session=session)
     elif interval_type == IntervalType.TRANSCRIPTS:
-        n_loaded_intervals: int = update_transcripts(
-            build=build, lines=interval_lines, session=session
-        )
+        update_transcripts(build=build, lines=interval_lines, session=session)
     elif interval_type == IntervalType.EXONS:
-        n_loaded_intervals: int = update_transcripts(
-            build=build, lines=interval_lines, session=session
-        )
-
-    print(
-        f"{n_loaded_intervals} intervals of type {interval_type} loaded into the database"
-    )
+        update_transcripts(build=build, lines=interval_lines, session=session)
 
 
 def read_resource_lines(build: Builds, interval_type: IntervalType) -> Iterator[str]:

@@ -32,7 +32,7 @@ async def load_genes(
     build: Builds,
     file_path: Optional[str] = None,
     session: Session = Depends(get_session),
-) -> Response:
+) -> dict:
     """Load genes in the given genome build."""
 
     print(f"Loading {build} genes.")
@@ -72,7 +72,7 @@ async def load_transcripts(
     build: Builds,
     file_path: Optional[str] = None,
     session: Session = Depends(get_session),
-) -> Response:
+) -> dict:
     """Load transcripts in the given genome build."""
 
     print(f"Loading {build} transcripts.")
@@ -120,7 +120,7 @@ async def load_exons(
     build: Builds,
     file_path: Optional[str] = None,
     session: Session = Depends(get_session),
-) -> Response:
+) -> dict:
     """Load exons in the given genome build."""
 
     print(f"Loading {build} exons.")
