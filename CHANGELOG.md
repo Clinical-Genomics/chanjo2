@@ -1,3 +1,8 @@
+## [unreleased]
+### Changed
+- Update genes, transcripts exons only from pre-downloaded files from schug
+- Database updates now run in background
+
 ## [3.1]
 ### Changed
 - Updated pydantic and fastapi libs
