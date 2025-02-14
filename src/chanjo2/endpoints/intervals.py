@@ -75,7 +75,6 @@ async def load_transcripts(
 ) -> dict:
     """Load transcripts in the given genome build."""
 
-    print(f"Loading {build} transcripts.")
     background_tasks.add_task(
         update_interval_table, IntervalType.TRANSCRIPTS, build, file_path, session
     )
@@ -123,7 +122,6 @@ async def load_exons(
 ) -> dict:
     """Load exons in the given genome build."""
 
-    print(f"Loading {build} exons.")
     background_tasks.add_task(
         update_interval_table, IntervalType.EXONS, build, file_path, session
     )
