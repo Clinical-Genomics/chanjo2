@@ -1,3 +1,7 @@
+## [unreleased]
+### Changed
+- Updated schug library to v1.10
+
 ## [3.1]
 ### Changed
 - Updated pydantic and fastapi libs
