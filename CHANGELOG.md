@@ -1,6 +1,7 @@
 ## [unreleased]
 ### Changed
 - Updated schug library to v1.10
+- Disable SQLAlchemy logger
 
 ## [3.1]
 ### Changed
