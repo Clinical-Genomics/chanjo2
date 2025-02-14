@@ -102,6 +102,8 @@ def update_genes(build: Builds, session: Session, lines: Iterator, nlines: int) 
             items: List = _replace_empty_cols(
                 line=line, nr_expected_columns=len(header)
             )
+            if items == header:
+                continue
             sql_gene = SQLGene(
                 build=build,
                 chromosome=items[0],
@@ -162,6 +164,8 @@ def update_transcripts(
             items: List = _replace_empty_cols(
                 line=line, nr_expected_columns=len(header)
             )
+            if items == header:
+                continue
             transcript = SQLTranscript(
                 chromosome=items[0],
                 ensembl_gene_id=items[1],
@@ -198,12 +202,13 @@ def update_transcripts(
     LOG.warning(f"{nr_loaded_transcripts} transcripts loaded into the database.")
 
 
-async def update_exons(
-    build: Builds, session: Session, lines: [Iterator] = None
+def update_exons(
+    build: Builds, session: Session, lines: [Iterator], nlines: int
 ) -> None:
     """Loads exons into the database."""
 
-    LOG.warning(f"Updating exons. Genome build --> {build}")
+    LOG.warning(f"Updating exons. Genome build --> {build.value}")
+
     header = next(lines).split("\t")
     expected_header = EXONS_FILE_HEADER[build]
     if header[: len(expected_header)] == expected_header is False:
@@ -211,38 +216,47 @@ async def update_exons(
             f"Ensembl exons file has an unexpected format:{header}. Expected format: {EXONS_FILE_HEADER[build]}"
         )
 
+    LOG.warning(f"Deleting exons in build {build.value}")
     delete_intervals_for_build(db=session, interval_type=SQLExon, build=build)
 
     exons_bulk: List[ExonBase] = []
 
-    for line in lines:
+    with tqdm(total=nlines - 1, desc="Processing exons lines", unit="line") as pbar:
+        for line in lines:
+            line = line.strip()
+            if END_OF_PARSED_FILE in line:
+                break
+            items: List = _replace_empty_cols(
+                line=line, nr_expected_columns=len(header)
+            )
+            if items == header:
+                continue
+            exon = SQLExon(
+                chromosome=items[0],
+                ensembl_gene_id=items[1],
+                ensembl_transcript_id=items[2],
+                ensembl_id=items[3],
+                start=int(items[4]),
+                stop=int(items[5]),
+                rank_in_transcript=int(items[-1]),
+                build=build,
+            )
 
-        line = line.strip()
-        if END_OF_PARSED_FILE in line:
-            break
+            exons_bulk.append(exon)
 
-        items: List = _replace_empty_cols(line=line, nr_expected_columns=len(header))
+            # Bulk insert when threshold is reached
+            if len(exons_bulk) > MAX_NR_OF_RECORDS:
+                bulk_insert_exons(db=session, exons=exons_bulk)
+                exons_bulk = []
 
-        exon = ExonBase(
-            chromosome=items[0],
-            ensembl_gene_id=items[1],
-            ensembl_transcript_id=items[2],
-            ensembl_id=items[3],
-            start=int(items[4]),
-            stop=int(items[5]),
-            rank_in_transcript=int(items[-1]),
-            build=build,
-        )
+            pbar.update(1)
 
-        exons_bulk.append(exon)
+    # Insert remaining genes
+    if exons_bulk:
+        bulk_insert_exons(db=session, exons=exons_bulk)
 
-        if len(exons_bulk) > MAX_NR_OF_RECORDS:
-            bulk_insert_exons(db=session, exons=exons_bulk)
-            exons_bulk = []
-
-    bulk_insert_exons(db=session, exons=exons_bulk)  # Load the remaining exons
-
+    pbar.close()
     nr_loaded_exons: int = count_intervals_for_build(
         db=session, interval_type=SQLExon, build=build
     )
-    LOG.info(f"{nr_loaded_exons} exons loaded into the database.")
+    LOG.warning(f"{nr_loaded_exons} exons loaded into the database.")
