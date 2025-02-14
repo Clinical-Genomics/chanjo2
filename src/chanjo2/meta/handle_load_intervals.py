@@ -59,24 +59,6 @@ async def update_genes(
 ) -> Optional[int]:
     """Loads genes into the database."""
 
-    def update_or_insert_gene(session, sql_gene):
-        # Try to find the gene in the database
-
-        existing_gene = (
-            session.query(SQLGene)
-            .filter_by(
-                chromosome=sql_gene.chromosome, start=sql_gene.start, stop=sql_gene.stop
-            )
-            .first()
-        )
-
-        if existing_gene:
-            # Gene exists, append the new ensembl_id to the existing ensembl_ids
-            existing_gene.ensembl_ids.append(sql_gene.ensembl_ids[0])
-        else:
-            # Gene does not exist, add a new record
-            session.add(sql_gene)
-
     LOG.info(f"Loading gene intervals. Genome build --> {build}")
     if lines is None:
         lines: Iterator[str] = read_resource_lines(
@@ -112,7 +94,7 @@ async def update_genes(
                 hgnc_id=items[5],
             )
 
-            update_or_insert_gene(session, sql_gene)  # Update or insert the gene
+            session.add(sql_gene)
 
             if len(genes_bulk) > MAX_NR_OF_RECORDS:
                 bulk_insert_genes(db=session, genes=genes_bulk)

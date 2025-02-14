@@ -22,7 +22,6 @@ def delete_intervals_for_build(
 ) -> None:
     """Delete intervals from a given table by specifying a genome build."""
     statement: Delete = delete(interval_type).where(interval_type.build == build)
-    LOG.info(f"Executing statement: {statement}")
     db.execute(statement)
 
 
