@@ -84,8 +84,8 @@ async def update_genes(
         )
 
     header = next(lines).split("\t")
-
-    if header != GENES_FILE_HEADER[build]:
+    expected_header = GENES_FILE_HEADER[build]
+    if header[: len(expected_header)] == expected_header is False:
         raise ValueError(
             f"Ensembl genes file has an unexpected format:{header}. Expected format: {GENES_FILE_HEADER[build]}"
         )
@@ -144,7 +144,8 @@ async def update_transcripts(
         )
 
     header = next(lines).split("\t")
-    if header != TRANSCRIPTS_FILE_HEADER[build]:
+    expected_header = TRANSCRIPTS_FILE_HEADER[build]
+    if header[: len(expected_header)] == expected_header is False:
         raise ValueError(
             f"Ensembl transcripts file has an unexpected format:{header}. Expected format: {TRANSCRIPTS_FILE_HEADER[build]}"
         )
@@ -209,7 +210,8 @@ async def update_exons(
         )
 
     header = next(lines).split("\t")
-    if header != EXONS_FILE_HEADER[build]:
+    expected_header = EXONS_FILE_HEADER[build]
+    if header[: len(expected_header)] == expected_header is False:
         raise ValueError(
             f"Ensembl exons file has an unexpected format:{header}. Expected format: {EXONS_FILE_HEADER[build]}"
         )

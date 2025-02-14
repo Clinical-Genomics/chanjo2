@@ -21,19 +21,31 @@ BED_FILE = "a_file.bed"
 REMOTE_COVERAGE_FILE = "https://a_remote_host/a_file.d4"
 CONTENT: str = "content"
 GENOMIC_IDS_37: Dict[str, List] = {
-    "ensembl_exons_ids": ["ENSE00001799379", "ENSE00001499436", "ENSE00001676225"],
-    "ensembl_transcript_ids": ["ENST00000418454", "ENST00000384428", "ENST00000414345"],
-    "ensembl_gene_ids": ["ENSG00000233440", "ENSG00000207157", "ENSG00000196593"],
-    "hgnc_ids": [19121, 42488, 42737],
-    "hgnc_symbols": ["HMGA1P6", "RNY3P4", "ANKRD20A19P"],
+    "ensembl_exons_ids": [
+        "ENSE00001471080",
+        "ENSE00001752304",
+        "ENSE00001198708",
+        "ENSE00003483605",
+        "ENSE00001544473",
+    ],
+    "ensembl_transcript_ids": [
+        "ENST00000376592",
+        "ENST00000439211",
+        "ENST00000312293",
+        "ENST00000584729",
+        "ENST00000387461",
+    ],
+    "ensembl_gene_ids": [
+        "ENSG00000177000",
+        "ENSG00000228716",
+        "ENSG00000110195",
+        "ENSG00000076351",
+        "ENSG00000210196",
+    ],
+    "hgnc_ids": [7436, 2861, 3791, 30521, 7494],
+    "hgnc_symbols": ["MTHFR", "DHFR", "FOLR1", "SLC46A1", "MT-TP"],
 }
-GENOMIC_IDS_38: Dict[str, List] = {
-    "ensembl_exons_ids": ["ENSE00003889014", "ENSE00003689846", "ENSE00003510521"],
-    "ensembl_transcript_ids": ["ENST00000673477", "ENST00000378391", "ENST00000270722"],
-    "ensembl_gene_ids": ["ENSG00000160072", "ENSG00000142611", "ENSG00000171729"],
-    "hgnc_ids": [24007, 14000, 25488],
-    "hgnc_symbols": ["ATAD3B", "PRDM16", "TMEM51"],
-}
+GENOMIC_IDS_38: Dict[str, List] = GENOMIC_IDS_37
 
 engine = create_engine(TEST_DB, connect_args=DEMO_CONNECT_ARGS)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
