@@ -30,7 +30,7 @@ def create_db_and_tables():
 async def lifespan(app_: FastAPI):
     configure_log(app=app, log=LOG)
     LOG.info("Starting up...")
-    await startup_db()
+    startup_db()
     yield
     LOG.info("Shutting down...")
 
@@ -54,7 +54,7 @@ for router, tag in APP_ROUTER_TAGS:
     )
 
 
-async def startup_db():
+def startup_db():
     # Create database tables
     create_db_and_tables()
 
@@ -62,8 +62,8 @@ async def startup_db():
 
     if os.getenv("DEMO") or not os.getenv("MYSQL_DATABASE_NAME"):
         LOG.warning("Running a demo instance of Chanjo2")
-        if await load_demo_data():
-            LOG.info("Demo data loaded into database")
+        load_demo_data()
+        LOG.info("Demo data loaded into database")
 
 
 @app.get("/")
