@@ -446,14 +446,14 @@ test = ["pytest (>=6)"]
 
 [[package]]
 name = "fastapi"
-version = "0.115.7"
+version = "0.115.8"
 description = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
 optional = false
 python-versions = ">=3.8"
 groups = ["main"]
 files = [
-    {file = "fastapi-0.115.7-py3-none-any.whl", hash = "sha256:eb6a8c8bf7f26009e8147111ff15b5177a0e19bb4a45bc3486ab14804539d21e"},
-    {file = "fastapi-0.115.7.tar.gz", hash = "sha256:0f106da6c01d88a6786b3248fb4d7a940d071f6f488488898ad5d354b25ed015"},
+    {file = "fastapi-0.115.8-py3-none-any.whl", hash = "sha256:753a96dd7e036b34eeef8babdfcfe3f28ff79648f86551eb36bfc1b0bf4a8cbf"},
+    {file = "fastapi-0.115.8.tar.gz", hash = "sha256:0ce9111231720190473e222cdf0f07f7206ad7e53ea02beb1d2dc36e2f0741e9"},
 ]
 
 [package.dependencies]
@@ -1463,14 +1463,14 @@ jupyter = ["ipywidgets (>=7.5.1,<9)"]
 
 [[package]]
 name = "schug"
-version = "1.9.0"
+version = "1.10.0"
 description = "Keep track of genes, transcripts and exons from different sources"
 optional = false
 python-versions = "<4.0,>=3.9"
 groups = ["main"]
 files = [
-    {file = "schug-1.9.0-py3-none-any.whl", hash = "sha256:c2dd96f924dd7d17331c4e9efaaa85872e7941627353462f012378159edbac8e"},
-    {file = "schug-1.9.0.tar.gz", hash = "sha256:2bf4acebf250bd6291dc530efeb542d8f7133935432bde32717f024f6dd0731c"},
+    {file = "schug-1.10.0-py3-none-any.whl", hash = "sha256:4d29ebaa5a7dacd4745c7cebe5b0ff72d9c662b3cc68291e6ba1c2eaabfcded8"},
+    {file = "schug-1.10.0.tar.gz", hash = "sha256:5fd119f08912f06985e4e8eb49e364cb9125f01c54470cc6c741e55eb50fcae4"},
 ]
 
 [package.dependencies]
@@ -1876,4 +1876,4 @@ m1 = []
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.9"
-content-hash = "314596ebe0e2278c84a5890b066f6d9f3da96d570db9ea3ce3f96f83be86155d"
+content-hash = "e5e6622525dae245a8fba53846248717a4e507e89487c176dd2beb729cd6a8a7"
