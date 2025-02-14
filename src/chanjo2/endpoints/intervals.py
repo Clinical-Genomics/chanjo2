@@ -27,7 +27,7 @@ def count_nr_filters(filters: List[str]) -> int:
 
 
 @router.post("/intervals/load/genes/{build}")
-async def load_genes(
+def load_genes(
     background_tasks: BackgroundTasks,
     build: Builds,
     file_path: str,
@@ -45,7 +45,7 @@ async def load_genes(
 
 
 @router.post("/intervals/genes", response_model=List[GeneBase])
-async def genes(query: GeneQuery, session: Session = Depends(get_session)):
+def genes(query: GeneQuery, session: Session = Depends(get_session)):
     """Return genes according to query parameters."""
     nr_filters = count_nr_filters(
         filters=[query.ensembl_ids, query.hgnc_ids, query.hgnc_symbols]
@@ -67,7 +67,7 @@ async def genes(query: GeneQuery, session: Session = Depends(get_session)):
 
 
 @router.post("/intervals/load/transcripts/{build}")
-async def load_transcripts(
+def load_transcripts(
     background_tasks: BackgroundTasks,
     build: Builds,
     file_path: str,
@@ -84,9 +84,7 @@ async def load_transcripts(
 
 
 @router.post("/intervals/transcripts", response_model=List[TranscriptBase])
-async def transcripts(
-    query: GeneIntervalQuery, session: Session = Depends(get_session)
-):
+def transcripts(query: GeneIntervalQuery, session: Session = Depends(get_session)):
     """Return transcripts according to query parameters."""
     nr_filters = count_nr_filters(
         filters=[
@@ -114,7 +112,7 @@ async def transcripts(
 
 
 @router.post("/intervals/load/exons/{build}")
-async def load_exons(
+def load_exons(
     background_tasks: BackgroundTasks,
     build: Builds,
     file_path: str,
@@ -131,7 +129,7 @@ async def load_exons(
 
 
 @router.post("/intervals/exons", response_model=List[ExonBase])
-async def exons(query: GeneIntervalQuery, session: Session = Depends(get_session)):
+def exons(query: GeneIntervalQuery, session: Session = Depends(get_session)):
     """Return exons in the given genome build."""
     nr_filters = count_nr_filters(
         filters=[
