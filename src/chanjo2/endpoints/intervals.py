@@ -30,7 +30,7 @@ def count_nr_filters(filters: List[str]) -> int:
 async def load_genes(
     background_tasks: BackgroundTasks,
     build: Builds,
-    file_path: Optional[str] = None,
+    file_path: str,
     session: Session = Depends(get_session),
 ) -> dict:
     """Load genes in the given genome build."""
@@ -70,7 +70,7 @@ async def genes(query: GeneQuery, session: Session = Depends(get_session)):
 async def load_transcripts(
     background_tasks: BackgroundTasks,
     build: Builds,
-    file_path: Optional[str] = None,
+    file_path: str,
     session: Session = Depends(get_session),
 ) -> dict:
     """Load transcripts in the given genome build."""
@@ -117,7 +117,7 @@ async def transcripts(
 async def load_exons(
     background_tasks: BackgroundTasks,
     build: Builds,
-    file_path: Optional[str] = None,
+    file_path: str,
     session: Session = Depends(get_session),
 ) -> dict:
     """Load exons in the given genome build."""
