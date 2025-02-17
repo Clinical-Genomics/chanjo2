@@ -3,6 +3,7 @@
 - Updated schug library to v1.10
 - Disable SQLAlchemy logger
 - To avoid timeout errors, update genes, transcripts exons only from pre-downloaded files from schug
+- Documentation on how to update genes, transcripts and exons database tables
 
 ## [3.1]
 ### Changed

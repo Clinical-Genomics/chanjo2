@@ -3,7 +3,7 @@
 Genes, transcripts and exons should be loaded and updated at regular intervals of time. Depending on the type of sequencing data analysed using chanjo2, <strong>loading of transcripts and exons might not be required.</strong>
 For instance, gene coordinates should be enough for whole genome sequencing (WGS) experiments, while transcripts and exons data are necessary to return statistics from transcripts and exons-based experiments.
 
-Genes, transcripts and exons are retrieved from the [Ensembl Biomart][ensembl-biomart] using the [Schug][shug] library and loaded into the database in three distinct tables.
+Genes, transcripts and exons can pre pre-downloaded from the [Ensembl Biomart][ensembl-biomart] using the [Schug][shug] library and loaded into the database in three distinct tables.
 
 <strong>Genes should be loaded into the database before transcripts and exons intervals.</strong> Depending on the hardware in use and the HTML connection speed, the process of loading these intervals might take some time. For this reason requests sent to these endpoints are asynchronous, so that they don't time out while processing the information.
 
@@ -15,7 +15,7 @@ Loading of genes in a given genome build can be achieved by sending a POST reque
 
 ``` shell
 curl -X 'POST' \
-  'http://localhost:8000/intervals/load/genes/GRCh38' \
+  'http://localhost:8000/intervals/load/genes/GRCh38?file_path=<path_to_genes_file_downloaded_from_schug_GRCh38.txt>' \
   -H 'accept: application/json' \
   -d ''
 ```
@@ -28,7 +28,7 @@ Transcripts can be loaded/updated by using the `/intervals/load/transcripts/{<ge
 
 ``` shell
 curl -X 'POST' \
-  'http://localhost:8000/intervals/load/transcripts/GRCh38' \
+  'http://localhost:8000/intervals/load/transcripts/GRCh38?file_path=<path_to_transcripts_file_downloaded_from_schug_GRCh38.txt>' \
   -H 'accept: application/json' \
   -d ''
 ```
@@ -39,7 +39,7 @@ As for the previous endpoints, exons are loaded by sending a POST request to the
 
 ``` shell
 curl -X 'POST' \
-  'http://localhost:8000/intervals/load/transcripts/GRCh38' \
+  'http://localhost:8000/intervals/load/transcripts/GRCh38?file_path=<path_to_exons_file_downloaded_from_schug_GRCh38.txt>' \
   -H 'accept: application/json' \
   -d ''
 ```
