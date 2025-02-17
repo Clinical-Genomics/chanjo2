@@ -67,7 +67,7 @@ class GeneBase(IntervalBase):
     hgnc_id: Optional[int]
     hgnc_symbol: Optional[str]
 
-    model_config = ConfigDict(from_attributes=True)  # type: ignore
+    model_config = ConfigDict(from_attributes=True)
 
 
 class GeneQuery(BaseModel):
