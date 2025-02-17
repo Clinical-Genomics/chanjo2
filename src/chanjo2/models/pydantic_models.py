@@ -4,7 +4,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Dict, List, Optional, Union
 
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from starlette.datastructures import FormData
 
 from chanjo2.constants import (
@@ -67,8 +67,7 @@ class GeneBase(IntervalBase):
     hgnc_id: Optional[int]
     hgnc_symbol: Optional[str]
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class GeneQuery(BaseModel):
