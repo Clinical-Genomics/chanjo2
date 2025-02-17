@@ -1,9 +1,8 @@
-from typing import Dict, Iterator, List, Type
+from typing import Dict, List, Type
 
 import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
-from pytest_mock.plugin import MockerFixture
 
 from chanjo2.constants import MULTIPLE_PARAMS_NOT_SUPPORTED_MSG
 from chanjo2.meta.handle_bed import resource_lines
@@ -19,45 +18,6 @@ MOCKED_FILE_PARSER = "chanjo2.meta.handle_load_intervals.read_resource_lines"
 
 @pytest.mark.parametrize("build, path", BUILD_GENES_RESOURCE)
 def test_load_genes(
-    build: str,
-    path: str,
-    client: TestClient,
-    endpoints: Type,
-    mocker: MockerFixture,
-):
-    """Test the endpoint that adds genes to the database in a given genome build."""
-
-    # GIVEN a patched response from Ensembl Biomart, via schug
-    gene_lines: Iterator = resource_lines(path)
-    mocker.patch(
-        MOCKED_FILE_PARSER,
-        return_value=gene_lines,
-    )
-
-    # GIVEN a number of genes contained in the demo file
-    nr_genes: int = len(list(resource_lines(path))) - 1
-
-    # WHEN sending a request to the load_genes with genome build
-    response: Response = client.post(f"{endpoints.LOAD_GENES}{build}")
-
-    # THEN it should return success
-    assert response.status_code == status.HTTP_200_OK
-
-    # THEN all the genes should be loaded
-    assert response.json()["detail"] == f"{nr_genes} genes loaded into the database"
-
-    # WHEN sending a request to the "genes" endpoint
-    response: Response = client.post(endpoints.GENES, json={"build": build})
-    assert response.status_code == status.HTTP_200_OK
-    result = response.json()
-    # THEN the expected number of genes should be returned
-    assert len(result) == nr_genes
-    # AND the gene should have the right format
-    assert GeneBase(**result[0])
-
-
-@pytest.mark.parametrize("build, path", BUILD_GENES_RESOURCE)
-def test_load_genes_from_file(
     build: str,
     path: str,
     client: TestClient,
@@ -183,37 +143,6 @@ def test_genes_by_hgnc_symbols(
 
 @pytest.mark.parametrize("build, path", BUILD_TRANSCRIPTS_RESOURCE)
 def test_load_transcripts(
-    build: str,
-    path: str,
-    client: TestClient,
-    endpoints: Type,
-    mocker: MockerFixture,
-):
-    """Test the endpoint that adds genes to the database in a given genome build."""
-
-    # GIVEN a patched response from Ensembl Biomart, via schug
-    transcript_lines: Iterator = resource_lines(path)
-    mocker.patch(
-        MOCKED_FILE_PARSER,
-        return_value=transcript_lines,
-    )
-
-    # GIVEN a number of transcripts contained in the demo file
-    nr_transcripts: int = len(list(resource_lines(path))) - 1
-
-    # WHEN sending a request to the load_genes with genome build
-    response: Response = client.post(f"{endpoints.LOAD_TRANSCRIPTS}{build}")
-    # THEN it should return success
-    assert response.status_code == status.HTTP_200_OK
-    # THEN all transcripts should be loaded
-    assert (
-        response.json()["detail"]
-        == f"{nr_transcripts} transcripts loaded into the database"
-    )
-
-
-@pytest.mark.parametrize("build, path", BUILD_TRANSCRIPTS_RESOURCE)
-def test_load_transcripts_from_file(
     build: str,
     path: str,
     client: TestClient,
@@ -375,36 +304,7 @@ def test_transcripts_by_hgnc_symbols(
 
 
 @pytest.mark.parametrize("build, path", BUILD_EXONS_RESOURCE)
-def test_load_exons(
-    build: str,
-    path: str,
-    client: TestClient,
-    endpoints: Type,
-    mocker: MockerFixture,
-):
-    """Test the endpoint that adds exons to the database in a given genome build."""
-
-    # GIVEN a patched response from Ensembl Biomart, via schug
-    exons_lines: Iterator = resource_lines(path)
-    mocker.patch(
-        MOCKED_FILE_PARSER,
-        return_value=exons_lines,
-    )
-
-    # GIVEN a number of exons contained in the demo file
-    nr_exons: int = len(list(resource_lines(path))) - 1
-
-    # WHEN sending a request to the load_genes with genome build
-    response: Response = client.post(f"{endpoints.LOAD_EXONS}{build}")
-
-    # THEN it should return success
-    assert response.status_code == status.HTTP_200_OK
-    # THEN all exons should be loaded
-    assert response.json()["detail"] == f"{nr_exons} exons loaded into the database"
-
-
-@pytest.mark.parametrize("build, path", BUILD_EXONS_RESOURCE)
-def test_load_exons_from_file(
+def test_load_exons_from(
     build: str,
     path: str,
     client: TestClient,
