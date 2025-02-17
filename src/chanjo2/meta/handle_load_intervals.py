@@ -59,7 +59,7 @@ async def update_genes(
 ) -> Optional[int]:
     """Loads genes into the database."""
 
-    LOG.info(f"Loading gene intervals. Genome build --> {build}")
+    LOG.warning(f"Updating genes. Genome build --> {build}")
     if lines is None:
         lines: Iterator[str] = read_resource_lines(
             build=build, interval_type=IntervalType.GENES
@@ -72,6 +72,7 @@ async def update_genes(
             f"Ensembl genes file has an unexpected format:{header}. Expected format: {GENES_FILE_HEADER[build]}"
         )
 
+    LOG.warning(f"Deleting genes, transcripts, exons in build {build}")
     for interval_type in [SQLExon, SQLTranscript, SQLGene]:
         delete_intervals_for_build(db=session, interval_type=interval_type, build=build)
 
@@ -82,7 +83,8 @@ async def update_genes(
             break
 
         items: List = _replace_empty_cols(line=line, nr_expected_columns=len(header))
-
+        if items == header:
+            continue
         try:
             sql_gene = SQLGene(
                 build=build,
@@ -118,7 +120,7 @@ async def update_transcripts(
 ) -> Optional[int]:
     """Loads transcripts into the database."""
 
-    LOG.info(f"Loading transcript intervals. Genome build --> {build}")
+    LOG.warning(f"Updating transcripts. Genome build --> {build}")
 
     if lines is None:
         lines: Iterator[str] = read_resource_lines(
@@ -132,6 +134,7 @@ async def update_transcripts(
             f"Ensembl transcripts file has an unexpected format:{header}. Expected format: {TRANSCRIPTS_FILE_HEADER[build]}"
         )
 
+    LOG.warning(f"Deleting transcripts in build {build}")
     delete_intervals_for_build(db=session, interval_type=SQLTranscript, build=build)
 
     transcripts_bulk: List[TranscriptBase] = []
@@ -141,9 +144,10 @@ async def update_transcripts(
             break
 
         items: List = _replace_empty_cols(line=line, nr_expected_columns=len(header))
-
+        if items == header:
+            continue
         try:
-            transcript = TranscriptBase(
+            transcript = SQLTranscript(
                 chromosome=items[0],
                 ensembl_gene_id=items[1],
                 ensembl_id=items[2],
@@ -184,7 +188,7 @@ async def update_exons(
 ) -> Optional[int]:
     """Loads exons into the database."""
 
-    LOG.info(f"Loading exon intervals. Genome build --> {build}")
+    LOG.warning(f"Updating exons. Genome build --> {build}")
 
     if lines is None:
         lines: Iterator[str] = read_resource_lines(
@@ -198,6 +202,7 @@ async def update_exons(
             f"Ensembl exons file has an unexpected format:{header}. Expected format: {EXONS_FILE_HEADER[build]}"
         )
 
+    LOG.warning(f"Deleting exons in build {build}")
     delete_intervals_for_build(db=session, interval_type=SQLExon, build=build)
 
     exons_bulk: List[ExonBase] = []
@@ -207,10 +212,11 @@ async def update_exons(
             break
 
         items: List = _replace_empty_cols(line=line, nr_expected_columns=len(header))
-
+        if items == header:
+            continue
         try:
             # Load Exon interval into the database
-            exon = ExonBase(
+            exon = SQLExon(
                 chromosome=items[0],
                 ensembl_gene_id=items[1],
                 ensembl_transcript_id=items[2],

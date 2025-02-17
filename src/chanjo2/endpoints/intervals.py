@@ -34,19 +34,16 @@ def count_nr_filters(filters: List[str]) -> int:
 @router.post("/intervals/load/genes/{build}")
 async def load_genes(
     build: Builds,
-    file_path: Optional[str] = None,
+    file_path: str,
     session: Session = Depends(get_session),
 ) -> Response:
     """Load genes in the given genome build."""
 
     try:
-        if file_path:
-            gene_lines: Iterator[str] = resource_lines(file_path=file_path)
-            nr_loaded_genes: int = await update_genes(
-                build=build, lines=gene_lines, session=session
-            )
-        else:
-            nr_loaded_genes: int = await update_genes(build=build, session=session)
+        gene_lines: Iterator[str] = resource_lines(file_path=file_path)
+        nr_loaded_genes: int = await update_genes(
+            build=build, lines=gene_lines, session=session
+        )
         return JSONResponse(
             content={"detail": f"{nr_loaded_genes} genes loaded into the database"}
         )
@@ -83,21 +80,16 @@ async def genes(query: GeneQuery, session: Session = Depends(get_session)):
 @router.post("/intervals/load/transcripts/{build}", response_model=List[GeneBase])
 async def load_transcripts(
     build: Builds,
-    file_path: Optional[str] = None,
+    file_path: str,
     session: Session = Depends(get_session),
 ) -> Response:
     """Load transcripts in the given genome build."""
 
     try:
-        if file_path:
-            transcripts_lines: Iterator[str] = resource_lines(file_path=file_path)
-            nr_loaded_transcripts: int = await update_transcripts(
-                build=build, lines=transcripts_lines, session=session
-            )
-        else:
-            nr_loaded_transcripts: int = await update_transcripts(
-                build=build, session=session
-            )
+        transcripts_lines: Iterator[str] = resource_lines(file_path=file_path)
+        nr_loaded_transcripts: int = await update_transcripts(
+            build=build, lines=transcripts_lines, session=session
+        )
         return JSONResponse(
             content={
                 "detail": f"{nr_loaded_transcripts} transcripts loaded into the database"
@@ -144,19 +136,16 @@ async def transcripts(
 @router.post("/intervals/load/exons/{build}")
 async def load_exons(
     build: Builds,
-    file_path: Optional[str] = None,
+    file_path: str,
     session: Session = Depends(get_session),
 ) -> Response:
     """Load exons in the given genome build."""
 
     try:
-        if file_path:
-            exons_lines: Iterator[str] = resource_lines(file_path=file_path)
-            nr_loaded_exons: int = await update_exons(
-                build=build, lines=exons_lines, session=session
-            )
-        else:
-            nr_loaded_exons: int = await update_exons(build=build, session=session)
+        exons_lines: Iterator[str] = resource_lines(file_path=file_path)
+        nr_loaded_exons: int = await update_exons(
+            build=build, lines=exons_lines, session=session
+        )
         return JSONResponse(
             content={"detail": f"{nr_loaded_exons} exons loaded into the database"}
         )
