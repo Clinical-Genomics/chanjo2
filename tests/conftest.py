@@ -62,6 +62,7 @@ class Endpoints(str):
     TRANSCRIPTS = "/intervals/transcripts"
     LOAD_EXONS = "/intervals/load/exons/"
     EXONS = "/intervals/exons"
+    INTERVALS_BY_BUILD = "/intervals/intervals_count_by_build"
     INTERVAL_COVERAGE = "/coverage/d4/interval/"
     INTERVALS_FILE_COVERAGE = "/coverage/d4/interval_file/"
     GENES_COVERAGE_SUMMARY = "/coverage/d4/genes/summary"

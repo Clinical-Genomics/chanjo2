@@ -188,4 +188,5 @@ async def exons(query: GeneIntervalQuery, session: Session = Depends(get_session
 
 @router.get("/intervals/intervals_count_by_build", response_model=dict)
 def intervals_count_by_build(session: Session = Depends(get_session)):
+    """Returns the number of genes, transcripts and exons available in the database for each genome build."""
     return get_interval_counts(db=session)
