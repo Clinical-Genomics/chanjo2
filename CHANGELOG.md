@@ -7,6 +7,8 @@
 - To avoid timeout errors, update genes, transcripts exons only from pre-downloaded files from schug
 - Documentation on how to update genes, transcripts and exons database tables
 - Renamed Pydantic `orm_mode` config param to `model_config`
+### Removed
+- Code for downloading resources from Ensembl using the schug library
 
 ## [3.1]
 ### Changed

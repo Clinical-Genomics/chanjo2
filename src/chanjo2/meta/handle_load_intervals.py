@@ -1,13 +1,9 @@
 import logging
 from typing import Iterator, List, Optional, Union
 
-import requests
-from schug.load.biomart import EnsemblBiomartClient
-from schug.models.common import Build as SchugBuild
 from sqlalchemy.orm import Session
 
 from chanjo2.constants import (
-    ENSEMBL_RESOURCE_CLIENT,
     EXONS_FILE_HEADER,
     GENES_FILE_HEADER,
     TRANSCRIPTS_FILE_HEADER,
@@ -30,17 +26,6 @@ from chanjo2.models.pydantic_models import (
 LOG = logging.getLogger(__name__)
 MAX_NR_OF_RECORDS = 10_000
 END_OF_PARSED_FILE: str = "[success]"
-
-
-def read_resource_lines(build: Builds, interval_type: IntervalType) -> Iterator[str]:
-    """Returns lines of a remote Ensembl Biomart resource (genes, transcripts or exons) in a given genome build."""
-
-    shug_client: EnsemblBiomartClient = ENSEMBL_RESOURCE_CLIENT[interval_type](
-        build=SchugBuild(build)
-    )
-    url: str = shug_client.build_url(xml=shug_client.xml)
-    response: requests.models.responses = requests.get(url, stream=True)
-    return response.iter_lines(decode_unicode=True)
 
 
 def _replace_empty_cols(line: str, nr_expected_columns: int) -> List[Union[str, None]]:
