@@ -1,11 +1,11 @@
-from typing import Iterator, List, Optional
+from typing import Iterator, List
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from chanjo2.constants import MULTIPLE_PARAMS_NOT_SUPPORTED_MSG
-from chanjo2.crud.intervals import get_gene_intervals, get_genes
+from chanjo2.crud.intervals import get_gene_intervals, get_genes, get_interval_counts
 from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import resource_lines
 from chanjo2.meta.handle_load_intervals import (
@@ -13,7 +13,7 @@ from chanjo2.meta.handle_load_intervals import (
     update_genes,
     update_transcripts,
 )
-from chanjo2.models import SQLExon, SQLGene, SQLTranscript
+from chanjo2.models import SQLExon, SQLTranscript
 from chanjo2.models.pydantic_models import (
     Builds,
     ExonBase,
@@ -184,3 +184,9 @@ async def exons(query: GeneIntervalQuery, session: Session = Depends(get_session
         limit=query.limit if nr_filters == 0 else None,
         interval_type=SQLExon,
     )
+
+
+@router.get("/intervals/intervals_count_by_build", response_model=dict)
+def intervals_count_by_build(session: Session = Depends(get_session)):
+    """Returns the number of genes, transcripts and exons available in the database for each genome build."""
+    return get_interval_counts(db=session)

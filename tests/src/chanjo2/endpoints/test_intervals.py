@@ -6,7 +6,13 @@ from fastapi.testclient import TestClient
 
 from chanjo2.constants import MULTIPLE_PARAMS_NOT_SUPPORTED_MSG
 from chanjo2.meta.handle_bed import resource_lines
-from chanjo2.models.pydantic_models import Builds, ExonBase, GeneBase, TranscriptBase
+from chanjo2.models.pydantic_models import (
+    Builds,
+    ExonBase,
+    GeneBase,
+    IntervalType,
+    TranscriptBase,
+)
 from chanjo2.populate_demo import (
     BUILD_EXONS_RESOURCE,
     BUILD_GENES_RESOURCE,
@@ -458,3 +464,23 @@ def test_exons_by_hgnc_symbols(
     assert response.status_code == status.HTTP_200_OK
     exons = response.json()
     assert ExonBase(**exons[0])
+
+
+def test_intervals_count_by_build(demo_client: TestClient, endpoints: Type):
+    """Tests the endpoint that returns the number of genes, transcripts and exons available in the database for each genome build."""
+
+    # GIVEN a populated demo database
+    # WHEN sending a GET request to the "intervals_count_by_build" endpoint
+    response: Response = demo_client.get(endpoints.INTERVALS_BY_BUILD)
+
+    # THEN response should be successful
+    assert response.status_code == status.HTTP_200_OK
+    result: dict = response.json()
+
+    # AND contain number of intervals by build
+    for build in Builds.get_enum_values():
+        for itype in IntervalType.get_enum_values():
+            if itype == "custom_intervals":
+                continue
+            count = result[build][f"number_of_{itype}"]
+            assert isinstance(count, int)

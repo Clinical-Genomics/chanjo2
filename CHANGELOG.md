@@ -1,4 +1,6 @@
 ## [unreleased]
+### Added
+- `/intervals/intervals_count_by_build` endpoint, which retuns the number of genes, transcripts, exons for each genome build
 ### Changed
 - Updated schug library to v1.10
 - Disable SQLAlchemy logger
