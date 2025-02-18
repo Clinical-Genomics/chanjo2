@@ -19,8 +19,6 @@ from chanjo2.populate_demo import (
     BUILD_TRANSCRIPTS_RESOURCE,
 )
 
-MOCKED_FILE_PARSER = "chanjo2.meta.handle_load_intervals.read_resource_lines"
-
 
 @pytest.mark.parametrize("build, path", BUILD_GENES_RESOURCE)
 def test_load_genes(
