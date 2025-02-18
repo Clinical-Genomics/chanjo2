@@ -1,4 +1,4 @@
-## [unreleased]
+## [3.2]
 ### Added
 - `/intervals/intervals_count_by_build` endpoint, which retuns the number of genes, transcripts, exons for each genome build
 ### Changed
