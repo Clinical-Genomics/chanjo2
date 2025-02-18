@@ -1,18 +1,12 @@
 import logging
-from typing import List, Optional, Union
+from typing import Dict, List, Optional, Union
 
-from sqlalchemy import delete, or_, text
+from sqlalchemy import delete, func, or_, text
 from sqlalchemy.orm import Session, query
 from sqlalchemy.sql.expression import Delete
 
 from chanjo2.models import SQLExon, SQLGene, SQLTranscript
-from chanjo2.models.pydantic_models import (
-    Builds,
-    ExonBase,
-    GeneBase,
-    TranscriptBase,
-    TranscriptTag,
-)
+from chanjo2.models.pydantic_models import Builds, TranscriptBase, TranscriptTag
 
 LOG = logging.getLogger(__name__)
 
@@ -192,3 +186,20 @@ def bulk_insert_exons(db: Session, exons: List[SQLExon]) -> None:
     """Bulk insert exons into the database."""
     db.bulk_save_objects(exons)
     db.commit()
+
+
+def get_interval_counts(db: Session) -> Dict:
+    counts = {}
+    for build in Builds.get_enum_values():
+        counts[build] = {
+            "number_of_genes": db.query(func.count(SQLGene.id))
+            .filter(SQLGene.build == build)
+            .scalar(),
+            "number_of_transcripts": db.query(func.count(SQLTranscript.id))
+            .filter(SQLTranscript.build == build)
+            .scalar(),
+            "number_of_exons": db.query(func.count(SQLExon.id))
+            .filter(SQLExon.build == build)
+            .scalar(),
+        }
+    return counts
