@@ -110,8 +110,8 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
             detail=WRONG_BED_FILE_MSG,
         )
 
-    interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]] = bed_file_interval_id_coords(
-        file_path=query.intervals_bed_path
+    interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]] = (
+        bed_file_interval_id_coords(file_path=query.intervals_bed_path)
     )
 
     interval_ids_coords = sort_interval_ids_coords(interval_ids_coords)
@@ -144,7 +144,9 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
 
 
 @router.post("/coverage/d4/genes/summary", response_model=Dict)
-def d4_genes_condensed_summary(query: CoverageSummaryQuery, db: Session = Depends(get_session)):
+def d4_genes_condensed_summary(
+    query: CoverageSummaryQuery, db: Session = Depends(get_session)
+):
     """Returning condensed summary containing only sample's mean coverage and completeness above a default threshold."""
 
     condensed_stats = {}
@@ -172,8 +174,8 @@ def d4_genes_condensed_summary(query: CoverageSummaryQuery, db: Session = Depend
                 detail=WRONG_COVERAGE_FILE_MSG,
             )
 
-        interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]] = set_interval_ids_coords(
-            sql_intervals=sql_intervals
+        interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]] = (
+            set_interval_ids_coords(sql_intervals=sql_intervals)
         )
 
         # Sort intervals by chrom, start & stop
@@ -195,7 +197,8 @@ def d4_genes_condensed_summary(query: CoverageSummaryQuery, db: Session = Depend
             chrom_prefix=chrom_prefix,
         )
         genes_coverage_completeness_values: List[float] = [
-            value[query.coverage_threshold] * 100 for value in genes_coverage_completeness.values()
+            value[query.coverage_threshold] * 100
+            for value in genes_coverage_completeness.values()
         ]
 
         condensed_stats[sample.name] = {
@@ -213,7 +216,10 @@ def d4_genes_condensed_summary(query: CoverageSummaryQuery, db: Session = Depend
 @router.get("/coverage/samples/predicted_sex", response_model=Dict)
 async def get_samples_predicted_sex(coverage_file_path: str):
     """Return predicted sex for a sample given the coverage over its sex chromosomes."""
-    if isfile(coverage_file_path) is False or validators.url(coverage_file_path) is False:
+    if (
+        isfile(coverage_file_path) is False
+        or validators.url(coverage_file_path) is False
+    ):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=WRONG_COVERAGE_FILE_MSG,
