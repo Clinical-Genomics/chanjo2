@@ -50,37 +50,43 @@ def d4_interval_coverage(query: FileCoverageQuery):
             detail=WRONG_COVERAGE_FILE_MSG,
         )
 
-    interval: str = query.chromosome
+    chrom_prefix: str = get_chromosomes_prefix(query.coverage_file_path)
+    chrom: str = query.chromosome.replace("chr", "")
+
     if None in [query.start, query.end]:  # Coverage over an entire chromosome
         return IntervalCoverage(
             mean_coverage=get_d4tools_chromosome_mean_coverage(
-                d4_file_path=query.coverage_file_path, chromosomes=[query.chromosome]
+                d4_file_path=query.coverage_file_path,
+                chromosomes=[f"{chrom_prefix}{chrom}"],
             )[0][1],
             completeness={},
-            interval_id=interval,
+            interval_id=f"{chrom_prefix}{chrom}",
         )
 
     interval_ids_coords = [
         (
-            f"{query.chromosome}:{query.start}-{query.end}",
-            (query.chromosome, query.start, query.end),
+            f"{chrom}:{query.start}-{query.end}",
+            (chrom, query.start, query.end),
         )
     ]
 
     mean_coverage: float = get_d4tools_intervals_mean_coverage(
-        d4_file_path=query.coverage_file_path, interval_ids_coords=interval_ids_coords
+        d4_file_path=query.coverage_file_path,
+        interval_ids_coords=interval_ids_coords,
+        chrom_prefix=chrom_prefix,
     )[0]
 
     completeness_stats = get_completeness_stats(
         d4_file_path=query.coverage_file_path,
-        interval_ids_coords=[(interval, (query.chromosome, query.start, query.end))],
+        interval_ids_coords=[(chrom, (chrom, query.start, query.end))],
         thresholds=query.completeness_thresholds,
+        chrom_prefix=chrom_prefix,
     )
 
     return IntervalCoverage(
         mean_coverage=mean_coverage,
-        completeness=completeness_stats[interval],
-        interval_id=f"{query.chromosome}:{query.start}-{query.end}",
+        completeness=completeness_stats[chrom],
+        interval_id=f"{chrom}:{query.start}-{query.end}",
     )
 
 
