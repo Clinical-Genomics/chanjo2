@@ -19,7 +19,7 @@ def bed_file_interval_id_coords(
 
     with open(file_path, "r") as bed_file:
         bed_file_contents: List[List[str]] = [
-            line.rstrip().split("\t")
+            line.rstrip().replace("chr", "").split("\t")
             for line in bed_file
             if line.startswith("#") is False
         ]
@@ -43,7 +43,7 @@ def bed_file_interval_id_coords(
 
 
 def sort_interval_ids_coords(
-    interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]]
+    interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]],
 ) -> List[Tuple[str, Tuple[str, int, int]]]:
     """Sort intervals and their IDs by chrom, start and stop positions."""
     return sorted(

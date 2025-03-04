@@ -42,17 +42,20 @@ def get_completeness_stats(
     d4_file_path: str,
     thresholds: List[int],
     interval_ids_coords: List[Tuple[str, tuple]],
+    chrom_prefix: str,
 ) -> Dict[str, dict]:
     """Compute coverage and completeness over the given intervals of a d4 file."""
 
     interval_id_completeness_stats: Dict[str:dict] = {}
 
     bed_lines = [
-        f"{coords[CHROM_INDEX]}\t{coords[START_INDEX]}\t{coords[STOP_INDEX]}"
+        f"{chrom_prefix}{coords[CHROM_INDEX]}\t{coords[START_INDEX]}\t{coords[STOP_INDEX]}"
         for _, coords in interval_ids_coords
     ]
+
     # Write genomic intervals to a temporary file
     with tempfile.NamedTemporaryFile(mode="w") as intervals_bed:
+
         intervals_bed.write("\n".join(bed_lines))
         intervals_bed.flush()
         intervals_completeness = get_d4tools_intervals_completeness(

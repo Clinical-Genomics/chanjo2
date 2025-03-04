@@ -9,6 +9,7 @@ from chanjo2.meta.handle_completeness_stats import (
     get_d4tools_intervals_completeness,
 )
 from chanjo2.meta.handle_coverage_stats import (
+    get_chromosomes_prefix,
     get_d4tools_chromosome_mean_coverage,
     get_d4tools_intervals_coverage,
     get_d4tools_intervals_mean_coverage,
@@ -20,7 +21,7 @@ LOG = logging.getLogger(__name__)
 
 
 def set_interval_ids_coords(
-    sql_intervals: List[Union[SQLGene, SQLTranscript, SQLExon]]
+    sql_intervals: List[Union[SQLGene, SQLTranscript, SQLExon]],
 ) -> List[Tuple[str, Tuple[str, int, int]]]:
     """Returns tuples with an ensembl_id and coordinates from a list of SQL intervals."""
 
@@ -56,9 +57,13 @@ def get_report_sample_interval_coverage(
     )
     interval_ids_coords = sort_interval_ids_coords(interval_ids_coords)
 
+    chrom_prefix: str = get_chromosomes_prefix(d4_file_path)
+
     # Compute intervals coverage
     intervals_coverage: List[float] = get_d4tools_intervals_mean_coverage(
-        d4_file_path=d4_file_path, interval_ids_coords=interval_ids_coords
+        d4_file_path=d4_file_path,
+        interval_ids_coords=interval_ids_coords,
+        chrom_prefix=chrom_prefix,
     )
     completeness_row_dict: dict = {"mean_coverage": mean(intervals_coverage)}
 
@@ -67,6 +72,7 @@ def get_report_sample_interval_coverage(
         d4_file_path=d4_file_path,
         thresholds=completeness_thresholds,
         interval_ids_coords=interval_ids_coords,
+        chrom_prefix=chrom_prefix,
     )
 
     interval_ids = set()

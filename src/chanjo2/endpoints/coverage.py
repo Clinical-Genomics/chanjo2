@@ -17,6 +17,7 @@ from chanjo2.meta.handle_bed import (
 )
 from chanjo2.meta.handle_completeness_stats import get_completeness_stats
 from chanjo2.meta.handle_coverage_stats import (
+    get_chromosomes_prefix,
     get_d4tools_chromosome_mean_coverage,
     get_d4tools_intervals_mean_coverage,
 )
@@ -49,37 +50,43 @@ def d4_interval_coverage(query: FileCoverageQuery):
             detail=WRONG_COVERAGE_FILE_MSG,
         )
 
-    interval: str = query.chromosome
+    chrom_prefix: str = get_chromosomes_prefix(query.coverage_file_path)
+    chrom: str = query.chromosome.replace("chr", "")
+
     if None in [query.start, query.end]:  # Coverage over an entire chromosome
         return IntervalCoverage(
             mean_coverage=get_d4tools_chromosome_mean_coverage(
-                d4_file_path=query.coverage_file_path, chromosomes=[query.chromosome]
+                d4_file_path=query.coverage_file_path,
+                chromosomes=[f"{chrom_prefix}{chrom}"],
             )[0][1],
             completeness={},
-            interval_id=interval,
+            interval_id=chrom,
         )
 
     interval_ids_coords = [
         (
-            f"{query.chromosome}:{query.start}-{query.end}",
-            (query.chromosome, query.start, query.end),
+            f"{chrom}:{query.start}-{query.end}",
+            (chrom, query.start, query.end),
         )
     ]
 
     mean_coverage: float = get_d4tools_intervals_mean_coverage(
-        d4_file_path=query.coverage_file_path, interval_ids_coords=interval_ids_coords
+        d4_file_path=query.coverage_file_path,
+        interval_ids_coords=interval_ids_coords,
+        chrom_prefix=chrom_prefix,
     )[0]
 
     completeness_stats = get_completeness_stats(
         d4_file_path=query.coverage_file_path,
-        interval_ids_coords=[(interval, (query.chromosome, query.start, query.end))],
+        interval_ids_coords=[(chrom, (chrom, query.start, query.end))],
         thresholds=query.completeness_thresholds,
+        chrom_prefix=chrom_prefix,
     )
 
     return IntervalCoverage(
         mean_coverage=mean_coverage,
-        completeness=completeness_stats[interval],
-        interval_id=f"{query.chromosome}:{query.start}-{query.end}",
+        completeness=completeness_stats[chrom],
+        interval_id=f"{chrom}:{query.start}-{query.end}",
     )
 
 
@@ -109,21 +116,26 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
 
     interval_ids_coords = sort_interval_ids_coords(interval_ids_coords)
 
+    chrom_prefix: str = get_chromosomes_prefix(query.coverage_file_path)
     intervals_coverage = get_d4tools_intervals_mean_coverage(
-        d4_file_path=query.coverage_file_path, interval_ids_coords=interval_ids_coords
+        d4_file_path=query.coverage_file_path,
+        interval_ids_coords=interval_ids_coords,
+        chrom_prefix=chrom_prefix,
     )
 
     intervals_completeness: Dict[str, Dict[int, float]] = get_completeness_stats(
         d4_file_path=query.coverage_file_path,
         thresholds=query.completeness_thresholds,
         interval_ids_coords=interval_ids_coords,
+        chrom_prefix=chrom_prefix,
     )
 
     results: List[IntervalCoverage] = []
     for counter, interval_data in enumerate(interval_ids_coords):
+        coords = f"{interval_data[1][0]}:{interval_data[1][1]}-{interval_data[1][2]}"
         interval_coverage = {
             "interval_type": IntervalType.CUSTOM,
-            "interval_id": interval_data[0],
+            "interval_id": coords,
             "mean_coverage": intervals_coverage[counter],
             "completeness": intervals_completeness[interval_data[0]],
         }
@@ -174,16 +186,20 @@ def d4_genes_condensed_summary(
         # Sort intervals by chrom, start & stop
         interval_ids_coords = sort_interval_ids_coords(interval_ids_coords)
 
+        chrom_prefix: str = get_chromosomes_prefix(sample.coverage_file_path)
+
         # Compute mean coverage over genomic intervals
         genes_mean_coverage: List[float] = get_d4tools_intervals_mean_coverage(
             d4_file_path=sample.coverage_file_path,
             interval_ids_coords=interval_ids_coords,
+            chrom_prefix=chrom_prefix,
         )
         # Compute coverage completeness over genomic intervals
         genes_coverage_completeness: Dict[str, dict] = get_completeness_stats(
             d4_file_path=sample.coverage_file_path,
             thresholds=[query.coverage_threshold],
             interval_ids_coords=interval_ids_coords,
+            chrom_prefix=chrom_prefix,
         )
         genes_coverage_completeness_values: List[float] = [
             value[query.coverage_threshold] * 100
