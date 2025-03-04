@@ -19,7 +19,7 @@ def bed_file_interval_id_coords(
 
     with open(file_path, "r") as bed_file:
         bed_file_contents: List[List[str]] = [
-            line.rstrip().split("\t")
+            line.rstrip().replace("chr", "").split("\t")
             for line in bed_file
             if line.startswith("#") is False
         ]

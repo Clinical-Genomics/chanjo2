@@ -116,21 +116,26 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
 
     interval_ids_coords = sort_interval_ids_coords(interval_ids_coords)
 
+    chrom_prefix: str = get_chromosomes_prefix(query.coverage_file_path)
     intervals_coverage = get_d4tools_intervals_mean_coverage(
-        d4_file_path=query.coverage_file_path, interval_ids_coords=interval_ids_coords
+        d4_file_path=query.coverage_file_path,
+        interval_ids_coords=interval_ids_coords,
+        chrom_prefix=chrom_prefix,
     )
 
     intervals_completeness: Dict[str, Dict[int, float]] = get_completeness_stats(
         d4_file_path=query.coverage_file_path,
         thresholds=query.completeness_thresholds,
         interval_ids_coords=interval_ids_coords,
+        chrom_prefix=chrom_prefix,
     )
 
     results: List[IntervalCoverage] = []
     for counter, interval_data in enumerate(interval_ids_coords):
+        coords = f"{interval_data[1][0]}:{interval_data[1][1]}-{interval_data[1][2]}"
         interval_coverage = {
             "interval_type": IntervalType.CUSTOM,
-            "interval_id": interval_data[0],
+            "interval_id": coords,
             "mean_coverage": intervals_coverage[counter],
             "completeness": intervals_completeness[interval_data[0]],
         }

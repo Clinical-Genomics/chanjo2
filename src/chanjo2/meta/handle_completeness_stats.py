@@ -52,8 +52,10 @@ def get_completeness_stats(
         f"{chrom_prefix}{coords[CHROM_INDEX]}\t{coords[START_INDEX]}\t{coords[STOP_INDEX]}"
         for _, coords in interval_ids_coords
     ]
+
     # Write genomic intervals to a temporary file
     with tempfile.NamedTemporaryFile(mode="w") as intervals_bed:
+
         intervals_bed.write("\n".join(bed_lines))
         intervals_bed.flush()
         intervals_completeness = get_d4tools_intervals_completeness(
