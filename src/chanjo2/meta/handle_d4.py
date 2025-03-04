@@ -20,7 +20,7 @@ LOG = logging.getLogger(__name__)
 
 
 def set_interval_ids_coords(
-    sql_intervals: List[Union[SQLGene, SQLTranscript, SQLExon]]
+    sql_intervals: List[Union[SQLGene, SQLTranscript, SQLExon]],
 ) -> List[Tuple[str, Tuple[str, int, int]]]:
     """Returns tuples with an ensembl_id and coordinates from a list of SQL intervals."""
 
