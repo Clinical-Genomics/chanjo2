@@ -179,6 +179,7 @@ def d4_genes_condensed_summary(
             d4_file_path=sample.coverage_file_path,
             interval_ids_coords=interval_ids_coords,
         )
+
         # Compute coverage completeness over genomic intervals
         genes_coverage_completeness: Dict[str, dict] = get_completeness_stats(
             d4_file_path=sample.coverage_file_path,

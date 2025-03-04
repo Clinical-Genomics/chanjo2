@@ -1,3 +1,4 @@
+from chanjo2.meta.handle_coverage_stats import get_chromosomes_prefix
 from chanjo2.meta.handle_d4 import predict_sex
 from chanjo2.models.pydantic_models import Sex
 
@@ -21,3 +22,9 @@ def test_predict_sex_unknown():
     # GIVEN a coverage of chromosome X equal to 0
     # THEN the predicted sex should be unknown
     assert predict_sex(x_cov=0, y_cov=6.605) == Sex.UNKNOWN
+
+
+def test_get_chromosomes_prefix_empty(real_coverage_path):
+    """Test the function that retrieves the suffix to prepend to the intervals based on the metadata of a d4 file."""
+    chr_prefix: str = get_chromosomes_prefix(real_coverage_path)
+    assert chr_prefix == ""
