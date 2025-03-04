@@ -17,6 +17,7 @@ from chanjo2.meta.handle_bed import (
 )
 from chanjo2.meta.handle_completeness_stats import get_completeness_stats
 from chanjo2.meta.handle_coverage_stats import (
+    get_chromosomes_prefix,
     get_d4tools_chromosome_mean_coverage,
     get_d4tools_intervals_mean_coverage,
 )
@@ -174,16 +175,20 @@ def d4_genes_condensed_summary(
         # Sort intervals by chrom, start & stop
         interval_ids_coords = sort_interval_ids_coords(interval_ids_coords)
 
+        chrom_prefix: str = get_chromosomes_prefix(sample.coverage_file_path)
+
         # Compute mean coverage over genomic intervals
         genes_mean_coverage: List[float] = get_d4tools_intervals_mean_coverage(
             d4_file_path=sample.coverage_file_path,
             interval_ids_coords=interval_ids_coords,
+            chrom_prefix=chrom_prefix,
         )
         # Compute coverage completeness over genomic intervals
         genes_coverage_completeness: Dict[str, dict] = get_completeness_stats(
             d4_file_path=sample.coverage_file_path,
             thresholds=[query.coverage_threshold],
             interval_ids_coords=interval_ids_coords,
+            chrom_prefix=chrom_prefix,
         )
         genes_coverage_completeness_values: List[float] = [
             value[query.coverage_threshold] * 100

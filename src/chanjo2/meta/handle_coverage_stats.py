@@ -23,11 +23,9 @@ def get_chromosomes_prefix(d4_file_path: str) -> str:
 
 
 def get_d4tools_intervals_mean_coverage(
-    d4_file_path: str, interval_ids_coords: List[Tuple[str, tuple]]
+    d4_file_path: str, interval_ids_coords: List[Tuple[str, tuple]], chrom_prefix: str
 ) -> List[float]:
     """Return the mean value over a list of intervals of a d4 file."""
-
-    chrom_prefix: str = get_chromosomes_prefix(d4_file_path)
 
     if interval_ids_coords:
         bed_lines = [
