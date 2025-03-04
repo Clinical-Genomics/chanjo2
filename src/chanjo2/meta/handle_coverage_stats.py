@@ -54,9 +54,6 @@ def get_d4tools_intervals_coverage(
 ) -> List[float]:
     """Return the coverage for intervals of a d4 file that are found in a bed file."""
 
-    with open(bed_file_path, "r") as f:
-        print(f.read())
-
     d4tools_stats_mean_cmd: str = subprocess.check_output(
         ["d4tools", "stat", "--region", bed_file_path, d4_file_path, "--stat", "mean"],
         text=True,

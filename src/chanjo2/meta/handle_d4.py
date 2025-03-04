@@ -1,5 +1,4 @@
 import logging
-import subprocess
 import tempfile
 from statistics import mean
 from typing import Dict, List, Optional, Tuple, Union
