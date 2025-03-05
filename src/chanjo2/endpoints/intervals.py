@@ -1,18 +1,13 @@
 from typing import Iterator, List
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Response, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from chanjo2.constants import MULTIPLE_PARAMS_NOT_SUPPORTED_MSG
 from chanjo2.crud.intervals import get_gene_intervals, get_genes, get_interval_counts
 from chanjo2.dbutil import get_session
-from chanjo2.meta.handle_bed import resource_lines
-from chanjo2.meta.handle_load_intervals import (
-    update_exons,
-    update_genes,
-    update_transcripts,
-)
+from chanjo2.meta.handle_load_intervals import update_interval_table
 from chanjo2.models import SQLExon, SQLTranscript
 from chanjo2.models.pydantic_models import (
     Builds,
@@ -20,6 +15,7 @@ from chanjo2.models.pydantic_models import (
     GeneBase,
     GeneIntervalQuery,
     GeneQuery,
+    IntervalType,
     TranscriptBase,
 )
 
@@ -32,27 +28,23 @@ def count_nr_filters(filters: List[str]) -> int:
 
 
 @router.post("/intervals/load/genes/{build}")
-async def load_genes(
+def load_genes(
+    background_tasks: BackgroundTasks,
     build: Builds,
     file_path: str,
     session: Session = Depends(get_session),
 ) -> Response:
     """Load genes in the given genome build."""
 
-    try:
-        gene_lines: Iterator[str] = resource_lines(file_path=file_path)
-        nr_loaded_genes: int = await update_genes(
-            build=build, lines=gene_lines, session=session
-        )
-        return JSONResponse(
-            content={"detail": f"{nr_loaded_genes} genes loaded into the database"}
-        )
-
-    except Exception as ex:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=ex.args,
-        )
+    print(f"Loading {build} genes.")
+    background_tasks.add_task(
+        update_interval_table, IntervalType.GENES, build, file_path, session
+    )
+    return JSONResponse(
+        content={
+            "detail": "Genes will be updated in background. Please check their availability in a few minutes."
+        }
+    )
 
 
 @router.post("/intervals/genes", response_model=List[GeneBase])
@@ -78,29 +70,23 @@ async def genes(query: GeneQuery, session: Session = Depends(get_session)):
 
 
 @router.post("/intervals/load/transcripts/{build}", response_model=List[GeneBase])
-async def load_transcripts(
+def load_transcripts(
+    background_tasks: BackgroundTasks,
     build: Builds,
     file_path: str,
     session: Session = Depends(get_session),
 ) -> Response:
     """Load transcripts in the given genome build."""
 
-    try:
-        transcripts_lines: Iterator[str] = resource_lines(file_path=file_path)
-        nr_loaded_transcripts: int = await update_transcripts(
-            build=build, lines=transcripts_lines, session=session
-        )
-        return JSONResponse(
-            content={
-                "detail": f"{nr_loaded_transcripts} transcripts loaded into the database"
-            }
-        )
-
-    except Exception as ex:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=ex.args,
-        )
+    print(f"Loading {build} transcripts.")
+    background_tasks.add_task(
+        update_interval_table, IntervalType.TRANSCRIPTS, build, file_path, session
+    )
+    return JSONResponse(
+        content={
+            "detail": "Transcripts will be updated in background. Please check their availability in a few minutes."
+        }
+    )
 
 
 @router.post("/intervals/transcripts", response_model=List[TranscriptBase])
@@ -134,27 +120,23 @@ async def transcripts(
 
 
 @router.post("/intervals/load/exons/{build}")
-async def load_exons(
+def load_exons(
+    background_tasks: BackgroundTasks,
     build: Builds,
     file_path: str,
     session: Session = Depends(get_session),
 ) -> Response:
     """Load exons in the given genome build."""
 
-    try:
-        exons_lines: Iterator[str] = resource_lines(file_path=file_path)
-        nr_loaded_exons: int = await update_exons(
-            build=build, lines=exons_lines, session=session
-        )
-        return JSONResponse(
-            content={"detail": f"{nr_loaded_exons} exons loaded into the database"}
-        )
-
-    except Exception as ex:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=ex.args,
-        )
+    print(f"Loading {build} exons.")
+    background_tasks.add_task(
+        update_interval_table, IntervalType.EXONS, build, file_path, session
+    )
+    return JSONResponse(
+        content={
+            "detail": "Exons will be updated in background. Please check their availability in a few minutes."
+        }
+    )
 
 
 @router.post("/intervals/exons", response_model=List[ExonBase])

@@ -33,16 +33,23 @@ def test_load_genes(
     nr_genes: int = len(list(resource_lines(path))) - 1
 
     # WHEN sending a request to the load_genes with genome build and path to the file containing the gene definitoons
-    response: Response = client.post(f"{endpoints.LOAD_GENES}{build}?file_path={path}")
+    response: Response = client.post(
+        f"{endpoints.LOAD_GENES}{build.value}?file_path={path}"
+    )
 
     # THEN it should return success
     assert response.status_code == status.HTTP_200_OK
 
     # THEN all the genes should be loaded
-    assert response.json()["detail"] == f"{nr_genes} genes loaded into the database"
+    assert (
+        response.json()["detail"]
+        == "Genes will be updated in background. Please check their availability in a few minutes."
+    )
 
     # WHEN sending a request to the "genes" endpoint
-    response: Response = client.post(endpoints.GENES, json={"build": build})
+    response: Response = client.post(
+        endpoints.GENES, json={"build": build, "limit": nr_genes}
+    )
     assert response.status_code == status.HTTP_200_OK
     result = response.json()
 
@@ -159,15 +166,28 @@ def test_load_transcripts(
 
     # WHEN sending a request to the load_transcripts with genome build and path to the file containing the transcripts definitoons
     response: Response = client.post(
-        f"{endpoints.LOAD_TRANSCRIPTS}{build}?file_path={path}"
+        f"{endpoints.LOAD_TRANSCRIPTS}{build.value}?file_path={path}"
     )
     # THEN it should return success
     assert response.status_code == status.HTTP_200_OK
     # THEN all transcripts should be loaded
     assert (
         response.json()["detail"]
-        == f"{nr_transcripts} transcripts loaded into the database"
+        == "Transcripts will be updated in background. Please check their availability in a few minutes."
     )
+
+    # WHEN sending a request to the "transcripts" endpoint
+    response: Response = client.post(
+        endpoints.TRANSCRIPTS, json={"build": build, "limit": nr_transcripts}
+    )
+    assert response.status_code == status.HTTP_200_OK
+    result = response.json()
+
+    # THEN the expected number of transcripts should be returned
+    assert len(result) == nr_transcripts
+
+    # THEN the gene should have the right format
+    assert TranscriptBase(**result[0])
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
@@ -308,7 +328,7 @@ def test_transcripts_by_hgnc_symbols(
 
 
 @pytest.mark.parametrize("build, path", BUILD_EXONS_RESOURCE)
-def test_load_exons_from(
+def test_load_exons(
     build: str,
     path: str,
     client: TestClient,
@@ -320,12 +340,30 @@ def test_load_exons_from(
     nr_exons: int = len(list(resource_lines(path))) - 1
 
     # WHEN sending a request to the load_exons endpoint with genome build and path to the exons definitions
-    response: Response = client.post(f"{endpoints.LOAD_EXONS}{build}?file_path={path}")
+    response: Response = client.post(
+        f"{endpoints.LOAD_EXONS}{build.value}?file_path={path}"
+    )
 
     # THEN it should return success
     assert response.status_code == status.HTTP_200_OK
     # THEN all exons should be loaded
-    assert response.json()["detail"] == f"{nr_exons} exons loaded into the database"
+    assert (
+        response.json()["detail"]
+        == "Exons will be updated in background. Please check their availability in a few minutes."
+    )
+
+    # WHEN sending a request to the "exons" endpoint
+    response: Response = client.post(
+        endpoints.EXONS, json={"build": build, "limit": nr_exons}
+    )
+    assert response.status_code == status.HTTP_200_OK
+    result = response.json()
+
+    # THEN the expected number of exons should be returned
+    assert len(result) == nr_exons
+
+    # THEN the gene should have the right format
+    assert ExonBase(**result[0])
 
 
 @pytest.mark.parametrize("build", Builds.get_enum_values())
