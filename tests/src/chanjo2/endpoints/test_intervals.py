@@ -33,7 +33,9 @@ def test_load_genes(
     nr_genes: int = len(list(resource_lines(path))) - 1
 
     # WHEN sending a request to the load_genes with genome build and path to the file containing the gene definitoons
-    response: Response = client.post(f"{endpoints.LOAD_GENES}{build}?file_path={path}")
+    response: Response = client.post(
+        f"{endpoints.LOAD_GENES}{build.value}?file_path={path}"
+    )
 
     # THEN it should return success
     assert response.status_code == status.HTTP_200_OK
@@ -164,7 +166,7 @@ def test_load_transcripts(
 
     # WHEN sending a request to the load_transcripts with genome build and path to the file containing the transcripts definitoons
     response: Response = client.post(
-        f"{endpoints.LOAD_TRANSCRIPTS}{build}?file_path={path}"
+        f"{endpoints.LOAD_TRANSCRIPTS}{build.value}?file_path={path}"
     )
     # THEN it should return success
     assert response.status_code == status.HTTP_200_OK
@@ -338,7 +340,9 @@ def test_load_exons(
     nr_exons: int = len(list(resource_lines(path))) - 1
 
     # WHEN sending a request to the load_exons endpoint with genome build and path to the exons definitions
-    response: Response = client.post(f"{endpoints.LOAD_EXONS}{build}?file_path={path}")
+    response: Response = client.post(
+        f"{endpoints.LOAD_EXONS}{build.value}?file_path={path}"
+    )
 
     # THEN it should return success
     assert response.status_code == status.HTTP_200_OK
