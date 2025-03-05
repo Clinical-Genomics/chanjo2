@@ -1,8 +1,9 @@
-## [unreleased]
+## [3.3]
 ### Added
 - Max-level provenance and Software Bill Of Materials (SBOM) to the Docker images pushed to Docker Hub
 ### Changed
 - Database updates now running in background
+- Updated several libraries via poetry
 ### Fixed
 - Fix computing stats for d4 files with chromosomes containing the `chr` suffix
 
