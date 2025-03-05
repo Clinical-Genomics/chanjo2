@@ -12,7 +12,11 @@ from sqlalchemy.orm import sessionmaker
 
 from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import resource_lines
-from chanjo2.meta.handle_load_intervals import update_exons, update_genes, update_transcripts
+from chanjo2.meta.handle_load_intervals import (
+    update_exons,
+    update_genes,
+    update_transcripts,
+)
 from chanjo2.models.pydantic_models import Builds
 
 db: sessionmaker = next(get_session())
@@ -53,7 +57,9 @@ async def load_demo_transcripts() -> None:
     for build, path in BUILD_TRANSCRIPTS_RESOURCE:
         transcript_lines: Iterator = resource_lines(path)
         nlines: int = sum(1 for _ in open(path))
-        update_transcripts(build=build, session=db, lines=transcript_lines, nlines=nlines)
+        update_transcripts(
+            build=build, session=db, lines=transcript_lines, nlines=nlines
+        )
 
 
 async def load_demo_exons() -> None:
