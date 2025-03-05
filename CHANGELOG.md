@@ -1,6 +1,8 @@
 ## [unreleased]
+### Changed
+- Database updates now running in background
 ### Fixed
-- `/coverage/d4/genes/summary` endpoint is now returning stats for d4file with chromosomes containing the `chr` suffix
+- Fix computing stats for d4 files with chromosomes containing the `chr` suffix
 
 ## [3.2]
 ### Added
