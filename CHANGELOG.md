@@ -1,4 +1,6 @@
 ## [unreleased]
+### Added
+- Max-level provenance and Software Bill Of Materials (SBOM) to the Docker images pushed to Docker Hub
 ### Changed
 - Database updates now running in background
 ### Fixed
