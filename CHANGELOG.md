@@ -2,6 +2,7 @@
 ### Fixed
 - Sex check and general report for samples with chromosomes prefixed by "chr"
 - MANE report and gene overview report for samples with chromosomes prefixed by "chr"
+- Convert the CMD command in the Dockerfile to a json array form, to to prevent unintended behavior related to OS signals
 
 ## [3.3]
 ### Added

@@ -26,6 +26,4 @@ RUN poetry install --no-interaction
 # Run commands as non-root
 USER worker
 
-CMD gunicorn\
-    --config gunicorn.conf.py \
-    chanjo2.main:app
+CMD ["gunicorn", "--config", "gunicorn.conf.py", "chanjo2.main:app"]
