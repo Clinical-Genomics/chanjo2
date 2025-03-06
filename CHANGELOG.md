@@ -1,3 +1,7 @@
+## [unreleased]
+### Fixed
+- Sex check and general report for samples with chromosomes prefixed by "chr"
+
 ## [3.3]
 ### Added
 - Max-level provenance and Software Bill Of Materials (SBOM) to the Docker images pushed to Docker Hub
