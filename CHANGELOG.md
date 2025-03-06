@@ -1,4 +1,4 @@
-## [unreleased]
+## [3.3.1]
 ### Fixed
 - Sex check and general report for samples with chromosomes prefixed by "chr"
 - MANE report and gene overview report for samples with chromosomes prefixed by "chr"
