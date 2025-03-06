@@ -292,7 +292,8 @@ def get_mane_overview_coverage_stats(query: ReportQuery, session: Session) -> Di
     hgnc_gene_ids = []
     for gene in genes:
         hgnc_gene_ids.append(gene.hgnc_id)
-        gene_mappings[gene.ensembl_id] = gene
+        for ensembl_id in gene.ensembl_ids:
+            gene_mappings[ensembl_id] = gene
 
     mane_stats = {
         "levels": get_ordered_levels(threshold_levels=query.completeness_thresholds),
@@ -344,7 +345,7 @@ def get_mane_overview_coverage_stats(query: ReportQuery, session: Session) -> Di
         data_dict: dict = {
             "gene": {
                 "hgnc_id": gene_mappings[transcript.ensembl_gene_id].hgnc_id,
-                "ensembl_id": gene_mappings[transcript.ensembl_gene_id].ensembl_id,
+                "ensembl_ids": gene_mappings[transcript.ensembl_gene_id].ensembl_ids,
             },
             "transcript": transcript_dict,
             "stats": mane_samples_coverage_stats_by_transcript[transcript.ensembl_id],
