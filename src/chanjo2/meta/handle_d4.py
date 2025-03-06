@@ -52,8 +52,8 @@ def get_report_sample_interval_coverage(
     """Compute stats to populate a coverage report for one sample."""
 
     # Compute intervals coverage completeness
-    interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]] = set_interval_ids_coords(
-        sql_intervals=sql_intervals
+    interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]] = (
+        set_interval_ids_coords(sql_intervals=sql_intervals)
     )
     interval_ids_coords = sort_interval_ids_coords(interval_ids_coords)
 
@@ -93,18 +93,25 @@ def get_report_sample_interval_coverage(
             if ensembl_id in interval_ids:
                 continue
             for threshold in completeness_thresholds:
-                interval_coverage_at_threshold: float = intervals_coverage_completeness[ensembl_id][
-                    threshold
-                ]
+                interval_coverage_at_threshold: float = intervals_coverage_completeness[
+                    ensembl_id
+                ][threshold]
                 thresholds_dict[threshold].append(interval_coverage_at_threshold)
 
                 # Collect intervals which are not completely covered at the custom threshold
-                if threshold == default_threshold and interval_coverage_at_threshold < 1:
+                if (
+                    threshold == default_threshold
+                    and interval_coverage_at_threshold < 1
+                ):
                     nr_intervals_covered_under_custom_threshold += 1
                     interval_ensembl_gene: str = (
-                        ensembl_id if ensembl_id.startswith("ENSG") else interval.ensembl_gene_id
+                        ensembl_id
+                        if ensembl_id.startswith("ENSG")
+                        else interval.ensembl_gene_id
                     )
-                    interval_hgnc_id: int = gene_ids_mapping[interval_ensembl_gene]["hgnc_id"]
+                    interval_hgnc_id: int = gene_ids_mapping[interval_ensembl_gene][
+                        "hgnc_id"
+                    ]
                     interval_hgnc_symbol: str = gene_ids_mapping[interval_ensembl_gene][
                         "hgnc_symbol"
                     ]
@@ -195,8 +202,8 @@ def get_gene_overview_stats(
     completeness_thresholds: List[int],
 ) -> Dict[str, list]:
     """Returns stats to be included in the gene overview page."""
-    interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]] = set_interval_ids_coords(
-        sql_intervals=sql_intervals
+    interval_ids_coords: List[Tuple[str, Tuple[str, int, int]]] = (
+        set_interval_ids_coords(sql_intervals=sql_intervals)
     )
     interval_ids_coords = tuple(
         sort_interval_ids_coords(set(interval_ids_coords))
@@ -209,7 +216,8 @@ def get_gene_overview_stats(
 
     # create a temp bed file containing transcripts coordinates
     bed_lines = [
-        f"{chrom_prefix}{coords[0]}\t{coords[1]}\t{coords[2]}" for _, coords in interval_ids_coords
+        f"{chrom_prefix}{coords[0]}\t{coords[1]}\t{coords[2]}"
+        for _, coords in interval_ids_coords
     ]
     temp_bed_file = tempfile.NamedTemporaryFile()
     with open(temp_bed_file.name, "w") as intervals_bed:
