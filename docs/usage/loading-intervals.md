@@ -3,26 +3,49 @@
 Genes, transcripts and exons should be loaded and updated at regular intervals of time. Depending on the type of sequencing data analysed using chanjo2, <strong>loading of transcripts and exons might not be required.</strong>
 For instance, gene coordinates should be enough for whole genome sequencing (WGS) experiments, while transcripts and exons data are necessary to return statistics from transcripts and exons-based experiments.
 
-Genes, transcripts and exons can pre pre-downloaded from the [Ensembl Biomart][ensembl-biomart] using the [Schug][shug] library and loaded into the database in three distinct tables.
+Genes, transcripts and exons should pre pre-downloaded from the [Ensembl Biomart][ensembl-biomart] using the [Schug][shug] library and loaded into the database in three distinct tables.
 
-<strong>Genes should be loaded into the database before transcripts and exons intervals.</strong> Depending on the hardware in use and the HTML connection speed, the process of loading these intervals might take some time. For this reason requests sent to these endpoints are asynchronous, so that they don't time out while processing the information.
+<strong>Genes should be loaded into the database before transcripts and exons intervals.</strong>
 
+### Downloading resources from the Schug instance at SciLifeLab
+
+#### Downloading of genes
+
+``` shell
+curl -X 'GET' 'https://schug.scilifelab.se/genes/ensembl_genes/?build=38' > genes_GRCh38.txt
+```
+
+#### Downloading of transcripts
+
+``` shell
+curl -X 'GET' 'https://schug.scilifelab.se/transcripts/ensembl_transcripts/?build=38' > transcripts_GRCh38.txt
+```
+
+#### Downloading of exons
+
+``` shell
+curl -X 'GET' 'https://schug.scilifelab.se/exons/ensembl_exons/?build=38' > exons_GRCh38.txt
+```
+
+Just replace "38" with "37" to download genes, transcripts and exons in genome build 37 (GRCh37).
+
+**Note that sometimes Biomart downloads time out and the resulting might be incomplete. For this reason it's always recommended to make sure the last lines of these file contain MT chromosome data (MT chromosome is the last chromosome downloaded from Biomart).**
 
 ### Loading/updating database genes
 
-Loading of genes in a given genome build can be achieved by sending a POST request to the `/intervals/load/genes/{<genome-build}` endpoint:
+FastAPI comes with an helpful Swagger UI, which allows to simplify several tasks, including loading of genes, transcripts and exons into the database.
 
+Given a running local instance of chanjo2, with a swagger UI available in the browser at `http://localhost:8000/docs, loading of genes in a given genome build can be achieved by using the `/intervals/load/genes/{<genome-build}` endpoint:
 
-``` shell
-curl -X 'POST' \
-  'http://localhost:8000/intervals/load/genes/GRCh38?file_path=<path_to_genes_file_downloaded_from_schug_GRCh38.txt>' \
-  -H 'accept: application/json' \
-  -d ''
-```
+<img width="1478" alt="Image" src="https://github.com/user-attachments/assets/7ef17743-6f46-4428-89ca-34e7cf04eab9" />
+
+Genes are loaded in background and would be available some minutes after the update is triggered.
 
 Please note that the process of <strong>loading genes into the database will erase eventual transcripts and exons with the same genome build</strong> that are already present in the database. This ensures that transcripts and exons intervals will be up-to-date with the latest definitions of the genes loaded into the database.
 
-### Loading/updating transcripts 
+### Loading/updating transcripts
+
+Similarly, transcript data 
 
 Transcripts can be loaded/updated by using the `/intervals/load/transcripts/{<genome-build}` endpoint:
 
