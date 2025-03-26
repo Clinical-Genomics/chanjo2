@@ -1,6 +1,7 @@
 ## [unreleased]
 ### Fixed
 - Documentation on how to update genes/transcripts/exons
+- Installing d4tools in Tests & Coverage GitHub action
 
 ## [3.3.1]
 ### Fixed
