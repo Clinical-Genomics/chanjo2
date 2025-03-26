@@ -2,6 +2,7 @@
 ### Fixed
 - Documentation on how to update genes/transcripts/exons
 - Installing d4tools in Tests & Coverage GitHub action
+- Ignore `[success]` lines used as separators between chromosome in the latest genes/transcripts/exons file downloaded using schug
 
 ## [3.3.1]
 ### Fixed

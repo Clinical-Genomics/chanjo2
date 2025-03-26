@@ -27,7 +27,7 @@ from chanjo2.models.pydantic_models import (
 
 LOG = logging.getLogger(__name__)
 MAX_NR_OF_RECORDS = 10_000
-END_OF_PARSED_FILE: str = "[success]"
+CHROM_SEPARATOR: str = "[success]"
 
 
 def update_interval_table(
@@ -82,8 +82,8 @@ def update_genes(build: Builds, session: Session, lines: Iterator, nlines: int) 
     with tqdm(total=nlines - 1, desc="Processing gene lines", unit="line") as pbar:
         for line in lines:
             line = line.strip()
-            if END_OF_PARSED_FILE in line:
-                break
+            if line == CHROM_SEPARATOR:
+                continue
             items: List = _replace_empty_cols(
                 line=line, nr_expected_columns=len(header)
             )
@@ -144,8 +144,8 @@ def update_transcripts(
     ) as pbar:
         for line in lines:
             line = line.strip()
-            if END_OF_PARSED_FILE in line:
-                break
+            if line == CHROM_SEPARATOR:
+                continue
             items: List = _replace_empty_cols(
                 line=line, nr_expected_columns=len(header)
             )
@@ -209,8 +209,8 @@ def update_exons(
     with tqdm(total=nlines - 1, desc="Processing exons lines", unit="line") as pbar:
         for line in lines:
             line = line.strip()
-            if END_OF_PARSED_FILE in line:
-                break
+            if line == CHROM_SEPARATOR:
+                continue
             items: List = _replace_empty_cols(
                 line=line, nr_expected_columns=len(header)
             )
