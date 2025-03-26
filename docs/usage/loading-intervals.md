@@ -3,46 +3,70 @@
 Genes, transcripts and exons should be loaded and updated at regular intervals of time. Depending on the type of sequencing data analysed using chanjo2, <strong>loading of transcripts and exons might not be required.</strong>
 For instance, gene coordinates should be enough for whole genome sequencing (WGS) experiments, while transcripts and exons data are necessary to return statistics from transcripts and exons-based experiments.
 
-Genes, transcripts and exons can pre pre-downloaded from the [Ensembl Biomart][ensembl-biomart] using the [Schug][shug] library and loaded into the database in three distinct tables.
+Genes, transcripts and exons should pre pre-downloaded from the [Ensembl Biomart][ensembl-biomart] using the [Schug][schug] library and loaded into the database in three distinct tables.
 
-<strong>Genes should be loaded into the database before transcripts and exons intervals.</strong> Depending on the hardware in use and the HTML connection speed, the process of loading these intervals might take some time. For this reason requests sent to these endpoints are asynchronous, so that they don't time out while processing the information.
+<strong>Genes should be loaded into the database before transcripts and exons intervals.</strong>
 
+### Downloading Resources from the Schug Instance at SciLifeLab
 
-### Loading/updating database genes
+#### Downloading Genes
 
-Loading of genes in a given genome build can be achieved by sending a POST request to the `/intervals/load/genes/{<genome-build}` endpoint:
-
-
-``` shell
-curl -X 'POST' \
-  'http://localhost:8000/intervals/load/genes/GRCh38?file_path=<path_to_genes_file_downloaded_from_schug_GRCh38.txt>' \
-  -H 'accept: application/json' \
-  -d ''
+```shell
+curl -X 'GET' 'https://schug.scilifelab.se/genes/ensembl_genes/?build=38' > genes_GRCh38.txt
 ```
 
-Please note that the process of <strong>loading genes into the database will erase eventual transcripts and exons with the same genome build</strong> that are already present in the database. This ensures that transcripts and exons intervals will be up-to-date with the latest definitions of the genes loaded into the database.
+#### Downloading Transcripts
 
-### Loading/updating transcripts 
-
-Transcripts can be loaded/updated by using the `/intervals/load/transcripts/{<genome-build}` endpoint:
-
-``` shell
-curl -X 'POST' \
-  'http://localhost:8000/intervals/load/transcripts/GRCh38?file_path=<path_to_transcripts_file_downloaded_from_schug_GRCh38.txt>' \
-  -H 'accept: application/json' \
-  -d ''
+```shell
+curl -X 'GET' 'https://schug.scilifelab.se/transcripts/ensembl_transcripts/?build=38' > transcripts_GRCh38.txt
 ```
 
-### Loading/updating exons:
+#### Downloading Exons
 
-As for the previous endpoints, exons are loaded by sending a POST request to the `/intervals/load/exons/{<genome-build}` endpoint.
-
-``` shell
-curl -X 'POST' \
-  'http://localhost:8000/intervals/load/transcripts/GRCh38?file_path=<path_to_exons_file_downloaded_from_schug_GRCh38.txt>' \
-  -H 'accept: application/json' \
-  -d ''
+```shell
+curl -X 'GET' 'https://schug.scilifelab.se/exons/ensembl_exons/?build=38' > exons_GRCh38.txt
 ```
+
+To download genes, transcripts, and exons for genome build 37 (GRCh37), simply replace `"38"` with `"37"` in the commands above.
+
+**Note:** Biomart downloads may occasionally time out, resulting in incomplete files. To ensure the integrity of your downloaded data, always check that the last lines of the file contain data for the MT chromosome, as it is the final chromosome retrieved from Biomart.
+
+---
+
+### Loading/Updating Genes in the Database
+
+FastAPI provides a user-friendly Swagger UI that simplifies various tasks, including loading genes, transcripts, and exons into the database.
+
+If you have a local instance of Chanjo2 running, and Swagger UI is accessible in your browser at `http://localhost:8000/docs`, you can load genes for a specific genome build using the `/intervals/load/genes/{<genome-build>}` endpoint:
+
+<img width="762" alt="Image" src="https://github.com/user-attachments/assets/11a6164b-f4b3-42a6-ba9d-fe3c6df4a055" />
+
+The required parameters are:
+- **Genome build** (e.g., 37 or 38)
+- **`file_path`**: The path to the genes resource file on your system
+
+The expected server response is:  
+> "Genes will be updated in the background. Please check their availability in a few minutes."
+
+**Important:**  
+Loading genes into the database will overwrite any existing transcripts and exons associated with the same genome build. This ensures that the transcript and exon intervals remain consistent with the newly loaded gene definitions.
+
+---
+
+### Loading/Updating Transcripts
+
+Similarly, transcript data can be updated using the `/intervals/load/transcripts/{<genome-build>}` endpoint:
+
+<img width="758" alt="Image" src="https://github.com/user-attachments/assets/e6dd8a62-0e55-4685-b9f0-5df5cb94592f" />
+
+---
+
+### Loading/Updating Exons
+
+Exon data can be loaded in the same way by providing the genome build and the path to the resource file using the `/intervals/load/exons/{<genome-build>}` endpoint.
+
+<img width="805" alt="Image" src="https://github.com/user-attachments/assets/0d562b95-a281-4576-9bfa-146f7978f72c" />
+
 
 ### Genes, transcripts and exons queries
 

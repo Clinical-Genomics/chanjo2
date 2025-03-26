@@ -14,7 +14,7 @@ jobs:
         with:
           crate: d4tools
           git: https://github.com/38/d4-format.git
-          brach: master
+          branch: master
 
       - name: Set up python
         id: setup-python
