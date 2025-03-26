@@ -1,3 +1,7 @@
+## [unreleased]
+### Fixed
+- Documentation on how to update genes/transcripts/exons
+
 ## [3.3.1]
 ### Fixed
 - Sex check and general report for samples with chromosomes prefixed by "chr"
