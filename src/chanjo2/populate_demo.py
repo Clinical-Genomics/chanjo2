@@ -1,6 +1,9 @@
 from typing import Iterator, List, Tuple
 
-from schug.demo import (
+from sqlalchemy.orm import sessionmaker
+
+from chanjo2.dbutil import get_session
+from chanjo2.demo import (
     EXONS_37_FILE_PATH,
     EXONS_38_FILE_PATH,
     GENES_37_FILE_PATH,
@@ -8,9 +11,6 @@ from schug.demo import (
     TRANSCRIPTS_37_FILE_PATH,
     TRANSCRIPTS_38_FILE_PATH,
 )
-from sqlalchemy.orm import sessionmaker
-
-from chanjo2.dbutil import get_session
 from chanjo2.meta.handle_bed import resource_lines
 from chanjo2.meta.handle_load_intervals import (
     update_exons,

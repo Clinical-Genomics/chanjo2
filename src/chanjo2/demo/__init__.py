@@ -44,3 +44,21 @@ DEMO_COVERAGE_QUERY_FORM = {
         [str(threshold) for threshold in DEFAULT_COMPLETENESS_LEVELS]
     ),
 }
+
+intervals = "intervals"
+EXONS_37_FILE = "exons_37.tsv"
+EXONS_37_FILE_PATH = str(files(BASE_PATH).joinpath(intervals).joinpath(EXONS_37_FILE))
+EXONS_38_FILE = "exons_38.tsv"
+EXONS_38_FILE_PATH = str(files(BASE_PATH).joinpath(intervals).joinpath(EXONS_38_FILE))
+GENES_37_FILE = "genes_37.tsv"
+GENES_37_FILE_PATH = str(files(BASE_PATH).joinpath(intervals).joinpath(GENES_37_FILE))
+GENES_38_FILE = "genes_38.tsv"
+GENES_38_FILE_PATH = str(files(BASE_PATH).joinpath(intervals).joinpath(GENES_38_FILE))
+TRANSCRIPTS_37_FILE = "transcripts_37.tsv"
+TRANSCRIPTS_37_FILE_PATH = str(
+    files(BASE_PATH).joinpath(intervals).joinpath(TRANSCRIPTS_37_FILE)
+)
+TRANSCRIPTS_38_FILE = "transcripts_38.tsv"
+TRANSCRIPTS_38_FILE_PATH = str(
+    files(BASE_PATH).joinpath(intervals).joinpath(TRANSCRIPTS_38_FILE)
+)
