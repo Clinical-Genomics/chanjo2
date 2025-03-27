@@ -1,11 +1,5 @@
 from typing import Callable, Dict, List
 
-from schug.load.ensembl import (
-    fetch_ensembl_exons,
-    fetch_ensembl_genes,
-    fetch_ensembl_transcripts,
-)
-
 SAMPLE_NOT_FOUND: str = "One of more requested samples were not present in the database"
 WRONG_COVERAGE_FILE_MSG: str = (
     "Coverage_file_path must be either an existing local file path or a URL"
@@ -16,12 +10,6 @@ GENE_LISTS_NOT_SUPPORTED_MSG = (
     "Please provide either Ensembl gene IDs, HGNC gene IDS or HGNC gene symbols."
 )
 AMBIGUOUS_SAMPLES_INPUT = "Please provide either a name of a case or a list of samples."
-
-ENSEMBL_RESOURCE_CLIENT: Dict[str, Callable] = {
-    "genes": fetch_ensembl_genes,
-    "transcripts": fetch_ensembl_transcripts,
-    "exons": fetch_ensembl_exons,
-}
 
 BUILD_37 = "GRCh37"
 BUILD_38 = "GRCh38"

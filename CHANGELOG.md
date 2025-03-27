@@ -1,6 +1,7 @@
 ## [unreleased]
 ### Changed
 - General library updates
+- Remove the schug library dependency
 ### Fixed
 - Documentation on how to update genes/transcripts/exons
 - Installing d4tools in Tests & Coverage GitHub action
