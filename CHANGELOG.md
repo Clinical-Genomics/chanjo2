@@ -1,4 +1,4 @@
-## [unreleased]
+## [3.4]
 ### Changed
 - General library updates
 - Remove the schug library dependency
