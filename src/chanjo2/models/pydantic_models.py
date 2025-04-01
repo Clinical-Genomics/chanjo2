@@ -2,6 +2,7 @@ import json
 import os
 from datetime import datetime
 from enum import Enum
+from os.path import isfile
 from typing import Dict, List, Optional, Union
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
@@ -11,6 +12,7 @@ from chanjo2.constants import (
     DEFAULT_COMPLETENESS_LEVELS,
     DEFAULT_COVERAGE_LEVEL,
     GENE_LISTS_NOT_SUPPORTED_MSG,
+    WRONG_COVERAGE_FILE_MSG,
 )
 
 
@@ -169,6 +171,12 @@ class ReportQuerySample(BaseModel):
     coverage_file_path: Optional[str] = None
     case_name: Optional[str] = None
     analysis_date: Optional[datetime] = datetime.now()
+
+    @field_validator("coverage_file_path", mode="after")
+    def coverage_file_path_validator(cls, coverage_file_path):
+        if isfile(coverage_file_path):
+            return coverage_file_path
+        raise ValueError(WRONG_COVERAGE_FILE_MSG)
 
 
 class ReportQuery(BaseModel):
