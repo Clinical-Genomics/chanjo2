@@ -1,3 +1,7 @@
+## [unreleased]
+### Changed
+- Introduced a validation to make sure d4 files are existing on disk when creating reports
+
 ## [3.4]
 ### Changed
 - General library updates

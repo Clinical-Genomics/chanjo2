@@ -4,8 +4,13 @@ from fastapi import status
 from fastapi.testclient import TestClient
 from requests.models import Response
 
-from chanjo2.constants import BUILD_37, BUILD_38, DEFAULT_COMPLETENESS_LEVELS
-from chanjo2.demo import DEMO_COVERAGE_QUERY_FORM
+from chanjo2.constants import (
+    BUILD_37,
+    BUILD_38,
+    DEFAULT_COMPLETENESS_LEVELS,
+    WRONG_COVERAGE_FILE_MSG,
+)
+from chanjo2.demo import DEMO_COVERAGE_QUERY_FORM, d4_demo_path
 
 
 def test_demo_overview(client: TestClient, endpoints: Type):
@@ -35,6 +40,25 @@ def test_overview_form_data(client: TestClient, endpoints: Type):
 
     # And return an HTML page
     assert response.template.name == "overview.html"
+
+
+def test_overview_form_data_d4_not_found(client: TestClient, endpoints: Type):
+    """Test the endpoint that creates the genes coverage overview page by providing a sample with a d4 file not found on disk."""
+
+    # GIVEN a query with application/x-www-form-urlencoded data and a sample with no valid d4 file on disk
+    data = DEMO_COVERAGE_QUERY_FORM.copy()
+    data["samples"] = data["samples"].replace(d4_demo_path, "foo")
+
+    response: Response = client.post(
+        endpoints.OVERVIEW,
+        data=data,
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+    )
+    # Then the request should be returning error
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    # And return the expected validation error
+    assert WRONG_COVERAGE_FILE_MSG in str(response.json())
 
 
 def test_gene_overview(
