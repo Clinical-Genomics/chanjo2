@@ -1,6 +1,8 @@
 ## [unreleased]
 ### Changed
 - Introduced a validation to make sure d4 files are existing on disk when creating reports
+### Fixed
+- Gunicorn HTTP Request/Response Smuggling vulnerability by updating gunicorn (22 -> 23.0.0)
 
 ## [3.4]
 ### Changed
