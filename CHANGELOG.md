@@ -3,7 +3,7 @@
 - Introduced a validation to make sure d4 files are existing on disk when creating reports
 ### Fixed
 - Gunicorn HTTP Request/Response Smuggling vulnerability by updating gunicorn (22 -> 23.0.0)
-- Jinja sandbox breakout through malicious filenames by updating jinja2 (3.1.4 -> 3.1.6)
+- Jinja2 vulnerabilities by updating jinja2 (3.1.4 -> 3.1.6)
 
 ## [3.4]
 ### Changed
