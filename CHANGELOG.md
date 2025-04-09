@@ -1,4 +1,6 @@
 ## [unreleased]
+### Added
+- New gene overview demo endpoint (`/gene_overview/demo`)
 ### Changed
 - Introduced a validation to make sure d4 files are existing on disk when creating reports
 ### Fixed

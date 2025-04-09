@@ -12,7 +12,7 @@ from typing_extensions import Annotated
 
 from chanjo2.constants import DEFAULT_COVERAGE_LEVEL
 from chanjo2.dbutil import get_session
-from chanjo2.demo import DEMO_COVERAGE_QUERY_FORM
+from chanjo2.demo import DEMO_COVERAGE_QUERY_FORM, DEMO_GENE_OVERVIEW_QUERY_FORM
 from chanjo2.meta.handle_report_contents import (
     get_gene_overview_coverage_stats,
     get_mane_overview_coverage_stats,
@@ -102,6 +102,23 @@ async def gene_overview(
     form_data: FormData = await request.form()
     form_dict: dict = jsonable_encoder(form_data)
     validated_form = GeneReportForm(**form_dict)
+
+    gene_overview_content: Dict[str, List[GeneCoverage]] = (
+        get_gene_overview_coverage_stats(form_data=validated_form, session=db)
+    )
+
+    return templates.TemplateResponse(
+        request=request, name="gene-overview.html", context=gene_overview_content
+    )
+
+
+@router.get("/gene_overview/demo", response_class=HTMLResponse)
+async def demo_gene_overview(
+    request: Request,
+    db: Session = Depends(get_session),
+):
+    """Returns coverage overview stats for a group of samples over genomic intervals of a single demo gene."""
+    validated_form = GeneReportForm(**DEMO_GENE_OVERVIEW_QUERY_FORM)
 
     gene_overview_content: Dict[str, List[GeneCoverage]] = (
         get_gene_overview_coverage_stats(form_data=validated_form, session=db)
