@@ -28,6 +28,16 @@ DEMO_HGNC_GENE_SYMBOLS = ["MTHFR", "DHFR", "FOLR1", "SLC46A1", "LAMA1", "PIPPI6"
 DEMO_HGNC_IDS = [7436, 2861, 3791, 30521]
 ANALYSIS_DATE = "2023-04-23T10:20:30.400+02:30"
 
+DEMO_GENE_OVERVIEW_QUERY_FORM = {
+    "build": BUILD_37,
+    "completeness_thresholds": ",".join(
+        [str(threshold) for threshold in DEFAULT_COMPLETENESS_LEVELS]
+    ),
+    "hgnc_gene_id": DEMO_HGNC_IDS[0],
+    "default_level": "20",
+    "samples": f"[{{'name': '{DEMO_SAMPLE['name']}', 'coverage_file_path': '{d4_demo_path}', 'case_name': '{DEMO_CASE['name']}', 'analysis_date': '{ANALYSIS_DATE}'}}]",
+    "interval_type": "transcripts",
+}
 
 # HTTP FORM-like data for generating a demo coverage report
 DEMO_COVERAGE_QUERY_FORM = {

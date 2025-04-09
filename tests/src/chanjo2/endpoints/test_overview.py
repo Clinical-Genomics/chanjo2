@@ -61,6 +61,19 @@ def test_overview_form_data_d4_not_found(client: TestClient, endpoints: Type):
     assert WRONG_COVERAGE_FILE_MSG in str(response.json())
 
 
+def test_demo_gene_overview(client: TestClient, endpoints: Type):
+    """Test the endpoint that shows coverage over a single demo gene."""
+
+    # GIVEN a query to the demo gene overview endpoint
+    response: Response = client.get(endpoints.GENE_OVERVIEW_DEMO)
+
+    # Then the request should be successful
+    assert response.status_code == status.HTTP_200_OK
+
+    # And return an HTML page
+    assert response.template.name == "gene-overview.html"
+
+
 def test_gene_overview(
     client: TestClient, endpoints: Type, genomic_ids_per_build: Dict[str, List]
 ):

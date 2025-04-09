@@ -70,6 +70,7 @@ class Endpoints(str):
     REPORT_DEMO = "/report/demo/"
     REPORT = "/report"
     GENE_OVERVIEW = "/gene_overview"
+    GENE_OVERVIEW_DEMO = "/gene_overview/demo"
     OVERVIEW = "/overview"
     OVERVIEW_DEMO = "/overview/demo"
     MANE_OVERVIEW_DEMO = "/mane_overview/demo"
