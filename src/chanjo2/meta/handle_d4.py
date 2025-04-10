@@ -22,14 +22,6 @@ from chanjo2.models.pydantic_models import ReportQuerySample, Sex
 LOG = logging.getLogger(__name__)
 
 
-def is_valid_url(value: str) -> bool:
-    """Makes sure that a string is formatted as an URL."""
-    try:
-        return bool(validators.url(value))
-    except Exception:
-        return False
-
-
 def set_interval_ids_coords(
     sql_intervals: List[Union[SQLGene, SQLTranscript, SQLExon]],
 ) -> List[Tuple[str, Tuple[str, int, int]]]:

@@ -20,11 +20,7 @@ from chanjo2.meta.handle_coverage_stats import (
     get_d4tools_chromosome_mean_coverage,
     get_d4tools_intervals_mean_coverage,
 )
-from chanjo2.meta.handle_d4 import (
-    get_samples_sex_metrics,
-    is_valid_url,
-    set_interval_ids_coords,
-)
+from chanjo2.meta.handle_d4 import get_samples_sex_metrics, set_interval_ids_coords
 from chanjo2.meta.handle_report_contents import INTERVAL_TYPE_SQL_TYPE, get_mean
 from chanjo2.models import SQLGene
 from chanjo2.models.pydantic_models import (
@@ -34,6 +30,7 @@ from chanjo2.models.pydantic_models import (
     IntervalCoverage,
     IntervalType,
     TranscriptTag,
+    is_valid_url,
 )
 
 router = APIRouter()

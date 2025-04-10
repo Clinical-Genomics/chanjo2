@@ -5,6 +5,7 @@ from enum import Enum
 from os.path import isfile
 from typing import Dict, List, Optional, Union
 
+import validators
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from starlette.datastructures import FormData
 
@@ -14,6 +15,14 @@ from chanjo2.constants import (
     GENE_LISTS_NOT_SUPPORTED_MSG,
     WRONG_COVERAGE_FILE_MSG,
 )
+
+
+def is_valid_url(value: str) -> bool:
+    """Makes sure that a string is formatted as an URL."""
+    try:
+        return bool(validators.url(value))
+    except Exception:
+        return False
 
 
 def default_report_coverage_levels() -> List[int]:
