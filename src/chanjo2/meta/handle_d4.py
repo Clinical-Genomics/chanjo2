@@ -21,6 +21,7 @@ LOG = logging.getLogger(__name__)
 
 
 def is_valid_url(value: str) -> bool:
+    """Makes sure that a string is formatted as an URL."""
     try:
         return bool(url(value))
     except Exception:

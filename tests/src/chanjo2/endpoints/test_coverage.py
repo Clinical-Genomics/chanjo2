@@ -44,6 +44,7 @@ def test_d4_interval_coverage_d4_not_found_on_disk(
     result = response.json()
     assert result["detail"] == WRONG_COVERAGE_FILE_MSG
 
+
 def test_d4_interval_coverage_d4_not_found_on_http(
     client: TestClient, mock_coverage_file: str, endpoints: Type, interval_query: dict
 ):
@@ -60,6 +61,7 @@ def test_d4_interval_coverage_d4_not_found_on_http(
     # THEN show a meaningful message
     result = response.json()
     assert result["detail"] == WRONG_COVERAGE_FILE_MSG
+
 
 def test_d4_interval_coverage(
     client: TestClient,
