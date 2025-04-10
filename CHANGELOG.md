@@ -6,6 +6,7 @@
 ### Fixed
 - Gunicorn HTTP Request/Response Smuggling vulnerability by updating gunicorn (22 -> 23.0.0)
 - Jinja2 vulnerabilities by updating jinja2 (3.1.4 -> 3.1.6)
+- Missing images on loading intervals documentation file
 
 ## [3.4]
 ### Changed
