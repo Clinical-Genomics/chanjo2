@@ -4,7 +4,6 @@ from os.path import isfile
 from statistics import mean
 from typing import Dict, List, Tuple
 
-import validators
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -21,7 +20,11 @@ from chanjo2.meta.handle_coverage_stats import (
     get_d4tools_chromosome_mean_coverage,
     get_d4tools_intervals_mean_coverage,
 )
-from chanjo2.meta.handle_d4 import get_samples_sex_metrics, set_interval_ids_coords
+from chanjo2.meta.handle_d4 import (
+    get_samples_sex_metrics,
+    is_valid_url,
+    set_interval_ids_coords,
+)
 from chanjo2.meta.handle_report_contents import INTERVAL_TYPE_SQL_TYPE, get_mean
 from chanjo2.models import SQLGene
 from chanjo2.models.pydantic_models import (
@@ -43,7 +46,7 @@ def d4_interval_coverage(query: FileCoverageQuery):
 
     if (
         isfile(query.coverage_file_path) is False
-        and validators.url(query.coverage_file_path) is False
+        and is_valid_url(query.coverage_file_path) is False
     ):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -97,7 +100,7 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
     start_time = time.time()
     if (
         isfile(query.coverage_file_path) is False
-        and validators.url(query.coverage_file_path) is False
+        and is_valid_url(query.coverage_file_path) is False
     ):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -223,7 +226,7 @@ async def get_samples_predicted_sex(coverage_file_path: str):
     """Return predicted sex for a sample given the coverage over its sex chromosomes."""
     if (
         isfile(coverage_file_path) is False
-        or validators.url(coverage_file_path) is False
+        and is_valid_url(query.coverage_file_path) is False
     ):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
