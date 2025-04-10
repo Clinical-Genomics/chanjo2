@@ -39,7 +39,7 @@ FastAPI provides a user-friendly Swagger UI that simplifies various tasks, inclu
 
 If you have a local instance of Chanjo2 running, and Swagger UI is accessible in your browser at `http://localhost:8000/docs`, you can load genes for a specific genome build using the `/intervals/load/genes/{<genome-build>}` endpoint:
 
-<img width="762" alt="Image" src="https://github.com/user-attachments/assets/11a6164b-f4b3-42a6-ba9d-fe3c6df4a055" />
+<img width="762" alt="Image" src="../../assets/images/loading_genes.png" />
 
 The required parameters are:
 - **Genome build** (e.g., 37 or 38)
@@ -57,7 +57,7 @@ Loading genes into the database will overwrite any existing transcripts and exon
 
 Similarly, transcript data can be updated using the `/intervals/load/transcripts/{<genome-build>}` endpoint:
 
-<img width="758" alt="Image" src="https://github.com/user-attachments/assets/e6dd8a62-0e55-4685-b9f0-5df5cb94592f" />
+<img width="762" alt="Image" src="../../assets/images/loading_transcripts.png" />
 
 ---
 
@@ -65,7 +65,7 @@ Similarly, transcript data can be updated using the `/intervals/load/transcripts
 
 Exon data can be loaded in the same way by providing the genome build and the path to the resource file using the `/intervals/load/exons/{<genome-build>}` endpoint.
 
-<img width="805" alt="Image" src="https://github.com/user-attachments/assets/0d562b95-a281-4576-9bfa-146f7978f72c" />
+<img width="762" alt="Image" src="../../assets/images/loading_exons.png" />
 
 
 ### Genes, transcripts and exons queries
