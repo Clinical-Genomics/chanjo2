@@ -20,11 +20,7 @@ from chanjo2.meta.handle_coverage_stats import (
     get_d4tools_chromosome_mean_coverage,
     get_d4tools_intervals_mean_coverage,
 )
-from chanjo2.meta.handle_d4 import (
-    get_samples_sex_metrics,
-    is_valid_url,
-    set_interval_ids_coords,
-)
+from chanjo2.meta.handle_d4 import get_samples_sex_metrics, set_interval_ids_coords
 from chanjo2.meta.handle_report_contents import INTERVAL_TYPE_SQL_TYPE, get_mean
 from chanjo2.models import SQLGene
 from chanjo2.models.pydantic_models import (
@@ -34,6 +30,7 @@ from chanjo2.models.pydantic_models import (
     IntervalCoverage,
     IntervalType,
     TranscriptTag,
+    is_valid_url,
 )
 
 router = APIRouter()
@@ -43,15 +40,6 @@ LOG = logging.getLogger(__name__)
 @router.post("/coverage/d4/interval/", response_model=IntervalCoverage)
 def d4_interval_coverage(query: FileCoverageQuery):
     """Return coverage on the given interval for a D4 resource located on the disk or on a remote server."""
-
-    if (
-        isfile(query.coverage_file_path) is False
-        and is_valid_url(query.coverage_file_path) is False
-    ):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=WRONG_COVERAGE_FILE_MSG,
-        )
 
     chrom_prefix: str = get_chromosomes_prefix(query.coverage_file_path)
     chrom: str = query.chromosome.replace("chr", "")
@@ -98,14 +86,6 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
     """Return coverage on the given intervals for a D4 resource located on the disk or on a remote server."""
 
     start_time = time.time()
-    if (
-        isfile(query.coverage_file_path) is False
-        and is_valid_url(query.coverage_file_path) is False
-    ):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=WRONG_COVERAGE_FILE_MSG,
-        )
 
     if isfile(query.intervals_bed_path) is False:
         raise HTTPException(

@@ -5,6 +5,8 @@ from enum import Enum
 from os.path import isfile
 from typing import Dict, List, Optional, Union
 
+import validators
+from fastapi import HTTPException, status
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from starlette.datastructures import FormData
 
@@ -14,6 +16,14 @@ from chanjo2.constants import (
     GENE_LISTS_NOT_SUPPORTED_MSG,
     WRONG_COVERAGE_FILE_MSG,
 )
+
+
+def is_valid_url(value: str) -> bool:
+    """Makes sure that a string is formatted as an URL."""
+    try:
+        return bool(validators.url(value))
+    except Exception:
+        return False
 
 
 def default_report_coverage_levels() -> List[int]:
@@ -143,11 +153,25 @@ class FileCoverageQuery(FileCoverageBaseQuery):
     start: Optional[int] = None
     end: Optional[int] = None
     completeness_thresholds: Optional[List[int]] = []
+    coverage_file_path: str
+
+    @field_validator("coverage_file_path", mode="after")
+    def coverage_file_path_validator(cls, coverage_file_path):
+        if isfile(coverage_file_path) or is_valid_url(coverage_file_path):
+            return coverage_file_path
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail=WRONG_COVERAGE_FILE_MSG)
 
 
 class FileCoverageIntervalsFileQuery(FileCoverageBaseQuery):
     intervals_bed_path: str
     completeness_thresholds: Optional[List[int]] = []
+    coverage_file_path: str
+
+    @field_validator("coverage_file_path", mode="after")
+    def coverage_file_path_validator(cls, coverage_file_path):
+        if isfile(coverage_file_path) or is_valid_url(coverage_file_path):
+            return coverage_file_path
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail=WRONG_COVERAGE_FILE_MSG)
 
 
 ## Coverage and  overview report - related models ###
@@ -174,7 +198,7 @@ class ReportQuerySample(BaseModel):
 
     @field_validator("coverage_file_path", mode="after")
     def coverage_file_path_validator(cls, coverage_file_path):
-        if isfile(coverage_file_path):
+        if isfile(coverage_file_path) or is_valid_url(coverage_file_path):
             return coverage_file_path
         raise ValueError(WRONG_COVERAGE_FILE_MSG)
 
