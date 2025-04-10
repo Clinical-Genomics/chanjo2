@@ -3,8 +3,6 @@ import tempfile
 from statistics import mean
 from typing import Dict, List, Optional, Tuple, Union
 
-import validators
-
 from chanjo2.meta.handle_bed import sort_interval_ids_coords
 from chanjo2.meta.handle_completeness_stats import (
     get_completeness_stats,
