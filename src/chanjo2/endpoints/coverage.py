@@ -41,15 +41,6 @@ LOG = logging.getLogger(__name__)
 def d4_interval_coverage(query: FileCoverageQuery):
     """Return coverage on the given interval for a D4 resource located on the disk or on a remote server."""
 
-    if (
-        isfile(query.coverage_file_path) is False
-        and is_valid_url(query.coverage_file_path) is False
-    ):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=WRONG_COVERAGE_FILE_MSG,
-        )
-
     chrom_prefix: str = get_chromosomes_prefix(query.coverage_file_path)
     chrom: str = query.chromosome.replace("chr", "")
 
@@ -95,14 +86,6 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
     """Return coverage on the given intervals for a D4 resource located on the disk or on a remote server."""
 
     start_time = time.time()
-    if (
-        isfile(query.coverage_file_path) is False
-        and is_valid_url(query.coverage_file_path) is False
-    ):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=WRONG_COVERAGE_FILE_MSG,
-        )
 
     if isfile(query.intervals_bed_path) is False:
         raise HTTPException(
