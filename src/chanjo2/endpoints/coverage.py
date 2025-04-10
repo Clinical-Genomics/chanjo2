@@ -43,7 +43,7 @@ def d4_interval_coverage(query: FileCoverageQuery):
 
     if (
         isfile(query.coverage_file_path) is False
-        or validators.url(query.coverage_file_path) is False
+        and validators.url(query.coverage_file_path) is False
     ):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -97,7 +97,7 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
     start_time = time.time()
     if (
         isfile(query.coverage_file_path) is False
-        or validators.url(query.coverage_file_path) is False
+        and validators.url(query.coverage_file_path) is False
     ):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
