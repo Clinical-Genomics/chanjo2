@@ -1,6 +1,17 @@
+from chanjo2.demo import HTTP_SERVER_D4_file
 from chanjo2.meta.handle_coverage_stats import get_chromosomes_prefix
-from chanjo2.meta.handle_d4 import predict_sex
+from chanjo2.meta.handle_d4 import is_valid_url, predict_sex
 from chanjo2.models.pydantic_models import Sex
+
+
+def test_is_valid_url_false():
+    """Test the function that checks if a string is formatted as a URL. Use a malformed URL."""
+    assert is_valid_url("https://somefile") is False
+
+
+def test_is_valid_url_true():
+    """Test the function that checks if a string is formatted as a URL. Use a valid URL."""
+    assert is_valid_url(HTTP_SERVER_D4_file)
 
 
 def test_predict_sex_male():

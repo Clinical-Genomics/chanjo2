@@ -3,6 +3,8 @@ import tempfile
 from statistics import mean
 from typing import Dict, List, Optional, Tuple, Union
 
+import validators
+
 from chanjo2.meta.handle_bed import sort_interval_ids_coords
 from chanjo2.meta.handle_completeness_stats import (
     get_completeness_stats,
@@ -23,7 +25,7 @@ LOG = logging.getLogger(__name__)
 def is_valid_url(value: str) -> bool:
     """Makes sure that a string is formatted as an URL."""
     try:
-        return bool(url(value))
+        return bool(validators.url(value))
     except Exception:
         return False
 
