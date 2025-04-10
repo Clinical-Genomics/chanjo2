@@ -27,14 +27,32 @@ CASE_COVERAGE_QUERY: Dict[str, str] = copy.deepcopy(BASE_COVERAGE_QUERY)
 CASE_COVERAGE_QUERY["case"] = DEMO_CASE["name"]
 
 
-def test_d4_interval_coverage_d4_not_found(
+def test_d4_interval_coverage_d4_not_found_on_disk(
     client: TestClient, mock_coverage_file: str, endpoints: Type, interval_query: dict
 ):
     """Test the function that returns the coverage over an interval of a D4 file.
-    Testing with a D4 file not found on disk or on a remote server."""
+    Testing with a D4 file not found on disk."""
 
     # WHEN using a query for a genomic interval with a D4 not present on disk
     interval_query["coverage_file_path"] = mock_coverage_file
+
+    # THEN a request to the read_single_interval should return 404 error
+    response = client.post(endpoints.INTERVAL_COVERAGE, json=interval_query)
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    # THEN show a meaningful message
+    result = response.json()
+    assert result["detail"] == WRONG_COVERAGE_FILE_MSG
+
+
+def test_d4_interval_coverage_d4_not_found_on_http(
+    client: TestClient, mock_coverage_file: str, endpoints: Type, interval_query: dict
+):
+    """Test the function that returns the coverage over an interval of a D4 file.
+    Testing with a D4 file that should present on a remote server but is not."""
+
+    # WHEN using a query for a genomic interval with a D4 not present on disk
+    interval_query["coverage_file_path"] = "https://somefile"
 
     # THEN a request to the read_single_interval should return 404 error
     response = client.post(endpoints.INTERVAL_COVERAGE, json=interval_query)
