@@ -52,7 +52,7 @@ def test_d4_interval_coverage_d4_not_found_on_http(
     Testing with a D4 file that should present on a remote server but is not."""
 
     # WHEN using a query for a genomic interval with a D4 not present on disk
-    interval_query["coverage_file_path"] = "http://somefile"
+    interval_query["coverage_file_path"] = "https://somefile"
 
     # THEN a request to the read_single_interval should return 404 error
     response = client.post(endpoints.INTERVAL_COVERAGE, json=interval_query)
