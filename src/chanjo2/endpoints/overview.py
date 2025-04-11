@@ -101,7 +101,14 @@ async def gene_overview(
     """Returns coverage overview stats for a group of samples over genomic intervals of a single gene."""
     form_data: FormData = await request.form()
     form_dict: dict = jsonable_encoder(form_data)
-    validated_form = GeneReportForm(**form_dict)
+
+    try:
+        validated_form = GeneReportForm(**form_dict)
+    except ValidationError as ve:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=ve.json(),
+        )
 
     gene_overview_content: Dict[str, List[GeneCoverage]] = (
         get_gene_overview_coverage_stats(form_data=validated_form, session=db)

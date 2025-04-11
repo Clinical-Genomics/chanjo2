@@ -318,6 +318,15 @@ class GeneReportForm(BaseModel):
     samples: List[ReportQuerySample]
     interval_type: IntervalType
 
+    @model_validator(mode="after")
+    def check_thresholds_not_with_url_d4(self):
+        """Completeness computation is not supported for d4 files over HTTP."""
+        if self.completeness_thresholds:
+            for sample in self.samples:
+                if is_valid_url(sample.coverage_file_path):
+                    raise ValueError(HTTP_D4_COMPLETENESS_ERROR)
+        return self
+
     @field_validator("samples", mode="before")
     def samples_validator(cls, sample_list):
         if isinstance(sample_list, str):
