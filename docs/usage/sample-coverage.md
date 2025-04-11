@@ -68,13 +68,15 @@ The entrypoint accepts a json query with the following parameters:
 
 If we were to use the [demo bed file](https://github.com/Clinical-Genomics/chanjo2/blob/main/src/chanjo2/demo/109_green.bed) provided in this repository, the query would look like this:
 
+# GIVEN a local d4 file
+
 ``` shell
 curl -X 'POST' \
   'http://localhost:8000/coverage/d4/interval_file/' \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
   -d '{
-  "coverage_file_path": "https://d4-format-testing.s3.us-west-1.amazonaws.com/hg002.d4",
+  "coverage_file_path": "<path_to_d4_file>",
   "intervals_bed_path": "<path-to-109_green.bed>",
   "completeness_thresholds": [
     10,20,30
