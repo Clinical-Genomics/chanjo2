@@ -47,7 +47,7 @@ def test_d4_interval_coverage_d4_not_found_on_disk(
 
     # THEN show a meaningful message
     result = response.json()
-    assert result["detail"] == HTTP_D4_COMPLETENESS_ERROR
+    assert result["detail"] == WRONG_COVERAGE_FILE_MSG
 
 
 def test_d4_interval_coverage_d4_not_found_on_http(
