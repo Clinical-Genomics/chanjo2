@@ -15,7 +15,7 @@ from chanjo2.meta.handle_coverage_stats import (
     get_d4tools_intervals_mean_coverage,
 )
 from chanjo2.models import SQLExon, SQLGene, SQLTranscript
-from chanjo2.models.pydantic_models import ReportQuerySample, Sex, is_valid_url
+from chanjo2.models.pydantic_models import ReportQuerySample, Sex
 
 LOG = logging.getLogger(__name__)
 
@@ -228,21 +228,16 @@ def get_gene_overview_stats(
         transcripts_coverage = get_d4tools_intervals_coverage(
             d4_file_path=sample.coverage_file_path, bed_file_path=temp_bed_file.name
         )
-
-        transcripts_completeness = None
-        if (
-            is_valid_url(sample.coverage_file_path) is False
-        ):  # d4tools stat -s perc_cov not supported for HTTP resources
-            transcripts_completeness = get_d4tools_intervals_completeness(
-                d4_file_path=sample.coverage_file_path,
-                bed_file_path=temp_bed_file.name,
-                completeness_thresholds=completeness_thresholds,
-            )
+        transcripts_completeness = get_d4tools_intervals_completeness(
+            d4_file_path=sample.coverage_file_path,
+            bed_file_path=temp_bed_file.name,
+            completeness_thresholds=completeness_thresholds,
+        )
         for idx, transcripts_coords in enumerate(interval_ids_coords):
             append_tuple = (
                 sample.name,
                 transcripts_coverage[idx],
-                transcripts_completeness[idx] if transcripts_completeness else "NA",
+                transcripts_completeness[idx],
             )
             transcripts_stats[transcripts_coords[0]].append(append_tuple)
 
