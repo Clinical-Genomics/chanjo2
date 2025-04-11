@@ -14,6 +14,7 @@ from chanjo2.constants import (
     DEFAULT_COMPLETENESS_LEVELS,
     DEFAULT_COVERAGE_LEVEL,
     GENE_LISTS_NOT_SUPPORTED_MSG,
+    HTTP_D4_COMPLETENESS_ERROR,
     WRONG_COVERAGE_FILE_MSG,
 )
 
@@ -214,6 +215,15 @@ class ReportQuery(BaseModel):
     panel_name: Optional[str] = None
     case_display_name: Optional[str] = None
     samples: List[ReportQuerySample]
+
+    @model_validator(mode="after")
+    def check_thresholds_not_with_url_d4(self):
+        """Completeness computation is not supported for d4 files over HTTP."""
+        if self.completeness_thresholds:
+            for sample in self.samples:
+                if is_valid_url(sample.coverage_file_path):
+                    raise ValueError(HTTP_D4_COMPLETENESS_ERROR)
+        return self
 
     @staticmethod
     def comma_sep_values_to_list(

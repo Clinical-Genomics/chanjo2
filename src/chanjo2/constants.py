@@ -10,6 +10,7 @@ GENE_LISTS_NOT_SUPPORTED_MSG = (
     "Please provide either Ensembl gene IDs, HGNC gene IDS or HGNC gene symbols."
 )
 AMBIGUOUS_SAMPLES_INPUT = "Please provide either a name of a case or a list of samples."
+HTTP_D4_COMPLETENESS_ERROR = "Completeness_thresholds must not be provided if any sample.coverage_file_path is a URL"
 
 BUILD_37 = "GRCh37"
 BUILD_38 = "GRCh38"
