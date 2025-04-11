@@ -19,6 +19,7 @@ from chanjo2.models.pydantic_models import ReportQuerySample, Sex
 
 LOG = logging.getLogger(__name__)
 
+
 def set_interval_ids_coords(
     sql_intervals: List[Union[SQLGene, SQLTranscript, SQLExon]],
 ) -> List[Tuple[str, Tuple[str, int, int]]]:
@@ -228,7 +229,9 @@ def get_gene_overview_stats(
             d4_file_path=sample.coverage_file_path, bed_file_path=temp_bed_file.name
         )
 
-        if is_valid_url(sample.coverage_file_path): # d4tools stat -s perc_cov not supported for HTTP resources
+        if is_valid_url(
+            sample.coverage_file_path
+        ):  # d4tools stat -s perc_cov not supported for HTTP resources
             transcripts_completeness = None
         else:
             transcripts_completeness = get_d4tools_intervals_completeness(
