@@ -190,7 +190,10 @@ class FileCoverageIntervalsFileQuery(FileCoverageBaseQuery):
         """Completeness computation is not supported for d4 files over HTTP."""
         if self.completeness_thresholds:
             if is_valid_url(self.coverage_file_path):
-                raise ValueError(HTTP_D4_COMPLETENESS_ERROR)
+                raise HTTPException(
+                    status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail=HTTP_D4_COMPLETENESS_ERROR,
+                )
         return self
 
 

@@ -75,7 +75,7 @@ def test_d4_interval_coverage_http_d4_with_completeness(
 
     # GIVEN a query with completeness thresholds and an HTTP d4 file
     query = copy.deepcopy(interval_query)
-    query["completeness_thresholds"] = [10, 20, 30]
+    query["completeness_thresholds"] = COVERAGE_COMPLETENESS_THRESHOLDS
     query["coverage_file_path"] = HTTP_SERVER_D4_file
 
     # THEN the endpoint should return query validation error
@@ -180,6 +180,27 @@ def test_d4_intervals_coverage_malformed_bed_file(
     result = response.json()
 
     assert result["detail"] == WRONG_BED_FILE_MSG
+
+
+def test_d4_intervals_coverage_http_d4_with_completeness(
+    client: TestClient, endpoints: Type
+):
+    """Test a query to the d4_intervals_coverage endpoint by providing a remote d4 and completeness thresholds."""
+
+    # GIVEN a query with completeness thresholds and an HTTP d4 file
+    d4_query = {
+        "coverage_file_path": HTTP_SERVER_D4_file,
+        "intervals_bed_path": gene_panel_path,
+        "completeness_thresholds": COVERAGE_COMPLETENESS_THRESHOLDS,
+    }
+
+    # THEN the endpoint should return query validation error
+    response = client.post(endpoints.INTERVALS_FILE_COVERAGE, json=d4_query)
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    # WITH informative message
+    result = response.json()
+    assert result["detail"] == HTTP_D4_COMPLETENESS_ERROR
 
 
 def test_d4_intervals_coverage(
