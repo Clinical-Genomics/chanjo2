@@ -5,7 +5,8 @@ Chanjo2 can be used to quickly access average coverage depth statistics for an i
 ### Coverage completeness
 
 When querying the server for sample coverage statistics, it is also possible to specify a custom list of numbers (example 30, 20, 10) representing the coverage thresholds that should be used to calculate the <strong>coverage completeness</strong> for each genomic interval. 
-This number describes the percentage of bases (as a decimal number) meeting the user-defined coverage threshold for each genomic interval.
+This number describes the percentage of bases (as a decimal number) meeting the user-defined coverage threshold for each genomic interval. 
+**Please note** that computing coverage completeness for non-local files (files provided as URLs) is not supported. This is because the functionality is not present in d4tools.
 
 ### Direct coverage query over a single genomic interval
 
@@ -29,7 +30,7 @@ curl -X 'POST' \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
   -d '{
-  "coverage_file_path": "https://d4-format-testing.s3.us-west-1.amazonaws.com/hg002.d4",
+  "coverage_file_path": "<path-to-d4-file.d4>",
   "chromosome": "7",
   "start": 124822386,
   "end": 124929983,
@@ -68,13 +69,14 @@ The entrypoint accepts a json query with the following parameters:
 
 If we were to use the [demo bed file](https://github.com/Clinical-Genomics/chanjo2/blob/main/src/chanjo2/demo/109_green.bed) provided in this repository, the query would look like this:
 
+
 ``` shell
 curl -X 'POST' \
   'http://localhost:8000/coverage/d4/interval_file/' \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
   -d '{
-  "coverage_file_path": "https://d4-format-testing.s3.us-west-1.amazonaws.com/hg002.d4",
+  "coverage_file_path": "<path-to-d4-file.d4>",
   "intervals_bed_path": "<path-to-109_green.bed>",
   "completeness_thresholds": [
     10,20,30

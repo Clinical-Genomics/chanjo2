@@ -5,12 +5,17 @@ from fastapi import status
 from fastapi.testclient import TestClient
 from pytest_mock.plugin import MockerFixture
 
-from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
+from chanjo2.constants import (
+    HTTP_D4_COMPLETENESS_ERROR,
+    WRONG_BED_FILE_MSG,
+    WRONG_COVERAGE_FILE_MSG,
+)
 from chanjo2.demo import (
     BUILD_37,
     DEMO_CASE,
     DEMO_HGNC_IDS,
     DEMO_SAMPLE,
+    HTTP_SERVER_D4_file,
     gene_panel_path,
 )
 from chanjo2.models.pydantic_models import IntervalCoverage, Sex
@@ -61,6 +66,25 @@ def test_d4_interval_coverage_d4_not_found_on_http(
     # THEN show a meaningful message
     result = response.json()
     assert result["detail"] == WRONG_COVERAGE_FILE_MSG
+
+
+def test_d4_interval_coverage_http_d4_with_completeness(
+    client: TestClient, endpoints: Type, interval_query: dict
+):
+    """Test a query to the d4_interval_coverage endpoint by providing a remote d4 and completeness thresholds."""
+
+    # GIVEN a query with completeness thresholds and an HTTP d4 file
+    query = copy.deepcopy(interval_query)
+    query["completeness_thresholds"] = COVERAGE_COMPLETENESS_THRESHOLDS
+    query["coverage_file_path"] = HTTP_SERVER_D4_file
+
+    # THEN the endpoint should return query validation error
+    response = client.post(endpoints.INTERVAL_COVERAGE, json=query)
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    # WITH informative message
+    result = response.json()
+    assert result["detail"] == HTTP_D4_COMPLETENESS_ERROR
 
 
 def test_d4_interval_coverage(
@@ -158,6 +182,27 @@ def test_d4_intervals_coverage_malformed_bed_file(
     assert result["detail"] == WRONG_BED_FILE_MSG
 
 
+def test_d4_intervals_coverage_http_d4_with_completeness(
+    client: TestClient, endpoints: Type
+):
+    """Test a query to the d4_intervals_coverage endpoint by providing a remote d4 and completeness thresholds."""
+
+    # GIVEN a query with completeness thresholds and an HTTP d4 file
+    d4_query = {
+        "coverage_file_path": HTTP_SERVER_D4_file,
+        "intervals_bed_path": gene_panel_path,
+        "completeness_thresholds": COVERAGE_COMPLETENESS_THRESHOLDS,
+    }
+
+    # THEN the endpoint should return query validation error
+    response = client.post(endpoints.INTERVALS_FILE_COVERAGE, json=d4_query)
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    # WITH informative message
+    result = response.json()
+    assert result["detail"] == HTTP_D4_COMPLETENESS_ERROR
+
+
 def test_d4_intervals_coverage(
     real_coverage_path: str,
     client: TestClient,
@@ -211,9 +256,32 @@ def test_d4_genes_coverage_summary_wrong_d4_file_path(
         "interval_type": "genes",
     }
     # GIVEN a query to the d4_genes_coverage_summary endpoint with the expected query
-    response = client.post("/coverage/d4/genes/summary", json=query)
+    response = client.post(endpoints.GENES_COVERAGE_SUMMARY, json=query)
     # THEN the request to the d4_genes_coverage_summary should return 404 error:
     assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+def test_d4_genes_coverage_summary_http_d4_file(client: TestClient, endpoints: Type):
+    """Tests Test the function that returns condensed stats when the path to at least one of the provided d4 files is wrong. It should not accept remove HTTP files."""
+
+    # GIVEN a query with HTTP d4 files
+    query = {
+        "build": BUILD_37,
+        "samples": [
+            {"name": DEMO_SAMPLE["name"], "coverage_file_path": HTTP_SERVER_D4_file}
+        ],
+        "hgnc_gene_ids": DEMO_HGNC_IDS,
+        "coverage_threshold": 10,
+        "interval_type": "genes",
+    }
+
+    # THEN the endpoint should return query validation error
+    response = client.post(endpoints.GENES_COVERAGE_SUMMARY, json=query)
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    # WITH informative message
+    result = response.json()
+    assert result["detail"] == HTTP_D4_COMPLETENESS_ERROR
 
 
 def test_d4_genes_coverage_summary(
@@ -240,7 +308,7 @@ def test_d4_genes_coverage_summary(
         "interval_type": "genes",
     }
     # GIVEN a query to the d4_genes_coverage_summary endpoint with the expected query
-    response = client.post("/coverage/d4/genes/summary", json=query)
+    response = client.post(endpoints.GENES_COVERAGE_SUMMARY, json=query)
 
     # THEN the request should be successful
     assert response.status_code == status.HTTP_200_OK

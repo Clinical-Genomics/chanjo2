@@ -14,8 +14,23 @@ from chanjo2.constants import (
     DEFAULT_COMPLETENESS_LEVELS,
     DEFAULT_COVERAGE_LEVEL,
     GENE_LISTS_NOT_SUPPORTED_MSG,
+    HTTP_D4_COMPLETENESS_ERROR,
     WRONG_COVERAGE_FILE_MSG,
 )
+
+
+def validate_url_and_completeness(
+    d4_file: str, completeness_thresholds: Optional[List[int]]
+):
+    """Raise error if d4 file is HTTP file and completeness thresholds are present."""
+    if not completeness_thresholds:
+        return
+    if is_valid_url(d4_file) is False:
+        return
+    raise HTTPException(
+        status.HTTP_422_UNPROCESSABLE_ENTITY,
+        detail=HTTP_D4_COMPLETENESS_ERROR,
+    )
 
 
 def is_valid_url(value: str) -> bool:
@@ -161,6 +176,15 @@ class FileCoverageQuery(FileCoverageBaseQuery):
             return coverage_file_path
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail=WRONG_COVERAGE_FILE_MSG)
 
+    @model_validator(mode="after")
+    def coverage_path_completeness_validator(self):
+        """Completeness computation is not supported for d4 files over HTTP."""
+        validate_url_and_completeness(
+            d4_file=self.coverage_file_path,
+            completeness_thresholds=self.completeness_thresholds,
+        )
+        return self
+
 
 class FileCoverageIntervalsFileQuery(FileCoverageBaseQuery):
     intervals_bed_path: str
@@ -173,10 +197,17 @@ class FileCoverageIntervalsFileQuery(FileCoverageBaseQuery):
             return coverage_file_path
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail=WRONG_COVERAGE_FILE_MSG)
 
+    @model_validator(mode="after")
+    def coverage_path_completeness_validator(self):
+        """Completeness computation is not supported for d4 files over HTTP."""
+        validate_url_and_completeness(
+            d4_file=self.coverage_file_path,
+            completeness_thresholds=self.completeness_thresholds,
+        )
+        return self
+
 
 ## Coverage and  overview report - related models ###
-
-
 class CoverageSummaryQuerySample(BaseModel):
     name: str
     coverage_file_path: str
@@ -188,6 +219,17 @@ class CoverageSummaryQuery(BaseModel):
     hgnc_gene_ids: List[int]
     coverage_threshold: int
     interval_type: IntervalType
+
+    @model_validator(mode="after")
+    def check_no_http_cov_files(self):
+        """Completeness computation, which is performed downstream, is not supported for d4 files over HTTP."""
+        for sample in self.samples:
+            if is_valid_url(sample.coverage_file_path):
+                raise HTTPException(
+                    status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail=HTTP_D4_COMPLETENESS_ERROR,
+                )
+        return self
 
 
 class ReportQuerySample(BaseModel):
@@ -214,6 +256,16 @@ class ReportQuery(BaseModel):
     panel_name: Optional[str] = None
     case_display_name: Optional[str] = None
     samples: List[ReportQuerySample]
+
+    @model_validator(mode="after")
+    def coverage_paths_completeness_validator(self):
+        """Completeness computation is not supported for d4 files over HTTP. Check each sample."""
+        for sample in self.samples:
+            validate_url_and_completeness(
+                d4_file=sample.coverage_file_path,
+                completeness_thresholds=self.completeness_thresholds,
+            )
+        return self
 
     @staticmethod
     def comma_sep_values_to_list(
@@ -307,6 +359,18 @@ class GeneReportForm(BaseModel):
     default_level: int = DEFAULT_COVERAGE_LEVEL
     samples: List[ReportQuerySample]
     interval_type: IntervalType
+
+    @model_validator(mode="after")
+    def check_thresholds_not_with_url_d4(self):
+        """Completeness computation is not supported for d4 files over HTTP."""
+        if self.completeness_thresholds:
+            for sample in self.samples:
+                if is_valid_url(sample.coverage_file_path):
+                    raise HTTPException(
+                        status.HTTP_422_UNPROCESSABLE_ENTITY,
+                        detail=HTTP_D4_COMPLETENESS_ERROR,
+                    )
+        return self
 
     @field_validator("samples", mode="before")
     def samples_validator(cls, sample_list):

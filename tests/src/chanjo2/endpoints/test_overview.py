@@ -8,9 +8,10 @@ from chanjo2.constants import (
     BUILD_37,
     BUILD_38,
     DEFAULT_COMPLETENESS_LEVELS,
+    HTTP_D4_COMPLETENESS_ERROR,
     WRONG_COVERAGE_FILE_MSG,
 )
-from chanjo2.demo import DEMO_COVERAGE_QUERY_FORM, d4_demo_path
+from chanjo2.demo import DEMO_COVERAGE_QUERY_FORM, HTTP_SERVER_D4_file, d4_demo_path
 
 
 def test_demo_overview(client: TestClient, endpoints: Type):
@@ -61,6 +62,25 @@ def test_overview_form_data_d4_not_found(client: TestClient, endpoints: Type):
     assert WRONG_COVERAGE_FILE_MSG in str(response.json())
 
 
+def test_overview_http_d4_with_completeness(client: TestClient, endpoints: Type):
+    """Make sure that model checks block requests to the overview endpoint when a sample is on the HTTP and request contains completeness thresholds."""
+
+    # GIVEN a query with application/x-www-form-urlencoded data and a sample with remote (HTTP d4 file)
+    data = DEMO_COVERAGE_QUERY_FORM.copy()
+    data["samples"] = data["samples"].replace(d4_demo_path, HTTP_SERVER_D4_file)
+
+    response: Response = client.post(
+        endpoints.OVERVIEW,
+        data=data,
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+    )
+    # Then the request should be returning error
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    # And return the expected validation error
+    assert HTTP_D4_COMPLETENESS_ERROR in str(response.json())
+
+
 def test_demo_gene_overview(client: TestClient, endpoints: Type):
     """Test the endpoint that shows coverage over a single demo gene."""
 
@@ -72,6 +92,35 @@ def test_demo_gene_overview(client: TestClient, endpoints: Type):
 
     # And return an HTML page
     assert response.template.name == "gene-overview.html"
+
+
+def test_gene_overview_http_d4_with_completeness(
+    client: TestClient, endpoints: Type, genomic_ids_per_build: Dict[str, List]
+):
+    """Make sure that model checks block requests to the gene overview endpoint when a sample is on the HTTP and request contains completeness thresholds."""
+
+    # GIVEN a query with application/x-www-form-urlencoded data and a sample with remote (HTTP d4 file)
+    samples = str(DEMO_COVERAGE_QUERY_FORM["samples"])
+
+    data = {
+        "build": BUILD_37,
+        "completeness_thresholds": DEFAULT_COMPLETENESS_LEVELS,
+        "hgnc_gene_id": genomic_ids_per_build[BUILD_37]["hgnc_ids"][0],
+        "default_level": 10,
+        "samples": samples.replace(d4_demo_path, HTTP_SERVER_D4_file),
+        "interval_type": "transcripts",
+    }
+
+    response: Response = client.post(
+        endpoints.GENE_OVERVIEW,
+        data=data,
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+    )
+    # Then the request should be returning error
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    # And return the expected validation error
+    assert HTTP_D4_COMPLETENESS_ERROR in str(response.json())
 
 
 def test_gene_overview(

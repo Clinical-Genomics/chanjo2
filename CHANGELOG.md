@@ -8,6 +8,7 @@
 - Jinja2 vulnerabilities by updating jinja2 (3.1.4 -> 3.1.6)
 - Missing images on loading intervals documentation file
 - Missing file error when d4 file is provided as an HTTP resource to the coverage endpoints `/coverage/d4/interval` and `/coverage/d4/interval_file` and /coverage/samples/predicted_sex
+- App crashing when trying to compute completeness stats for d4 files over HTTP
 
 ## [3.4]
 ### Changed
