@@ -205,15 +205,6 @@ class CoverageSummaryQuery(BaseModel):
     hgnc_gene_ids: List[int]
     coverage_threshold: int
     interval_type: IntervalType
-    coverage_threshold: int
-
-    @model_validator(mode="after")
-    def check_not_http_d4_files(self):
-        """Completeness computation is not supported for d4 files over HTTP."""
-        if self.completeness_thresholds:
-            if is_valid_url(self.coverage_file_path):
-                raise ValueError(HTTP_D4_COMPLETENESS_ERROR)
-        return self
 
     @model_validator(mode="after")
     def check_thresholds_not_with_url_d4(self):
