@@ -1,10 +1,12 @@
+import copy
 from typing import Type
 
 from fastapi import status
 from fastapi.testclient import TestClient
 from requests.models import Response
 
-from chanjo2.demo import DEMO_COVERAGE_QUERY_FORM
+from chanjo2.constants import HTTP_D4_COMPLETENESS_ERROR
+from chanjo2.demo import DEMO_COVERAGE_QUERY_FORM, HTTP_SERVER_D4_file, d4_demo_path
 
 
 def test_demo_report(client: TestClient, endpoints: Type):
@@ -57,3 +59,25 @@ def test_report_form_data_no_genes(client: TestClient, endpoints: Type):
 
     # And return an HTML page
     assert response.template.name == "report.html"
+
+
+def test_report_http_d4_with_completeness(client: TestClient, endpoints: Type):
+    """Test model validation when a user sends a request to the report endpoint containing HTTP samples and completeness threshold."""
+
+    # GIVEN one or more samples with HTTP d4 files present in the query
+    query = copy.deepcopy(DEMO_COVERAGE_QUERY_FORM)
+    query["samples"] = query["samples"].replace(d4_demo_path, HTTP_SERVER_D4_file)
+    # WITH completeness thresholds
+    assert query["completeness_thresholds"]
+
+    # GIVEN a query with application/x-www-form-urlencoded data to the report endpoint
+    response: Response = client.post(
+        endpoints.REPORT,
+        data=query,
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+    )
+
+    # THEN the request should return error
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    # And return the expected validation error
+    assert HTTP_D4_COMPLETENESS_ERROR in str(response.json())
