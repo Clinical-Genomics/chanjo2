@@ -1,4 +1,4 @@
-## [unreleased]
+## [3.5]
 ### Added
 - New gene overview demo endpoint (`/gene_overview/demo`)
 ### Changed
