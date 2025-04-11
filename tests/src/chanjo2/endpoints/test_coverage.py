@@ -5,12 +5,17 @@ from fastapi import status
 from fastapi.testclient import TestClient
 from pytest_mock.plugin import MockerFixture
 
-from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
+from chanjo2.constants import (
+    HTTP_D4_COMPLETENESS_ERROR,
+    WRONG_BED_FILE_MSG,
+    WRONG_COVERAGE_FILE_MSG,
+)
 from chanjo2.demo import (
     BUILD_37,
     DEMO_CASE,
     DEMO_HGNC_IDS,
     DEMO_SAMPLE,
+    HTTP_SERVER_D4_file,
     gene_panel_path,
 )
 from chanjo2.models.pydantic_models import IntervalCoverage, Sex
@@ -42,7 +47,7 @@ def test_d4_interval_coverage_d4_not_found_on_disk(
 
     # THEN show a meaningful message
     result = response.json()
-    assert result["detail"] == WRONG_COVERAGE_FILE_MSG
+    assert result["detail"] == HTTP_D4_COMPLETENESS_ERROR
 
 
 def test_d4_interval_coverage_d4_not_found_on_http(
@@ -61,6 +66,25 @@ def test_d4_interval_coverage_d4_not_found_on_http(
     # THEN show a meaningful message
     result = response.json()
     assert result["detail"] == WRONG_COVERAGE_FILE_MSG
+
+
+def test_d4_interval_coverage_http_d4_with_completeness(
+    client: TestClient, endpoints: Type, interval_query: dict
+):
+    """Test a query to the d4_interval_coverage endpoint by providing a remote d4 and completeness thresholds."""
+
+    # GIVEN a query with completeness thresholds and an HTTP d4 file
+    query = copy.deepcopy(interval_query)
+    query["completeness_thresholds"] = [10, 20, 30]
+    query["coverage_file_path"] = HTTP_SERVER_D4_file
+
+    # THEN the endpoint should return query validation error
+    response = client.post(endpoints.INTERVAL_COVERAGE, json=query)
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    # WITH informative message
+    result = response.json()
+    assert result["detail"] == HTTP_D4_COMPLETENESS_ERROR
 
 
 def test_d4_interval_coverage(
