@@ -19,6 +19,20 @@ from chanjo2.constants import (
 )
 
 
+def validate_url_and_completeness(
+    d4_file: str, completeness_thresholds: Optional[List[int]]
+):
+    """Raise error if d4 file is HTTP file and completeness thresholds are present."""
+    if not completeness_thresholds:
+        return
+    if is_valid_url(d4_file) is False:
+        return
+    raise HTTPException(
+        status.HTTP_422_UNPROCESSABLE_ENTITY,
+        detail=HTTP_D4_COMPLETENESS_ERROR,
+    )
+
+
 def is_valid_url(value: str) -> bool:
     """Makes sure that a string is formatted as an URL."""
     try:
@@ -163,14 +177,12 @@ class FileCoverageQuery(FileCoverageBaseQuery):
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail=WRONG_COVERAGE_FILE_MSG)
 
     @model_validator(mode="after")
-    def check_thresholds_not_with_url_d4(self):
+    def coverage_path_completeness_validator(self):
         """Completeness computation is not supported for d4 files over HTTP."""
-        if self.completeness_thresholds:
-            if is_valid_url(self.coverage_file_path):
-                raise HTTPException(
-                    status.HTTP_422_UNPROCESSABLE_ENTITY,
-                    detail=HTTP_D4_COMPLETENESS_ERROR,
-                )
+        validate_url_and_completeness(
+            d4_file=self.coverage_file_path,
+            completeness_thresholds=self.completeness_thresholds,
+        )
         return self
 
 
@@ -186,20 +198,16 @@ class FileCoverageIntervalsFileQuery(FileCoverageBaseQuery):
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail=WRONG_COVERAGE_FILE_MSG)
 
     @model_validator(mode="after")
-    def check_thresholds_not_with_url_d4(self):
+    def coverage_path_completeness_validator(self):
         """Completeness computation is not supported for d4 files over HTTP."""
-        if self.completeness_thresholds:
-            if is_valid_url(self.coverage_file_path):
-                raise HTTPException(
-                    status.HTTP_422_UNPROCESSABLE_ENTITY,
-                    detail=HTTP_D4_COMPLETENESS_ERROR,
-                )
+        validate_url_and_completeness(
+            d4_file=self.coverage_file_path,
+            completeness_thresholds=self.completeness_thresholds,
+        )
         return self
 
 
 ## Coverage and  overview report - related models ###
-
-
 class CoverageSummaryQuerySample(BaseModel):
     name: str
     coverage_file_path: str
@@ -213,7 +221,7 @@ class CoverageSummaryQuery(BaseModel):
     interval_type: IntervalType
 
     @model_validator(mode="after")
-    def check_thresholds_not_with_url_d4(self):
+    def check_no_http_cov_files(self):
         """Completeness computation, which is performed downstream, is not supported for d4 files over HTTP."""
         for sample in self.samples:
             if is_valid_url(sample.coverage_file_path):
@@ -250,15 +258,13 @@ class ReportQuery(BaseModel):
     samples: List[ReportQuerySample]
 
     @model_validator(mode="after")
-    def check_thresholds_not_with_url_d4(self):
-        """Completeness computation is not supported for d4 files over HTTP."""
-        if self.completeness_thresholds:
-            for sample in self.samples:
-                if is_valid_url(sample.coverage_file_path):
-                    raise HTTPException(
-                        status.HTTP_422_UNPROCESSABLE_ENTITY,
-                        detail=HTTP_D4_COMPLETENESS_ERROR,
-                    )
+    def coverage_paths_completeness_validator(self):
+        """Completeness computation is not supported for d4 files over HTTP. Check each sample."""
+        for sample in self.samples:
+            validate_url_and_completeness(
+                d4_file=sample.coverage_file_path,
+                completeness_thresholds=self.completeness_thresholds,
+            )
         return self
 
     @staticmethod
