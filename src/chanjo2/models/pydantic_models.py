@@ -255,7 +255,10 @@ class ReportQuery(BaseModel):
         if self.completeness_thresholds:
             for sample in self.samples:
                 if is_valid_url(sample.coverage_file_path):
-                    raise ValueError(HTTP_D4_COMPLETENESS_ERROR)
+                    raise HTTPException(
+                        status.HTTP_422_UNPROCESSABLE_ENTITY,
+                        detail=HTTP_D4_COMPLETENESS_ERROR,
+                    )
         return self
 
     @staticmethod
@@ -357,7 +360,10 @@ class GeneReportForm(BaseModel):
         if self.completeness_thresholds:
             for sample in self.samples:
                 if is_valid_url(sample.coverage_file_path):
-                    raise ValueError(HTTP_D4_COMPLETENESS_ERROR)
+                    raise HTTPException(
+                        status.HTTP_422_UNPROCESSABLE_ENTITY,
+                        detail=HTTP_D4_COMPLETENESS_ERROR,
+                    )
         return self
 
     @field_validator("samples", mode="before")
