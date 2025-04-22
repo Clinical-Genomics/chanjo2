@@ -1,3 +1,7 @@
+## [unreleased]
+### Fixed
+- `d4_interval_coverage` endpoint crashing when computing stats over the `chrM` chromosome
+
 ## [3.5]
 ### Added
 - New gene overview demo endpoint (`/gene_overview/demo`)
