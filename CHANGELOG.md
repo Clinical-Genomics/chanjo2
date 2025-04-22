@@ -1,6 +1,6 @@
-## [unreleased]
+## [3.5.1]
 ### Fixed
-- `d4_interval_coverage` endpoint crashing when computing stats over the `chrM` chromosome
+- `d4_interval_coverage` endpoint crashing when computing stats over the `MT` interval, when d4 file contains `chrM` chromosome (Nallo pipeline)
 
 ## [3.5]
 ### Added
