@@ -5,6 +5,7 @@ from typing import Dict, List, Optional, Tuple, Union
 
 from sqlalchemy.orm import Session
 
+from chanjo2 import __version__
 from chanjo2.crud.intervals import get_genes, get_hgnc_gene, set_sql_intervals
 from chanjo2.meta.handle_d4 import (
     get_gene_overview_stats,
@@ -209,6 +210,7 @@ def get_gene_overview_coverage_stats(form_data: GeneReportForm, session: Session
     """Returns coverage stats over the intervals of one gene for one or more samples."""
 
     gene_stats = {
+        "software_version": __version__,
         "levels": get_ordered_levels(
             threshold_levels=form_data.completeness_thresholds
         ),
@@ -296,6 +298,7 @@ def get_mane_overview_coverage_stats(query: ReportQuery, session: Session) -> Di
             gene_mappings[ensembl_id] = gene
 
     mane_stats = {
+        "software_version": __version__,
         "levels": get_ordered_levels(threshold_levels=query.completeness_thresholds),
         "extras": {
             "hgnc_gene_ids": hgnc_gene_ids

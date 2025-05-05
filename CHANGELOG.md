@@ -1,4 +1,6 @@
 ## [3.5.1]
+### Added
+- Display chanjo2 software version on report, overview, gene_overview and MANE overview reports
 ### Fixed
 - `d4_interval_coverage` endpoint crashing when computing stats over the `MT` interval, when d4 file contains `chrM` chromosome (Nallo pipeline)
 
