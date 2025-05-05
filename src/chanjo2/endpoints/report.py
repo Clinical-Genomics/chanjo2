@@ -10,6 +10,7 @@ from pydantic_core._pydantic_core import ValidationError
 from sqlalchemy.orm import Session
 from typing_extensions import Annotated
 
+from chanjo2 import __version__
 from chanjo2.constants import DEFAULT_COVERAGE_LEVEL
 from chanjo2.dbutil import get_session
 from chanjo2.demo import DEMO_COVERAGE_QUERY_FORM
@@ -38,6 +39,7 @@ async def demo_report(request: Request, db: Session = Depends(get_session)):
         request=request,
         name="report.html",
         context={
+            "software_version": __version__,
             "levels": report_content["levels"],
             "extras": report_content["extras"],
             "sex_rows": report_content["sex_rows"],
@@ -83,6 +85,7 @@ async def report(
         request=request,
         name="report.html",
         context={
+            "software_version": __version__,
             "levels": report_content["levels"],
             "extras": report_content["extras"],
             "sex_rows": report_content["sex_rows"],

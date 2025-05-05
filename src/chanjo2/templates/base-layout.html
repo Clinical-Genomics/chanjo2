@@ -30,7 +30,10 @@
 
 	<nav class="navbar navbar-expand-lg navbar-light bg-light">
 	  <div class="container">
-		  <a class="navbar-brand" href="#">Chanjo2</a>
+		  <a class="navbar-brand" href="#">
+			  Chanjo2
+			  <span class="text-muted" style="font-size: 0.7em;">v{{ software_version }}</span>
+		  </a>
 
 		  {% block pdf_export %}
 		  {% endblock %}
