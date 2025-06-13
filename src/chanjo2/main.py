@@ -5,6 +5,7 @@ from typing import List, Tuple
 
 from fastapi import FastAPI, status
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 
 from chanjo2 import __version__
 from chanjo2.dbutil import engine
@@ -36,7 +37,13 @@ async def lifespan(app_: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5000"],  # or ["*"] during local dev
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],  # or at least ["Authorization", "Content-Type"]
+)
 
 def configure_static(app):
     """Configure static folder."""

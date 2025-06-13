@@ -1,7 +1,7 @@
 import logging
 import time
 from os import path
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
 from fastapi.responses import HTMLResponse
@@ -16,6 +16,7 @@ from chanjo2.dbutil import get_session
 from chanjo2.demo import DEMO_COVERAGE_QUERY_FORM
 from chanjo2.meta.handle_report_contents import get_report_data
 from chanjo2.models.pydantic_models import Builds, IntervalType, ReportQuery
+from chanjo2.decorators import check_auth
 
 
 def get_templates_path() -> str:
@@ -32,7 +33,6 @@ router = APIRouter()
 @router.get("/report/demo", response_class=HTMLResponse)
 async def demo_report(request: Request, db: Session = Depends(get_session)):
     """Return a demo coverage report over a list of genes for a list of samples."""
-
     report_query = ReportQuery.as_form(DEMO_COVERAGE_QUERY_FORM)
     report_content: Dict = get_report_data(query=report_query, session=db)
     return templates.TemplateResponse(
@@ -54,6 +54,7 @@ async def demo_report(request: Request, db: Session = Depends(get_session)):
 
 
 @router.post("/report", response_class=HTMLResponse)
+@check_auth()
 async def report(
     request: Request,
     build=Annotated[Builds, Form(...)],
@@ -69,7 +70,6 @@ async def report(
     db: Session = Depends(get_session),
 ):
     """Return a coverage report over a list of genes for a list of samples."""
-
     start_time = time.time()
     try:
         report_query = ReportQuery.as_form(await request.form())
