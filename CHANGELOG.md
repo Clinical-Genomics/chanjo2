@@ -1,3 +1,7 @@
+## [unreleased]
+### Added
+- Optional authentication via access tokens
+
 ## [3.5.1]
 ### Added
 - Display chanjo2 software version on report, overview, gene_overview and MANE overview reports
