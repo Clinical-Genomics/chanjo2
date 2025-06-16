@@ -255,12 +255,6 @@ def genomic_ids_per_build() -> Dict[str, List]:
     return {BUILD_37: GENOMIC_IDS_37, BUILD_38: GENOMIC_IDS_38}
 
 
-def encode_segment(segment: Dict) -> str:
-    """Encode a JWT segment (header or payload) as base64url."""
-    json_bytes = json.dumps(segment, separators=(",", ":")).encode()
-    return base64.urlsafe_b64encode(json_bytes).rstrip(b"=").decode()
-
-
 @pytest.fixture(scope="session")
 def rsa_keys():
     private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
