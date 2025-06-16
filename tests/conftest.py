@@ -1,8 +1,15 @@
+import base64
+import json
+import os
+import time
 from pathlib import PosixPath
-from typing import Dict, List, Tuple
+from typing import Callable, Dict, List, Tuple
 
 import pytest
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
 from fastapi.testclient import TestClient
+from jose import jwt
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -246,3 +253,110 @@ def real_d4_query(real_coverage_path) -> Dict[str, str]:
 def genomic_ids_per_build() -> Dict[str, List]:
     """Return a dict containing lists with test genes in different build specific formats."""
     return {BUILD_37: GENOMIC_IDS_37, BUILD_38: GENOMIC_IDS_38}
+
+
+@pytest.fixture(autouse=True)
+def set_oidc_env_vars(monkeypatch):
+    """Mocks the existence of 2 variables in the .env file. Used to test endpoints protected by OIDC auth."""
+    monkeypatch.setenv("JWKS_URL", "https://mocked-jwks-url.com")
+    monkeypatch.setenv("AUDIENCE", "account")
+
+
+def encode_segment(segment: Dict) -> str:
+    """Encode a JWT segment (header or payload) as base64url."""
+    json_bytes = json.dumps(segment, separators=(",", ":")).encode()
+    return base64.urlsafe_b64encode(json_bytes).rstrip(b"=").decode()
+
+
+@pytest.fixture(scope="session")
+def rsa_keys():
+    private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    public_key = private_key.public_key()
+    public_numbers = public_key.public_numbers()
+
+    n = (
+        base64.urlsafe_b64encode(public_numbers.n.to_bytes(256, "big"))
+        .rstrip(b"=")
+        .decode("utf-8")
+    )
+    e = (
+        base64.urlsafe_b64encode(public_numbers.e.to_bytes(3, "big"))
+        .rstrip(b"=")
+        .decode("utf-8")
+    )
+
+    jwks_mock = {
+        "keys": [
+            {
+                "kid": "test-kid",
+                "kty": "RSA",
+                "alg": "RS256",
+                "use": "sig",
+                "n": n,
+                "e": e,
+            }
+        ]
+    }
+
+    private_pem = private_key.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.PKCS8,
+        encryption_algorithm=serialization.NoEncryption(),
+    )
+
+    return {
+        "private_key": private_key,
+        "private_pem": private_pem,
+        "jwks_mock": jwks_mock,
+        "kid": "test-kid",
+    }
+
+
+@pytest.fixture
+def create_token(rsa_keys) -> Callable[[str], str]:
+    def _create_token(audience: str) -> str:
+        payload = {
+            "sub": "user123",
+            "iat": int(time.time()),
+            "exp": int(time.time()) + 600,
+            "aud": audience,
+        }
+        token = jwt.encode(
+            payload,
+            rsa_keys["private_pem"],
+            algorithm="RS256",
+            headers={"kid": rsa_keys["kid"]},
+        )
+        return token
+
+    return _create_token
+
+
+@pytest.fixture
+def jwks_mock(rsa_keys):
+    return rsa_keys["jwks_mock"]
+
+
+@pytest.fixture(name="auth_protected_client")
+def auth_protected_client_fixture(session, set_oidc_env_vars) -> TestClient:
+    """
+    Returns a TestClient with the database session override.
+    Depends on set_oidc_env_vars fixture to ensure OIDC env vars are set.
+    """
+    # Set environment variables for the test session
+    os.environ["JWKS_URL"] = "http://localhost/.well-known/jwks.json"
+    os.environ["AUDIENCE"] = "test-audience"
+
+    def _override_get_db():
+        try:
+            db = session
+            yield db
+        finally:
+            db.close()
+
+    app.dependency_overrides[get_session] = _override_get_db
+    yield TestClient(app)
+
+    # Optionally clean up after test
+    del os.environ["JWKS_URL"]
+    del os.environ["AUDIENCE"]

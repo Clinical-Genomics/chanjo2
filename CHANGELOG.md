@@ -1,6 +1,7 @@
 ## [unreleased]
 ### Added
 - Optional auth protection on overview and report endpoint, when env variables `JWKS_URL` and `AUDIENCE` are specified
+- Tests for authorized endpoints
 
 ## [3.5.1]
 ### Added

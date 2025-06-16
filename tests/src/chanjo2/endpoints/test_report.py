@@ -1,8 +1,11 @@
 import copy
-from typing import Type
+import os
+from typing import Callable, Type
 
+import respx
 from fastapi import status
 from fastapi.testclient import TestClient
+from httpx import Response as http_response
 from requests.models import Response
 
 from chanjo2.constants import HTTP_D4_COMPLETENESS_ERROR
@@ -36,6 +39,65 @@ def test_report_form_data(client: TestClient, endpoints: Type):
 
     # And return an HTML page
     assert response.template.name == "report.html"
+
+
+@respx.mock
+def test_report_form_data_auth_valid_token(
+    auth_protected_client: TestClient,
+    endpoints: Type,
+    jwks_mock: dict,
+    create_token: Callable,
+):
+    """Test the report endpoint with a non-valid access token."""
+
+    # Mock the JWKS URL to return the JWKS public key set
+    respx.get("http://localhost/.well-known/jwks.json").mock(
+        return_value=http_response(200, json=jwks_mock)
+    )
+
+    # Create a valid token with the expected audience
+    token = create_token("test-audience")
+    # Set token in the test client cookies
+    auth_protected_client.cookies.set("access_token", token)
+
+    # Make a request to the protected endpoint
+    response = auth_protected_client.post(
+        endpoints.REPORT,  # Replace with your actual endpoint path
+        data=DEMO_COVERAGE_QUERY_FORM,
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+    )
+
+    # Assert that access is authorized
+    assert response.status_code == status.HTTP_200_OK
+
+
+@respx.mock
+def test_report_form_data_auth_invalid_token(
+    auth_protected_client: TestClient,
+    endpoints: Type,
+    jwks_mock: dict,
+    create_token: Callable,
+):
+    """Test the report endpoint with a non-valid access token."""
+
+    # GIVEN a mocked response for the OIDC provider
+    respx.get("http://localhost/.well-known/jwks.json").mock(
+        return_value=http_response(200, json=jwks_mock)
+    )
+
+    # GIVEN a request with a token that is not valid
+    token = create_token("wrong-audience")
+    # Set token in the test client cookies
+    auth_protected_client.cookies.set("access_token", token)
+
+    response = auth_protected_client.post(
+        endpoints.REPORT,
+        data=DEMO_COVERAGE_QUERY_FORM,
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+    )
+    # THEN the endpoint should return unauthorized
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    assert response.json()["detail"] == "Token validation failed: Invalid audience"
 
 
 def test_report_form_data_no_genes(client: TestClient, endpoints: Type):
