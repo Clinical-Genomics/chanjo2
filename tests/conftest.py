@@ -255,13 +255,6 @@ def genomic_ids_per_build() -> Dict[str, List]:
     return {BUILD_37: GENOMIC_IDS_37, BUILD_38: GENOMIC_IDS_38}
 
 
-@pytest.fixture(autouse=True)
-def set_oidc_env_vars(monkeypatch):
-    """Mocks the existence of 2 variables in the .env file. Used to test endpoints protected by OIDC auth."""
-    monkeypatch.setenv("JWKS_URL", "https://mocked-jwks-url.com")
-    monkeypatch.setenv("AUDIENCE", "account")
-
-
 def encode_segment(segment: Dict) -> str:
     """Encode a JWT segment (header or payload) as base64url."""
     json_bytes = json.dumps(segment, separators=(",", ":")).encode()
@@ -338,10 +331,9 @@ def jwks_mock(rsa_keys):
 
 
 @pytest.fixture(name="auth_protected_client")
-def auth_protected_client_fixture(session, set_oidc_env_vars) -> TestClient:
+def auth_protected_client_fixture(session) -> TestClient:
     """
     Returns a TestClient with the database session override.
-    Depends on set_oidc_env_vars fixture to ensure OIDC env vars are set.
     """
     # Set environment variables for the test session
     os.environ["JWKS_URL"] = "http://localhost/.well-known/jwks.json"
