@@ -30,6 +30,7 @@ fastapi = "^0.115.12"
 importlib-resources = "^6.5.2"
 httpx = "^0.28.1"
 python-jose = {extras = ["cryptography"], version = "^3.5.0"}
+respx = "^0.22.0"
 
 [tool.poetry.extras]
 m1 = ["pyd4"]

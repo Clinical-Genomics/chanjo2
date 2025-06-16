@@ -71,7 +71,6 @@ async def report(
     user: dict = Depends(get_current_user),
 ):
     """Return a coverage report over a list of genes for a list of samples."""
-
     start_time = time.time()
     try:
         report_query = ReportQuery.as_form(await request.form())

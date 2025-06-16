@@ -1,4 +1,5 @@
 import base64
+import logging
 import os
 from typing import Any, Dict
 
@@ -8,8 +9,8 @@ from cryptography.hazmat.primitives.asymmetric.rsa import RSAPublicKey, RSAPubli
 from fastapi import HTTPException, Request, status
 from jose import JWTError, jwt
 
-AUDIENCE = os.environ.get("AUDIENCE")
-JWKS_URL = os.environ.get("JWKS_URL")
+LOG = logging.getLogger(__name__)
+
 ALGORITHMS = ["RS256"]
 
 
@@ -27,6 +28,8 @@ async def get_current_user(request: Request) -> Dict[str, Any]:
     """
     Verifies JWT token from cookies using Keycloak's JWKS.
     """
+    AUDIENCE = os.environ.get("AUDIENCE")
+    JWKS_URL = os.environ.get("JWKS_URL")
 
     if not JWKS_URL or not AUDIENCE:
         # Skip verification in dev mode
@@ -63,7 +66,6 @@ async def get_current_user(request: Request) -> Dict[str, Any]:
             algorithms=ALGORITHMS,
             audience=AUDIENCE,
         )
-
         return payload
 
     except JWTError as e:
