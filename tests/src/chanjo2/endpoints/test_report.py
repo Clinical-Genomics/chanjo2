@@ -70,6 +70,9 @@ def test_report_form_data_auth_valid_token(
     # Assert that access is authorized
     assert response.status_code == status.HTTP_200_OK
 
+    # And return an HTML page
+    assert response.template.name == "report.html"
+
 
 @respx.mock
 def test_report_form_data_auth_invalid_token(
