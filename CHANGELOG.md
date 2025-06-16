@@ -1,3 +1,7 @@
+## [unreleased]
+### Added
+- Optional auth protection on overview and report endpoint, when env variables `JWKS_URL` and `AUDIENCE` are specified
+
 ## [3.5.1]
 ### Added
 - Display chanjo2 software version on report, overview, gene_overview and MANE overview reports
