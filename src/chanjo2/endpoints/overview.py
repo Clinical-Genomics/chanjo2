@@ -11,6 +11,7 @@ from starlette.datastructures import FormData
 from typing_extensions import Annotated
 
 from chanjo2 import __version__
+from chanjo2.auth import get_current_user
 from chanjo2.constants import DEFAULT_COVERAGE_LEVEL
 from chanjo2.dbutil import get_session
 from chanjo2.demo import DEMO_COVERAGE_QUERY_FORM, DEMO_GENE_OVERVIEW_QUERY_FORM
@@ -70,6 +71,7 @@ async def overview(
     hgnc_gene_symbols=Annotated[Optional[str], Form(None)],
     default_level=Annotated[Optional[int], Form(DEFAULT_COVERAGE_LEVEL)],
     db: Session = Depends(get_session),
+    user: dict = Depends(get_current_user),
 ):
     """Return the genes overview page over a list of genes for a list of samples."""
     try:
@@ -100,6 +102,7 @@ async def overview(
 async def gene_overview(
     request: Request,
     db: Session = Depends(get_session),
+    user: dict = Depends(get_current_user),
 ):
     """Returns coverage overview stats for a group of samples over genomic intervals of a single gene."""
     form_data: FormData = await request.form()
@@ -168,6 +171,7 @@ async def mane_overview(
     hgnc_gene_symbols=Annotated[Optional[str], Form(None)],
     default_level=Annotated[Optional[int], Form(DEFAULT_COVERAGE_LEVEL)],
     db: Session = Depends(get_session),
+    user: dict = Depends(get_current_user),
 ):
     """Returns coverage overview stats for a group of samples over MANE transcripts of a list of genes."""
     try:
