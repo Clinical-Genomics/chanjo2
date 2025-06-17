@@ -7,6 +7,7 @@ from typing import Dict, List, Tuple
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from chanjo2.auth import get_current_user
 from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
 from chanjo2.crud.intervals import get_genes, set_sql_intervals
 from chanjo2.dbutil import get_session
@@ -38,7 +39,9 @@ LOG = logging.getLogger(__name__)
 
 
 @router.post("/coverage/d4/interval/", response_model=IntervalCoverage)
-def d4_interval_coverage(query: FileCoverageQuery):
+def d4_interval_coverage(
+    query: FileCoverageQuery, user: dict = Depends(get_current_user)
+):
     """Return coverage on the given interval for a D4 resource located on the disk or on a remote server."""
 
     chrom_prefix: str = get_chromosomes_prefix(query.coverage_file_path)
