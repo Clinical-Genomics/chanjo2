@@ -127,7 +127,7 @@ def test_d4_interval_coverage_auth_invalid_token(
     jwks_mock: dict,
     create_token: Callable,
 ):
-    """Test the function that returns the coverage over an interval of a D4 file. Situation where the endpoints expects auth token but token is NOT valid."""
+    """Test the function that returns the coverage over an interval of a D4 file. Situation where the endpoint expects auth token but token is NOT valid."""
 
     # Mock the JWKS URL to return the JWKS public key set
     respx.get("http://localhost/.well-known/jwks.json").mock(
@@ -160,7 +160,7 @@ def test_d4_interval_coverage_auth_valid_token(
     jwks_mock: dict,
     create_token: Callable,
 ):
-    """Test the function that returns the coverage over an interval of a D4 file. Situation where the endpoints receives a valid auth token in the request headers."""
+    """Test the function that returns the coverage over an interval of a D4 file. Situation where the endpoint receives a valid auth token in the request headers."""
 
     # Mock the JWKS URL to return the JWKS public key set
     respx.get("http://localhost/.well-known/jwks.json").mock(
@@ -193,7 +193,7 @@ def test_d4_interval_coverage_auth_valid_token(
 def test_d4_interval_coverage_single_chromosome(
     client: TestClient, real_coverage_path: str, endpoints: Type, interval_query: dict
 ):
-    """Test the function that returns the coverage over an entire chsomosome of a D4 file."""
+    """Test the function that returns the coverage over an entire chromosome of a D4 file."""
 
     # GIVEN an interval query without start and and  coordinates
     interval_query.pop("start")
