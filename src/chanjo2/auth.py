@@ -26,7 +26,7 @@ def construct_rsa_key(key_data: Dict[str, str]) -> RSAPublicKey:
 
 async def get_current_user(request: Request) -> Dict[str, Any]:
     """
-    Verifies JWT token from cookies using Keycloak's JWKS.
+    Verifies JWT token from cookies or request headers..
     """
     AUDIENCE = os.environ.get("AUDIENCE")
     JWKS_URL = os.environ.get("JWKS_URL")
@@ -35,7 +35,15 @@ async def get_current_user(request: Request) -> Dict[str, Any]:
         # Skip verification in dev mode
         return {"sub": "anonymous", "role": "dev", "auth_skipped": True}
 
-    token = request.cookies.get("access_token")
+    # Try to get token from Authorization header first
+    auth_header = request.headers.get("Authorization")
+
+    if auth_header and auth_header.startswith("Bearer "):
+        token = auth_header.removeprefix("Bearer ").strip()
+    else:
+        # Fallback to token in cookies
+        token = request.cookies.get("access_token")
+
     if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing token"

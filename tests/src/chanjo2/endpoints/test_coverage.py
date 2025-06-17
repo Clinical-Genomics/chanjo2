@@ -1,8 +1,10 @@
 import copy
-from typing import Dict, List, Type
+from typing import Callable, Dict, List, Type
 
+import respx
 from fastapi import status
 from fastapi.testclient import TestClient
+from httpx import Response as http_response
 from pytest_mock.plugin import MockerFixture
 
 from chanjo2.constants import (
@@ -116,10 +118,82 @@ def test_d4_interval_coverage(
         assert coverage_data.completeness[str(cov_threshold)] > 0
 
 
+@respx.mock
+def test_d4_interval_coverage_auth_invalid_token(
+    auth_protected_client: TestClient,
+    real_coverage_path: str,
+    endpoints: Type,
+    interval_query: dict,
+    jwks_mock: dict,
+    create_token: Callable,
+):
+    """Test the function that returns the coverage over an interval of a D4 file. Situation where the endpoint expects auth token but token is NOT valid."""
+
+    # Mock the JWKS URL to return the JWKS public key set
+    respx.get("http://localhost/.well-known/jwks.json").mock(
+        return_value=http_response(200, json=jwks_mock)
+    )
+
+    # WHEN using a query for the coverage over a genomic interval in a local D4 file
+    interval_query["coverage_file_path"] = real_coverage_path
+    interval_query["completeness_thresholds"] = COVERAGE_COMPLETENESS_THRESHOLDS
+
+    # GIVEN a request with authorization in the request headers, with a token that is not valid:
+    token = create_token("wrong-audience")
+    response = auth_protected_client.post(
+        endpoints.INTERVAL_COVERAGE,
+        json=interval_query,
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    # THEN the endpoint should return unauthorized
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    assert response.json()["detail"] == "Token validation failed: Invalid audience"
+
+
+@respx.mock
+def test_d4_interval_coverage_auth_valid_token(
+    auth_protected_client: TestClient,
+    real_coverage_path: str,
+    endpoints: Type,
+    interval_query: dict,
+    jwks_mock: dict,
+    create_token: Callable,
+):
+    """Test the function that returns the coverage over an interval of a D4 file. Situation where the endpoint receives a valid auth token in the request headers."""
+
+    # Mock the JWKS URL to return the JWKS public key set
+    respx.get("http://localhost/.well-known/jwks.json").mock(
+        return_value=http_response(200, json=jwks_mock)
+    )
+
+    # WHEN using a query for the coverage over a genomic interval in a local D4 file
+    interval_query["coverage_file_path"] = real_coverage_path
+    interval_query["completeness_thresholds"] = COVERAGE_COMPLETENESS_THRESHOLDS
+
+    # GIVEN a request with authorization in the request headers with a valid token:
+    # Create a valid token with the expected audience
+    token = create_token("test-audience")
+    response = auth_protected_client.post(
+        endpoints.INTERVAL_COVERAGE,
+        json=interval_query,
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    # THEN a request to the read_single_interval should be successful
+    assert response.status_code == status.HTTP_200_OK
+
+    # THEN the mean coverage over the interval should be returned
+    result = response.json()
+
+    coverage_data = IntervalCoverage(**result)
+    assert coverage_data.mean_coverage
+
+
 def test_d4_interval_coverage_single_chromosome(
     client: TestClient, real_coverage_path: str, endpoints: Type, interval_query: dict
 ):
-    """Test the function that returns the coverage over an entire chsomosome of a D4 file."""
+    """Test the function that returns the coverage over an entire chromosome of a D4 file."""
 
     # GIVEN an interval query without start and and  coordinates
     interval_query.pop("start")
