@@ -11,13 +11,16 @@ STATS_MEAN_COVERAGE_INDEX = 3
 
 
 def get_chromosomes_prefix(d4_file_path: str) -> str:
-    """Extracts the prefix to be prepended to genomic intervals when calculating stats.
-    Depends on the chromosomes format present on the d4 file..
-    """
-    chr1_stats = subprocess.check_output(
-        f"d4tools view -g {d4_file_path} | head -n 1", text=True, shell=True
+    """Extracts the prefix to be prepended to genomic intervals when calculating stats."""
+    result = subprocess.run(
+        ["d4tools", "view", "-g", d4_file_path],
+        capture_output=True,
+        text=True,
+        check=True,
     )
-    if "chr" in chr1_stats:
+    first_line = result.stdout.splitlines()[0] if result.stdout else ""
+
+    if "chr" in first_line:
         return "chr"
     return ""
 

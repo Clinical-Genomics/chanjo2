@@ -6,6 +6,7 @@
 ### Fixed
 - Bump h11 from 0.14.0 to 0.16.0 (fixes: h11 accepts some malformed Chunked-Encoding bodies)
 - Bump requests from 2.32.3 to 2.32.4 (fixes: Requests vulnerable to .netrc credentials leak via malicious URLs)
+- OS command vulnerability to command injection attacks 
 
 ## [3.5.1]
 ### Added
