@@ -3,6 +3,8 @@
 - Optional Authorization protection on overview and report endpoints. When env variables `JWKS_URL` and `AUDIENCE` are specified, `access_token` will be collected from request cookies
 - Optional Authorization protection on coverage endpoints. When env variables `JWKS_URL` and `AUDIENCE` are specified, `access_token` will be collected from request headers {"Authorization": "Bearer <token>"}
 - Tests for endpoints protected by Authorization
+### Fixed
+- Bump h11 from 0.14.0 to 0.16.0 (Fixes: h11 accepts some malformed Chunked-Encoding bodies)
 
 ## [3.5.1]
 ### Added
