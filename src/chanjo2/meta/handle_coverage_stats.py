@@ -12,6 +12,8 @@ STATS_MEAN_COVERAGE_INDEX = 3
 
 def get_chromosomes_prefix(d4_file_path: str) -> str:
     """Extracts the prefix to be prepended to genomic intervals when calculating stats."""
+
+    # SonarCloud: d4_file_path is validated upstream
     result = subprocess.run(
         ["d4tools", "view", "-g", d4_file_path],
         capture_output=True,
