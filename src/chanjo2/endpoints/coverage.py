@@ -86,7 +86,9 @@ def d4_interval_coverage(
 
 
 @router.post("/coverage/d4/interval_file/", response_model=List[IntervalCoverage])
-def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
+def d4_intervals_coverage(
+    query: FileCoverageIntervalsFileQuery, user: dict = Depends(get_current_user)
+):
     """Return coverage on the given intervals for a D4 resource located on the disk or on a remote server."""
 
     start_time = time.time()
@@ -137,7 +139,9 @@ def d4_intervals_coverage(query: FileCoverageIntervalsFileQuery):
 
 @router.post("/coverage/d4/genes/summary", response_model=Dict)
 def d4_genes_condensed_summary(
-    query: CoverageSummaryQuery, db: Session = Depends(get_session)
+    query: CoverageSummaryQuery,
+    db: Session = Depends(get_session),
+    user: dict = Depends(get_current_user),
 ):
     """Returning condensed summary containing only sample's mean coverage and completeness above a default threshold."""
 
@@ -206,7 +210,9 @@ def d4_genes_condensed_summary(
 
 
 @router.get("/coverage/samples/predicted_sex", response_model=Dict)
-async def get_samples_predicted_sex(coverage_file_path: str):
+async def get_samples_predicted_sex(
+    coverage_file_path: str, user: dict = Depends(get_current_user)
+):
     """Return predicted sex for a sample given the coverage over its sex chromosomes."""
     if (
         isfile(coverage_file_path) is False
