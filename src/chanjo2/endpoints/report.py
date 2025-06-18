@@ -57,6 +57,7 @@ async def demo_report(request: Request, db: Session = Depends(get_session)):
 @router.post("/report", response_class=HTMLResponse)
 async def report(
     request: Request,
+    access_token=Annotated[Optional[str], Form(None)],
     build=Annotated[Builds, Form(...)],
     samples=Annotated[str, Form(...)],
     interval_type=Annotated[IntervalType, Form(...)],
