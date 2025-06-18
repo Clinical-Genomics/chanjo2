@@ -38,10 +38,13 @@ async def get_current_user(request: Request) -> Dict[str, Any]:
     # Try to get token from Authorization header first
     auth_header = request.headers.get("Authorization")
 
-    if auth_header and auth_header.startswith("Bearer "):
+    form = await request.form()  # await the coroutine to get the form data
+    access_token = form.get("access_token")
+    if access_token:
+        token = access_token
+    elif auth_header and auth_header.startswith("Bearer "):
         token = auth_header.removeprefix("Bearer ").strip()
-    else:
-        # Fallback to token in cookies
+    else:  # Fallback to token in cookies
         token = request.cookies.get("access_token")
 
     if not token:

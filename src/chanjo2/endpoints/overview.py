@@ -62,6 +62,7 @@ async def demo_overview(request: Request, db: Session = Depends(get_session)):
 @router.post("/overview", response_class=HTMLResponse)
 async def overview(
     request: Request,
+    access_token=Annotated[Optional[str], Form(None)],
     build=Annotated[Builds, Form(...)],
     samples=Annotated[str, Form(...)],
     interval_type=Annotated[IntervalType, Form(...)],
@@ -101,6 +102,7 @@ async def overview(
 @router.post("/gene_overview", response_class=HTMLResponse)
 async def gene_overview(
     request: Request,
+    access_token=Annotated[Optional[str], Form(None)],
     db: Session = Depends(get_session),
     user: dict = Depends(get_current_user),
 ):
@@ -162,6 +164,7 @@ async def demo_mane_overview(
 @router.post("/mane_overview", response_class=HTMLResponse)
 async def mane_overview(
     request: Request,
+    access_token=Annotated[Optional[str], Form(None)],
     build=Annotated[Builds, Form(Builds.build_38)],
     samples=Annotated[str, Form(...)],
     interval_type=Annotated[IntervalType, Form(IntervalType.TRANSCRIPTS)],

@@ -1,3 +1,7 @@
+## [unreleased]
+### Added
+- Optional Authorization protection on overview and report endpoints. When env variables `JWKS_URL` and `AUDIENCE` are specified, `access_token` can also be collected form the request form, `access_token` key
+
 ## [3.6]
 ### Added
 - Optional Authorization protection on overview and report endpoints. When env variables `JWKS_URL` and `AUDIENCE` are specified, `access_token` will be collected from request cookies
