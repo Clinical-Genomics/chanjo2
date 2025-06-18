@@ -42,13 +42,47 @@ def test_report_form_data(client: TestClient, endpoints: Type):
 
 
 @respx.mock
-def test_report_form_data_auth_valid_token(
+def test_report_form_data_auth_token_via_form(
     auth_protected_client: TestClient,
     endpoints: Type,
     jwks_mock: dict,
     create_token: Callable,
 ):
-    """Test the report endpoint with a non-valid access token."""
+    """Test the report endpoint with a valid access token passed via form."""
+    # Mock the JWKS URL to return the JWKS public key set
+    respx.get("http://localhost/.well-known/jwks.json").mock(
+        return_value=http_response(200, json=jwks_mock)
+    )
+
+    # Create a valid token with the expected audience
+    token = create_token("test-audience")
+
+    # GIVEN that request form contains the access token
+    data = copy.deepcopy(DEMO_COVERAGE_QUERY_FORM)
+    data["access_token"] = token
+
+    # Make a request to the protected endpoint
+    response = auth_protected_client.post(
+        endpoints.REPORT,  # Replace with your actual endpoint path
+        data=data,
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+    )
+
+    # Assert that access is authorized
+    assert response.status_code == status.HTTP_200_OK
+
+    # And return an HTML page
+    assert response.template.name == "report.html"
+
+
+@respx.mock
+def test_report_form_data_auth_valid_token_via_cookies(
+    auth_protected_client: TestClient,
+    endpoints: Type,
+    jwks_mock: dict,
+    create_token: Callable,
+):
+    """Test the report endpoint with a valid access token passed via request cookies."""
 
     # Mock the JWKS URL to return the JWKS public key set
     respx.get("http://localhost/.well-known/jwks.json").mock(
@@ -75,13 +109,13 @@ def test_report_form_data_auth_valid_token(
 
 
 @respx.mock
-def test_report_form_data_auth_invalid_token(
+def test_report_form_data_auth_invalid_token_via_cookies(
     auth_protected_client: TestClient,
     endpoints: Type,
     jwks_mock: dict,
     create_token: Callable,
 ):
-    """Test the report endpoint with a non-valid access token."""
+    """Test the report endpoint with a non-valid access token passed via request cookies."""
 
     # GIVEN a mocked response for the OIDC provider
     respx.get("http://localhost/.well-known/jwks.json").mock(
