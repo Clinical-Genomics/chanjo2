@@ -39,7 +39,7 @@ Once the `.env` file is configured with valid `JWKS_URL` and `AUDIENCE`, the fol
 | `/overview`                          | Form field, Cookie           |
 | `/gene_overview`                     | Form field, Cookie           |
 | `/mane_overview`                     | Form field, Cookie           |
-| `/coverage/d4/interval/`             | Authorization header          |
+| `/coverage/d4/interval/`             | Authorization header         |
 | `/coverage/d4/interval_file/`        | Authorization header         |
 | `/coverage/d4/genes/summary`         | Authorization header         |
 | `/coverage/samples/predicted_sex`    | Authorization header         |
