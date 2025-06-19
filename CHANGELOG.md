@@ -1,4 +1,4 @@
-## [unreleased]
+## [3.7]
 ### Added
 - Optional Authorization protection on overview and report endpoints. When env variables `JWKS_URL` and `AUDIENCE` are specified, `access_token` can also be collected form the request form, `access_token` key
 - Documentation on how to change the app settings to enforce authorised requests
