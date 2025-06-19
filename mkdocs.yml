@@ -9,7 +9,9 @@ nav:
     - Deployment:
       - Deployment using Docker: "deployment/docker-deployment.md"
       - Installation on a virtual environment: "deployment/installation.md"
+      - Custom settings and the .env file: "deployment/env_file.md"
     - Usage:
         - Loading and displaying genes, transcripts and exons: "usage/loading-intervals.md"
         - Coverage and coverage completeness queries: "usage/sample-coverage.md"
         - Coverage and genes overview reports: "usage/coverage-reports.md"
+        - Authorised requests: "usage/authorised_requests.md"

@@ -31,20 +31,9 @@ uvicorn src.chanjo2.main:app --reload
 
 The server will run on localhost and default port 8000 (http://0.0.0.0:8000)
 
-
-### Custom settings and the .env file
-
 The demo server is connecting to a SQLite database whose temporary tables are destroyed and re-created every time the server is started.
-In order to connect to a permanent MYSQL database instance, you'd need to customise the settings present on the [`.env`](https://github.com/Clinical-Genomics/chanjo2/blob/main/.env) file:
+In order to connect to a permanent MYSQL database instance, you'd need to customise the settings present on the [`.env`](https://github.com/Clinical-Genomics/chanjo2/blob/main/.env) file. 
+For info about custom settings on the .env file, please visit [this document](env_file.md).
 
-```
-MYSQL_USER=dbUser
-MYSQL_PASSWORD=dbPassword
-MYSQL_DATABASE_NAME=chanjo2_test
-MYSQL_HOST_NAME=localhost
-MYSQL_PORT=3306
-```
-
-The last line present on this file (`DEMO=Y`) should be removed or commented out.
 
 [rust]: https://www.rust-lang.org/
