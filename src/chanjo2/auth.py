@@ -33,7 +33,6 @@ async def get_current_user(request: Request) -> Dict[str, Any]:
     JWKS_URL = os.environ.get("JWKS_URL")
 
     if not JWKS_URL or not AUDIENCE:
-        # Dev mode: skip verification and return dummy user
         return {"sub": "anonymous", "role": "dev", "auth_skipped": True}
 
     # Extract token from (priority order): form > Authorization header > cookies
