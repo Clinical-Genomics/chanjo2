@@ -1,3 +1,7 @@
+## [unreleased]
+### Changed 
+- In order to support login via Google, validate `id_token` instead of `access_token` in overview and report endpoints.
+
 ## [3.7]
 ### Added
 - Optional Authorization protection on overview and report endpoints. When env variables `JWKS_URL` and `AUDIENCE` are specified, `access_token` can also be collected form the request form, `access_token` key

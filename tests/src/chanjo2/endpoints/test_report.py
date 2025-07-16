@@ -59,7 +59,7 @@ def test_report_form_data_auth_token_via_form(
 
     # GIVEN that request form contains the access token
     data = copy.deepcopy(DEMO_COVERAGE_QUERY_FORM)
-    data["access_token"] = token
+    data["id_token"] = token
 
     # Make a request to the protected endpoint
     response = auth_protected_client.post(
@@ -92,7 +92,7 @@ def test_report_form_data_auth_valid_token_via_cookies(
     # Create a valid token with the expected audience
     token = create_token("test-audience")
     # Set token in the test client cookies
-    auth_protected_client.cookies.set("access_token", token)
+    auth_protected_client.cookies.set("id_token", token)
 
     # Make a request to the protected endpoint
     response = auth_protected_client.post(
@@ -125,7 +125,7 @@ def test_report_form_data_auth_invalid_token_via_cookies(
     # GIVEN a request with a token that is not valid
     token = create_token("wrong-audience")
     # Set token in the test client cookies
-    auth_protected_client.cookies.set("access_token", token)
+    auth_protected_client.cookies.set("id_token", token)
 
     response = auth_protected_client.post(
         endpoints.REPORT,
