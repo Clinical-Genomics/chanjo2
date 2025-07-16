@@ -66,9 +66,6 @@ async def get_current_user(request: Request) -> Dict[str, Any]:
         unverified_claims = jwt.get_unverified_claims(id_token)
         unverified_header = jwt.get_unverified_header(id_token)
 
-        # Remove 'at_hash' manually (ugly but effective)
-        unverified_claims.pop("at_hash", None)
-
         kid = unverified_header.get("kid")
         if not kid:
             raise HTTPException(status_code=401, detail="Invalid token header: no kid")
@@ -89,7 +86,6 @@ async def get_current_user(request: Request) -> Dict[str, Any]:
             public_key,
             algorithms=ALGORITHMS,
             audience=AUDIENCE,
-            gorithms=["RS256"],
             options={"verify_at_hash": False},  # disables at_hash validation
         )
         print(f"Verified audience: {payload.get('aud')}")
