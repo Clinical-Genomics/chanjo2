@@ -63,7 +63,6 @@ async def get_current_user(request: Request) -> Dict[str, Any]:
             jwks = resp.json()
 
         # Extract kid from unverified token header
-        unverified_claims = jwt.get_unverified_claims(id_token)
         unverified_header = jwt.get_unverified_header(id_token)
 
         kid = unverified_header.get("kid")
@@ -88,7 +87,6 @@ async def get_current_user(request: Request) -> Dict[str, Any]:
             audience=AUDIENCE,
             options={"verify_at_hash": False},  # disables at_hash validation
         )
-        print(f"Verified audience: {payload.get('aud')}")
         return payload
 
     except JWTError as e:
