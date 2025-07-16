@@ -26,56 +26,65 @@ def construct_rsa_key(key_data: Dict[str, str]) -> RSAPublicKey:
 
 async def get_current_user(request: Request) -> Dict[str, Any]:
     """
-    Verifies JWT token from cookies or request headers..
+    Verify and decode the OIDC id_token JWT from request headers, form, or cookies.
+    Supports standard OIDC tokens (Google, Keycloak, etc).
     """
     AUDIENCE = os.environ.get("AUDIENCE")
     JWKS_URL = os.environ.get("JWKS_URL")
 
     if not JWKS_URL or not AUDIENCE:
-        # Skip verification in dev mode
+        # Dev mode: skip verification and return dummy user
         return {"sub": "anonymous", "role": "dev", "auth_skipped": True}
 
-    # Try to get token from Authorization header first
+    # Extract token from (priority order): form > Authorization header > cookies
+    form = await request.form()
+    id_token = form.get("id_token")
+
     auth_header = request.headers.get("Authorization")
+    if not id_token and auth_header and auth_header.startswith("Bearer "):
+        id_token = auth_header.removeprefix("Bearer ").strip()
 
-    form = await request.form()  # await the coroutine to get the form data
-    access_token = form.get("access_token")
-    if access_token:
-        token = access_token
-    elif auth_header and auth_header.startswith("Bearer "):
-        token = auth_header.removeprefix("Bearer ").strip()
-    else:  # Fallback to token in cookies
-        token = request.cookies.get("access_token")
+    if not id_token:
+        id_token = request.cookies.get("id_token")
 
-    if not token:
+    if not id_token:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing token"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing id_token"
         )
+
+    claims = jwt.get_unverified_claims(id_token)
+    print(f"Received a token with audience:{claims.get('aud')}")
 
     try:
-        # Fetch JWKS
-        resp = await httpx.AsyncClient().get(JWKS_URL)
-        jwks = resp.json()
+        # Fetch JWKS keys
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(JWKS_URL)
+            resp.raise_for_status()
+            jwks = resp.json()
 
-        # Get the key that matches the token's `kid`
-        unverified_header = jwt.get_unverified_header(token)
-        key = next(
-            (k for k in jwks["keys"] if k["kid"] == unverified_header["kid"]), None
-        )
+        # Extract kid from unverified token header
+        unverified_header = jwt.get_unverified_header(id_token)
+        kid = unverified_header.get("kid")
+        if not kid:
+            raise HTTPException(status_code=401, detail="Invalid token header: no kid")
 
+        # Find matching key
+        key = next((k for k in jwks["keys"] if k["kid"] == kid), None)
         if not key:
             raise HTTPException(
                 status_code=401, detail="Unable to find matching key in JWKS"
             )
 
-        public_key: RSAPublicKey = construct_rsa_key(key)
+        # Construct public key object for verification
+        public_key = construct_rsa_key(key)
 
-        # Decode and validate token
+        # Decode & validate token
         payload = jwt.decode(
-            token,
+            id_token,
             public_key,
             algorithms=ALGORITHMS,
             audience=AUDIENCE,
+            options={"verify_at_hash": False},  # disables at_hash validation
         )
         return payload
 
