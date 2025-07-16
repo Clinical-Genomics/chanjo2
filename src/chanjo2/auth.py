@@ -63,7 +63,12 @@ async def get_current_user(request: Request) -> Dict[str, Any]:
             jwks = resp.json()
 
         # Extract kid from unverified token header
+        unverified_claims = jwt.get_unverified_claims(id_token)
         unverified_header = jwt.get_unverified_header(id_token)
+
+        # Remove 'at_hash' manually (ugly but effective)
+        unverified_claims.pop("at_hash", None)
+
         kid = unverified_header.get("kid")
         if not kid:
             raise HTTPException(status_code=401, detail="Invalid token header: no kid")
