@@ -1,6 +1,6 @@
-## [unreleased]
+## [3.8]
 ### Changed 
-- In order to support login via Google, validate `id_token` instead of `access_token` in overview and report endpoints.
+- In order to support token login via Google, validate `id_token` instead of `access_token` in overview and report endpoints.
 
 ## [3.7]
 ### Added
