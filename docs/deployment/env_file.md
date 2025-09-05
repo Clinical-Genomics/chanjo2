@@ -35,7 +35,7 @@ Furthermore, it's worth considering that the more coverage levels provided, the 
 
 ## Endpoint Protection Using OIDC Authentication
 
-Chanjo2 supports authenticated requests via OIDC. This functionality has been tested with Keycloak but should also work with Google authentication.
+Chanjo2 supports authenticated requests via OIDC. This functionality has been tested with Keycloak and Google authentication.
 To enforce authentication for the /report, /overview, /gene_overview, /mane_overview and all /coverage endpoints, uncomment and customize the following parameter.
 
 ```

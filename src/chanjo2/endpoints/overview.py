@@ -11,7 +11,6 @@ from starlette.datastructures import FormData
 from typing_extensions import Annotated
 
 from chanjo2 import __version__
-from chanjo2.auth import get_current_user
 from chanjo2.constants import DEFAULT_COVERAGE_LEVEL
 from chanjo2.dbutil import get_session
 from chanjo2.demo import DEMO_COVERAGE_QUERY_FORM, DEMO_GENE_OVERVIEW_QUERY_FORM
@@ -62,7 +61,6 @@ async def demo_overview(request: Request, db: Session = Depends(get_session)):
 @router.post("/overview", response_class=HTMLResponse)
 async def overview(
     request: Request,
-    access_token=Annotated[Optional[str], Form(None)],
     build=Annotated[Builds, Form(...)],
     samples=Annotated[str, Form(...)],
     interval_type=Annotated[IntervalType, Form(...)],
@@ -72,7 +70,6 @@ async def overview(
     hgnc_gene_symbols=Annotated[Optional[str], Form(None)],
     default_level=Annotated[Optional[int], Form(DEFAULT_COVERAGE_LEVEL)],
     db: Session = Depends(get_session),
-    user: dict = Depends(get_current_user),
 ):
     """Return the genes overview page over a list of genes for a list of samples."""
     try:
@@ -100,12 +97,7 @@ async def overview(
 
 
 @router.post("/gene_overview", response_class=HTMLResponse)
-async def gene_overview(
-    request: Request,
-    access_token=Annotated[Optional[str], Form(None)],
-    db: Session = Depends(get_session),
-    user: dict = Depends(get_current_user),
-):
+async def gene_overview(request: Request, db: Session = Depends(get_session)):
     """Returns coverage overview stats for a group of samples over genomic intervals of a single gene."""
     form_data: FormData = await request.form()
     form_dict: dict = jsonable_encoder(form_data)
@@ -164,7 +156,6 @@ async def demo_mane_overview(
 @router.post("/mane_overview", response_class=HTMLResponse)
 async def mane_overview(
     request: Request,
-    access_token=Annotated[Optional[str], Form(None)],
     build=Annotated[Builds, Form(Builds.build_38)],
     samples=Annotated[str, Form(...)],
     interval_type=Annotated[IntervalType, Form(IntervalType.TRANSCRIPTS)],
@@ -174,7 +165,6 @@ async def mane_overview(
     hgnc_gene_symbols=Annotated[Optional[str], Form(None)],
     default_level=Annotated[Optional[int], Form(DEFAULT_COVERAGE_LEVEL)],
     db: Session = Depends(get_session),
-    user: dict = Depends(get_current_user),
 ):
     """Returns coverage overview stats for a group of samples over MANE transcripts of a list of genes."""
     try:
