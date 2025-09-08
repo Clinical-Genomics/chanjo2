@@ -1,7 +1,8 @@
+import datetime
 import logging
 import time
 from os import path
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple
 
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
 from fastapi.responses import HTMLResponse
@@ -11,7 +12,7 @@ from sqlalchemy.orm import Session
 from typing_extensions import Annotated
 
 from chanjo2 import __version__
-from chanjo2.auth import get_current_user
+from chanjo2.auth import get_token
 from chanjo2.constants import DEFAULT_COVERAGE_LEVEL
 from chanjo2.dbutil import get_session
 from chanjo2.demo import DEMO_COVERAGE_QUERY_FORM
@@ -69,9 +70,12 @@ async def report(
     panel_name=Annotated[Optional[str], Form("Custom panel")],
     default_level=Annotated[Optional[int], Form(DEFAULT_COVERAGE_LEVEL)],
     db: Session = Depends(get_session),
-    user: dict = Depends(get_current_user),
+    token_data: Tuple[str, datetime.datetime] = Depends(get_token),
 ):
     """Return a coverage report over a list of genes for a list of samples."""
+
+    validated_token, expires = token_data
+
     start_time = time.time()
     try:
         report_query = ReportQuery.as_form(await request.form())
@@ -83,7 +87,7 @@ async def report(
 
     report_content: dict = get_report_data(query=report_query, session=db)
     LOG.debug(f"Time to compute stats: {time.time() - start_time} seconds.")
-    return templates.TemplateResponse(
+    response = templates.TemplateResponse(
         request=request,
         name="report.html",
         context={
@@ -99,3 +103,13 @@ async def report(
             "errors": report_content["errors"],
         },
     )
+
+    response.set_cookie(
+        key="id_token",
+        value=validated_token,
+        httponly=True,
+        secure=True,
+        samesite="Strict",
+        expires=expires,
+    )
+    return response

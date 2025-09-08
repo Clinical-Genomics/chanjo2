@@ -1,7 +1,8 @@
 import base64
+import datetime
 import logging
 import os
-from typing import Any, Dict
+from typing import Dict, Tuple
 
 import httpx
 from cryptography.hazmat.backends import default_backend
@@ -24,35 +25,36 @@ def construct_rsa_key(key_data: Dict[str, str]) -> RSAPublicKey:
     return public_numbers.public_key(default_backend())
 
 
-async def get_current_user(request: Request) -> Dict[str, Any]:
+async def get_token(request: Request) -> Tuple[str, datetime.datetime]:
     """
-    Verify and decode the OIDC id_token JWT from request headers, form, or cookies.
-    Supports standard OIDC tokens (Google, Keycloak, etc).
+    Validate the OIDC id_token JWT from form/header/cookie.
+    Returns:
+        token: the validated JWT string
+        expires: datetime when the token expires
     """
     AUDIENCE = os.environ.get("AUDIENCE")
     JWKS_URL = os.environ.get("JWKS_URL")
 
     if not JWKS_URL or not AUDIENCE:
-        return {"sub": "anonymous", "role": "dev", "auth_skipped": True}
+        return None, None
 
-    # Extract token from (priority order): form > Authorization header > cookies
+    # Extract token from form > Authorization header > cookie
     form = await request.form()
-    id_token = form.get("id_token")
+    token = form.get("id_token")
 
     auth_header = request.headers.get("Authorization")
-    if not id_token and auth_header and auth_header.startswith("Bearer "):
-        id_token = auth_header.removeprefix("Bearer ").strip()
+    if not token and auth_header and auth_header.startswith("Bearer "):
+        token = auth_header.removeprefix("Bearer ").strip()
 
-    if not id_token:
-        id_token = request.cookies.get("id_token")
+    if not token:
+        token = request.cookies.get("id_token")
 
-    if not id_token:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing id_token"
-        )
+    if not token:
+        raise HTTPException(status_code=401, detail="Missing id_token")
 
-    claims = jwt.get_unverified_claims(id_token)
-    print(f"Received a token with audience:{claims.get('aud')}")
+    # Optional: log unverified claims
+    claims = jwt.get_unverified_claims(token)
+    print(f"Received a token with audience: {claims.get('aud')}")
 
     try:
         # Fetch JWKS keys
@@ -61,32 +63,40 @@ async def get_current_user(request: Request) -> Dict[str, Any]:
             resp.raise_for_status()
             jwks = resp.json()
 
-        # Extract kid from unverified token header
-        unverified_header = jwt.get_unverified_header(id_token)
-
+        unverified_header = jwt.get_unverified_header(token)
         kid = unverified_header.get("kid")
         if not kid:
             raise HTTPException(status_code=401, detail="Invalid token header: no kid")
 
-        # Find matching key
         key = next((k for k in jwks["keys"] if k["kid"] == kid), None)
         if not key:
             raise HTTPException(
                 status_code=401, detail="Unable to find matching key in JWKS"
             )
 
-        # Construct public key object for verification
         public_key = construct_rsa_key(key)
 
-        # Decode & validate token
-        payload = jwt.decode(
-            id_token,
+        # Validate token fully
+        decoded = jwt.decode(
+            token,
             public_key,
             algorithms=ALGORITHMS,
             audience=AUDIENCE,
-            options={"verify_at_hash": False},  # disables at_hash validation
+            options={"verify_at_hash": False},
         )
-        return payload
+
+        # Compute expiration datetime from `exp` claim
+        exp_timestamp = decoded.get("exp")
+        if exp_timestamp:
+            expires = datetime.datetime.fromtimestamp(
+                exp_timestamp, tz=datetime.timezone.utc
+            )
+        else:
+            expires = datetime.datetime.now(
+                tz=datetime.timezone.utc
+            ) + datetime.timedelta(hours=1)
+
+        return token, expires
 
     except JWTError as e:
         raise HTTPException(status_code=401, detail=f"Token validation failed: {e}")

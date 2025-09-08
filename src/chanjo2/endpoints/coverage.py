@@ -1,3 +1,4 @@
+import datetime
 import logging
 import time
 from os.path import isfile
@@ -7,7 +8,7 @@ from typing import Dict, List, Tuple
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from chanjo2.auth import get_current_user
+from chanjo2.auth import get_token
 from chanjo2.constants import WRONG_BED_FILE_MSG, WRONG_COVERAGE_FILE_MSG
 from chanjo2.crud.intervals import get_genes, set_sql_intervals
 from chanjo2.dbutil import get_session
@@ -40,7 +41,8 @@ LOG = logging.getLogger(__name__)
 
 @router.post("/coverage/d4/interval/", response_model=IntervalCoverage)
 def d4_interval_coverage(
-    query: FileCoverageQuery, user: dict = Depends(get_current_user)
+    query: FileCoverageQuery,
+    token_data: Tuple[str, datetime.datetime] = Depends(get_token),
 ):
     """Return coverage on the given interval for a D4 resource located on the disk or on a remote server."""
 
@@ -87,7 +89,8 @@ def d4_interval_coverage(
 
 @router.post("/coverage/d4/interval_file/", response_model=List[IntervalCoverage])
 def d4_intervals_coverage(
-    query: FileCoverageIntervalsFileQuery, user: dict = Depends(get_current_user)
+    query: FileCoverageIntervalsFileQuery,
+    token_data: Tuple[str, datetime.datetime] = Depends(get_token),
 ):
     """Return coverage on the given intervals for a D4 resource located on the disk or on a remote server."""
 
@@ -139,9 +142,7 @@ def d4_intervals_coverage(
 
 @router.post("/coverage/d4/genes/summary", response_model=Dict)
 def d4_genes_condensed_summary(
-    query: CoverageSummaryQuery,
-    db: Session = Depends(get_session),
-    user: dict = Depends(get_current_user),
+    query: CoverageSummaryQuery, db: Session = Depends(get_session)
 ):
     """Returning condensed summary containing only sample's mean coverage and completeness above a default threshold."""
 
@@ -211,7 +212,8 @@ def d4_genes_condensed_summary(
 
 @router.get("/coverage/samples/predicted_sex", response_model=Dict)
 async def get_samples_predicted_sex(
-    coverage_file_path: str, user: dict = Depends(get_current_user)
+    coverage_file_path: str,
+    token_data: Tuple[str, datetime.datetime] = Depends(get_token),
 ):
     """Return predicted sex for a sample given the coverage over its sex chromosomes."""
     if (

@@ -1,3 +1,8 @@
+## [unreleased]
+### Changed
+- Validate and persist OIDC token in cookie for report and overview endpoints (#492)
+- Condensed summary endpoint not protected by auth for now (#492)
+
 ## [3.8]
 ### Changed 
 - In order to support token login via Google, validate `id_token` instead of `access_token` in overview and report endpoints.
