@@ -201,6 +201,7 @@ async def mane_overview(
     token_data: Tuple[str, datetime.datetime] = Depends(get_token),
 ):
     """Returns coverage overview stats for a group of samples over MANE transcripts of a list of genes."""
+    validated_token, expires = token_data
     try:
         overview_query = ReportQuery.as_form(await request.form())
 
