@@ -1,3 +1,4 @@
+import datetime
 import logging
 import time
 from os.path import isfile
@@ -40,7 +41,8 @@ LOG = logging.getLogger(__name__)
 
 @router.post("/coverage/d4/interval/", response_model=IntervalCoverage)
 def d4_interval_coverage(
-    query: FileCoverageQuery, validated_token: dict = Depends(get_token)
+    query: FileCoverageQuery,
+    token_data: Tuple[str, datetime.datetime] = Depends(get_token),
 ):
     """Return coverage on the given interval for a D4 resource located on the disk or on a remote server."""
 
@@ -87,7 +89,8 @@ def d4_interval_coverage(
 
 @router.post("/coverage/d4/interval_file/", response_model=List[IntervalCoverage])
 def d4_intervals_coverage(
-    query: FileCoverageIntervalsFileQuery, validated_token: dict = Depends(get_token)
+    query: FileCoverageIntervalsFileQuery,
+    token_data: Tuple[str, datetime.datetime] = Depends(get_token),
 ):
     """Return coverage on the given intervals for a D4 resource located on the disk or on a remote server."""
 
@@ -209,7 +212,8 @@ def d4_genes_condensed_summary(
 
 @router.get("/coverage/samples/predicted_sex", response_model=Dict)
 async def get_samples_predicted_sex(
-    coverage_file_path: str, validated_token: dict = Depends(get_token)
+    coverage_file_path: str,
+    token_data: Tuple[str, datetime.datetime] = Depends(get_token),
 ):
     """Return predicted sex for a sample given the coverage over its sex chromosomes."""
     if (
