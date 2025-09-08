@@ -83,7 +83,7 @@ async def report(
 
     report_content: dict = get_report_data(query=report_query, session=db)
     LOG.debug(f"Time to compute stats: {time.time() - start_time} seconds.")
-    return templates.TemplateResponse(
+    response = templates.TemplateResponse(
         request=request,
         name="report.html",
         context={
@@ -99,3 +99,12 @@ async def report(
             "errors": report_content["errors"],
         },
     )
+
+    response.set_cookie(
+        key="id_token",
+        value=validated_token,
+        httponly=True,
+        secure=True,
+        samesite="Strict",
+    )
+    return response
