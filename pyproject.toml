@@ -29,6 +29,8 @@ fastapi = "^0.115.12"
 importlib-resources = "^6.5.2"
 httpx = "^0.28.1"
 respx = "^0.22.0"
+itsdangerous = "^2.2.0"
+authlib = "^1.6.3"
 
 [tool.poetry.extras]
 m1 = ["pyd4"]

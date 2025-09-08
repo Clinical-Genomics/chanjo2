@@ -24,6 +24,7 @@ else:
 
 # --- Dependency ---
 def get_current_user(request: Request):
+    """"""
     if not oauth:
         return None  # login not enforced
     user = request.session.get("user")
@@ -37,6 +38,7 @@ def get_current_user(request: Request):
 # --- Routes ---
 @router.get("/login")
 async def login(request: Request):
+    """"""
     if not oauth:
         raise HTTPException(status_code=404, detail="Login not enabled")
     redirect_uri = config("OIDC_REDIRECT_URI")
