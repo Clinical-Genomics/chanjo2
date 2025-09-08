@@ -1,7 +1,7 @@
 import base64
 import logging
 import os
-from typing import Any, Dict
+from typing import Dict
 
 import httpx
 from cryptography.hazmat.backends import default_backend

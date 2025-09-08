@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 from typing_extensions import Annotated
 
 from chanjo2 import __version__
-from chanjo2.auth import get_current_user
+from chanjo2.auth import get_token
 from chanjo2.constants import DEFAULT_COVERAGE_LEVEL
 from chanjo2.dbutil import get_session
 from chanjo2.demo import DEMO_COVERAGE_QUERY_FORM
@@ -69,7 +69,7 @@ async def report(
     panel_name=Annotated[Optional[str], Form("Custom panel")],
     default_level=Annotated[Optional[int], Form(DEFAULT_COVERAGE_LEVEL)],
     db: Session = Depends(get_session),
-    user: dict = Depends(get_current_user),
+    validated_token: dict = Depends(get_token),
 ):
     """Return a coverage report over a list of genes for a list of samples."""
     start_time = time.time()
