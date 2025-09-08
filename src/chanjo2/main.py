@@ -5,16 +5,18 @@ from typing import List, Tuple
 
 from fastapi import FastAPI, status
 from fastapi.staticfiles import StaticFiles
+from starlette.middleware.sessions import SessionMiddleware
 
 from chanjo2 import __version__
 from chanjo2.dbutil import engine
-from chanjo2.endpoints import coverage, intervals, overview, report
+from chanjo2.endpoints import auth, coverage, intervals, overview, report
 from chanjo2.logger import configure_log
 from chanjo2.models.sql_models import Base
 from chanjo2.populate_demo import load_demo_data
 
 LOG = logging.getLogger(__name__)
 APP_ROUTER_TAGS: List[Tuple] = [
+    (auth.router, "auth"),
     (intervals.router, "intervals"),
     (coverage.router, "coverage"),
     (report.router, "report"),
@@ -36,6 +38,7 @@ async def lifespan(app_: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+app.add_middleware(SessionMiddleware, secret_key=os.getenv("SESSION_SECRET"))
 
 
 def configure_static(app):
