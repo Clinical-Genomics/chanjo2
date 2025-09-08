@@ -139,9 +139,7 @@ def d4_intervals_coverage(
 
 @router.post("/coverage/d4/genes/summary", response_model=Dict)
 def d4_genes_condensed_summary(
-    query: CoverageSummaryQuery,
-    db: Session = Depends(get_session),
-    validated_token: dict = Depends(get_token),
+    query: CoverageSummaryQuery, db: Session = Depends(get_session)
 ):
     """Returning condensed summary containing only sample's mean coverage and completeness above a default threshold."""
 
