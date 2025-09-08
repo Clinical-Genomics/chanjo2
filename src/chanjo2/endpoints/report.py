@@ -1,7 +1,8 @@
+import datetime
 import logging
 import time
 from os import path
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple
 
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
 from fastapi.responses import HTMLResponse
@@ -69,9 +70,12 @@ async def report(
     panel_name=Annotated[Optional[str], Form("Custom panel")],
     default_level=Annotated[Optional[int], Form(DEFAULT_COVERAGE_LEVEL)],
     db: Session = Depends(get_session),
-    validated_token: dict = Depends(get_token),
+    token_data: Tuple[str, datetime.datetime] = Depends(get_token),
 ):
     """Return a coverage report over a list of genes for a list of samples."""
+
+    validated_token, expires = token_data
+
     start_time = time.time()
     try:
         report_query = ReportQuery.as_form(await request.form())
@@ -106,5 +110,6 @@ async def report(
         httponly=True,
         secure=True,
         samesite="Strict",
+        expires=expires,
     )
     return response

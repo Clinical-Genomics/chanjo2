@@ -1,7 +1,7 @@
 ## [unreleased]
 ### Changed
-- Validate and persist OIDC token in cookie for report and overview endpoints
-- Condensed summary endpoint not protected by auth for now
+- Validate and persist OIDC token in cookie for report and overview endpoints (#492)
+- Condensed summary endpoint not protected by auth for now (#492)
 
 ## [3.8]
 ### Changed 

@@ -1,7 +1,8 @@
 import base64
+import datetime
 import logging
 import os
-from typing import Dict
+from typing import Dict, Tuple
 
 import httpx
 from cryptography.hazmat.backends import default_backend
@@ -24,16 +25,18 @@ def construct_rsa_key(key_data: Dict[str, str]) -> RSAPublicKey:
     return public_numbers.public_key(default_backend())
 
 
-async def get_token(request: Request) -> str:
+async def get_token(request: Request) -> Tuple[str, datetime.datetime]:
     """
     Validate the OIDC id_token JWT from form/header/cookie.
-    Returns the token itself after full validation.
+    Returns:
+        token: the validated JWT string
+        expires: datetime when the token expires
     """
     AUDIENCE = os.environ.get("AUDIENCE")
     JWKS_URL = os.environ.get("JWKS_URL")
 
     if not JWKS_URL or not AUDIENCE:
-        return "anonymous"
+        return None, None
 
     # Extract token from form > Authorization header > cookie
     form = await request.form()
@@ -74,7 +77,7 @@ async def get_token(request: Request) -> str:
         public_key = construct_rsa_key(key)
 
         # Validate token fully
-        jwt.decode(
+        decoded = jwt.decode(
             token,
             public_key,
             algorithms=ALGORITHMS,
@@ -82,8 +85,18 @@ async def get_token(request: Request) -> str:
             options={"verify_at_hash": False},
         )
 
-        # ✅ Validation passed, return the token itself
-        return token
+        # Compute expiration datetime from `exp` claim
+        exp_timestamp = decoded.get("exp")
+        if exp_timestamp:
+            expires = datetime.datetime.fromtimestamp(
+                exp_timestamp, tz=datetime.timezone.utc
+            )
+        else:
+            expires = datetime.datetime.now(
+                tz=datetime.timezone.utc
+            ) + datetime.timedelta(hours=1)
+
+        return token, expires
 
     except JWTError as e:
         raise HTTPException(status_code=401, detail=f"Token validation failed: {e}")

@@ -1,5 +1,6 @@
+import datetime
 from os import path
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple
 
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
 from fastapi.encoders import jsonable_encoder
@@ -72,9 +73,10 @@ async def overview(
     hgnc_gene_symbols=Annotated[Optional[str], Form(None)],
     default_level=Annotated[Optional[int], Form(DEFAULT_COVERAGE_LEVEL)],
     db: Session = Depends(get_session),
-    validated_token: dict = Depends(get_token),
+    token_data: Tuple[str, datetime.datetime] = Depends(get_token),
 ):
     """Return the genes overview page over a list of genes for a list of samples."""
+    validated_token, expires = token_data
     try:
         overview_query = ReportQuery.as_form(await request.form())
 
@@ -104,6 +106,7 @@ async def overview(
         httponly=True,
         secure=True,
         samesite="Strict",
+        expires=expires,
     )
     return response
 
@@ -113,11 +116,13 @@ async def gene_overview(
     request: Request,
     access_token=Annotated[Optional[str], Form(None)],
     db: Session = Depends(get_session),
-    validated_token: dict = Depends(get_token),
+    token_data: Tuple[str, datetime.datetime] = Depends(get_token),
 ):
     """Returns coverage overview stats for a group of samples over genomic intervals of a single gene."""
+
     form_data: FormData = await request.form()
     form_dict: dict = jsonable_encoder(form_data)
+    validated_token, expires = token_data
 
     try:
         validated_form = GeneReportForm(**form_dict)
@@ -141,6 +146,7 @@ async def gene_overview(
         httponly=True,
         secure=True,
         samesite="Strict",
+        expires=expires,
     )
     return response
 
@@ -192,7 +198,7 @@ async def mane_overview(
     hgnc_gene_symbols=Annotated[Optional[str], Form(None)],
     default_level=Annotated[Optional[int], Form(DEFAULT_COVERAGE_LEVEL)],
     db: Session = Depends(get_session),
-    validated_token: dict = Depends(get_token),
+    token_data: Tuple[str, datetime.datetime] = Depends(get_token),
 ):
     """Returns coverage overview stats for a group of samples over MANE transcripts of a list of genes."""
     try:
@@ -216,5 +222,6 @@ async def mane_overview(
         httponly=True,
         secure=True,
         samesite="Strict",
+        expires=expires,
     )
     return response
