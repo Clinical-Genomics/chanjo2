@@ -87,7 +87,7 @@ async def overview(
     overview_content: dict = get_report_data(
         query=overview_query, session=db, is_overview=True
     )
-    return templates.TemplateResponse(
+    response = templates.TemplateResponse(
         request=request,
         name="overview.html",
         context={
@@ -97,6 +97,15 @@ async def overview(
             "incomplete_coverage_rows": overview_content["incomplete_coverage_rows"],
         },
     )
+
+    response.set_cookie(
+        key="id_token",
+        value=validated_token,
+        httponly=True,
+        secure=True,
+        samesite="Strict",
+    )
+    return response
 
 
 @router.post("/gene_overview", response_class=HTMLResponse)
@@ -122,9 +131,18 @@ async def gene_overview(
         get_gene_overview_coverage_stats(form_data=validated_form, session=db)
     )
 
-    return templates.TemplateResponse(
+    response = templates.TemplateResponse(
         request=request, name="gene-overview.html", context=gene_overview_content
     )
+
+    response.set_cookie(
+        key="id_token",
+        value=validated_token,
+        httponly=True,
+        secure=True,
+        samesite="Strict",
+    )
+    return response
 
 
 @router.get("/gene_overview/demo", response_class=HTMLResponse)
@@ -186,8 +204,17 @@ async def mane_overview(
             detail=ve.json(),
         )
 
-    return templates.TemplateResponse(
+    response = templates.TemplateResponse(
         request=request,
         name="mane-overview.html",
         context=get_mane_overview_coverage_stats(query=overview_query, session=db),
     )
+
+    response.set_cookie(
+        key="id_token",
+        value=validated_token,
+        httponly=True,
+        secure=True,
+        samesite="Strict",
+    )
+    return response
