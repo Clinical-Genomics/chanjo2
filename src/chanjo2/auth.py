@@ -52,11 +52,11 @@ async def get_token(request: Request) -> Tuple[str, datetime.datetime]:
     if not token:
         raise HTTPException(status_code=401, detail="Missing id_token")
 
-    # Optional: log unverified claims
-    claims = jwt.get_unverified_claims(token)
-    print(f"Received a token with audience: {claims.get('aud')}")
-
     try:
+        # Optional: log unverified claims
+        claims = jwt.get_unverified_claims(token)
+        print(f"Received a token with audience: {claims.get('aud')}")
+
         # Fetch JWKS keys
         async with httpx.AsyncClient() as client:
             resp = await client.get(JWKS_URL)

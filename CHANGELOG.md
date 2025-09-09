@@ -1,7 +1,9 @@
 ## [unreleased]
 ### Changed
-- Validate and persist OIDC token in cookie for report and overview endpoints (#492)
 - Condensed summary endpoint not protected by auth for now (#492)
+### Fixed
+- Validate and persist OIDC token in cookie for report and overview endpoints (#492)
+- Fix app crashing when try validating token claims in absence of token (#494)
 
 ## [3.8]
 ### Changed 
