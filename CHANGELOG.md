@@ -4,6 +4,7 @@
 ### Fixed
 - Validate and persist OIDC token in cookie for report and overview endpoints (#492)
 - Fix app crashing when try validating token claims in absence of token (#494)
+- On report page, fixed title `Transcript coverage at 10x` with `Genes/Transcript/Exons coverage at 10x`, reflecting the analysis type (#495)
 
 ## [3.8]
 ### Changed 
