@@ -1,3 +1,7 @@
+## [unreleased]
+### Added
+- Instructions for deployment as CG service @SciLifeLab Stockholm (#497)
+
 ## [3.9]
 ### Changed
 - Condensed summary endpoint not protected by auth for now (#492)
