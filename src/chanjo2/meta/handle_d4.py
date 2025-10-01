@@ -75,6 +75,8 @@ def get_report_sample_interval_coverage(
         chrom_prefix=chrom_prefix,
     )
 
+    LOG.warning(intervals_coverage_completeness)
+
     interval_ids = set()
     thresholds_dict = {threshold: [] for threshold in completeness_thresholds}
     incomplete_coverages_rows: List[Tuple[int, str, str, str, float]] = []
