@@ -65,6 +65,8 @@ def get_completeness_stats(
         )
 
     for index, interval_id_coord in enumerate(interval_ids_coords):
+        if intervals_completeness[index] == "nan":
+            continue
         interval_id_completeness_stats[interval_id_coord[0]] = intervals_completeness[
             index
         ]
