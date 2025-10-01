@@ -25,6 +25,9 @@ def get_d4tools_intervals_completeness(
         text=True,
     )
     for line in d4tools_stats_perc_cov.splitlines():
+        if "nan" in line:
+            print(line)
+            continue
         stats_dict: Dict = dict(
             (
                 zip(
@@ -65,8 +68,6 @@ def get_completeness_stats(
         )
 
     for index, interval_id_coord in enumerate(interval_ids_coords):
-        if intervals_completeness[index] == "nan":
-            continue
         interval_id_completeness_stats[interval_id_coord[0]] = intervals_completeness[
             index
         ]
