@@ -2,7 +2,6 @@ import datetime
 import logging
 import time
 from os.path import isfile
-from statistics import mean
 from typing import Dict, List, Tuple
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -23,7 +22,8 @@ from chanjo2.meta.handle_coverage_stats import (
     get_d4tools_intervals_mean_coverage,
 )
 from chanjo2.meta.handle_d4 import get_samples_sex_metrics, set_interval_ids_coords
-from chanjo2.meta.handle_report_contents import INTERVAL_TYPE_SQL_TYPE, get_mean
+from chanjo2.meta.handle_report_contents import INTERVAL_TYPE_SQL_TYPE
+from chanjo2.meta.utils import get_mean
 from chanjo2.models import SQLGene
 from chanjo2.models.pydantic_models import (
     CoverageSummaryQuery,
@@ -201,7 +201,7 @@ def d4_genes_condensed_summary(
         condensed_stats[sample.name] = {
             "mean_coverage": get_mean(float_list=genes_mean_coverage),
             "coverage_completeness_percent": (
-                round(mean(genes_coverage_completeness_values), 2)
+                get_mean(genes_coverage_completeness_values)
                 if genes_coverage_completeness_values
                 else "NA"
             ),
