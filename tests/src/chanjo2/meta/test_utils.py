@@ -1,6 +1,7 @@
 from chanjo2.meta.utils import get_mean
 from math import nan, inf
 
+
 def test_get_mean_floats():
     """Test invoking the get_mean function with a list of floating point numbers."""
 
