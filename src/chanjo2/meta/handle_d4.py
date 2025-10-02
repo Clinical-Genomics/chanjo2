@@ -139,8 +139,9 @@ def get_report_sample_interval_coverage(
 
     for threshold in completeness_thresholds:
         if thresholds_dict[threshold]:
+
             completeness_row_dict[f"completeness_{threshold}"] = round(
-                get_mean((thresholds_dict[threshold]) * 100)
+                get_mean(float_list=thresholds_dict[threshold], round_by=None) * 100, 2
             )
 
     report_data["completeness_rows"].append((sample_name, completeness_row_dict))
