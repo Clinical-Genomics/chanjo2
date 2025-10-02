@@ -178,6 +178,7 @@ class FileCoverageQuery(FileCoverageBaseQuery):
 
     @model_validator(mode="after")
     def coverage_path_completeness_validator(self):
+        """Completeness computation is not supported for d4 files over HTTP."""
         validate_url_and_completeness(
             d4_file=self.coverage_file_path,
             completeness_thresholds=self.completeness_thresholds,
@@ -219,6 +220,7 @@ class CoverageSummaryQuery(BaseModel):
 
     @model_validator(mode="after")
     def check_no_http_cov_files(self):
+        """Completeness computation, which is performed downstream, is not supported for d4 files over HTTP."""
         for sample in self.samples:
             if is_valid_url(sample.coverage_file_path):
                 raise HTTPException(
@@ -279,6 +281,7 @@ class ReportQuery(BaseModel):
 
     @model_validator(mode="after")
     def coverage_paths_completeness_validator(self):
+        """Completeness computation is not supported for d4 files over HTTP. Check each sample."""
         for sample in self.samples:
             validate_url_and_completeness(
                 d4_file=sample.coverage_file_path,
@@ -290,6 +293,7 @@ class ReportQuery(BaseModel):
     def comma_sep_values_to_list(
         comma_sep_values: Optional[str], items_format: Union[str, int]
     ) -> Optional[List[Union[str, int]]]:
+        """Helper function that formats list of strings or integers passed by a form as comma separated values."""
         if comma_sep_values is None:
             return
         if items_format == str:
@@ -304,6 +308,7 @@ class ReportQuery(BaseModel):
             "hgnc_gene_ids": [],
             "hgnc_gene_symbols": [],
         }
+        """Helper function that collects form data from report page requests and sets the right gene IDs/values in the query."""
         for gene_ids_key in query_genes.keys():
             if bool(form_data.get(gene_ids_key)) is False:
                 continue
