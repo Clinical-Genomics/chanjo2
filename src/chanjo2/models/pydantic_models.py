@@ -18,6 +18,8 @@ from chanjo2.constants import (
     WRONG_COVERAGE_FILE_MSG,
 )
 
+# -------------------- Helper functions --------------------
+
 
 def validate_url_and_completeness(
     d4_file: str, completeness_thresholds: Optional[List[int]]
@@ -34,7 +36,7 @@ def validate_url_and_completeness(
 
 
 def is_valid_url(value: str) -> bool:
-    """Makes sure that a string is formatted as an URL."""
+    """Checks that a string is formatted as a URL."""
     try:
         return bool(validators.url(value))
     except Exception:
@@ -42,10 +44,13 @@ def is_valid_url(value: str) -> bool:
 
 
 def default_report_coverage_levels() -> List[int]:
-    """Sets the coverage thresholds to be used for report metrics whenever a request doesn't contain 'completeness_thresholds' values."""
+    """Default coverage thresholds for report metrics."""
     if os.getenv("REPORT_COVERAGE_LEVELS"):
         return json.loads(os.getenv("REPORT_COVERAGE_LEVELS"))
     return DEFAULT_COMPLETENESS_LEVELS
+
+
+# -------------------- Enums --------------------
 
 
 class Builds(str, Enum):
@@ -54,7 +59,6 @@ class Builds(str, Enum):
 
     @staticmethod
     def get_enum_values() -> List[str]:
-        """Returns the values of the available genome builds."""
         return [member.value for member in Builds]
 
 
@@ -66,7 +70,6 @@ class IntervalType(str, Enum):
 
     @staticmethod
     def get_enum_values() -> List[str]:
-        """Returns the values of the available interval types."""
         return [member.value for member in IntervalType]
 
 
@@ -81,6 +84,9 @@ class Sex(str, Enum):
     FEMALE = "female"
     MALE = "male"
     UNKNOWN = "unknown"
+
+
+# -------------------- Interval and Gene Models --------------------
 
 
 class IntervalBase(BaseModel):
@@ -145,6 +151,9 @@ class Exon(IntervalBase):
     id: int
 
 
+# -------------------- Coverage Models --------------------
+
+
 class IntervalCoverage(BaseModel):
     mean_coverage: float
     completeness: Optional[Dict] = Field(default_factory=dict)
@@ -153,10 +162,13 @@ class IntervalCoverage(BaseModel):
 
 
 class GeneCoverage(IntervalCoverage):
-    inner_intervals: List[IntervalCoverage] = []  # Transcripts or exons
+    inner_intervals: List[IntervalCoverage] = Field(default_factory=list)
     hgnc_id: Optional[int] = None
     hgnc_symbol: Optional[str] = None
     ensembl_gene_id: Optional[str] = None
+
+
+# -------------------- File Coverage Queries --------------------
 
 
 class FileCoverageBaseQuery(BaseModel):
@@ -167,7 +179,7 @@ class FileCoverageQuery(FileCoverageBaseQuery):
     chromosome: str
     start: Optional[int] = None
     end: Optional[int] = None
-    completeness_thresholds: Optional[List[int]] = []
+    completeness_thresholds: Optional[List[int]] = Field(default_factory=list)
     coverage_file_path: str
 
     @field_validator("coverage_file_path", mode="after")
@@ -178,7 +190,6 @@ class FileCoverageQuery(FileCoverageBaseQuery):
 
     @model_validator(mode="after")
     def coverage_path_completeness_validator(self):
-        """Completeness computation is not supported for d4 files over HTTP."""
         validate_url_and_completeness(
             d4_file=self.coverage_file_path,
             completeness_thresholds=self.completeness_thresholds,
@@ -188,7 +199,7 @@ class FileCoverageQuery(FileCoverageBaseQuery):
 
 class FileCoverageIntervalsFileQuery(FileCoverageBaseQuery):
     intervals_bed_path: str
-    completeness_thresholds: Optional[List[int]] = []
+    completeness_thresholds: Optional[List[int]] = Field(default_factory=list)
     coverage_file_path: str
 
     @field_validator("coverage_file_path", mode="after")
@@ -199,7 +210,6 @@ class FileCoverageIntervalsFileQuery(FileCoverageBaseQuery):
 
     @model_validator(mode="after")
     def coverage_path_completeness_validator(self):
-        """Completeness computation is not supported for d4 files over HTTP."""
         validate_url_and_completeness(
             d4_file=self.coverage_file_path,
             completeness_thresholds=self.completeness_thresholds,
@@ -207,7 +217,9 @@ class FileCoverageIntervalsFileQuery(FileCoverageBaseQuery):
         return self
 
 
-## Coverage and  overview report - related models ###
+# -------------------- Coverage Summary --------------------
+
+
 class CoverageSummaryQuerySample(BaseModel):
     name: str
     coverage_file_path: str
@@ -222,7 +234,6 @@ class CoverageSummaryQuery(BaseModel):
 
     @model_validator(mode="after")
     def check_no_http_cov_files(self):
-        """Completeness computation, which is performed downstream, is not supported for d4 files over HTTP."""
         for sample in self.samples:
             if is_valid_url(sample.coverage_file_path):
                 raise HTTPException(
@@ -232,14 +243,19 @@ class CoverageSummaryQuery(BaseModel):
         return self
 
 
+# -------------------- Report Models --------------------
+
+
 class ReportQuerySample(BaseModel):
     name: str
     coverage_file_path: Optional[str] = None
     case_name: Optional[str] = None
-    analysis_date: Optional[datetime] = datetime.now()
+    analysis_date: Optional[datetime] = Field(default_factory=datetime.now)
 
     @field_validator("coverage_file_path", mode="after")
     def coverage_file_path_validator(cls, coverage_file_path):
+        if coverage_file_path is None:
+            return coverage_file_path
         if isfile(coverage_file_path) or is_valid_url(coverage_file_path):
             return coverage_file_path
         raise ValueError(WRONG_COVERAGE_FILE_MSG)
@@ -247,7 +263,9 @@ class ReportQuerySample(BaseModel):
 
 class ReportQuery(BaseModel):
     build: Builds
-    completeness_thresholds: Optional[List[int]] = default_report_coverage_levels()
+    completeness_thresholds: Optional[List[int]] = Field(
+        default_factory=default_report_coverage_levels
+    )
     ensembl_gene_ids: Optional[List[str]] = None
     hgnc_gene_ids: Optional[List[int]] = None
     hgnc_gene_symbols: Optional[List[str]] = None
@@ -257,80 +275,7 @@ class ReportQuery(BaseModel):
     case_display_name: Optional[str] = None
     samples: List[ReportQuerySample]
 
-    @model_validator(mode="after")
-    def coverage_paths_completeness_validator(self):
-        """Completeness computation is not supported for d4 files over HTTP. Check each sample."""
-        for sample in self.samples:
-            validate_url_and_completeness(
-                d4_file=sample.coverage_file_path,
-                completeness_thresholds=self.completeness_thresholds,
-            )
-        return self
-
-    @staticmethod
-    def comma_sep_values_to_list(
-        comma_sep_values: Optional[str], items_format: Union[str, int]
-    ) -> Optional[List[Union[str, int]]]:
-        """Helper function that formats list of strings or integers passed by a form as comma separated values."""
-        if comma_sep_values is None:
-            return
-        if items_format == str:
-            return [item.strip() for item in comma_sep_values.split(",")]
-        else:
-            return [int(item.strip()) for item in comma_sep_values.split(",")]
-
-    @staticmethod
-    def set_query_genes(form_data: FormData):
-        """Helper function that collects form data from report page requests and sets the right gene IDs/values in the query."""
-        query_genes = {
-            "ensembl_gene_ids": [],
-            "hgnc_gene_ids": [],
-            "hgnc_gene_symbols": [],
-        }
-
-        for gene_ids_key in query_genes.keys():
-            if bool(form_data.get(gene_ids_key)) is False:
-                continue
-            id_values: List[Union[str, int]] = [
-                item.strip() for item in form_data.get(gene_ids_key).split(",")
-            ]
-            for value in id_values:
-                if value.isdigit():
-                    query_genes["hgnc_gene_ids"].append(value)
-                elif value.startswith("ENSG"):
-                    query_genes["ensembl_gene_ids"].append(value)
-                else:
-                    query_genes["hgnc_gene_symbols"].append(value)
-        return query_genes
-
-    @classmethod
-    def as_form(cls, form_data: FormData) -> "ReportQuery":
-        query_genes: dict = cls.set_query_genes(form_data)
-        report_query: dict = {
-            "build": form_data.get("build"),
-            "completeness_thresholds": (
-                cls.comma_sep_values_to_list(
-                    comma_sep_values=form_data.get("completeness_thresholds"),
-                    items_format=int,
-                )
-                if form_data.get("completeness_thresholds")
-                else default_report_coverage_levels()
-            ),
-            "ensembl_gene_ids": query_genes["ensembl_gene_ids"],
-            "hgnc_gene_ids": query_genes["hgnc_gene_ids"],
-            "hgnc_gene_symbols": query_genes["hgnc_gene_symbols"],
-            "interval_type": form_data.get("interval_type"),
-            "default_level": (
-                form_data.get("default_level")
-                if form_data.get("default_level")
-                else DEFAULT_COVERAGE_LEVEL
-            ),
-            "panel_name": form_data.get("panel_name"),
-            "case_display_name": form_data.get("case_display_name"),
-            "samples": form_data.get("samples"),
-        }
-        return cls(**report_query)
-
+    # -------------------- Validators --------------------
     @field_validator("samples", mode="before")
     def samples_validator(cls, sample_list):
         if isinstance(sample_list, str):
@@ -351,26 +296,81 @@ class ReportQuery(BaseModel):
             raise ValueError(GENE_LISTS_NOT_SUPPORTED_MSG)
         return values
 
+    @model_validator(mode="after")
+    def coverage_paths_completeness_validator(self):
+        for sample in self.samples:
+            validate_url_and_completeness(
+                d4_file=sample.coverage_file_path,
+                completeness_thresholds=self.completeness_thresholds,
+            )
+        return self
+
+    # -------------------- Helper Methods --------------------
+    @staticmethod
+    def comma_sep_values_to_list(
+        comma_sep_values: Optional[str], items_format: Union[str, int]
+    ) -> Optional[List[Union[str, int]]]:
+        if comma_sep_values is None:
+            return
+        if items_format == str:
+            return [item.strip() for item in comma_sep_values.split(",")]
+        else:
+            return [int(item.strip()) for item in comma_sep_values.split(",")]
+
+    @staticmethod
+    def set_query_genes(form_data: FormData):
+        query_genes = {
+            "ensembl_gene_ids": [],
+            "hgnc_gene_ids": [],
+            "hgnc_gene_symbols": [],
+        }
+        for gene_ids_key in query_genes.keys():
+            if bool(form_data.get(gene_ids_key)) is False:
+                continue
+            id_values: List[Union[str, int]] = [
+                item.strip() for item in form_data.get(gene_ids_key).split(",")
+            ]
+            for value in id_values:
+                if value.isdigit():
+                    query_genes["hgnc_gene_ids"].append(int(value))
+                elif value.startswith("ENSG"):
+                    query_genes["ensembl_gene_ids"].append(value)
+                else:
+                    query_genes["hgnc_gene_symbols"].append(value)
+        return query_genes
+
+    @classmethod
+    def as_form(cls, form_data: FormData) -> "ReportQuery":
+        query_genes = cls.set_query_genes(form_data)
+        return cls(
+            build=form_data.get("build"),
+            completeness_thresholds=(
+                cls.comma_sep_values_to_list(
+                    form_data.get("completeness_thresholds"), int
+                )
+                if form_data.get("completeness_thresholds")
+                else default_report_coverage_levels()
+            ),
+            ensembl_gene_ids=query_genes["ensembl_gene_ids"],
+            hgnc_gene_ids=query_genes["hgnc_gene_ids"],
+            hgnc_gene_symbols=query_genes["hgnc_gene_symbols"],
+            interval_type=form_data.get("interval_type"),
+            default_level=int(form_data.get("default_level") or DEFAULT_COVERAGE_LEVEL),
+            panel_name=form_data.get("panel_name"),
+            case_display_name=form_data.get("case_display_name"),
+            samples=form_data.get("samples"),
+        )
+
 
 class GeneReportForm(BaseModel):
     build: Builds
-    completeness_thresholds: Optional[List[int]] = default_report_coverage_levels()
+    completeness_thresholds: Optional[List[int]] = Field(
+        default_factory=default_report_coverage_levels
+    )
     hgnc_gene_id: int
     default_level: int = DEFAULT_COVERAGE_LEVEL
     samples: List[ReportQuerySample]
     interval_type: IntervalType
-
-    @model_validator(mode="after")
-    def check_thresholds_not_with_url_d4(self):
-        """Completeness computation is not supported for d4 files over HTTP."""
-        if self.completeness_thresholds:
-            for sample in self.samples:
-                if is_valid_url(sample.coverage_file_path):
-                    raise HTTPException(
-                        status.HTTP_422_UNPROCESSABLE_ENTITY,
-                        detail=HTTP_D4_COMPLETENESS_ERROR,
-                    )
-        return self
 
     @field_validator("samples", mode="before")
     def samples_validator(cls, sample_list):
@@ -385,10 +385,20 @@ class GeneReportForm(BaseModel):
 
     @field_validator("interval_type", mode="before")
     def interval_type_validator(cls, interval_type: IntervalType) -> IntervalType:
-        """Make sure that gene stats include transcript data even if it's a WGS analysis."""
         if interval_type == IntervalType.GENES:
             return IntervalType.TRANSCRIPTS
         return interval_type
+
+    @model_validator(mode="after")
+    def check_thresholds_not_with_url_d4(self):
+        if self.completeness_thresholds:
+            for sample in self.samples:
+                if is_valid_url(sample.coverage_file_path):
+                    raise HTTPException(
+                        status.HTTP_422_UNPROCESSABLE_ENTITY,
+                        detail=HTTP_D4_COMPLETENESS_ERROR,
+                    )
+        return self
 
 
 class SampleSexRow(BaseModel):

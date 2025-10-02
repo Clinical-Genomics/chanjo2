@@ -2,6 +2,8 @@
 ### Added
 - Instructions for deployment as CG service @SciLifeLab Stockholm (#497)
 - MIT license file (#54)
+### Changed
+- Refactored pydantic models to avoid `non-serializable-default` warnings (#503)
 ### Fixed
 - Remove from mean stats interval values that are 'NaN' (#501)
 
