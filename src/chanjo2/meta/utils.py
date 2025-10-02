@@ -2,6 +2,7 @@ import math
 from statistics import mean
 from typing import List, Union
 
+
 def get_mean(float_list: List[float], round_by: int = 2) -> Union[float, str]:
     """Return the mean value from a list of floating point numbers, or a string when the value can't be converted to number."""
 
