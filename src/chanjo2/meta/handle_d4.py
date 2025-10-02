@@ -1,6 +1,5 @@
 import logging
 import tempfile
-from statistics import mean
 from typing import Dict, List, Optional, Tuple, Union
 
 from chanjo2.meta.handle_bed import sort_interval_ids_coords
@@ -14,6 +13,7 @@ from chanjo2.meta.handle_coverage_stats import (
     get_d4tools_intervals_coverage,
     get_d4tools_intervals_mean_coverage,
 )
+from chanjo2.meta.utils import get_mean
 from chanjo2.models import SQLExon, SQLGene, SQLTranscript
 from chanjo2.models.pydantic_models import ReportQuerySample, Sex
 
@@ -65,7 +65,7 @@ def get_report_sample_interval_coverage(
         interval_ids_coords=interval_ids_coords,
         chrom_prefix=chrom_prefix,
     )
-    completeness_row_dict: dict = {"mean_coverage": mean(intervals_coverage)}
+    completeness_row_dict: dict = {"mean_coverage": get_mean(intervals_coverage)}
 
     # Compute intervals coverage completeenss
     intervals_coverage_completeness: Dict[str, dict] = get_completeness_stats(
@@ -140,7 +140,7 @@ def get_report_sample_interval_coverage(
     for threshold in completeness_thresholds:
         if thresholds_dict[threshold]:
             completeness_row_dict[f"completeness_{threshold}"] = round(
-                mean(thresholds_dict[threshold]) * 100, 2
+                get_mean((thresholds_dict[threshold]) * 100)
             )
 
     report_data["completeness_rows"].append((sample_name, completeness_row_dict))
