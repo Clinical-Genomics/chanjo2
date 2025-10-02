@@ -22,6 +22,7 @@ from chanjo2.constants import (
 def validate_url_and_completeness(
     d4_file: str, completeness_thresholds: Optional[List[int]]
 ):
+    """Raise error if d4 file is HTTP file and completeness thresholds are present."""
     if not completeness_thresholds:
         return
     if is_valid_url(d4_file) is False:
@@ -33,6 +34,7 @@ def validate_url_and_completeness(
 
 
 def is_valid_url(value: str) -> bool:
+    """Makes sure that a string is formatted as an URL."""
     try:
         return bool(validators.url(value))
     except Exception:
@@ -40,6 +42,7 @@ def is_valid_url(value: str) -> bool:
 
 
 def default_report_coverage_levels() -> List[int]:
+    """Sets the coverage thresholds to be used for report metrics whenever a request doesn't contain 'completeness_thresholds' values."""
     if os.getenv("REPORT_COVERAGE_LEVELS"):
         return json.loads(os.getenv("REPORT_COVERAGE_LEVELS"))
     return DEFAULT_COMPLETENESS_LEVELS
@@ -51,6 +54,7 @@ class Builds(str, Enum):
 
     @staticmethod
     def get_enum_values() -> List[str]:
+        """Returns the values of the available genome builds."""
         return [member.value for member in Builds]
 
 
@@ -62,6 +66,7 @@ class IntervalType(str, Enum):
 
     @staticmethod
     def get_enum_values() -> List[str]:
+        """Returns the values of the available interval types."""
         return [member.value for member in IntervalType]
 
 
