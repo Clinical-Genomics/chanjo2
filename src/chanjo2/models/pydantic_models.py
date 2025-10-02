@@ -18,13 +18,10 @@ from chanjo2.constants import (
     WRONG_COVERAGE_FILE_MSG,
 )
 
-# -------------------- Helper functions --------------------
-
 
 def validate_url_and_completeness(
     d4_file: str, completeness_thresholds: Optional[List[int]]
 ):
-    """Raise error if d4 file is HTTP file and completeness thresholds are present."""
     if not completeness_thresholds:
         return
     if is_valid_url(d4_file) is False:
@@ -36,7 +33,6 @@ def validate_url_and_completeness(
 
 
 def is_valid_url(value: str) -> bool:
-    """Checks that a string is formatted as a URL."""
     try:
         return bool(validators.url(value))
     except Exception:
@@ -44,13 +40,9 @@ def is_valid_url(value: str) -> bool:
 
 
 def default_report_coverage_levels() -> List[int]:
-    """Default coverage thresholds for report metrics."""
     if os.getenv("REPORT_COVERAGE_LEVELS"):
         return json.loads(os.getenv("REPORT_COVERAGE_LEVELS"))
     return DEFAULT_COMPLETENESS_LEVELS
-
-
-# -------------------- Enums --------------------
 
 
 class Builds(str, Enum):
@@ -84,9 +76,6 @@ class Sex(str, Enum):
     FEMALE = "female"
     MALE = "male"
     UNKNOWN = "unknown"
-
-
-# -------------------- Interval and Gene Models --------------------
 
 
 class IntervalBase(BaseModel):
@@ -151,9 +140,6 @@ class Exon(IntervalBase):
     id: int
 
 
-# -------------------- Coverage Models --------------------
-
-
 class IntervalCoverage(BaseModel):
     mean_coverage: float
     completeness: Optional[Dict] = Field(default_factory=dict)
@@ -166,9 +152,6 @@ class GeneCoverage(IntervalCoverage):
     hgnc_id: Optional[int] = None
     hgnc_symbol: Optional[str] = None
     ensembl_gene_id: Optional[str] = None
-
-
-# -------------------- File Coverage Queries --------------------
 
 
 class FileCoverageBaseQuery(BaseModel):
@@ -217,9 +200,6 @@ class FileCoverageIntervalsFileQuery(FileCoverageBaseQuery):
         return self
 
 
-# -------------------- Coverage Summary --------------------
-
-
 class CoverageSummaryQuerySample(BaseModel):
     name: str
     coverage_file_path: str
@@ -241,9 +221,6 @@ class CoverageSummaryQuery(BaseModel):
                     detail=HTTP_D4_COMPLETENESS_ERROR,
                 )
         return self
-
-
-# -------------------- Report Models --------------------
 
 
 class ReportQuerySample(BaseModel):
@@ -275,7 +252,6 @@ class ReportQuery(BaseModel):
     case_display_name: Optional[str] = None
     samples: List[ReportQuerySample]
 
-    # -------------------- Validators --------------------
     @field_validator("samples", mode="before")
     def samples_validator(cls, sample_list):
         if isinstance(sample_list, str):
@@ -305,7 +281,6 @@ class ReportQuery(BaseModel):
             )
         return self
 
-    # -------------------- Helper Methods --------------------
     @staticmethod
     def comma_sep_values_to_list(
         comma_sep_values: Optional[str], items_format: Union[str, int]
