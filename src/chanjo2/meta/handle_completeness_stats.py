@@ -25,6 +25,9 @@ def get_d4tools_intervals_completeness(
         text=True,
     )
     for line in d4tools_stats_perc_cov.splitlines():
+        if "nan" in line:
+            print(line)
+            continue
         stats_dict: Dict = dict(
             (
                 zip(

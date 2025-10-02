@@ -67,7 +67,7 @@ def get_report_sample_interval_coverage(
     )
     completeness_row_dict: dict = {"mean_coverage": get_mean(intervals_coverage)}
 
-    # Compute intervals coverage completeenss
+    # Compute intervals coverage completeness
     intervals_coverage_completeness: Dict[str, dict] = get_completeness_stats(
         d4_file_path=d4_file_path,
         thresholds=completeness_thresholds,
