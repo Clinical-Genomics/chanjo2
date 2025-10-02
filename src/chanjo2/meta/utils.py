@@ -1,9 +1,9 @@
 import math
 from statistics import mean
-from typing import List, Union
+from typing import List, Optional, Union
 
 
-def get_mean(float_list: List[float], round_by: int = 2) -> Union[float, str]:
+def get_mean(float_list: List[float], round_by: Optional[int] = 2) -> Union[float, str]:
     """Return the mean value from a list of floats, optionally rounded.
     Returns 'NA' if the list has no valid numbers.
     Converts inf/-inf to string 'inf'/'-inf'."""
