@@ -2,6 +2,7 @@
 ### Added
 - Instructions for deployment as CG service @SciLifeLab Stockholm (#497)
 - MIT license file (#54)
+- Files with chr X and Y transcripts and exons, to be used for calculating stats on sex chromosomes ()
 ### Changed
 - Refactored pydantic models to avoid `non-serializable-default` warnings (#503)
 ### Fixed

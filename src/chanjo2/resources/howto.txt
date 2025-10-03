@@ -1,0 +1,109 @@
+### Exons GRCh38 - chrX
+
+wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_47/gencode.v47.annotation.gtf.gz
+
+gunzip gencode.v47.annotation.gtf.gz
+
+awk '$1=="chrX" && $3=="exon"' gencode.v47.annotation.gtf \
+  | awk 'BEGIN{OFS="\t"} {print $1,$4-1,$5}' > chrX_exons_GRCh38_coords.bed
+
+sort -k1,1 -k2,2n chrX_exons_GRCh38_coords.bed | uniq > chrX_exons_GRCh38_sorted.bed
+
+bedtools merge -i chrX_exons_GRCh38_sorted.bed > chrX_exons_GRCh38_merged.bed
+
+mv chrX_exons_GRCh38_merged.bed chrX_exons_GRCh38.bed
+
+
+
+### Transcripts GRCh38 - chrX
+
+awk '$1=="chrX" && $3=="transcript"' gencode.v47.annotation.gtf \
+  | awk 'BEGIN{OFS="\t"} {print $1,$4-1,$5}' > chrX_transcripts_GRCh38_coords.bed
+
+sort -k1,1 -k2,2n chrX_transcripts_GRCh38_coords.bed | uniq > chrX_transcripts_GRCh38_sorted.bed
+
+bedtools merge -i chrX_transcripts_GRCh38_sorted.bed > chrX_transcripts_GRCh38_merged.bed
+
+mv chrX_transcripts_GRCh38_merged.bed chrX_transcripts_GRCh38.bed
+
+
+
+### Exons GRCh37 - chrX
+
+wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_19/gencode.v19.annotation.gtf.gz
+
+gunzip gencode.v19.annotation.gtf.gz
+
+awk '$1=="chrX" && $3=="exon"' gencode.v19.annotation.gtf \
+  | awk 'BEGIN{OFS="\t"} {print $1,$4-1,$5}' > chrX_exons_GRCh37_coords.bed
+
+sort -k1,1 -k2,2n chrX_exons_GRCh37_coords.bed | uniq > chrX_exons_GRCh37_sorted.bed
+
+bedtools merge -i chrX_exons_GRCh37_sorted.bed > chrX_exons_GRCh37_merged.bed
+
+mv chrX_exons_GRCh37_merged.bed chrX_exons_GRCh37.bed
+
+
+### Trancripts GRCh37 - chrX
+
+awk '$1=="chrX" && $3=="transcript"' gencode.v19.annotation.gtf \
+  | awk 'BEGIN{OFS="\t"} {print $1,$4-1,$5}' > chrX_transcripts_GRCh37_coords.bed
+
+sort -k1,1 -k2,2n chrX_transcripts_GRCh37_coords.bed | uniq > chrX_transcripts_GRCh37_sorted.bed
+
+bedtools merge -i chrX_transcripts_GRCh37_sorted.bed > chrX_transcripts_GRCh37_merged.bed
+
+
+######################################################################################################
+
+### Exons GRCh38 - chrY
+
+
+awk '$1=="chrY" && $3=="exon"' gencode.v47.annotation.gtf \
+  | awk 'BEGIN{OFS="\t"} {print $1,$4-1,$5}' > chrY_exons_GRCh38_coords.bed
+
+sort -k1,1 -k2,2n chrY_exons_GRCh38_coords.bed | uniq > chrY_exons_GRCh38_sorted.bed
+
+bedtools merge -i chrY_exons_GRCh38_sorted.bed > chrY_exons_GRCh38_merged.bed
+
+mv chrY_exons_GRCh38_merged.bed chrY_exons_GRCh38.bed
+
+
+
+### Transcripts GRCh38 - chrY
+
+awk '$1=="chrY" && $3=="transcript"' gencode.v47.annotation.gtf \
+  | awk 'BEGIN{OFS="\t"} {print $1,$4-1,$5}' > chrY_transcripts_GRCh38_coords.bed
+
+sort -k1,1 -k2,2n chrY_transcripts_GRCh38_coords.bed | uniq > chrY_transcripts_GRCh38_sorted.bed
+
+bedtools merge -i chrY_transcripts_GRCh38_sorted.bed > chrY_transcripts_GRCh38_merged.bed
+
+mv chrY_transcripts_GRCh38_merged.bed chrY_transcripts_GRCh38.bed
+
+
+
+### Exons GRCh37 - chrY
+
+awk '$1=="chrY" && $3=="exon"' gencode.v19.annotation.gtf \
+  | awk 'BEGIN{OFS="\t"} {print $1,$4-1,$5}' > chrY_exons_GRCh37_coords.bed
+
+sort -k1,1 -k2,2n chrY_exons_GRCh37_coords.bed | uniq > chrY_exons_GRCh37_sorted.bed
+
+bedtools merge -i chrY_exons_GRCh37_sorted.bed > chrY_exons_GRCh37_merged.bed
+
+mv chrY_exons_GRCh37_merged.bed chrY_exons_GRCh37.bed
+
+
+### Trancripts GRCh37 - chrX
+
+awk '$1=="chrY" && $3=="transcript"' gencode.v19.annotation.gtf \
+  | awk 'BEGIN{OFS="\t"} {print $1,$4-1,$5}' > chrY_transcripts_GRCh37_coords.bed
+
+sort -k1,1 -k2,2n chrY_transcripts_GRCh37_coords.bed | uniq > chrY_transcripts_GRCh37_sorted.bed
+
+bedtools merge -i chrY_transcripts_GRCh37_sorted.bed > chrY_transcripts_GRCh37_merged.bed
+
+mv chrY_transcripts_GRCh37_merged.bed chrY_transcripts_GRCh37.bed
+
+
