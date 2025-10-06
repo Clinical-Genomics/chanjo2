@@ -79,14 +79,19 @@ def get_d4tools_chromosome_mean_coverage(
             [
                 "d4tools",
                 "stat",
+                "--stat",
+                "mean",
                 "--region",
                 bed_file_path,
                 d4_file_path,
-                "--stat",
-                "mean",
             ],
             text=True,
         ).splitlines()
+        if not chromosomes_stats_mean_cmd:
+            print(
+                f"No coverage over chromosomes {chromosomes} using specified bed file: {bed_file_path}"
+            )
+            chromosomes_stats_mean_cmd = ["X\t0\t155270560\t0", "Y\t0\t59373566\t0"]
     else:
         chromosomes_stats_mean_cmd: List[str] = subprocess.check_output(
             ["d4tools", "stat", "-s" "mean", d4_file_path],
@@ -96,7 +101,6 @@ def get_d4tools_chromosome_mean_coverage(
     chromosomes_coverage: List[Tuple[str, float]] = []
     for line in chromosomes_stats_mean_cmd:
         stats_data: List[str] = line.split("\t")
-        print(stats_data)
         if stats_data[CHROM_INDEX] in chromosomes:
             chromosomes_coverage.append(
                 (stats_data[CHROM_INDEX], float(stats_data[STATS_MEAN_COVERAGE_INDEX]))
