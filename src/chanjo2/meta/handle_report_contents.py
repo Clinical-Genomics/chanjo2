@@ -21,6 +21,12 @@ from chanjo2.models.pydantic_models import (
     SampleSexRow,
     TranscriptTag,
 )
+from chanjo2.resources import (
+    CHR_X_Y_EXONS_BUILD_37_PATH,
+    CHR_X_Y_EXONS_BUILD_38_PATH,
+    CHR_X_Y_TRANSCRIPTS_BUILD_37_PATH,
+    CHR_X_Y_TRANSCRIPTS_BUILD_38_PATH,
+)
 
 LOG = logging.getLogger(__name__)
 INTERVAL_TYPE_SQL_TYPE: Dict[IntervalType, Union[SQLGene, SQLTranscript, SQLExon]] = {
@@ -101,7 +107,12 @@ def get_report_data(
     }
 
     # Add coverage_report - specific data
-    data["sex_rows"] = get_report_sex_rows(samples=query.samples)
+    data["sex_rows"] = get_report_sex_rows(
+        samples=query.samples,
+        bed_file_path=get_sex_chroms_bed_file(
+            build=query.build, interval_type=query.interval_type
+        ),
+    )
 
     data["errors"] = [
         get_missing_genes_from_db(
@@ -170,12 +181,28 @@ def get_missing_genes_from_db(
     )
 
 
-def get_report_sex_rows(samples: List[ReportQuerySample]) -> List[Dict]:
+def get_sex_chroms_bed_file(
+    build: Builds, interval_type: IntervalType
+) -> Optional[str]:
+
+    if build == Builds.build_37 and interval_type == IntervalType.EXONS:
+        return CHR_X_Y_EXONS_BUILD_37_PATH
+    elif build == Builds.build_38 and interval_type == IntervalType.EXONS:
+        return CHR_X_Y_EXONS_BUILD_38_PATH
+    elif build == Builds.build_37 and interval_type == IntervalType.TRANSCRIPTS:
+        return CHR_X_Y_TRANSCRIPTS_BUILD_37_PATH
+    elif build == Builds.build_38 and interval_type == IntervalType.TRANSCRIPTS:
+        return CHR_X_Y_TRANSCRIPTS_BUILD_38_PATH
+
+
+def get_report_sex_rows(
+    samples: List[ReportQuerySample], bed_file_path: Optional[str] = None
+) -> List[Dict]:
     """Create and return the contents for the sample sex lines in the coverage report."""
     sample_sex_rows: D4FileList = []
     for sample in samples:
         sample_sex_metrics: Dict = get_samples_sex_metrics(
-            d4_file_path=sample.coverage_file_path
+            d4_file_path=sample.coverage_file_path, bed_file_path=bed_file_path
         )
 
         sample_sex_row: SampleSexRow = SampleSexRow(
