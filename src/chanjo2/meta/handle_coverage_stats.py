@@ -62,7 +62,6 @@ def get_d4tools_intervals_coverage(
         ["d4tools", "stat", "--region", bed_file_path, d4_file_path, "--stat", "mean"],
         text=True,
     )
-    print(d4tools_stats_mean_cmd)
     return [
         float(line.rstrip().split("\t")[3])
         for line in d4tools_stats_mean_cmd.splitlines()
