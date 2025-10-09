@@ -1,8 +1,9 @@
 import subprocess
 import tempfile
-from typing import List, Tuple
+from typing import List, Optional, Tuple, Union
 
 from chanjo2.constants import CHROMOSOMES
+from chanjo2.models import SQLExon, SQLGene, SQLTranscript
 
 CHROM_INDEX = 0
 START_INDEX = 1
@@ -68,14 +69,29 @@ def get_d4tools_intervals_coverage(
 
 
 def get_d4tools_chromosome_mean_coverage(
-    d4_file_path: str, chromosomes=List[str]
+    d4_file_path: str, chromosomes=List[str], bed_file_path: Optional[str] = None
 ) -> List[Tuple[str, float]]:
     """Return mean coverage over entire chromosomes."""
 
-    chromosomes_stats_mean_cmd: List[str] = subprocess.check_output(
-        ["d4tools", "stat", "-s" "mean", d4_file_path],
-        text=True,
-    ).splitlines()
+    if bed_file_path:
+        chromosomes_stats_mean_cmd: List[str] = subprocess.check_output(
+            [
+                "d4tools",
+                "stat",
+                "--region",
+                bed_file_path,
+                d4_file_path,
+                "--stat",
+                "mean",
+            ],
+            text=True,
+        ).splitlines()
+    else:
+        chromosomes_stats_mean_cmd: List[str] = subprocess.check_output(
+            ["d4tools", "stat", "-s" "mean", d4_file_path],
+            text=True,
+        ).splitlines()
+
     chromosomes_coverage: List[Tuple[str, float]] = []
     for line in chromosomes_stats_mean_cmd:
         stats_data: List[str] = line.split("\t")
