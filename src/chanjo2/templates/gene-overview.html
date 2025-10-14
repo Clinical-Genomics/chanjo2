@@ -49,11 +49,13 @@
 				</thead>
 				<tbody>
 				{% for sample_stats in interval_features.stats %}
-					<td>{{ sample_stats[0] }}</td>
-					<td>{{ sample_stats[1]|round(2) }}</td>
-					{% for level, _ in levels.items() %}
-						<td>{{ (sample_stats[2][level] * 100)|round(2) }}</td>
-					{% endfor %}
+					<tr>
+						<td>{{ sample_stats[0] }}</td>
+						<td>{{ sample_stats[1]|round(2) }}</td>
+						{% for level, _ in levels.items() %}
+							<td>{{ (sample_stats[2][level] * 100)|round(2) }}</td>
+						{% endfor %}
+					</tr>
 				{% endfor %}
 				</tbody>
 			</table>
