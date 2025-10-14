@@ -1,4 +1,4 @@
-## [unreleased]
+## [3.10]
 ### Added
 - Instructions for deployment as CG service @SciLifeLab Stockholm (#497)
 - MIT license file (#54)
