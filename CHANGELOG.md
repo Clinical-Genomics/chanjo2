@@ -7,6 +7,7 @@
 - Refactored pydantic models to avoid `non-serializable-default` warnings (#503)
 ### Fixed
 - Remove from mean stats interval values that are 'NaN' (#501)
+- Multi-sample gene overview page(#509) 
 
 ## [3.9]
 ### Changed
