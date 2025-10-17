@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://clinical-genomics.github.io/chanjo2/usage/authorised_requests/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Authorised requests - Chanjo2</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Authorised requests";
+        var mkdocs_page_input_path = "usage/authorised_requests.md";
+        var mkdocs_page_url = "/chanjo2/usage/authorised_requests/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Chanjo2
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Index</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Deployment</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../deployment/docker-deployment/">Deployment using Docker</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../deployment/installation/">Installation on a virtual environment</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../deployment/env_file/">Custom settings and the .env file</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Usage</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../loading-intervals/">Loading and displaying genes, transcripts and exons</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../sample-coverage/">Coverage and coverage completeness queries</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../coverage-reports/">Coverage and genes overview reports</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Authorised requests</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#provider-specific-jwks-urls">Provider-specific JWKS URLs</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#what-is-audience">What is AUDIENCE?</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#protected-endpoints">Protected Endpoints</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#providing-the-access_token-in-requests">Providing the access_token in Requests</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#1-as-a-form-field">1. ✅ As a Form Field</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#2-as-a-cookie">2. ✅ As a Cookie</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#3-as-an-authorization-header">3. ✅ As an Authorization Header</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Chanjo2</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Usage</li>
+      <li class="breadcrumb-item active">Authorised requests</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Clinical-Genomics/chanjo2/edit/master/docs/usage/authorised_requests.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="enforcing-oidc-authentication-in-requests">Enforcing OIDC Authentication in Requests</h1>
+<p>By default, Chanjo2 endpoints are open to unauthenticated access. To enforce OIDC (OpenID Connect) authentication, you can configure your <code>.env</code> file by uncommenting and updating the following lines:</p>
+<pre><code class="language-dotenv">## Optional OIDC login settings
+# JWKS_URL=https://example.com/realms/&lt;realm-name&gt;/protocol/openid-connect/certs
+# AUDIENCE=account
+</code></pre>
+<blockquote>
+<p>✅ <code>JWKS_URL</code> should point to your OIDC provider’s JSON Web Key Set (JWKS).<br />
+✅ <code>AUDIENCE</code> must match the <code>aud</code> claim in the access token issued by your provider.</p>
+</blockquote>
+<h3 id="provider-specific-jwks-urls">Provider-specific JWKS URLs</h3>
+<table>
+<thead>
+<tr>
+<th>Provider</th>
+<th>Example JWKS URL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Google</strong></td>
+<td><code>https://www.googleapis.com/oauth2/v3/certs</code></td>
+</tr>
+<tr>
+<td><strong>Auth0</strong></td>
+<td><code>https://&lt;your-domain&gt;/.well-known/jwks.json</code></td>
+</tr>
+<tr>
+<td><strong>Keycloak</strong></td>
+<td><code>https://example.com/realms/&lt;realm-name&gt;/protocol/openid-connect/certs</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="what-is-audience">What is <code>AUDIENCE</code>?</h3>
+<p>The <code>AUDIENCE</code> setting tells your server what client/app the token is intended for.</p>
+<ul>
+<li>For <strong>Keycloak</strong>, it's typically the client ID.</li>
+<li>For <strong>Google</strong>, it's your OAuth2 client ID.</li>
+<li>For <strong>Auth0</strong>, it's the API identifier you configured.</li>
+</ul>
+<hr />
+<h2 id="protected-endpoints">Protected Endpoints</h2>
+<p>Once the <code>.env</code> file is configured with valid <code>JWKS_URL</code> and <code>AUDIENCE</code>, the following endpoints will require an access token:</p>
+<table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>Token Method(s)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/report</code></td>
+<td>Form field, Cookie</td>
+</tr>
+<tr>
+<td><code>/overview</code></td>
+<td>Form field, Cookie</td>
+</tr>
+<tr>
+<td><code>/gene_overview</code></td>
+<td>Form field, Cookie</td>
+</tr>
+<tr>
+<td><code>/mane_overview</code></td>
+<td>Form field, Cookie</td>
+</tr>
+<tr>
+<td><code>/coverage/d4/interval/</code></td>
+<td>Authorization header</td>
+</tr>
+<tr>
+<td><code>/coverage/d4/interval_file/</code></td>
+<td>Authorization header</td>
+</tr>
+<tr>
+<td><code>/coverage/d4/genes/summary</code></td>
+<td>Authorization header</td>
+</tr>
+<tr>
+<td><code>/coverage/samples/predicted_sex</code></td>
+<td>Authorization header</td>
+</tr>
+</tbody>
+</table>
+<p>If no token is provided, or the token is invalid or expired, the server will return <strong>HTTP 401 Unauthorized</strong>.</p>
+<hr />
+<h2 id="providing-the-access_token-in-requests">Providing the <code>access_token</code> in Requests</h2>
+<p>There are three supported methods for including the access token in a request:</p>
+<h3 id="1-as-a-form-field">1. ✅ As a Form Field</h3>
+<p><strong>curl example:</strong></p>
+<pre><code class="language-bash">curl -X POST https://your-chanjo2-url/report \
+  -d &quot;other_form_field&quot; \
+  -d &quot;access_token=eyJhbGciOi...&quot; \
+  -H &quot;Content-Type: application/x-www-form-urlencoded&quot;
+</code></pre>
+<hr />
+<h3 id="2-as-a-cookie">2. ✅ As a Cookie</h3>
+<p><strong>curl example:</strong></p>
+<pre><code class="language-bash">curl https://your-chanjo2-url/overview \
+  --cookie &quot;access_token=eyJhbGciOi...&quot;
+</code></pre>
+<hr />
+<h3 id="3-as-an-authorization-header">3. ✅ As an Authorization Header</h3>
+<p>Standard for APIs and OAuth2-based integrations.</p>
+<p><strong>curl example:</strong></p>
+<pre><code class="language-bash">curl https://your-chanjo2-url/gene_overview \
+  -H &quot;Authorization: Bearer eyJhbGciOi...&quot;
+</code></pre>
+<p>Let us know if you run into issues or want to validate token claims manually.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../coverage-reports/" class="btn btn-neutral float-left" title="Coverage and genes overview reports"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Clinical-Genomics/chanjo2/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../coverage-reports/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
