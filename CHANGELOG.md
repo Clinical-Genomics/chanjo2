@@ -1,4 +1,4 @@
-## [unreleased]
+## [3.10.1]
 ### Changed
 - Remove PAR regions from bed files used in X/Y chromosome check (#514)
 ### Fixed
