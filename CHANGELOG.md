@@ -1,3 +1,7 @@
+## [unreleased]
+### Fixed
+- Exome and Transcript data sex chromosome coverage. Returning always 0 (#512)
+
 ## [3.10]
 ### Added
 - Instructions for deployment as CG service @SciLifeLab Stockholm (#497)
