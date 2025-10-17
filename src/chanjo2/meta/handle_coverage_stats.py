@@ -1,9 +1,9 @@
 import subprocess
 import tempfile
-from typing import List, Optional, Tuple, Union
+from collections import defaultdict
+from typing import List, Optional, Tuple
 
 from chanjo2.constants import CHROMOSOMES
-from chanjo2.models import SQLExon, SQLGene, SQLTranscript
 
 CHROM_INDEX = 0
 START_INDEX = 1
@@ -92,11 +92,26 @@ def get_d4tools_chromosome_mean_coverage(
             text=True,
         ).splitlines()
 
-    chromosomes_coverage: List[Tuple[str, float]] = []
+    total_cov = defaultdict(float)
+    total_len = defaultdict(int)
+
     for line in chromosomes_stats_mean_cmd:
-        stats_data: List[str] = line.split("\t")
-        if stats_data[CHROM_INDEX] in chromosomes:
-            chromosomes_coverage.append(
-                (stats_data[CHROM_INDEX], float(stats_data[STATS_MEAN_COVERAGE_INDEX]))
-            )
+        stats_data = line.split("\t")
+        chrom = stats_data[CHROM_INDEX]
+        if chrom not in chromosomes:
+            continue
+        start = int(stats_data[START_INDEX])
+        end = int(stats_data[STOP_INDEX])
+        region_len = end - start
+        mean_cov = float(stats_data[STATS_MEAN_COVERAGE_INDEX])
+
+        total_cov[chrom] += mean_cov * region_len
+        total_len[chrom] += region_len
+
+    chromosomes_coverage = [
+        (chrom, total_cov[chrom] / total_len[chrom])
+        for chrom in chromosomes
+        if total_len[chrom]
+    ]
+
     return chromosomes_coverage
