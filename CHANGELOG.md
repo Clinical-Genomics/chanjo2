@@ -1,4 +1,6 @@
 ## [unreleased]
+### Changed
+- Remove PAR regions from bed files used in X/Y chromosome check (#514)
 ### Fixed
 - Exome and Transcript data sex chromosome coverage. Returning always 0 (#512)
 
