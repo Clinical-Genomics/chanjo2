@@ -1,4 +1,4 @@
-## [unreleased]
+## [3.10.1]
 ### Changed
 - Remove PAR regions from bed files used in X/Y chromosome check (#514)
 - Remove problematic genes on XY backbone, leaving only the following genes on chr Y: SRY, ZFY, AMELY, RPS4Y1, KDM5D, UTY, EIF1AY (#515)
