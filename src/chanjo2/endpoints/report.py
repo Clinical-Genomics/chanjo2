@@ -19,6 +19,8 @@ from chanjo2.demo import DEMO_COVERAGE_QUERY_FORM
 from chanjo2.meta.handle_report_contents import get_report_data
 from chanjo2.models.pydantic_models import Builds, IntervalType, ReportQuery
 
+LOG = logging.getLogger(__name__)
+
 
 def get_templates_path() -> str:
     """Returns the absolute path to the templates folder of this app."""
