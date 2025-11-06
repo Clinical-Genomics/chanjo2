@@ -25,7 +25,7 @@
 			<!-- hidden fields passed from previous query -->
 			<form name="customizeForm" action="{{url_for('report')}}" method="post">
 			<input type="hidden" id="build" name="build" value="{{extras.build}}">
-s			<input type="hidden" name="samples" value="{{extras.samples|safe}}"/>
+			<input type="hidden" name="samples" value="{{extras.samples|safe}}"/>
 			  <div>
 				<div class="form-group">
 				  <div class="row" {% if hidden %}hidden{% endif %}>
