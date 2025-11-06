@@ -180,7 +180,9 @@ def predict_sex(x_cov: float, y_cov: float) -> str:
 
 
 def get_samples_sex_metrics(
-    d4_file_path: str, chr_prefix: Optional[str], bed_file_path: Optional[str] = None
+    d4_file_path: str,
+    chr_prefix: Optional[str] = "",
+    bed_file_path: Optional[str] = None,
 ) -> Dict:
     """Compute coverage over sex chromosomes and predicted sex."""
 
