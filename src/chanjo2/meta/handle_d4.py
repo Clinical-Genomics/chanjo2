@@ -192,6 +192,8 @@ def get_samples_sex_metrics(
         bed_file_path=bed_file_path,
     )
 
+    LOG.warning(sex_chroms_coverage)
+
     return {
         "x_coverage": round(sex_chroms_coverage[0][1], 1),
         "y_coverage": round(sex_chroms_coverage[1][1], 1),
