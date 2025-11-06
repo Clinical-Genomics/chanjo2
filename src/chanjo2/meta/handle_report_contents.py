@@ -110,7 +110,7 @@ def get_report_data(
     data["sex_rows"] = get_report_sex_rows(
         samples=query.samples,
         bed_file_path=get_sex_chroms_bed_file(
-            build=query.build, interval_type=query.interval_type.value
+            build=query.build, interval_type=query.interval_type
         ),
     )
 
