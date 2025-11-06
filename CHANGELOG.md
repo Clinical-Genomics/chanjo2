@@ -1,3 +1,7 @@
+## [unreleased]
+### Changed
+- Removed support for Python 3.9 (#520)
+
 ## [3.10.1]
 ### Changed
 - Remove PAR regions from bed files used in X/Y chromosome check (#514)
