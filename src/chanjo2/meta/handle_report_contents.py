@@ -188,7 +188,7 @@ def get_report_sex_rows(
 
         if interval_type != IntervalType.GENES:
             bed_file_path = get_sex_chroms_bed_file(
-                build=build, interval_type=interval_type, prefix=chr_prefix
+                build=build.value, interval_type=interval_type.value, prefix=chr_prefix
             )
 
         sample_sex_metrics: Dict = get_samples_sex_metrics(
