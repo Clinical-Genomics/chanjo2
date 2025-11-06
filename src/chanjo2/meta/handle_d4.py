@@ -180,15 +180,13 @@ def predict_sex(x_cov: float, y_cov: float) -> str:
 
 
 def get_samples_sex_metrics(
-    d4_file_path: str, bed_file_path: Optional[str] = None
+    d4_file_path: str, chr_prefix: Optional[str], bed_file_path: Optional[str] = None
 ) -> Dict:
     """Compute coverage over sex chromosomes and predicted sex."""
 
-    chrom_prefix: str = get_chromosomes_prefix(d4_file_path)
-
     sex_chroms_coverage: List[Tuple[str, float]] = get_d4tools_chromosome_mean_coverage(
         d4_file_path=d4_file_path,
-        chromosomes=[f"{chrom_prefix}X", f"{chrom_prefix}Y"],
+        chromosomes=[f"{chr_prefix}X", f"{chr_prefix}Y"],
         bed_file_path=bed_file_path,
     )
 

@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from chanjo2 import __version__
 from chanjo2.crud.intervals import get_genes, get_hgnc_gene, set_sql_intervals
 from chanjo2.meta.handle_d4 import (
+    get_chromosomes_prefix,
     get_gene_overview_stats,
     get_report_sample_interval_coverage,
     get_samples_sex_metrics,
@@ -21,12 +22,7 @@ from chanjo2.models.pydantic_models import (
     SampleSexRow,
     TranscriptTag,
 )
-from chanjo2.resources import (
-    CHR_X_Y_EXONS_BUILD_37_PATH,
-    CHR_X_Y_EXONS_BUILD_38_PATH,
-    CHR_X_Y_TRANSCRIPTS_BUILD_37_PATH,
-    CHR_X_Y_TRANSCRIPTS_BUILD_38_PATH,
-)
+from chanjo2.resources import get_sex_chroms_bed_file
 
 LOG = logging.getLogger(__name__)
 INTERVAL_TYPE_SQL_TYPE: Dict[IntervalType, Union[SQLGene, SQLTranscript, SQLExon]] = {
@@ -108,10 +104,7 @@ def get_report_data(
 
     # Add coverage_report - specific data
     data["sex_rows"] = get_report_sex_rows(
-        samples=query.samples,
-        bed_file_path=get_sex_chroms_bed_file(
-            build=query.build, interval_type=query.interval_type
-        ),
+        samples=query.samples, build=query.build, interval_type=query.interval_type
     )
 
     data["errors"] = [
@@ -181,28 +174,27 @@ def get_missing_genes_from_db(
     )
 
 
-def get_sex_chroms_bed_file(
-    build: Builds, interval_type: IntervalType
-) -> Optional[str]:
-
-    if build == Builds.build_37 and interval_type == IntervalType.EXONS:
-        return CHR_X_Y_EXONS_BUILD_37_PATH
-    elif build == Builds.build_38 and interval_type == IntervalType.EXONS:
-        return CHR_X_Y_EXONS_BUILD_38_PATH
-    elif build == Builds.build_37 and interval_type == IntervalType.TRANSCRIPTS:
-        return CHR_X_Y_TRANSCRIPTS_BUILD_37_PATH
-    elif build == Builds.build_38 and interval_type == IntervalType.TRANSCRIPTS:
-        return CHR_X_Y_TRANSCRIPTS_BUILD_38_PATH
-
-
 def get_report_sex_rows(
-    samples: List[ReportQuerySample], bed_file_path: Optional[str] = None
+    samples: List[ReportQuerySample],
+    build: Builds,
+    interval_type: IntervalType,
 ) -> List[Dict]:
     """Create and return the contents for the sample sex lines in the coverage report."""
     sample_sex_rows: D4FileList = []
     for sample in samples:
+
+        chr_prefix = get_chromosomes_prefix(sample.coverage_file_path)
+        bed_file_path = None
+
+        if interval_type != IntervalType.GENES:
+            bed_file_path = get_sex_chroms_bed_file(
+                build=build, interval_type=interval_type, prefix=chr_prefix
+            )
+
         sample_sex_metrics: Dict = get_samples_sex_metrics(
-            d4_file_path=sample.coverage_file_path, bed_file_path=bed_file_path
+            d4_file_path=sample.coverage_file_path,
+            chr_prefix=chr_prefix,
+            bed_file_path=bed_file_path,
         )
 
         sample_sex_row: SampleSexRow = SampleSexRow(
