@@ -2,16 +2,9 @@ from importlib_resources import files
 
 BASE_PATH: str = "chanjo2.resources"
 
-CHR_X_Y_EXONS_BUILD_37 = "chrXY_exons_GRCh37_noPAR.bed"
-CHR_X_Y_EXONS_BUILD_38 = "chrXY_exons_GRCh38_noPAR.bed"
-CHR_X_Y_TRANSCRIPTS_BUILD_37 = "chrXY_transcripts_GRCh37_noPAR.bed"
-CHR_X_Y_TRANSCRIPTS_BUILD_38 = "chrXY_transcripts_GRCh38_noPAR.bed"
 
-CHR_X_Y_EXONS_BUILD_37_PATH = str(files(BASE_PATH).joinpath(CHR_X_Y_EXONS_BUILD_37))
-CHR_X_Y_EXONS_BUILD_38_PATH = str(files(BASE_PATH).joinpath(CHR_X_Y_EXONS_BUILD_38))
-CHR_X_Y_TRANSCRIPTS_BUILD_37_PATH = str(
-    files(BASE_PATH).joinpath(CHR_X_Y_TRANSCRIPTS_BUILD_37)
-)
-CHR_X_Y_TRANSCRIPTS_BUILD_38_PATH = str(
-    files(BASE_PATH).joinpath(CHR_X_Y_TRANSCRIPTS_BUILD_38)
-)
+def get_sex_chroms_bed_file(build: str, interval_type: str, prefix: str) -> str:
+    """Return the appropriate XY BED file path given build, interval type, and chr prefix."""
+
+    file_name = f"{prefix}XY_{interval_type}_{build}_noPAR.bed"
+    return str(files(BASE_PATH).joinpath(file_name))
