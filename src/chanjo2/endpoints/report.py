@@ -87,8 +87,6 @@ async def report(
             detail=ve.json(),
         )
 
-    LOG.warning(report_query)
-
     report_content: dict = get_report_data(query=report_query, session=db)
     LOG.debug(f"Time to compute stats: {time.time() - start_time} seconds.")
     response = templates.TemplateResponse(
