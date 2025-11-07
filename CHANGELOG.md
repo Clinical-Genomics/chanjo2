@@ -1,8 +1,9 @@
-## [unreleased]
+## [3.11]
 ### Added
 - Added a select to switch between genes/transcripts/exons stats on coverage reports (#521)
 ### Changed
 - Removed support for Python 3.9 (#520)
+- Updated libraries (#525)
 
 ## [3.10.1]
 ### Changed
