@@ -341,26 +341,36 @@ def get_mane_overview_coverage_stats(query: ReportQuery, session: Session) -> Di
         completeness_thresholds=query.completeness_thresholds,
     )
 
-    existing_transcripts = []
+    genes_transcripts = {}
 
     for transcript in sql_intervals:
-        transcript_dict = {
-            "mane_select": transcript.refseq_mane_select,
-            "mane_plus_clinical": transcript.refseq_mane_plus_clinical,
-        }
-        if transcript_dict in existing_transcripts:
-            continue
 
-        existing_transcripts.append(transcript_dict)
-        gene_symbol: str = gene_mappings[transcript.ensembl_gene_id].hgnc_symbol
-        data_dict: dict = {
-            "gene": {
-                "hgnc_id": gene_mappings[transcript.ensembl_gene_id].hgnc_id,
-                "ensembl_ids": gene_mappings[transcript.ensembl_gene_id].ensembl_ids,
-            },
-            "transcript": transcript_dict,
-            "stats": mane_samples_coverage_stats_by_transcript[transcript.ensembl_id],
-        }
-        mane_stats["mane_coverage_stats"].append((gene_symbol, data_dict))
+        transcript_ensembl_gene = transcript.ensembl_gene_id
+        transcript_gene_symbol = gene_mappings[transcript_ensembl_gene].hgnc_symbol
+
+        if transcript_gene_symbol not in genes_transcripts:
+            genes_transcripts[transcript_gene_symbol] = {
+                "gene": {
+                    "hgnc_id": gene_mappings[transcript_ensembl_gene].hgnc_id,
+                    "ensembl_ids": gene_mappings[transcript_ensembl_gene].ensembl_ids,
+                },
+                "transcript": {
+                    "mane_select": transcript.refseq_mane_select,
+                    "mane_plus_clinical": transcript.refseq_mane_plus_clinical,
+                },
+                "stats": mane_samples_coverage_stats_by_transcript[
+                    transcript.ensembl_id
+                ],
+            }
+        elif transcript.refseq_mane_select:
+            genes_transcripts[transcript_gene_symbol]["transcript"][
+                "mane_select"
+            ] = transcript.refseq_mane_select
+        elif transcript.refseq_mane_plus_clinical:
+            genes_transcripts[transcript_gene_symbol]["transcript"][
+                "mane_plus_clinical"
+            ] = transcript.refseq_mane_plus_clinical
+
+    mane_stats["mane_coverage_stats"] = tuple(genes_transcripts.items())
 
     return mane_stats
