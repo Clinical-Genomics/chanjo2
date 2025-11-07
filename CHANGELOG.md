@@ -4,13 +4,14 @@
 ### Changed
 - Removed support for Python 3.9 (#520)
 - Updated libraries (#525)
+### Fixed
+- Sex chromosome checks for d4 files with 'chr' prefix (#523 and #526)
 
 ## [3.10.1]
 ### Changed
 - Remove PAR regions from bed files used in X/Y chromosome check (#514)
 ### Fixed
 - Exome and Transcript data sex chromosome coverage. Returning always 0 (#512)
-- Sex chromosome checks for d4 files with 'chr' prefix (#523)
 
 ## [3.10]
 ### Added

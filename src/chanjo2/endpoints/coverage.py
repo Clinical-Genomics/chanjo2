@@ -21,7 +21,11 @@ from chanjo2.meta.handle_coverage_stats import (
     get_d4tools_chromosome_mean_coverage,
     get_d4tools_intervals_mean_coverage,
 )
-from chanjo2.meta.handle_d4 import get_samples_sex_metrics, set_interval_ids_coords
+from chanjo2.meta.handle_d4 import (
+    get_chromosomes_prefix,
+    get_samples_sex_metrics,
+    set_interval_ids_coords,
+)
 from chanjo2.meta.handle_report_contents import INTERVAL_TYPE_SQL_TYPE
 from chanjo2.meta.utils import get_mean
 from chanjo2.models import SQLGene
@@ -224,4 +228,7 @@ async def get_samples_predicted_sex(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=WRONG_COVERAGE_FILE_MSG,
         )
-    return get_samples_sex_metrics(d4_file_path=coverage_file_path)
+    chr_prefix = get_chromosomes_prefix(coverage_file_path)
+    return get_samples_sex_metrics(
+        d4_file_path=coverage_file_path, chr_prefix=chr_prefix
+    )
