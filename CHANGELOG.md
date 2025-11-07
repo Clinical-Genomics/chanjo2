@@ -5,7 +5,7 @@
 - Removed support for Python 3.9 (#520)
 ### Fixed
 - Sex chromosome checks for d4 files with 'chr' prefix (#523 and #526)
-- Starlette library vulnerability by updating it to v0.49.3 (#527)
+- Starlette library vulnerability by updating it to v >=0.49.1 (#527)
 
 ## [3.10.1]
 ### Changed
