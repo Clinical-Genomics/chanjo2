@@ -13,4 +13,4 @@ Please update to the latest version to ensure you get the newest features and se
 
 ## Reporting a Vulnerability
 
-Please report any issue or potential vulnerability by opening a GitHub issue in this repository. The project is actively maintained, and I’ll review and address reports as soon as possible.
+Please report any issue or potential vulnerability by opening **a GitHub issue** in this repository. The project is actively maintained, and we’ll review and address reports as soon as possible.
