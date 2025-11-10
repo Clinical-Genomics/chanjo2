@@ -1,12 +1,13 @@
-## [unreleased]
+## [3.11]
 ### Added
 - Added a select to switch between genes/transcripts/exons stats on coverage reports (#521)
 ### Changed
 - Removed support for Python 3.9 (#520)
+- Updated libraries (#525)
 ### Fixed
 - Sex chromosome checks for d4 files with 'chr' prefix (#523 and #527)
 - Starlette library vulnerability by updating it to v >=0.49.1 (#528)
-- On Mane transcripts overview, do not duplicate lines when a gene has both `S` and `MANE Plus Clinical` transcript (#531)
+- On Mane transcripts overview, do not duplicate lines when a gene has both `Mane Select` and `MANE Plus Clinical` transcript (#531)
 
 ## [3.10.1]
 ### Changed
