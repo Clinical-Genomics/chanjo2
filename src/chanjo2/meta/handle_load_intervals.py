@@ -95,6 +95,7 @@ def update_genes(build: Builds, session: Session, lines: Iterator, nlines: int) 
                 chromosome=items[0],
                 start=int(items[1]),
                 stop=int(items[2]),
+                size=int(items[2]) - int(items[1]),
                 ensembl_ids=[items[3]],
                 hgnc_symbol=items[4],
                 hgnc_id=items[5],
@@ -161,12 +162,13 @@ def update_transcripts(
                 ensembl_id=items[2],
                 start=int(items[3]),
                 stop=int(items[4]),
-                refseq_mrna=items[5],
-                refseq_mrna_pred=items[6],
-                refseq_ncrna=items[7],
-                refseq_mane_select=items[8] if build == Builds.build_38 else None,
+                size=int(items[5]),
+                refseq_mrna=items[6],
+                refseq_mrna_pred=items[7],
+                refseq_ncrna=items[8],
+                refseq_mane_select=items[9] if build == Builds.build_38 else None,
                 refseq_mane_plus_clinical=(
-                    items[9] if build == Builds.build_38 else None
+                    items[10] if build == Builds.build_38 else None
                 ),
                 build=build,
             )
@@ -227,6 +229,7 @@ def update_exons(
                 ensembl_id=items[3],
                 start=int(items[4]),
                 stop=int(items[5]),
+                size=int(items[2]) - int(items[1]),
                 rank_in_transcript=int(items[-1]),
                 build=build,
             )
