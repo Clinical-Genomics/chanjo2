@@ -1,3 +1,7 @@
+## [unreleased]
+### Fixed
+- Unified and fixed Ensembl files headers (#532)
+
 ## [3.11]
 ### Added
 - Added a select to switch between genes/transcripts/exons stats on coverage reports (#521)
