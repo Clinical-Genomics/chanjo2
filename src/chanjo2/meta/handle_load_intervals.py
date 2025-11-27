@@ -8,6 +8,7 @@ from chanjo2.constants import (
     EXONS_FILE_HEADER,
     GENES_FILE_HEADER,
     TRANSCRIPTS_FILE_HEADER,
+    TRANSCRIPTS_FILE_HEADER_37,
 )
 from chanjo2.crud.intervals import (
     bulk_insert_exons,
@@ -129,6 +130,9 @@ def update_transcripts(
 
     header = next(lines).split("\t")
     expected_header = TRANSCRIPTS_FILE_HEADER
+    if build == Builds.build_37:
+        expected_header = TRANSCRIPTS_FILE_HEADER_37
+
     if header != expected_header:
         raise ValueError(
             f"Ensembl transcripts file has an unexpected format:{header}. Expected format: {TRANSCRIPTS_FILE_HEADER}"
