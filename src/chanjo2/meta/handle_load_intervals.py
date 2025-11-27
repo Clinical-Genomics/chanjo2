@@ -68,10 +68,10 @@ def update_genes(build: Builds, session: Session, lines: Iterator, nlines: int) 
     LOG.warning(f"Updating genes. Genome build --> {build.value}")
 
     header = next(lines).split("\t")
-    expected_header = GENES_FILE_HEADER[build]
-    if header[: len(expected_header)] == expected_header is False:
+    expected_header = GENES_FILE_HEADER
+    if header != expected_header:
         raise ValueError(
-            f"Ensembl genes file has an unexpected format:{header}. Expected format: {GENES_FILE_HEADER[build]}"
+            f"Ensembl genes file has an unexpected format:{header}. Expected format: {GENES_FILE_HEADER}"
         )
 
     LOG.warning(f"Deleting genes, transcripts, exons in build {build.value}")
@@ -128,10 +128,10 @@ def update_transcripts(
     LOG.warning(f"Updating transcripts. Genome build --> {build.value}")
 
     header = next(lines).split("\t")
-    expected_header = TRANSCRIPTS_FILE_HEADER[build]
-    if header[: len(expected_header)] == expected_header is False:
+    expected_header = TRANSCRIPTS_FILE_HEADER
+    if header != expected_header:
         raise ValueError(
-            f"Ensembl transcripts file has an unexpected format:{header}. Expected format: {TRANSCRIPTS_FILE_HEADER[build]}"
+            f"Ensembl transcripts file has an unexpected format:{header}. Expected format: {TRANSCRIPTS_FILE_HEADER}"
         )
 
     LOG.warning(f"Deleting transcripts in build {build.value}")
@@ -195,10 +195,10 @@ def update_exons(
     LOG.warning(f"Updating exons. Genome build --> {build.value}")
 
     header = next(lines).split("\t")
-    expected_header = EXONS_FILE_HEADER[build]
-    if header[: len(expected_header)] == expected_header is False:
+    expected_header = EXONS_FILE_HEADER
+    if header != expected_header:
         raise ValueError(
-            f"Ensembl exons file has an unexpected format:{header}. Expected format: {EXONS_FILE_HEADER[build]}"
+            f"Ensembl exons file has an unexpected format:{header}. Expected format: {EXONS_FILE_HEADER}"
         )
 
     LOG.warning(f"Deleting exons in build {build.value}")

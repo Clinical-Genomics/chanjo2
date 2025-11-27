@@ -1,4 +1,4 @@
-Chromosome Name	Ensembl Gene ID	Ensembl Transcript ID	Ensembl Exon ID	Exon Chr Start (bp)	Exon Chr End (bp)	5' UTR Start	5' UTR End	3' UTR Start	3' UTR End	Strand	Exon Rank in Transcript
+Chromosome/scaffold name	Gene stable ID	Transcript stable ID	Exon stable ID	Exon region start (bp)	Exon region end (bp)	5' UTR start	5' UTR end	3' UTR start	3' UTR end	Strand	Exon rank in transcript
 1	ENSG00000177000	ENST00000376592	ENSE00001471080	11862938	11863302	11863174	11863302			-1	1
 1	ENSG00000177000	ENST00000376592	ENSE00001225848	11861218	11861456					-1	2
 1	ENSG00000177000	ENST00000376592	ENSE00001225838	11860269	11860379					-1	3
