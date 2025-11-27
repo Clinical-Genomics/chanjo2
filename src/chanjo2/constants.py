@@ -29,7 +29,7 @@ GENES_FILE_HEADER: list[str] = [
 
 CHROMOSOMES = [str(i) for i in range(0, 23)] + ["X", "Y", "MT"]
 
-TRANSCRIPTS_FILE_HEADER: list[str] = [
+TRANSCRIPTS_FILE_HEADER_37: list[str] = [
     CHROMOSOME_NAME,
     ENSEMBL_GENE_ID,
     "Transcript stable ID",
@@ -38,6 +38,10 @@ TRANSCRIPTS_FILE_HEADER: list[str] = [
     "RefSeq mRNA ID",
     "RefSeq mRNA predicted ID",
     "RefSeq ncRNA ID",
+    "Transcript length (including UTRs and CDS)",
+]
+
+TRANSCRIPTS_FILE_HEADER: list[str] = TRANSCRIPTS_FILE_HEADER_37 + [
     "RefSeq match transcript (MANE Select)",
     "RefSeq match transcript (MANE Plus Clinical)",
 ]

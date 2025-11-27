@@ -1,4 +1,6 @@
 ## [unreleased]
+### Changed
+- Parsing and saving `size` field in genes, transcripts and exons tables - Requires modifying the database table - works with files downloaded with schug >=1.13 (#533)
 ### Fixed
 - Unified and fixed Ensembl files headers (#532)
 
