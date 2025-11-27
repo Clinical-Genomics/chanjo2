@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://clinical-genomics.github.io/chanjo2/deployment/installation/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Installation on a virtual environment - Chanjo2</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Installation on a virtual environment";
+        var mkdocs_page_input_path = "deployment/installation.md";
+        var mkdocs_page_url = "/chanjo2/deployment/installation/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Chanjo2
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Index</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Deployment</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../docker-deployment/">Deployment using Docker</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Installation on a virtual environment</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#installing-the-application-on-a-local-conda-environment">Installing the application on a local Conda environment</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../env_file/">Custom settings and the .env file</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Usage</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../usage/loading-intervals/">Loading and displaying genes, transcripts and exons</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../usage/sample-coverage/">Coverage and coverage completeness queries</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../usage/coverage-reports/">Coverage and genes overview reports</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../usage/authorised_requests/">Authorised requests</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Chanjo2</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Deployment</li>
+      <li class="breadcrumb-item active">Installation on a virtual environment</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Clinical-Genomics/chanjo2/edit/master/docs/deployment/installation.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h2 id="installing-chanjo2-in-a-virtual-environment">Installing Chanjo2 in a virtual environment</h2>
+<h3 id="installing-the-application-on-a-local-conda-environment">Installing the application on a local Conda environment</h3>
+<p>Given a conda environment containing <a href="https://www.rust-lang.org/">Rust</a>, Python &gt;=3.8 with <a href="https://github.com/python-poetry/poetry">poetry</a> installed, clone the repository from GitHub with the following command:</p>
+<pre><code>git clone https://github.com/Clinical-Genomics/chanjo2.git
+</code></pre>
+<p>The command will create a folder named <code>chanjo2</code> in your current working directory. Move inside this directory:</p>
+<pre><code>cd chanjo2
+</code></pre>
+<p>And install the software with poetry:</p>
+<pre><code>poetry install
+</code></pre>
+<p>If you encounter any difficulties installing the pyd4 library due to its lack of support for PEP 517 builds, simply retry the aforementioned step using a version of poetry that is less than 1.8.</p>
+<p>You can run a demo instance of the web server by typing:</p>
+<pre><code>uvicorn src.chanjo2.main:app --reload
+</code></pre>
+<p>The server will run on localhost and default port 8000 (http://0.0.0.0:8000)</p>
+<p>The demo server is connecting to a SQLite database whose temporary tables are destroyed and re-created every time the server is started.
+In order to connect to a permanent MYSQL database instance, you'd need to customise the settings present on the <a href="https://github.com/Clinical-Genomics/chanjo2/blob/main/.env"><code>.env</code></a> file. 
+For info about custom settings on the .env file, please visit <a href="../env_file/">this document</a>.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../docker-deployment/" class="btn btn-neutral float-left" title="Deployment using Docker"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../env_file/" class="btn btn-neutral float-right" title="Custom settings and the .env file">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Clinical-Genomics/chanjo2/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../docker-deployment/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../env_file/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
