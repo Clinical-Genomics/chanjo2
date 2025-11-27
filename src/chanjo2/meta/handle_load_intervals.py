@@ -156,16 +156,17 @@ def update_transcripts(
             )
             if items == header:
                 continue
+
             transcript = SQLTranscript(
                 chromosome=items[0],
                 ensembl_gene_id=items[1],
                 ensembl_id=items[2],
                 start=int(items[3]),
                 stop=int(items[4]),
-                size=int(items[5]),
-                refseq_mrna=items[6],
-                refseq_mrna_pred=items[7],
-                refseq_ncrna=items[8],
+                size=int(items[8]),
+                refseq_mrna=items[5],
+                refseq_mrna_pred=items[6],
+                refseq_ncrna=items[7],
                 refseq_mane_select=items[9] if build == Builds.build_38 else None,
                 refseq_mane_plus_clinical=(
                     items[10] if build == Builds.build_38 else None
@@ -229,7 +230,7 @@ def update_exons(
                 ensembl_id=items[3],
                 start=int(items[4]),
                 stop=int(items[5]),
-                size=int(items[2]) - int(items[1]),
+                size=int(items[5]) - int(items[4]),
                 rank_in_transcript=int(items[-1]),
                 build=build,
             )
