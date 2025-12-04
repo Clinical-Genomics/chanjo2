@@ -95,7 +95,6 @@ def update_genes(build: Builds, session: Session, lines: Iterator, nlines: int) 
                 chromosome=items[0],
                 start=int(items[1]),
                 stop=int(items[2]),
-                size=int(items[2]) - int(items[1]),
                 ensembl_ids=[items[3]],
                 hgnc_symbol=items[4],
                 hgnc_id=items[5],
@@ -133,10 +132,9 @@ def update_transcripts(
     expected_header = TRANSCRIPTS_FILE_HEADER
     if build == Builds.build_37:
         expected_header = TRANSCRIPTS_FILE_HEADER_37
-
     if header != expected_header:
         raise ValueError(
-            f"Ensembl transcripts file has an unexpected format:{header}. Expected format: {TRANSCRIPTS_FILE_HEADER}"
+            f"Ensembl transcripts file has an unexpected format:{header}. Expected format: {expected_header}"
         )
 
     LOG.warning(f"Deleting transcripts in build {build.value}")
@@ -156,20 +154,18 @@ def update_transcripts(
             )
             if items == header:
                 continue
-
             transcript = SQLTranscript(
                 chromosome=items[0],
                 ensembl_gene_id=items[1],
                 ensembl_id=items[2],
                 start=int(items[3]),
                 stop=int(items[4]),
-                size=int(items[8]),
                 refseq_mrna=items[5],
                 refseq_mrna_pred=items[6],
                 refseq_ncrna=items[7],
-                refseq_mane_select=items[9] if build == Builds.build_38 else None,
+                refseq_mane_select=items[8] if build == Builds.build_38 else None,
                 refseq_mane_plus_clinical=(
-                    items[10] if build == Builds.build_38 else None
+                    items[9] if build == Builds.build_38 else None
                 ),
                 build=build,
             )
@@ -230,7 +226,6 @@ def update_exons(
                 ensembl_id=items[3],
                 start=int(items[4]),
                 stop=int(items[5]),
-                size=int(items[5]) - int(items[4]),
                 rank_in_transcript=int(items[-1]),
                 build=build,
             )
