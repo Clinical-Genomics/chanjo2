@@ -1,7 +1,7 @@
 ## [unreleased]
 ### Fixed
 - Unified and fixed Ensembl files headers (#532)
-- Fixed header for transcripts in build GRCh37 ()
+- Fixed header for transcripts in build GRCh37 (#535)
 
 ## [3.11]
 ### Added
