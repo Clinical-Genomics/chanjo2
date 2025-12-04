@@ -38,7 +38,6 @@ TRANSCRIPTS_FILE_HEADER_37: list[str] = [
     "RefSeq mRNA ID",
     "RefSeq mRNA predicted ID",
     "RefSeq ncRNA ID",
-    "Transcript length (including UTRs and CDS)",
 ]
 
 TRANSCRIPTS_FILE_HEADER: list[str] = TRANSCRIPTS_FILE_HEADER_37 + [
