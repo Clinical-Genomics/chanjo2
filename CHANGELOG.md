@@ -1,8 +1,7 @@
-## [3.11.1]
+## [unreleased]
 ### Fixed
 - Unified and fixed Ensembl files headers (#532)
 - Fixed header for transcripts in build GRCh37 (#535)
-- Lib updates including vulnerability fix to urllib3 (2.5.0 -> 2.6.1) (#) 
 
 ## [3.11]
 ### Added
