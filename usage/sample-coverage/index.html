@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://clinical-genomics.github.io/chanjo2/usage/sample-coverage/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Coverage and coverage completeness queries - Chanjo2</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Coverage and coverage completeness queries";
+        var mkdocs_page_input_path = "usage/sample-coverage.md";
+        var mkdocs_page_url = "/chanjo2/usage/sample-coverage/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Chanjo2
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Index</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Deployment</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../deployment/docker-deployment/">Deployment using Docker</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../deployment/installation/">Installation on a virtual environment</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../deployment/env_file/">Custom settings and the .env file</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Usage</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../loading-intervals/">Loading and displaying genes, transcripts and exons</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Coverage and coverage completeness queries</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#coverage-completeness">Coverage completeness</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#direct-coverage-query-over-a-single-genomic-interval">Direct coverage query over a single genomic interval</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#direct-coverage-query-over-the-intervals-present-in-a-bed-file">Direct coverage query over the intervals present in a bed file</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#condensed-summary-stats-for-one-or-more-samples-over-a-list-of-hgnc-ids">Condensed summary stats for one or more samples over a list of HGNC IDs</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#request-example">Request example:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#response-from-chanjo2">Response from chanjo2:</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../coverage-reports/">Coverage and genes overview reports</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../authorised_requests/">Authorised requests</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Chanjo2</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Usage</li>
+      <li class="breadcrumb-item active">Coverage and coverage completeness queries</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Clinical-Genomics/chanjo2/edit/master/docs/usage/sample-coverage.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h2 id="coverage-queries-on-d4-files-or-data-contained-in-the-database">Coverage queries on d4 files or data contained in the database</h2>
+<p>Chanjo2 can be used to quickly access average coverage depth statistics for an interval from a list of genomic intervals on a custom d4 coverage file.</p>
+<h3 id="coverage-completeness">Coverage completeness</h3>
+<p>When querying the server for sample coverage statistics, it is also possible to specify a custom list of numbers (example 30, 20, 10) representing the coverage thresholds that should be used to calculate the <strong>coverage completeness</strong> for each genomic interval. 
+This number describes the percentage of bases (as a decimal number) meeting the user-defined coverage threshold for each genomic interval. 
+<strong>Please note</strong> that computing coverage completeness for non-local files (files provided as URLs) is not supported. This is because the functionality is not present in d4tools.</p>
+<h3 id="direct-coverage-query-over-a-single-genomic-interval">Direct coverage query over a single genomic interval</h3>
+<p>Coverage and coverage completeness over a genomic interval can be computed by sending a <code>POST</code> request to the <code>/coverage/d4/interval/</code> endpoint.</p>
+<p>The entrypoint accepts a json query with the following parameters:</p>
+<ul>
+<li><strong>coverage_file_path</strong> # (required). Path to a d4 file that is stored on the local drive or on a remote server (slower computation)</li>
+<li><strong>chromosome</strong> # (required). Genomic interval chromosome</li>
+<li><strong>completeness_thresholds</strong> # Threshold values for computing coverage completeness. Example [50, 30, 10]</li>
+<li><strong>start</strong> # Genomic interval start position </li>
+<li><strong>stop</strong> # Genomic interval end position </li>
+</ul>
+<p>Note that start and stop coordinates are not required and whenever they are omitted coverage statistics will be computer over the entire chromosome.</p>
+<p>Query example:</p>
+<pre><code class="language-shell">curl -X 'POST' \
+  'http://localhost:8000/coverage/d4/interval/' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  &quot;coverage_file_path&quot;: &quot;&lt;path-to-d4-file.d4&gt;&quot;,
+  &quot;chromosome&quot;: &quot;7&quot;,
+  &quot;start&quot;: 124822386,
+  &quot;end&quot;: 124929983,
+  &quot;completeness_thresholds&quot;: [
+    10,20,30
+  ]
+}'
+</code></pre>
+<p>This query wll return a response, where the mean coverage over the single interval is present under the mean_coverage key. 
+Coverage completeness values will be additionally returned if the query sent to the server contains values for the completeness_thresholds key. 
+A response from the server to the query above will return for instance a mean interval coverage of 27.2 and coverage completeness of 99.6%, 85% and 33.4% using threshold values of respectively 10, 20 and 30.</p>
+<pre><code class="language-shell">{
+  &quot;mean_coverage&quot;: 27.19804455514559,
+  &quot;completeness&quot;: {
+    &quot;10&quot;: 1,
+    &quot;20&quot;: 0.85,
+    &quot;30&quot;: 0.33
+  },
+  &quot;interval_id&quot;: null,
+  &quot;interval_type&quot;: null
+}
+</code></pre>
+<h3 id="direct-coverage-query-over-the-intervals-present-in-a-bed-file">Direct coverage query over the intervals present in a bed file</h3>
+<p>Mean coverage can be also calculated for a list of intervals using the <code>/coverage/d4/interval_file</code> endpoint. The intervals list should be provided as the path to a bed-formatted file.</p>
+<p>The entrypoint accepts a json query with the following parameters:</p>
+<ul>
+<li><strong>coverage_file_path</strong> # (required). Path to a d4 file that is stored on the local drive or on a remote server (slower computation)</li>
+<li><strong>intervals_bed_path</strong> # (required). Path to a .bed file present on the local drive.</li>
+<li><strong>completeness_thresholds</strong> # Threshold values for computing coverage completeness. Example [50, 30, 10]</li>
+</ul>
+<p>If we were to use the <a href="https://github.com/Clinical-Genomics/chanjo2/blob/main/src/chanjo2/demo/109_green.bed">demo bed file</a> provided in this repository, the query would look like this:</p>
+<pre><code class="language-shell">curl -X 'POST' \
+  'http://localhost:8000/coverage/d4/interval_file/' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  &quot;coverage_file_path&quot;: &quot;&lt;path-to-d4-file.d4&gt;&quot;,
+  &quot;intervals_bed_path&quot;: &quot;&lt;path-to-109_green.bed&gt;&quot;,
+  &quot;completeness_thresholds&quot;: [
+    10,20,30
+  ]
+}'
+</code></pre>
+<p>And it would return the following result:</p>
+<pre><code class="language-shell">[
+  {
+    &quot;mean_coverage&quot;: 22.17115629570222,
+    &quot;completeness&quot;: {
+      &quot;10&quot;: 1,
+      &quot;20&quot;: 0.69,
+      &quot;30&quot;: 0.08
+    },
+    &quot;interval_id&quot;: null,
+    &quot;interval_type&quot;: null
+  },
+  {
+    &quot;mean_coverage&quot;: 83.1338549817423,
+    &quot;completeness&quot;: {
+      &quot;10&quot;: 1,
+      &quot;20&quot;: 0.84,
+      &quot;30&quot;: 0.24
+    },
+    &quot;interval_id&quot;: null,
+    &quot;interval_type&quot;: null
+  },
+  {
+    &quot;mean_coverage&quot;: 252.63072816253893,
+    &quot;completeness&quot;: {
+      &quot;10&quot;: 1,
+      &quot;20&quot;: 0.78,
+      &quot;30&quot;: 0.03
+    },
+    &quot;interval_id&quot;: null,
+    &quot;interval_type&quot;: null
+  },
+  {
+    &quot;mean_coverage&quot;: 141.35853114545165,
+    &quot;completeness&quot;: {
+      &quot;10&quot;: 0.99,
+      &quot;20&quot;: 0.7,
+      &quot;30&quot;: 0.09
+    },
+    &quot;interval_id&quot;: null,
+    &quot;interval_type&quot;: null
+  }
+]
+</code></pre>
+<h3 id="condensed-summary-stats-for-one-or-more-samples-over-a-list-of-hgnc-ids">Condensed summary stats for one or more samples over a list of HGNC IDs</h3>
+<p>To obtain condensed statistics for one or more samples, use the <code>/coverage/d4/genes/summary</code> endpoint. 
+Send a request with a list of HGNC gene IDs, the path to the d4 files for the samples, and the coverage threshold for computing coverage completeness. 
+The endpoint will return the average coverage and coverage completeness for all the genes included in the query.
+You need to provide a parameter <code>interval_type</code> to specify whether the statistics should be computed over entire genes, gene transcripts, or exons.</p>
+<h4 id="request-example">Request example:</h4>
+<pre><code class="language-shell">curl -X 'POST' \
+  'https://chanjo2-stage.scilifelab.se/coverage/d4/genes/summary' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  &quot;build&quot;: &quot;GRCh37&quot;,
+  &quot;samples&quot;: [
+    {
+      &quot;name&quot;: &quot;TestSample&quot;,
+      &quot;coverage_file_path&quot;: &quot;&lt;path-to-d4-file.d4&gt;&quot;
+    }
+  ],
+  &quot;hgnc_gene_ids&quot;: [
+    2861, 3791, 6481, 7436, 30521
+  ],
+  &quot;coverage_threshold&quot;: 10,
+  &quot;interval_type&quot;: &quot;genes&quot;
+}'
+</code></pre>
+<h4 id="response-from-chanjo2">Response from chanjo2:</h4>
+<pre><code class="language-shell">{&quot;TestSample&quot;:{&quot;mean_coverage&quot;:54.38,&quot;coverage_completeness_percent&quot;:33.03}}
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../loading-intervals/" class="btn btn-neutral float-left" title="Loading and displaying genes, transcripts and exons"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../coverage-reports/" class="btn btn-neutral float-right" title="Coverage and genes overview reports">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Clinical-Genomics/chanjo2/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../loading-intervals/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../coverage-reports/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://clinical-genomics.github.io/chanjo2/deployment/docker-deployment/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Deployment using Docker - Chanjo2</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Deployment using Docker";
+        var mkdocs_page_input_path = "deployment/docker-deployment.md";
+        var mkdocs_page_url = "/chanjo2/deployment/docker-deployment/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Chanjo2
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Index</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Deployment</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Deployment using Docker</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#launching-a-demo-using-docker">Launching a demo using Docker</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#launching-the-app-connected-to-a-mysql-database-via-docker-compose">Launching the app connected to a MySQL database via docker-compose</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#production-settings-and-env-file">Production settings and .env file</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../installation/">Installation on a virtual environment</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../env_file/">Custom settings and the .env file</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Usage</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../usage/loading-intervals/">Loading and displaying genes, transcripts and exons</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../usage/sample-coverage/">Coverage and coverage completeness queries</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../usage/coverage-reports/">Coverage and genes overview reports</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../usage/authorised_requests/">Authorised requests</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Chanjo2</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Deployment</li>
+      <li class="breadcrumb-item active">Deployment using Docker</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Clinical-Genomics/chanjo2/edit/master/docs/deployment/docker-deployment.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h2 id="deploying-chanjo2-using-docker">Deploying Chanjo2 using Docker</h2>
+<p>The <a href="https://github.com/Clinical-Genomics/chanjo2/blob/main/Dockerfile">Dockerfile</a> provided in the chanjo2 repository can be built and runned to deploy the software. Alternatively an image containing chanjo2 and all its dependencies is hosted on <a href="https://hub.docker.com/repository/docker/clinicalgenomics/chanjo2/general">Docker Hub</a>.</p>
+<h3 id="launching-a-demo-using-docker">Launching a demo using Docker</h3>
+<p>The file named <code>Dockerfile</code> is a generic Docker file to run the application. Whenever the app is launched with the ENV param <code>DEMO</code> (check the settings present in file <code>docker-compose.yml</code>) it will create a test SQLite database to work with.</p>
+<p>To start the demo via docker, run:</p>
+<pre><code>docker run -d --rm  -p 8000:8000 --expose 8000 clinicalgenomics/chanjo2:latest
+</code></pre>
+<p>The endpoints of the app will be now reachable from any web browser: http://0.0.0.0:8000/docs or http://localhost:8000/docs</p>
+<h3 id="launching-the-app-connected-to-a-mysql-database-via-docker-compose">Launching the app connected to a MySQL database via docker-compose</h3>
+<p>An example of this setup is provided in the <code>docker-compose-mysql.yml</code> file.
+Here we connect the app to a MySQL (MariaDB) and provide the connection settings to use it.</p>
+<p>Note that a file containing environmnent variables is required to run this setup. The <code>template.env</code> file offers an example of the required variables and can be customised according to your local settings.</p>
+<p>To check the configuration (env variables passed to the docker-compose file) run:</p>
+<pre><code>docker-compose -f docker-compose-mysql.yml --env-file template.env config
+</code></pre>
+<p>The docker-compose file contains 2 services:
+- <strong>MariaDB database</strong>, runned from a Docker file that includes the script to create an empty <code>testdb</code> database
+- <strong>The chanjo2 web app</strong>, a REST API</p>
+<p>To start the demo, run:</p>
+<pre><code>docker-compose -f docker-compose-mysql.yml --env-file template.env up
+</code></pre>
+<p>The endpoints of the app will be now reachable from any web browser: http://0.0.0.0:8000/docs or http://localhost:8000/docs</p>
+<h3 id="production-settings-and-env-file">Production settings and .env file</h3>
+<p>Keep in mind that Chanjo2 reads the variables necessary for connecting to the database from a default <a href="https://github.com/Clinical-Genomics/chanjo2/blob/main/.env">.env file</a>. 
+If you run a dockerized version of Chanjo2 and want to connect to a real database, you'll need to replace the default .env file with a custom environment file containing the correct settings to connect to your MySQL database. 
+The last line present on the .env file (<code>DEMO=Y</code>) should be removed or commented out.</p>
+<p>Given a local database running on localhost and port 3306, a custom .env file like this:</p>
+<pre><code>MYSQL_USER=dbUser
+MYSQL_PASSWORD=dbPassword
+MYSQL_DATABASE_NAME=chanjo2_test
+MYSQL_HOST_NAME=host.docker.internal
+MYSQL_PORT=3306
+</code></pre>
+<p>Should suffice to override the parameters present in the default .env file of Chanjo2:</p>
+<pre><code class="language-shell">docker run -d --rm -v $(pwd)/.env:/home/worker/app/.env  -p 8000:8000 --expose 8000 clinicalgenomics/chanjo2:latest
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../.." class="btn btn-neutral float-left" title="Index"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../installation/" class="btn btn-neutral float-right" title="Installation on a virtual environment">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Clinical-Genomics/chanjo2/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../.." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../installation/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

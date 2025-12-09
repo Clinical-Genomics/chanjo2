@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://clinical-genomics.github.io/chanjo2/</loc>
+         <lastmod>2025-12-09</lastmod>
+    </url>
+    <url>
+         <loc>https://clinical-genomics.github.io/chanjo2/deployment/docker-deployment/</loc>
+         <lastmod>2025-12-09</lastmod>
+    </url>
+    <url>
+         <loc>https://clinical-genomics.github.io/chanjo2/deployment/env_file/</loc>
+         <lastmod>2025-12-09</lastmod>
+    </url>
+    <url>
+         <loc>https://clinical-genomics.github.io/chanjo2/deployment/installation/</loc>
+         <lastmod>2025-12-09</lastmod>
+    </url>
+    <url>
+         <loc>https://clinical-genomics.github.io/chanjo2/usage/authorised_requests/</loc>
+         <lastmod>2025-12-09</lastmod>
+    </url>
+    <url>
+         <loc>https://clinical-genomics.github.io/chanjo2/usage/coverage-reports/</loc>
+         <lastmod>2025-12-09</lastmod>
+    </url>
+    <url>
+         <loc>https://clinical-genomics.github.io/chanjo2/usage/loading-intervals/</loc>
+         <lastmod>2025-12-09</lastmod>
+    </url>
+    <url>
+         <loc>https://clinical-genomics.github.io/chanjo2/usage/sample-coverage/</loc>
+         <lastmod>2025-12-09</lastmod>
+    </url>
+</urlset>

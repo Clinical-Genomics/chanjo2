@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://clinical-genomics.github.io/chanjo2/usage/loading-intervals/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Loading and displaying genes, transcripts and exons - Chanjo2</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Loading and displaying genes, transcripts and exons";
+        var mkdocs_page_input_path = "usage/loading-intervals.md";
+        var mkdocs_page_url = "/chanjo2/usage/loading-intervals/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Chanjo2
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Index</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Deployment</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../deployment/docker-deployment/">Deployment using Docker</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../deployment/installation/">Installation on a virtual environment</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../deployment/env_file/">Custom settings and the .env file</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Usage</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Loading and displaying genes, transcripts and exons</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#downloading-resources-from-the-schug-instance-at-scilifelab">Downloading Resources from the Schug Instance at SciLifeLab</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#downloading-genes">Downloading Genes</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#downloading-transcripts">Downloading Transcripts</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#downloading-exons">Downloading Exons</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#loadingupdating-genes-in-the-database">Loading/Updating Genes in the Database</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#loadingupdating-transcripts">Loading/Updating Transcripts</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#loadingupdating-exons">Loading/Updating Exons</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#genes-transcripts-and-exons-queries">Genes, transcripts and exons queries</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../sample-coverage/">Coverage and coverage completeness queries</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../coverage-reports/">Coverage and genes overview reports</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../authorised_requests/">Authorised requests</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Chanjo2</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Usage</li>
+      <li class="breadcrumb-item active">Loading and displaying genes, transcripts and exons</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Clinical-Genomics/chanjo2/edit/master/docs/usage/loading-intervals.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h2 id="loading-genetic-intervals-genes-transcripts-and-exons-into-the-database">Loading genetic intervals: genes, transcripts and exons into the database</h2>
+<p>Genes, transcripts and exons should be loaded and updated at regular intervals of time. Depending on the type of sequencing data analysed using chanjo2, <strong>loading of transcripts and exons might not be required.</strong>
+For instance, gene coordinates should be enough for whole genome sequencing (WGS) experiments, while transcripts and exons data are necessary to return statistics from transcripts and exons-based experiments.</p>
+<p>Genes, transcripts and exons should pre pre-downloaded from the <a href="http://useast.ensembl.org/info/data/biomart/index.html">Ensembl Biomart</a> using the <a href="https://github.com/Clinical-Genomics/schug">Schug</a> library and loaded into the database in three distinct tables.</p>
+<p><strong>Genes should be loaded into the database before transcripts and exons intervals.</strong></p>
+<h3 id="downloading-resources-from-the-schug-instance-at-scilifelab">Downloading Resources from the Schug Instance at SciLifeLab</h3>
+<h4 id="downloading-genes">Downloading Genes</h4>
+<pre><code class="language-shell">curl -X 'GET' 'https://schug.scilifelab.se/genes/ensembl_genes/?build=38' &gt; genes_GRCh38.txt
+</code></pre>
+<h4 id="downloading-transcripts">Downloading Transcripts</h4>
+<pre><code class="language-shell">curl -X 'GET' 'https://schug.scilifelab.se/transcripts/ensembl_transcripts/?build=38' &gt; transcripts_GRCh38.txt
+</code></pre>
+<h4 id="downloading-exons">Downloading Exons</h4>
+<pre><code class="language-shell">curl -X 'GET' 'https://schug.scilifelab.se/exons/ensembl_exons/?build=38' &gt; exons_GRCh38.txt
+</code></pre>
+<p>To download genes, transcripts, and exons for genome build 37 (GRCh37), simply replace <code>"38"</code> with <code>"37"</code> in the commands above.</p>
+<p><strong>Note:</strong> Biomart downloads may occasionally time out, resulting in incomplete files. To ensure the integrity of your downloaded data, always check that the last lines of the file contain data for the MT chromosome, as it is the final chromosome retrieved from Biomart.</p>
+<hr />
+<h3 id="loadingupdating-genes-in-the-database">Loading/Updating Genes in the Database</h3>
+<p>FastAPI provides a user-friendly Swagger UI that simplifies various tasks, including loading genes, transcripts, and exons into the database.</p>
+<p>If you have a local instance of Chanjo2 running, and Swagger UI is accessible in your browser at <code>http://localhost:8000/docs</code>, you can load genes for a specific genome build using the <code>/intervals/load/genes/{&lt;genome-build&gt;}</code> endpoint:</p>
+<p><img width="762" alt="Image" src="../../assets/images/loading_genes.png" /></p>
+<p>The required parameters are:
+- <strong>Genome build</strong> (e.g., 37 or 38)
+- <strong><code>file_path</code></strong>: The path to the genes resource file on your system</p>
+<p>The expected server response is:  </p>
+<blockquote>
+<p>"Genes will be updated in the background. Please check their availability in a few minutes."</p>
+</blockquote>
+<p><strong>Important:</strong><br />
+Loading genes into the database will overwrite any existing transcripts and exons associated with the same genome build. This ensures that the transcript and exon intervals remain consistent with the newly loaded gene definitions.</p>
+<hr />
+<h3 id="loadingupdating-transcripts">Loading/Updating Transcripts</h3>
+<p>Similarly, transcript data can be updated using the <code>/intervals/load/transcripts/{&lt;genome-build&gt;}</code> endpoint:</p>
+<p><img width="762" alt="Image" src="../../assets/images/loading_transcripts.png" /></p>
+<hr />
+<h3 id="loadingupdating-exons">Loading/Updating Exons</h3>
+<p>Exon data can be loaded in the same way by providing the genome build and the path to the resource file using the <code>/intervals/load/exons/{&lt;genome-build&gt;}</code> endpoint.</p>
+<p><img width="762" alt="Image" src="../../assets/images/loading_exons.png" /></p>
+<h3 id="genes-transcripts-and-exons-queries">Genes, transcripts and exons queries</h3>
+<p>Once the database is populated with genomic intervals data, it is possible to run queries to retrieve its content.</p>
+<p>Genomic intervals can be queried using genes definitions. Genes can be provided as a parameter to the query in the following formats</p>
+<ul>
+<li>Ensembl gene IDs (use parameter <code>ensembl_ids</code>)</li>
+<li>HGNC ids (use parameter <code>hgnc_ids</code>)</li>
+<li>HGNC symbols (use parameter <code>hgnc_symbols</code>)</li>
+</ul>
+<p>Genome build is always a required parameter in these queries.</p>
+<p>Examples:</p>
+<ul>
+<li>Send a POST request to Retrieve information on a list of <strong>genes</strong> using HGNC symbols:</li>
+</ul>
+<pre><code class="language-shell">{
+  &quot;build&quot;: &quot;GRCh37&quot;,
+  &quot;hgnc_symbols&quot;: [&quot;LAMA1&quot;,&quot;LAMA2&quot;]
+}
+</code></pre>
+<ul>
+<li>Retrieve transcripts available for one of more genes described by Ensembl IDs:</li>
+</ul>
+<pre><code class="language-shell">curl -X 'POST' \
+  'http://localhost:8000/intervals/transcripts' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  &quot;build&quot;: &quot;GRCh37&quot;,
+  &quot;ensembl_gene_ids&quot;: [
+    &quot;ENSG00000101680&quot;, &quot;ENSG00000196569&quot;
+  ]
+}'
+</code></pre>
+<ul>
+<li>Retrieve all exons for genes with HGNC IDs: 6481 and 6482:</li>
+</ul>
+<pre><code class="language-shell">curl -X 'POST' \
+  'http://localhost:8000/intervals/exons' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  &quot;build&quot;: &quot;GRCh37&quot;,
+  &quot;hgnc_ids&quot;: [
+    6481, 6482
+  ]
+}'
+</code></pre>
+<p>Whenever ensembl_ids, hgnc_ids, hgnc_symbols parameter is not provided, these endpoints will return a list of 100 default genes, transcripts or exons. To increase the number of returned entries you can specify a custom value for the query <code>limit</code> parameter.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../../deployment/env_file/" class="btn btn-neutral float-left" title="Custom settings and the .env file"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../sample-coverage/" class="btn btn-neutral float-right" title="Coverage and coverage completeness queries">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Clinical-Genomics/chanjo2/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../../deployment/env_file/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../sample-coverage/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="None" /><link rel="canonical" href="https://clinical-genomics.github.io/chanjo2/" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>Chanjo2</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Index";
+        var mkdocs_page_input_path = "index.md";
+        var mkdocs_page_url = "/chanjo2/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="." class="icon icon-home"> Chanjo2
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Index</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#chanjo2-image-as-a-proxy-to-d4tools-to-compute-coverage-stats-over-genomic-intervals-of-a-d4-file">Chanjo2 image as a proxy to d4tools to compute coverage stats over genomic intervals of a d4 file</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#executing-d4tools">Executing d4tools</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#calculating-coverage-on-specific-genomic-intervals-of-a-d4-file-using-d4tools">Calculating coverage on specific genomic intervals of a d4 file using d4tools</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#chanjo2-as-a-rest-server">Chanjo2 as a REST server</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Deployment</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="deployment/docker-deployment/">Deployment using Docker</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="deployment/installation/">Installation on a virtual environment</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="deployment/env_file/">Custom settings and the .env file</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Usage</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="usage/loading-intervals/">Loading and displaying genes, transcripts and exons</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="usage/sample-coverage/">Coverage and coverage completeness queries</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="usage/coverage-reports/">Coverage and genes overview reports</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="usage/authorised_requests/">Authorised requests</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">Chanjo2</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Index</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Clinical-Genomics/chanjo2/edit/master/docs/index.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="chanjo2-documentation-pages">Chanjo2 documentation pages</h1>
+<p>Chanjo2 is <strong>coverage analysis tool for clinical sequencing data</strong> using the <strong><a href="https://www.nature.com/articles/s43588-021-00085-0">d4 (Dense Depth Data Dump) format</a></strong>. 
+It's implemented in Python <a href="https://fastapi.tiangolo.com/">FastAPI</a> and provides API endpoints to communicate with a d4tools software in order to 
+<strong>return coverage and coverage completeness over genomic intervals (genes, transcripts, exons as well as custom intervals)</strong> over 
+single d4 files or samples stored in the database with associated d4 files.</p>
+<p>The tool is flexible and can be used in different ways. The simplest use case would be calculating sequencing coverage over one or more intervals for a d4 file stored locally or remotely on the internet.</p>
+<h2 id="chanjo2-image-as-a-proxy-to-d4tools-to-compute-coverage-stats-over-genomic-intervals-of-a-d4-file">Chanjo2 image as a proxy to d4tools to compute coverage stats over genomic intervals of a d4 file</h2>
+<p>Chanjo2 image contains <a href="https://github.com/38/d4-format">d4tools</a> and can be used to directly retrieve statistics over d4 files.</p>
+<h3 id="executing-d4tools">Executing d4tools</h3>
+<pre><code class="language-shell">docker run --entrypoint d4tools --rm  clinicalgenomics/chanjo2:latest
+</code></pre>
+<h3 id="calculating-coverage-on-specific-genomic-intervals-of-a-d4-file-using-d4tools">Calculating coverage on specific genomic intervals of a d4 file using d4tools</h3>
+<pre><code class="language-shell">docker run --entrypoint d4tools --platform linux/x86_64 --rm  -v &lt;path-to-local-d4-files-folder&gt;:/home/worker/infiles clinicalgenomics/chanjo2:latest view /home/worker/infiles/&lt;d4file.d4&gt; 1:1234560-1234580 X:1234560-1234580
+</code></pre>
+<p>Please note that the d4 file containing the <strong>coverage data can be also stored on a remote server</strong>. In this case the command above could be replaced by this one:</p>
+<pre><code class="language-shell">docker run --entrypoint d4tools --platform linux/x86_64 --rm clinicalgenomics/chanjo2:latest view &lt;url-to-remote-d4-file.d4&gt; 1:1234560-1234580 X:1234560-1234580
+</code></pre>
+<p>The coverage computation on a file hosted on a remote server, will be consistently slower than when hosting the file on a local server. </p>
+<h2 id="chanjo2-as-a-rest-server">Chanjo2 as a REST server</h2>
+<p>When chanjo2 is launched and runs as a REST server, it is offering many additional features, including:</p>
+<ul>
+<li><code>Support for calculating coverage and coverage completeness over genes, transcripts and exons for different genome builds</code></li>
+<li>Chanjo2 server can be either installed on a virtual environment using <a href="https://python-poetry.org/">poetry</a> of directly launched using <a href="https://www.docker.com/">Docker</a></li>
+</ul>
+<p>Instructions on how to set up and run Chanjo2 as a REST server as well as the functionalities that it offers are better illustrated in these dedicated pages.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="deployment/docker-deployment/" class="btn btn-neutral float-right" title="Deployment using Docker">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Clinical-Genomics/chanjo2/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+      <span><a href="deployment/docker-deployment/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = ".";</script>
+    <script src="js/theme_extra.js"></script>
+    <script src="js/theme.js"></script>
+      <script src="search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 1.6.1
+Build Date UTC : 2025-12-09 12:52:04.173199+00:00
+-->
